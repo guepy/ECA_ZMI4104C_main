@@ -1,0 +1,8 @@
+﻿  sis3100_vme_calls.c
+  ECA_ZMI4104C_main.c
+  wingetopt.c
+  Generating code
+  Previous IPDB not found, fall back to full compilation.
+  All 48 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Finished generating code
+  ECA_ZMI4104C_main.vcxproj -> C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\x64\Release\ECA_ZMI4104C_main.exe

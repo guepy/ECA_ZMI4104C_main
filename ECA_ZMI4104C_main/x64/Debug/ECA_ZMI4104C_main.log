@@ -1,0 +1,24 @@
+﻿  sis3100_vme_calls.c
+  ECA_ZMI4104C_main.c
+  wingetopt.c
+  Generating Code...
+sis3100_vme_calls.obj : error LNK2019: unresolved external symbol __imp_sis1100w_VmeSysreset referenced in function vmesysreset
+ECA_ZMI4104C_main.obj : error LNK2001: unresolved external symbol __imp_sis1100w_VmeSysreset
+sis3100_vme_calls.obj : error LNK2019: unresolved external symbol __imp_sis1100w_Vme_Single_Read referenced in function vme_A16D16_read
+ECA_ZMI4104C_main.obj : error LNK2001: unresolved external symbol __imp_sis1100w_Vme_Single_Read
+sis3100_vme_calls.obj : error LNK2019: unresolved external symbol __imp_sis1100w_Vme_Single_Write referenced in function vme_A16D16_write
+ECA_ZMI4104C_main.obj : error LNK2001: unresolved external symbol __imp_sis1100w_Vme_Single_Write
+sis3100_vme_calls.obj : error LNK2019: unresolved external symbol __imp_sis1100w_Vme_Dma_Read referenced in function vme_A24DMA_D16FIFO_read
+sis3100_vme_calls.obj : error LNK2019: unresolved external symbol __imp_sis1100w_Vme_Dma_Write referenced in function vme_A24DMA_D16FIFO_write
+sis3100_vme_calls.obj : error LNK2019: unresolved external symbol __imp_sis1100w_SdramSharc_Single_Read referenced in function s3100_sdram_read
+sis3100_vme_calls.obj : error LNK2019: unresolved external symbol __imp_sis1100w_SdramSharc_Single_Write referenced in function s3100_sdram_write
+sis3100_vme_calls.obj : error LNK2019: unresolved external symbol __imp_sis1100w_SdramSharc_Dma_Read referenced in function s3100_sdram_read
+sis3100_vme_calls.obj : error LNK2019: unresolved external symbol __imp_sis1100w_SdramSharc_Dma_Write referenced in function s3100_sdram_write
+ECA_ZMI4104C_main.obj : error LNK2019: unresolved external symbol __imp_sis1100w_Find_No_Of_sis1100 referenced in function Init_SIS_boards
+ECA_ZMI4104C_main.obj : error LNK2019: unresolved external symbol __imp_sis1100w_Get_Handle_And_Open referenced in function Init_SIS_boards
+ECA_ZMI4104C_main.obj : error LNK2019: unresolved external symbol __imp_sis1100w_Close referenced in function main
+ECA_ZMI4104C_main.obj : error LNK2019: unresolved external symbol __imp_sis1100w_Init referenced in function Init_SIS_boards
+ECA_ZMI4104C_main.obj : error LNK2019: unresolved external symbol __imp_sis1100w_Init_sis3100 referenced in function Init_SIS_boards
+ECA_ZMI4104C_main.obj : error LNK2019: unresolved external symbol __imp_sis1100w_sis1100_Control_Read referenced in function Init_SIS_boards
+sis1100w.lib : warning LNK4272: library machine type 'x86' conflicts with target machine type 'x64'
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\x64\Debug\ECA_ZMI4104C_main.exe : fatal error LNK1120: 15 unresolved externals
