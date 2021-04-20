@@ -390,8 +390,6 @@ int InitAxis(struct SIS1100_Device_Struct* dev) {
 	return 0;
 }
 
-
-
 int DisableAllInterrupts(struct SIS1100_Device_Struct* dev, unsigned int axis) {
 	unsigned int uint_vme_address = 0, uint_vme_data;
 	uint_vme_address = ADD(BASE_ADDRESS[axis-1], zVMEIntEnab0);				// Disable VME interrupts 
