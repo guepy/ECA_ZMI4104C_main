@@ -60,8 +60,9 @@
 #define zCompAExt 0x74 
 #define zCompBMSB 0x78 
 #define zCompBLSB 0x7A 
-#define zSSISquelch 0x34 
 #define zCompBExt 0x7C 
+#define zSSISquelch 0x34 
+#define zSoftErrID 0x1BA 
 #define zTestStat1 0xA0 // read axis 1, 3 only 
 #define zTestCmd1 0xA0 // write axis 1, 3 only 
 #define zTestCtrl1 0xA2 // axis 1, 3 only 
