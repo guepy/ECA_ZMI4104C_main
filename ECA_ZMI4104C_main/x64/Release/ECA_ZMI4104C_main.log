@@ -3,6 +3,6 @@
   wingetopt.c
   Generating code
   Previous IPDB not found, fall back to full compilation.
-  All 72 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  All 64 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
   Finished generating code
   ECA_ZMI4104C_main.vcxproj -> C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\x64\Release\ECA_ZMI4104C_main.exe

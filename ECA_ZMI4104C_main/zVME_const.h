@@ -21,9 +21,10 @@
 #define zVMEIntEnab2 0x1C 
 #define zP2IntEnab0 0x20 
 #define zP2IntEnab1 0x22 
-#define zAPDGain_L2 0x1A2 
+#define zAPDGain_L2 0x1A2
 #define zAPDGain_L2_set 0x18C 
-#define zP2ErrStat0 0x24				// read only 
+#define zAPDBiasDAC 0x18C 
+#define zP2ErrStat0 0xDE				// read only 
 #define zP2ErrClr0 0x24					// write only 
 #define zP2ErrStat1 0x26				// read only 
 #define zP2ErrClr1 0x26					// write only 
