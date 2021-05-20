@@ -14,7 +14,6 @@
 /***************************************************************************/
 
 //#include "stdafx.h"
-
 #include <windows.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -26,13 +25,15 @@
 #include "wingetopt.h" 
 #include "sis3100_vme_calls.h"
 #include "sis1100w.h"
+#include "sis3302.h"
+#include "sis3100.h"
 #pragma comment (lib, "sis1100w.lib")
 
 
-#define MAX_NOF_ACCESS_MODE_DEFINES		11 
-#define RET_SUCCESS						0
-#define RET_FAILED						-1
-#define LAMBDA  632.9911                   //"Nominal Vacuum Wavelength: 632.9911 ± 0.0001 nm"
+#define MAX_NOF_ACCESS_MODE_DEFINES			11 
+#define RET_SUCCESS							0
+#define RET_FAILED							-1
+#define LAMBDA								632.9911 //"Nominal Vacuum Wavelength: 632.9911 ± 0.0001 nm"
 #define SINGLE_PASS_INT_POS_COEF			2048	// 0.31 nm resolution
 #define DOUBLE_PASS_INT_POS_COEF			4096	// 0.15 nm resolution
 #define SSI_MAX_SAT							2047
@@ -44,12 +45,25 @@
 #define STACK_OVERFLOW						2
 #define SWITCH_DEFAULT_ERROR				3
 #define COMM_ERROR							4
+#define AXIS1								1
+#define AXIS2								2
+#define AXIS3								3
+#define AXIS4								4
+#define INT_LEVEL0							0
+#define INT_LEVEL1							1
+#define INT_LEVEL2							2
+#define INT_LEVEL3							3
+#define INT_LEVEL4							4
+#define INT_LEVEL5							5
+#define INT_LEVEL6							6
+#define INT_LEVEL7							7
 
 #define BIAS_OFF_MODE						0
 #define BIAS_CONSTANT_VOLT_MODE				1
 #define BIAS_CONSTANT_GAIN_MODE				2
 #define BIAS_CONSTANT_OPT_PWR_MODE			3
 #define BIAS_SIG_RMS_ADJUST_MODE			4
+#define BIAS_CTRL_MODE_NBR					5
 #define CEC_ERR_INT							0
 #define PHASE_NOISE_ERR_INT					1
 #define ACCELERATION_ERR_INT				2
@@ -85,6 +99,14 @@
 #define APD_FAIL_ERR_INT					32
 #define APD_TMP_ERR_INT						33
 
+#define DESCRIPTOR_1_TEST
+#define DESCRIPTOR_2_TEST
+#define DESCRIPTOR_3_TEST
+#define DESCRIPTOR_4_TEST
+#define DESCRIPTOR_5_TEST
+// get SIS3104 base address as argument at the process startup
+#define SIS3104_BASE_ADDRESS				0x0
+
 const char* const access_mode_Selection[MAX_NOF_ACCESS_MODE_DEFINES] = {
 	"CRCSRD8",  // Configuration ROM/Control&Status Register (CR/CSR)
 	"CRCSRD16", // Configuration ROM/Control&Status Register (CR/CSR)
@@ -98,20 +120,32 @@ const char* const access_mode_Selection[MAX_NOF_ACCESS_MODE_DEFINES] = {
 	"A32D16",   // A32 non privileged data access
 	"A32D32"    // A32 non privileged data access
 };
+const char* const biasControlModeString[BIAS_CTRL_MODE_NBR] = {
+	"BIAS_OFF_MODE",
+	"BIAS_CONSTANT_VOLTAGE_MODE",
+	"BIAS_CONSTANT_GAIN_MODE",
+	"BIAS_ACONSTANT_OPTICAL_POWER_MODE",
+	"BIAS_SIG_RMS_ADJUST_MODE",
+};
 
 SIS1100W_STATUS stat;
-
+struct SIS1100_Device_Struct dev;
 
 unsigned int	BASE_ADDRESS[] = { 0x14000, 0x15000, 0x16000, 0x17000 }, // Base adresses 
 return_code = 0,
 comp_err = 0,
-comp_valid_flag = 0,
+valid_flag = 0,
 NbrBdAx = 0;
+//uint32_t sis_irq_array[16]; // 16 IRQs
+uint32_t vme_irq_level=0, vme_irq_vector=0;
+uint8_t read_irq_vector=0;
 
 unsigned short	IntVector[] = { 0x101, 0, 0x202, 0 },
 SCLKDrive = 2,
 Direction[] = { 0, 0, 0, 0 };
 
+/**/
+//GUID sis1100w_GUID = { 0x944adde8, 0x4f6d, 0x4bee, 0xa309, 0x7ad62ab0b4bb };
 
 char sc_char[4];
 FILE* fd;
@@ -180,36 +214,230 @@ int ParseVMEPosErrs(struct SIS1100_Device_Struct*, unsigned char, unsigned int*)
 int ParseVMEErrorStatus1(struct SIS1100_Device_Struct*, unsigned char, unsigned int*);
 int ParseVMEErrorStatus0(struct SIS1100_Device_Struct*, unsigned char, unsigned int*);
 int ParseAPDErrCode(struct SIS1100_Device_Struct*, unsigned char, unsigned int*);
-int BoardControlMode(struct SIS1100_Device_Struct*, unsigned char, unsigned int, unsigned int);
+int BoardControlMode(struct SIS1100_Device_Struct*, unsigned char, unsigned int);
 int BiasControlMode(struct SIS1100_Device_Struct*, unsigned char, unsigned int);
 int StartBiasCalculation(struct SIS1100_Device_Struct*, unsigned char);
 int SetAPDGainL2(struct SIS1100_Device_Struct*, unsigned char, unsigned int);
+
+int SetAPDSigRMSL2(struct SIS1100_Device_Struct*, unsigned char, unsigned int);
+int SetAPDOptPwrL2(struct SIS1100_Device_Struct*, unsigned char, unsigned int);
 int ResetAxis(struct SIS1100_Device_Struct*, unsigned char);
 int WaitResetComplete(struct SIS1100_Device_Struct*, unsigned char);
 int SetPositionOffset32(struct SIS1100_Device_Struct*, unsigned char, unsigned int);
 int SetPositionOffset37(struct SIS1100_Device_Struct*, unsigned char, unsigned int, unsigned int);
-int EnableInterrupt_bit(struct SIS1100_Device_Struct*, unsigned char, unsigned short);
-int DisableInterrupt_bit(struct SIS1100_Device_Struct*, unsigned char, unsigned short);
-int EnableGlobalInterrupt(struct SIS1100_Device_Struct*, unsigned char);
+int EnableVMEInterrupt_bit(struct SIS1100_Device_Struct*, unsigned char, unsigned short);
+int DisableVMEInterrupt_bit(struct SIS1100_Device_Struct*, unsigned char, unsigned short);
+int EnableVMEGlobalInterrupt(struct SIS1100_Device_Struct*, unsigned char);
 int DisableGlobalInterrupt(struct SIS1100_Device_Struct*, unsigned char);
-int DisableAllInterrupts(struct SIS1100_Device_Struct*, unsigned char);
+int DisableAllVMEInterrupts(struct SIS1100_Device_Struct*, unsigned char);
 int SetKpAndKvCoeff(struct SIS1100_Device_Struct*, unsigned char, unsigned short, unsigned short);
 int ReadAPDCtrlSoftErrs(struct SIS1100_Device_Struct*, unsigned char);
 int ReadAllErrs(struct SIS1100_Device_Struct*, unsigned char);
 int SetTimeDelayBetweenResAndCompleteBit(struct SIS1100_Device_Struct*, unsigned char, unsigned char);
+int EnableAllVMEInterrupts(struct SIS1100_Device_Struct*, unsigned char );
+int EnableVMEGlobalInterrupt(struct SIS1100_Device_Struct*, unsigned char );
+int setVMEIntVector(struct SIS1100_Device_Struct* , unsigned char , unsigned char);
+int setVMEIntLevel(struct SIS1100_Device_Struct*, unsigned char , unsigned char );
+int sis3301w_Init(struct SIS1100_Device_Struct*, uint32_t, uint32_t, uint32_t);
+int	AckForSis3100VME_Irq(struct SIS1100_Device_Struct*, uint32_t);
 int EEPROMread(
 	struct SIS1100_Device_Struct*,
 	unsigned short,
 	unsigned int*,
 	unsigned short nBytes);
 
-int main(int argc, char* argv[])
+
+#define THREADCOUNT 4 
+
+HANDLE vmeIrq6Event, lemoIN1Event;
+HANDLE  hThreadArray[THREADCOUNT];
+HANDLE vmeIntThread, lemoIN1Thread, fastReadThread, WaitForSis3100IrqThread, WaitForVmeIrqThread;
+DWORD WINAPI vmeIntThreadFunc(LPVOID);
+DWORD WINAPI lemoIN1ThreadFunc(LPVOID);
+DWORD WINAPI readThreadFunc(LPVOID); 
+DWORD WINAPI fastReadThreadFunc(LPVOID);
+DWORD	WaitForVmeIrqThreadFunc(LPVOID);
+DWORD	WaitForSis3100IrqThreadFunc(LPVOID);
+
+UINT sisIrqMask = DOORBELL_DSP_IRQ |
+DOORBELL_LEMO_IN1_IRQ |
+DOORBELL_LEMO_IN2_IRQ |
+DOORBELL_LEMO_IN3_IRQ |
+DOORBELL_FLAT_IN4_IRQ |
+DOORBELL_FLAT_IN3_IRQ |
+DOORBELL_FLAT_IN2_IRQ |
+DOORBELL_FLAT_IN1_IRQ ;
+UINT vmeIrqMask = 
+DOORBELL_VME_IRQ1 |
+DOORBELL_VME_IRQ2 |
+DOORBELL_VME_IRQ3 |
+DOORBELL_VME_IRQ4 |
+DOORBELL_VME_IRQ5 |
+DOORBELL_VME_IRQ6;
+void CreateEvents(void)
 {
+
+	// Create a manual-reset event object. The write thread sets this
+	// object to the signaled state when it finishes writing to a 
+	// shared buffer. 
+
+
+	lemoIN1Event = CreateEvent(
+		NULL,               // default security attributes
+		TRUE,               // manual-reset event
+		FALSE,              // initial state is nonsignaled
+		TEXT("lemoIN1Event")  // object name
+	);
+
+	if (lemoIN1Event == NULL)
+	{
+		printf("CreateEvent failed (%d)\n", GetLastError());
+		return;
+	}
+
+	vmeIrq6Event = CreateEvent(
+		NULL,               // default security attributes
+		TRUE,               // manual-reset event
+		FALSE,              // initial state is nonsignaled
+		TEXT("vmeIrq6Event")  // object name
+	);
+	if (vmeIrq6Event == NULL)
+	{
+		printf("CreateEvent failed (%d)\n", GetLastError());
+		return;
+	}
+
+}
+void CreateThreads(void)
+{
+	int i=0;
+	DWORD dwThreadID;
+	
+	
+	// Create  thread 
+		// TODO: More complex scenarios may require use of a parameter
+		//   to the thread procedure, such as an event per thread to  
+		//   be used for synchronization.
+	vmeIntThread = CreateThread(
+		NULL,              // default security
+		0,                 // default stack size
+		vmeIntThreadFunc,        // name of the thread function
+		NULL,              // no thread parameters
+		0,                 // default startup flags
+		&dwThreadID);
+
+	if (vmeIntThread == NULL)
+	{
+		printf("CreateThread failed (%d)\n", GetLastError());
+		return;
+	}
+	else
+		hThreadArray[0] = vmeIntThread;
+
+	WaitForSis3100IrqThread = CreateThread(
+		NULL,              // default security
+		0,                 // default stack size
+		WaitForSis3100IrqThreadFunc,        // name of the thread function
+		NULL,              // no thread parameters
+		0,                 // default startup flags
+		&dwThreadID);
+	if (WaitForSis3100IrqThread == NULL)
+	{
+		printf("CreateThread failed (%d)\n", GetLastError());
+		return;
+	}
+	else
+		hThreadArray[1] = WaitForSis3100IrqThread;
+
+	WaitForVmeIrqThread = CreateThread(
+		NULL,              // default security
+		0,                 // default stack size
+		WaitForVmeIrqThreadFunc,        // name of the thread function
+		NULL,              // no thread parameters
+		0,                 // default startup flags
+		&dwThreadID);
+	if (WaitForVmeIrqThread == NULL)
+	{
+		printf("CreateThread failed (%d)\n", GetLastError());
+		return;
+	}
+	else
+		hThreadArray[2] = WaitForVmeIrqThread;
+
+	lemoIN1Thread = CreateThread(
+		NULL,              // default security
+		0,                 // default stack size
+		lemoIN1ThreadFunc,        // name of the thread function
+		NULL,              // no thread parameters
+		0,                 // default startup flags
+		&dwThreadID);
+	if (lemoIN1Thread == NULL)
+	{
+		printf("CreateThread failed (%d)\n", GetLastError());
+		return;
+	}
+	else
+		hThreadArray[3] = lemoIN1Thread;
+	/**
+	fastReadThread = CreateThread(
+		NULL,              // default security
+		0,                 // default stack size
+		fastReadThreadFunc,        // name of the thread function
+		NULL,              // no thread parameters
+		0,                 // default startup flags
+		&dwThreadID);
+
+	if (fastReadThread == NULL)
+	{
+		printf("CreateThread failed (%d)\n", GetLastError());
+		return;
+	}*/
+}
+void CloseThreads()
+{
+	// Close all event handles (currently, only one global handle).
+	CloseHandle(vmeIntThread);
+	CloseHandle(lemoIN1Thread);
+	CloseHandle(WaitForSis3100IrqThread);
+	CloseHandle(WaitForVmeIrqThread);
+}
+
+void CloseEvents()
+{
+	// Close all event handles (currently, only one global handle).
+
+	CloseHandle(vmeIrq6Event);
+	CloseHandle(lemoIN1Event);
+}
+HANDLE hDevice = INVALID_HANDLE_VALUE;  // handle to the drive to be examined 
+BOOL bResult = FALSE;                 // results flag
+DWORD junk = 0;                     // discard results
+
+unsigned int pdg[100];
+#define wszDrive L"\\\\.\\PhysicalDrive0"
+volatile int irq;
+//int irqlevel=3;
+//int irqvector=37;
+
+unsigned int gl_vme_irq_level;
+unsigned int gl_vme_irq_vector;
+unsigned int gl_irq_loop_counter;
+USHORT end_read = 0;
+PUINT base_A24D32_FR_ptr, base_A24D32_ptr;
+DWORD dwWaitResult;
+struct sis1100_irq_ctl irqctl;
+struct sis1100_irq_get irqget;
+struct sis1100_irq_ack irqack;
+HANDLE ghMutex;
+int main(void)
+{
+	
+
+	//======================================================================
 	double position[] = { 0, 0, 0, 0 },
-		time[] = { 0, 0, 0, 0 },
+	time[] = { 0, 0, 0, 0 },
 		velocity[] = { 0, 0, 0, 0 },
 		Period = 1 / 3000;	//sample period in sec
-	struct SIS1100_Device_Struct dev;
 	const unsigned short access_mode_AM_value[MAX_NOF_ACCESS_MODE_DEFINES] = {
 		0x2F, // Configuration ROM/Control&Status Register (CR/CSR)
 		0x2F, // Configuration ROM/Control&Status Register (CR/CSR)
@@ -228,7 +456,19 @@ int main(int argc, char* argv[])
 					   , {timeScale, timeScale * (10 ^ 3), timeScale * (10 ^ 6), 1} \
 					   , {velocityScale, velocityScale * (10 ^ 3), velocityScale * (10 ^ 6), 1} \
 					   , {1 * (10 ^ -3), 1, 1 * (10 ^ 3), 1} };
+	
+	// Create a mutex with no initial owner
 
+	ghMutex = CreateMutex(
+		NULL,              // default security attributes
+		FALSE,             // initially not owned
+		NULL);             // unnamed mutex
+
+	if (ghMutex == NULL)
+	{
+		printf("CreateMutex error: %d\n", GetLastError());
+		return 1;
+	}
 	/*
 		printf("Parsing arguments ... \n");
 
@@ -279,36 +519,649 @@ int main(int argc, char* argv[])
 		printf("\n Arguments Parsed\n");
 	*/
 	//_CRT_SECURE_NO_WARNINGS = 1;
+
 	Init_SIS_boards(&dev);
 	//Sleep(10);
-	Init_ZMI_bd(&dev);
+	//Init_ZMI_bd(&dev);
 
-	InitAxis(&dev);
+	//InitAxis(&dev);
 	EnableSinglePassInterferometer();
-	SetSampFlag(&dev, 1e-2);
-	EnableSampleTimer(&dev);
+	//SetSampFlag(&dev, 1e-2);
+	//EnableSampleTimer(&dev);
+
+	// TODO: Create the shared buffer
+
+	// Create events and THREADCOUNT threads to read from the buffer
+
+	
+
+	// At this point, the reader threads have started and are most
+	// likely waiting for the global event to be signaled. However, 
+	// it is safe to write to the buffer because the event is a 
+	// manual-reset event.
+
+	//WriteToBuffer();
+	//GetDeviceHandle(wszDrive);
+
+	vme_irq_level = INT_LEVEL6;
+	vme_irq_vector = 12;
+	CreateThreads();
+	dwWaitResult = WaitForSingleObject( //wait for the main thread to sent an event
+		ghMutex, // event handle
+		INFINITE);    // indefinite wait*/
 	while (1)
 	{
 		ReadOpticalPowerUsingSSIav(&dev);
-		//ReadSamplePosition32(&dev, 3, position);
+		ReadSamplePosition32(&dev, AXIS3, position);
+		//ReadPosition32(&dev, AXIS3, position);
+
 		//ReadTime32_ForAllAxis(&dev, time);
 		//ReadVelocity32_ForAllAxis(&dev, time);
-
-		ReadAllErrs(&dev,3);
+		/*dwWaitResult = WaitForSingleObject( //wait for the main thread to sent an event
+			ghMutex, // event handle
+			INFINITE);    // indefinite wait*/
+			//ReadAllErrs(&dev, AXIS3);
+			/*if (!ReleaseMutex(ghMutex))
+				printf("Error while releasing mutex\n");*/
 		printf(" Press enter to sample data and read a new value \n");
 
 		scanf_s("%c", sc_char, 2);
 		if (!strncmp(sc_char, "q", 1))
-			exit(EXIT_SUCCESS);
+			valid_flag = 1;
 		printf("Sampling data... \n");
+		if (valid_flag == 1)
+			break;
+		Sleep(1000);
+		
+		
+	}
+	//=================================================================
+	printf("Main thread waiting for threads to exit...\n");
+
+	// The handle for each thread is signaled when the thread is
+	// terminated.
+	dwWaitResult = WaitForMultipleObjects(
+		3,
+		hThreadArray,     //  thread handle
+		TRUE,
+		INFINITE);
+
+	switch (dwWaitResult)
+	{
+		// All thread objects were signaled
+	case WAIT_OBJECT_0:
+		printf("All threads ended, cleaning up for application exit...\n");
+		break;
+
+		// An error occurred
+	default:
+		printf("WaitForMultipleObjects failed (%d)\n", GetLastError());
+		return 1;
 	}
 
-	sis1100w_Close(&dev);
-	printf("   \n");
-	printf("   \n");
-	exit(0);
+	// Close the events to clean up
+	
+	CloseHandle(ghMutex);
+	CloseThreads();
+	return 0;
 }
-//*
+
+DWORD WINAPI lemoIN1ThreadFunc(LPVOID lpParam)
+{
+	// lpParam not used 
+	UNREFERENCED_PARAMETER(lpParam);
+
+	uint32_t get_irq_level = 0;
+	DWORD dwWaitResult = 0;
+	unsigned int loop_cnt, error_cnt;
+	//------------------------------------------------------------------------------------
+	error_cnt = 0;
+	loop_cnt = 0;
+	printf("Thread lemoIN1 is running\n");
+	do {
+		dwWaitResult = WaitForSingleObject(
+			lemoIN1Event,    // handle to mutex
+			1000);  // 1s time-out interval
+
+		switch (dwWaitResult)
+		{
+			// The thread got ownership of the mutex
+		case WAIT_OBJECT_0:
+				printf("Interrupt Thread %d is using the dev structure...\n",
+				GetCurrentThreadId());
+				printf(" \n\n\n\tA LEMO INTERRUPT HAS OCCURED \n\n\n");
+				loop_cnt++;
+			break;
+		case WAIT_ABANDONED:
+			break;
+		default:
+			break;
+		}
+	} while (valid_flag != 1);
+printf("==============================================================\n");
+printf("nbr of LEMO interrupt %d\n", loop_cnt);
+printf("==============================================================\n");
+	//result = scanf("%s", line_in);
+
+	//------------------------------------------------------------------------------------
+	/*
+	dwWaitResult = WaitForSingleObject( //wait for the main thread to sent an event
+		ghMutex, // event handle
+		INFINITE);    // indefinite wait
+
+	switch (dwWaitResult)
+	{
+		// Event object was signaled
+	case WAIT_OBJECT_0:
+		printf("Closing Interrupt Handler \n");
+		/* close VME environment
+		sis1100w_Close(&dev);
+		if (!ReleaseMutex(ghMutex))
+			printf("Error while releasing mutex\n");
+		break;
+
+		// An error occurred
+	default:
+		printf("Wait error (%d)\n", GetLastError());
+
+		return 0;
+	}
+	*/
+	// Now that we are done reading the buffer, we could use another
+	// event to signal that this thread is no longer reading. This
+	// example simply uses the thread handle for synchronization (the
+	// handle is signaled when the thread terminates.)
+
+	printf("Thread %d exiting\n", GetCurrentThreadId());
+	return 1;
+}
+DWORD WINAPI vmeIntThreadFunc(LPVOID lpParam)
+{
+	// lpParam not used in this example.
+	UNREFERENCED_PARAMETER(lpParam);
+	uint32_t get_irq_level = 0x6;
+	DWORD dwWaitResult=0;
+	unsigned int loop_cnt, error_cnt;
+	int rc;
+	//------------------------------------------------------------------------------------
+	error_cnt = 0;
+	loop_cnt = 0;
+	do {
+		dwWaitResult = WaitForSingleObject(
+			vmeIrq6Event,    // handle to mutex
+			1000);  // 1s time-out interval
+
+		switch (dwWaitResult)
+		{
+			// The thread got ownership of the mutex
+		case WAIT_OBJECT_0:
+				// TODO: Write to the database
+				printf("Interrupt Thread %d is using the dev structure...\n",
+				GetCurrentThreadId());
+				printf(" \n\n\n\tA VME INTERRUPT HAS OCCURED \n\n\n");
+				rc = vme_IACK_D8_read(&dev, get_irq_level, &read_irq_vector);
+				if (rc != 0) printf("IACK Cycle:  rc = 0x%08x\n", rc);
+				printf(" read_irq_vector =  %x \r\n", read_irq_vector);
+			break;
+		case WAIT_ABANDONED:
+			break;
+		default:
+			break;
+		}
+	} while (valid_flag != 1);
+	//result = scanf("%s", line_in);
+
+	//------------------------------------------------------------------------------------
+	/*
+	dwWaitResult = WaitForSingleObject( //wait for the main thread to sent an event
+		ghMutex, // event handle
+		INFINITE);    // indefinite wait
+		
+	switch (dwWaitResult)
+	{
+		// Event object was signaled
+	case WAIT_OBJECT_0:
+		printf("Closing Interrupt Handler \n");
+		/* close VME environment 
+		sis1100w_Close(&dev);
+		if (!ReleaseMutex(ghMutex))
+			printf("Error while releasing mutex\n");
+		break;
+
+		// An error occurred
+	default:
+		printf("Wait error (%d)\n", GetLastError());
+		
+		return 0;
+	}
+	*/
+	// Now that we are done reading the buffer, we could use another
+	// event to signal that this thread is no longer reading. This
+	// example simply uses the thread handle for synchronization (the
+	// handle is signaled when the thread terminates.)
+
+	printf("Thread %d exiting\n", GetCurrentThreadId());
+	return 1;
+}
+/*********************************************************/
+/*
+DWORD WINAPI fastReadThreadFunc(LPVOID lpParam)
+{
+	// lpParam not used in this example.
+	UNREFERENCED_PARAMETER(lpParam);
+
+	DWORD dwWaitResult = 0;
+	unsigned int position;
+	printf(" Thread %d is running...\n",GetCurrentThreadId());
+	do {
+		//ReadSamplePosition32(&dev, AXIS3, &position);
+	} while (0);//1
+	printf("Thread %d exiting\n", GetCurrentThreadId());
+	return 1;
+}
+
+DWORD WINAPI readThreadFunc(LPVOID lpParam)
+{
+	// lpParam not used in this example.
+	UNREFERENCED_PARAMETER(lpParam);
+
+	DWORD dwWaitResult = 0;
+	unsigned int uint_vme_data = 0,
+		uint_vme_address = 0,
+		get_lwords = 0,
+		no_of_lwords=0;
+	PUINT ptr = base_A24D32_ptr;
+	printf(" Thread %d is running...\n", GetCurrentThreadId());
+	do {
+		for (USHORT i = 0; i < 0x1C7; i = i + 4) {
+			uint_vme_address = BASE_ADDRESS + i;
+			return_code = vme_A32DMA_D32_read(&dev, uint_vme_address, &uint_vme_data, no_of_lwords, &get_lwords);
+			if (return_code != 0) {
+				printf("return Error vme_A32DMA_D32_read:   return_code = 0x%08x  at address = 0x%08x\n", return_code, uint_vme_address);
+				return -1;
+			}
+			if (no_of_lwords != get_lwords) {
+				printf("length Error vme_A32DMA_D32_read:   must length = 0x%08x  read length = 0x%08x\n", no_of_lwords, get_lwords);
+				return -1;
+			}
+			*(base_A24D32_ptr++) = uint_vme_data;
+		}
+		base_A24D32_ptr = ptr;
+	} while (!end_read);
+	printf("Thread %d exiting\n", GetCurrentThreadId());
+	return 1;
+}
+*/
+int allocateWinMemSpace(struct SIS1100_Device_Struct* dev, UCHAR *nof_windows) {
+
+	UINT nof_vme_windows = 2;
+	UINT mapParams[2 * 4] = {  // 2 descriptors (Address windows) each contains 4 32-bit entries 
+
+		// 1.descriptor 
+		0xff010800, /* protocol header */
+		0x39,       /* A24 */
+		0x00000000, /* VME Base Address              */
+		0,
+
+		// 2.descriptor 
+		0xff010800, /* protocol header */
+		0x39,       /* A24 */
+		0x00400000, /* VME Base Address              */
+		0,
+
+	};
+
+	// Map windows
+	stat = sis1100w_vme_map(dev, mapParams, nof_vme_windows * 4);
+	if (stat != Stat1100Success) {
+		printf("Error in 'sis1100w_vme_map': %d\n", stat);
+		printf("Note: Set mapping size from 256MiB to 64MiB on the SIS1100(-eCMC/-e2) device to reduce the mapping window \n");
+		printf("      Use the program: mapwindow/mapwindow.exe \n");
+		printf("      Reboot the PC after changing the mapping size \n\n");
+		return -1;
+	}
+
+	// get Map windows pointer
+	PUINT mappedArea = NULL;
+	stat = sis1100w_vme_map_get_ptr(dev, &mappedArea);
+	if (stat != Stat1100Success) {
+		printf("Error in 'sis1100w_vme_map_get_adr': %d\n", stat);
+		return -1;
+	}
+	printf("mapped area: %p\n", mappedArea);
+
+	/* VME Windows pointer */
+	PUCHAR vme_window1_ptr = (PUCHAR)mappedArea;                    // 1st 4MB block;
+	PUCHAR vme_window2_ptr = (PUCHAR)mappedArea + (1 * 0x400000);    // 2st 4MB block;
+
+	// VME Address Pointer definitons
+
+		//1.descriptor 4MB block A24/D32-cycles ;
+	base_A24D32_FR_ptr = (PUINT)(vme_window1_ptr);  // D32 cycle pointer with VME Base Address 0x00000000  
+	//*(base_A24D32_0x000000_ptr + 0x0)      -> first VME address 0x00000000
+	//*(base_A24D32_0x000000_ptr + 0xFFFFF)  -> last  VME address 0x003FFFFC
+	// To use in fast position reading cycle
+
+	//2.descriptor 4MB block A24/D32-cycles ;
+	base_A24D32_ptr = (PUINT)(vme_window2_ptr);  // D32 cycle pointer with VME Base Address 0x00000000  
+	//*(base_A24D32_0x000000_ptr + 0x0)      -> first VME address 0x00000000
+	//*(base_A24D32_0x000000_ptr + 0xFFFFF)  -> last  VME address 0x003FFFFC
+	//To use in central read thread
+
+}
+
+int releaseWinMemSpace(struct SIS1100_Device_Struct* dev, UCHAR nof_vme_windows) {
+	// cleanup
+	stat = sis1100w_vme_unmap(dev, nof_vme_windows * 4);
+	if (stat != Stat1100Success) {
+		printf("Error in 'sis1100w_vme_unmap': %d\n", stat);
+		return -1;
+	}
+
+	sis1100w_Close(dev);
+	printf("Windows -vme map demo- finished \n");
+
+}
+int sis3301w_Init(
+	struct SIS1100_Device_Struct* dev,
+	uint32_t mod_base,
+	uint32_t vme_irq_level,
+	uint32_t vme_irq_vector
+)
+{
+	int rc;
+	uint32_t addr, data;
+
+	/* reset  */
+	addr = mod_base + SIS3302_KEY_RESET;
+	rc = s3100_control_write(dev, addr, 0x0);
+	if (rc != 0) {
+		printf("vme_A32D32_write:  rc = 0x%08x  at address = 0x%08x\n", rc, addr);
+	}
+
+	/* irq level  vector  */
+	addr = mod_base + SIS3302_IRQ_CONFIG;
+	//data =  (vme_irq_vector & 0xff) + (((vme_irq_level & 0x7) + 0x8) << 8) ;
+	//data =  0x1b01 ;
+	//data =  0x1A01 ;
+	//data =  0x1801 + 0x300 ;
+	data = (vme_irq_vector & 0xff) + (((vme_irq_level & 0x7) + 0x8) << 8);
+	if (s3100_control_write(dev, addr, data) != 0) {
+		printf("vme_A32D32_write:  rc = 0x%08x  at address = 0x%08x\n", rc, addr);
+	}
+
+	/* irq source  control  */
+	addr = mod_base + SIS3302_IRQ_CONTROL;
+	data = 0x2;
+	if (s3100_control_write(dev, addr, data) != 0) {
+		printf("vme_A32D32_write:  rc = 0x%08x  at address = 0x%08x\n", rc, addr);
+	}
+
+
+	/* max_nof_events  */
+	addr = mod_base + SIS3302_MAX_NOF_EVENT;
+	data = 0x100;
+	if (s3100_control_write(dev, addr, data) != 0) {
+		printf("vme_A32D32_write:  rc = 0x%08x  at address = 0x%08x\n", rc, addr);
+	}
+
+	// why ?
+#ifdef not_used
+	/* control  */
+	addr = mod_base + SIS3302_CONTROL_STATUS;
+	data = 0x0;
+	if (vme_A32D32_write(dev, addr, data) != 0) {
+		printf("vme_A32D32_write:  rc = 0x%08x  at address = 0x%08x\n", rc, addr);
+	}
+	// why ?
+	/* control  */
+	addr = mod_base + SIS3302_CONTROL_STATUS;
+	data = 0x0;
+	if (vme_A32D32_write(dev, addr, data) != 0) {
+		printf("vme_A32D32_write:  rc = 0x%08x  at address = 0x%08x\n", rc, addr);
+	}
+#endif
+
+	/* Acqconf  */
+	addr = mod_base + SIS3302_ACQUISTION_CONTROL;
+	data = 0x130; // SIS3302_ACQ_ENABLE_LEMO_START_STOP + SIS3302_ACQ_ENABLE_MULTIEVENT + SIS3302_ACQ_ENABLE_AUTOSTART
+	if (s3100_control_write(dev, addr, data) != 0) {
+		printf("vme_A32D32_write:  rc = 0x%08x  at address = 0x%08x\n", rc, addr);
+	}
+
+	/* Startdelay  */
+	addr = mod_base + SIS3302_START_DELAY;
+	data = 0x20; //  
+	if (s3100_control_write(dev, addr, data) != 0) {
+		printf("vme_A32D32_write:  rc = 0x%08x  at address = 0x%08x\n", rc, addr);
+	}
+	/* Stopdelay  */
+	addr = mod_base + SIS3302_STOP_DELAY;
+	data = 0x320; //  
+	if (s3100_control_write(dev, addr, data) != 0) {
+		printf("vme_A32D32_write:  rc = 0x%08x  at address = 0x%08x\n", rc, addr);
+	}
+
+
+	/* Event Config  */
+	addr = mod_base + SIS3302_EVENT_CONFIG_ALL_ADC;
+	data = 0x17; //  EVENT_CONF_ENABLE_WRAP_PAGE_MODE + EVENT_CONF_PAGE_SIZE_1K_WRAP
+	if (s3100_control_write(dev, addr, data) != 0) {
+		printf("vme_A32D32_write:  rc = 0x%08x  at address = 0x%08x\n", rc, addr);
+	}
+
+#ifdef not_used
+
+	/* Acqconf  */
+	addr = mod_base + SIS3302_ACQUISTION_CONTROL;
+	data = 0x130; // SIS3302_ACQ_ENABLE_LEMO_START_STOP + SIS3302_ACQ_ENABLE_MULTIEVENT + SIS3302_ACQ_ENABLE_AUTOSTART
+	if (vme_A32D32_write(dev, addr, data) != 0) {
+		printf("vme_A32D32_write:  rc = 0x%08x  at address = 0x%08x\n", rc, addr);
+	}
+#endif
+
+
+	return 0;
+}
+	
+
+	DWORD	WaitForVmeIrqThreadFunc(LPVOID lpParam)
+	{
+		int rc;
+		uint32_t doorbell_value=0;
+		UINT sis_get_irq_level=0;
+
+		vmeIrq6Event = CreateEvent(
+			NULL,               // default security attributes
+			FALSE,               // Auto-reset event
+			FALSE,              // initial state is nonsignaled
+			TEXT("vmeIrq6Event")  // object name
+		);
+		if (vmeIrq6Event == NULL)
+		{
+			printf("CreateEvent failed (%d)\n", GetLastError());
+			return -1;
+		}
+		sis1100w_sis310x_Register_For_Irq(&dev, vmeIrqMask); //Register to listen to IRQ level interrupt
+		//PLX_INTERRUPT intSrc;
+		//CreateEvents();
+		do {
+			//IRQ update on SIS3100
+			rc = s3100_control_write(&dev, SIS3100_OPT_IN_IRQ_LATCH, DOORBELL_IRQ_UPDATE);
+			if (Stat1100Success != rc) {
+				printf("\n\nError in 's3100_control_write' (Thread Running: %s, stopping)\n", __FUNCTION__);
+				break;
+			}
+			rc = sis1100w_sis310x_Wait_For_Irq(&dev, 1000, &doorbell_value); //wait for 1s, use -1 for INFINITE
+			if (doorbell_value) {
+				printf("\n\n\nDoorbell value is %X \n\n\n", doorbell_value);
+				sis_get_irq_level = 0;
+				// VME IRQ7
+				if ((doorbell_value & DOORBELL_VME_IRQ7) == DOORBELL_VME_IRQ7) {
+					sis_get_irq_level = 0x7;
+				}
+
+				// VME IRQ6
+				if ((doorbell_value & DOORBELL_VME_IRQ6) == DOORBELL_VME_IRQ6) {
+					sis_get_irq_level = 0x6;
+					printf("\n\n\nSending vmeIrq event to ISR..\n\n\n");
+					if (!SetEvent(vmeIrq6Event))
+					{
+						printf("SetEvent failed (%d)\n", GetLastError());
+						break;
+					}
+					rc = s3100_control_write(&dev, SIS3100_OPT_VME_IRQ_CTRL, VME_IRQ6_STA_CLR_BIT);
+					if (Stat1100Success != rc) {
+						printf("\n\nError in 's3100_control_write' (Thread Running: %s, stopping)\n", __FUNCTION__);
+						break;
+					}
+				}
+				// VME IRQ5
+				if ((doorbell_value & DOORBELL_VME_IRQ5) == DOORBELL_VME_IRQ5) {
+					sis_get_irq_level = 0x5;
+				}
+
+				// VME IRQ4
+				if ((doorbell_value & DOORBELL_VME_IRQ4) == DOORBELL_VME_IRQ4) {
+					sis_get_irq_level = 0x4;
+				}
+
+				// VME IRQ3
+				if ((doorbell_value & DOORBELL_VME_IRQ3) == DOORBELL_VME_IRQ3) {
+					sis_get_irq_level = 0x3;
+				}
+
+				// VME IRQ2
+				if ((doorbell_value & DOORBELL_VME_IRQ2) == DOORBELL_VME_IRQ2) {
+					sis_get_irq_level = 0x2;
+				}
+
+				// VME IRQ1
+				if ((doorbell_value & DOORBELL_VME_IRQ1) == DOORBELL_VME_IRQ1) {
+					sis_get_irq_level = 0x2;
+				}
+
+
+			}
+			doorbell_value = 0;
+		} while (valid_flag != 1);
+		
+		CloseHandle(vmeIrq6Event);
+		printf("Terminating Thread %d..\n", GetCurrentThreadId());
+		return 0;
+	}
+	DWORD	WaitForSis3100IrqThreadFunc(LPVOID lpParam)
+	{
+		int rc;
+		uint32_t doorbell_value;
+		UINT sis_get_irq_level = 0;
+
+		printf(" Thread %d is running...\n",
+			GetCurrentThreadId());
+		// Create a manual-reset event object. The write thread sets this
+		// object to the signaled state when it finishes writing to a 
+		// shared buffer. 
+		lemoIN1Event = CreateEvent(
+			NULL,               // default security attributes
+			FALSE,               // Auto-reset event
+			FALSE,              // initial state is nonsignaled
+			TEXT("lemoIN1Event")  // object name
+		);
+
+		if (lemoIN1Event == NULL)
+		{
+			printf("CreateEvent failed (%d)\n", GetLastError());
+			return -1;
+		}	
+
+		sis1100w_sis310x_Register_For_Irq(&dev, sisIrqMask); //Register to listen to IRQ level interrupt
+		//CreateEvents();
+		do {
+			//IRQ update on SIS3100
+			rc = s3100_control_write(&dev, SIS3100_OPT_IN_IRQ_LATCH, DOORBELL_IRQ_UPDATE);
+			if (Stat1100Success != rc) {
+				printf("\n\nError in 's3100_control_write' (IRQ Running: %d, stopping)\n", rc);
+				continue;
+			}
+			rc = sis1100w_sis310x_Wait_For_Irq(&dev, 1000, &doorbell_value); //wait for 1s, use -1 for INFINITE
+			if (doorbell_value) {
+				printf("\n\n\nDoorbell value is %X \n\n\n", doorbell_value);
+				// LEMO IN1
+				if ((doorbell_value & DOORBELL_FLAT_IN3_IRQ) == DOORBELL_FLAT_IN3_IRQ) {
+					sis_get_irq_level = 0x8;
+					printf("\n\n\nSending vmeIrq event to ISR..\n\n\n");
+					if (!SetEvent(lemoIN1Event))
+					{
+						printf("SetEvent failed (%d)\n", GetLastError());
+						break;
+					}
+					rc = s3100_control_write(&dev, SIS3100_OPT_IN_IRQ_LATCH, FLAT_IN3_IRQ_STA_CLR_BIT);
+					if (Stat1100Success != rc) {
+						printf("\n\nError in 's3100_control_write' (Thread Running: %s, stopping)\n", __FUNCTION__);
+						break;
+					}
+				}
+			}
+			doorbell_value = 0;
+		} while (valid_flag != 1);
+
+		CloseHandle(lemoIN1Event);
+		printf("Terminating Thread %d..\n", GetCurrentThreadId());
+		return 0;
+	}
+
+	int	AckForSis3100VME_Irq(
+		struct SIS1100_Device_Struct* dev,
+		uint32_t sis_get_irq_level
+	)
+	{
+		int rc;
+		uint32_t irq_level;
+
+		//	#ifdef raus
+		irq_level = sis_get_irq_level & 0x7;
+		switch (irq_level) {
+		case 0:
+			rc = -1;
+			break;
+		case 1:
+			rc = s3100_control_write(dev, SIS3100_OPT_VME_IRQ_CTRL, VME_IRQ1_STA_CLR_BIT);
+			break;
+		case 2:
+			rc = s3100_control_write(dev, SIS3100_OPT_VME_IRQ_CTRL, VME_IRQ2_STA_CLR_BIT);
+			break;
+		case 3:
+			rc = s3100_control_write(dev, SIS3100_OPT_VME_IRQ_CTRL, VME_IRQ3_STA_CLR_BIT);
+			break;
+		case 4:
+			rc = s3100_control_write(dev, SIS3100_OPT_VME_IRQ_CTRL, VME_IRQ4_STA_CLR_BIT);
+			break;
+		case 5:
+			rc = s3100_control_write(dev, SIS3100_OPT_VME_IRQ_CTRL, VME_IRQ5_STA_CLR_BIT);
+			break;
+		case 6:
+			rc = s3100_control_write(dev, SIS3100_OPT_VME_IRQ_CTRL, VME_IRQ6_STA_CLR_BIT);
+			break;
+		case 7:
+			rc = s3100_control_write(dev, SIS3100_OPT_IN_IRQ_LATCH, VME_IRQ7_STA_CLR_BIT);
+			break;
+		case 8:
+			rc = s3100_control_write(dev, SIS3100_OPT_IN_IRQ_LATCH, FLAT_IN3_IRQ_STA_CLR_BIT);
+			break;
+		}
+		//#endif
+		/*dwWaitResult = WaitForSingleObject(
+		ghMutex,    // handle to mutex
+			INFINITE);  // no time-out interval
+			*/
+			//IRQ update on SIS3100
+		rc = s3100_control_write(dev, SIS3100_OPT_VME_IRQ_CTRL, DOORBELL_IRQ_UPDATE);
+		/*
+		if (!ReleaseMutex(ghMutex))
+			printf("Int: Error while releasing mutex\n");
+			*/
+		return rc;
+	}
 
 
 int EnableSinglePassInterferometer(void) {
@@ -333,20 +1186,23 @@ int InitAxis(struct SIS1100_Device_Struct* dev) {
 
 	strcpy_s(ch_access_mode, sizeof(ch_access_mode), access_mode_Selection[6]);
 
-	SetTimeDelayBetweenResAndCompleteBit(dev, 3, 0); // Reset RT1 and RT0, axis 1 and 3 only
-
+	SetTimeDelayBetweenResAndCompleteBit(dev, AXIS3, 0); 
+	//sis1100w_sis310x_Register_For_Irq(dev, sis_irq_mask); //Register to listen to IRQ6 level interrupt
+	setVMEIntLevel(dev, AXIS3, INT_LEVEL6);//3
+	setVMEIntVector(dev, AXIS3, 0x12);
+	EnableVMEGlobalInterrupt(dev, AXIS3);
+	EnableAllVMEInterrupts(dev, AXIS3);
 	for (int a = 1; a < 5; a++) {
 
-		DisableAllInterrupts(dev, a);
+		//DisableAllVMEInterrupts(dev, a);
+	
 		Disable32bitsOverflow(dev, a);
 		Enable37bitsSignExtension(dev, a);				// enable sign extension of 32 bits to match 37 bits register size 
 																			// when register data is written
 		SetPositionOffset37(dev, a, 0, 0);
 		SetKpAndKvCoeff(dev, a, 4, 4);					// Set Kp = -6 and Kv = -15		
 
-		
-		BoardControlMode(dev, a, BIAS_CONSTANT_VOLT_MODE, 0X37C);
-		Sleep(1000);
+		BoardControlMode(dev, a, BIAS_CONSTANT_VOLT_MODE);
 		ResetAxis(dev, a);
 	}
 
@@ -355,15 +1211,17 @@ int InitAxis(struct SIS1100_Device_Struct* dev) {
 	if (WaitResetComplete(dev, 4) < 0)	// Wait for reset complete on the main axis
 		exit(EXIT_FAILURE);
 	//Sleep(10);
+
 	return 0;
 }
-int DisableAllInterrupts(struct SIS1100_Device_Struct* dev, unsigned char axis) {
+int DisableAllVMEInterrupts(struct SIS1100_Device_Struct* dev, unsigned char axis) {
 	unsigned int uint_vme_address = 0, uint_vme_data;
 	uint_vme_address = ADD(BASE_ADDRESS[axis-1], zVMEIntEnab0);				// Disable VME interrupts 0
 	uint_vme_data = 0;
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) == RET_FAILED)
 		printf("Register %6X access Faillure !  \n", uint_vme_address);
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEIntEnab1);				// Disable VME interrupts 1
+	uint_vme_data = 0x8000;
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) == RET_FAILED)
 		printf("Register %6X access Faillure !  \n", uint_vme_address);
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEIntEnab2);				// Disable VME interrupts 2
@@ -371,7 +1229,23 @@ int DisableAllInterrupts(struct SIS1100_Device_Struct* dev, unsigned char axis) 
 		printf("Register %6X access Faillure !  \n", uint_vme_address);
 	return 0;
 }
-int EnableGlobalInterrupt(struct SIS1100_Device_Struct* dev, unsigned char axis) {
+int EnableAllVMEInterrupts(struct SIS1100_Device_Struct* dev, unsigned char axis) {
+	unsigned int uint_vme_address = 0, uint_vme_data =0xFFFF;
+	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEIntEnab0);				// VME interrupts 0
+
+	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) == RET_FAILED)
+		printf("Register %6X access Faillure !  \n", uint_vme_address);
+	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEIntEnab1);				// VME interrupts 1
+	uint_vme_data |= 0x811F;
+	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) == RET_FAILED)
+		printf("Register %6X access Faillure !  \n", uint_vme_address);
+	uint_vme_data = 0xF0FF;
+	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEIntEnab2);				//  VME interrupts 2
+	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) == RET_FAILED)
+		printf("Register %6X access Faillure !  \n", uint_vme_address);
+	return 0;
+}
+int EnableVMEGlobalInterrupt(struct SIS1100_Device_Struct* dev, unsigned char axis) {
 	unsigned int uint_vme_address = 0, uint_vme_data;
 
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEIntEnab1);				// Disable VME interrupts 
@@ -379,6 +1253,120 @@ int EnableGlobalInterrupt(struct SIS1100_Device_Struct* dev, unsigned char axis)
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) == RET_FAILED)
 		printf("Register %6X access Faillure !  \n", uint_vme_address);
 	uint_vme_data |= 0x8000;
+	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) == RET_FAILED)
+		printf("Register %6X access Faillure !  \n", uint_vme_address);
+	return 0;
+}
+
+/// <summary>
+/// This function configure the Flyscan mode to continuously stream position data from all 4 axes
+/// 
+/// </summary>
+/// <param name="dev"> device to be used</param>
+/// <param name="nbrAxis">number of axis </param>
+/// <param name="freqKHz">
+/// flyscan frequency in KHz
+/// </param>
+/// /// <param name="trig">
+/// 1: acquisition on transition from 1 to 0
+/// 0: acquisition on transition from 0 to 1
+/// </param>
+/// <returns>
+/// -1 if unsuccessful
+/// </returns>
+int configureFlyscan(struct SIS1100_Device_Struct* dev, unsigned char nbrAxis, USHORT freqKHz, UCHAR trig) {
+	/*'
+		'4 X 8kSamples of 32 bit position values at FULL resolution of lambda/4096/8
+		' returns false if unsuccessful
+		' sample freq in mHz 10MHZ is max
+		' trigger type: instant = 0
+		'               P2D_In = 1*/
+#define masterAxisAddr	0x2000
+	short rdVal = 0, sclkVal = 0;
+	UINT diagSrc = 0;
+	UINT uint_vme_data = 0, uint_vme_address = 0;
+	int ramAxisAddr = 0x0;
+
+	/* Check if RAM is busy*/
+	if (!isRAMbusy(dev)) 
+		return -1;
+	if ((nbrAxis > 2) & (freqKHz > 8)) {
+		freqKHz = 8;
+		printf("Max freq is 8KHz for 4 axis\n");
+	}
+
+	SetSampFlag(dev, freqKHz);
+	Sclk_On(dev);
+	if (nbrAxis <= 2)
+		diagSrc = 0x8000;
+	else
+		diagSrc = 0x9000;
+	if (trig)
+		diagSrc += 0x400;
+	//Setup axis 1 and 2
+	uint_vme_address = ADD(BASE_ADDRESS[AXIS1],zDiagFFTCtrl) ;
+	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) == RET_FAILED)
+		printf("Register %6X access Faillure !  \n", uint_vme_address);
+	//Setup axis 3 and 4
+	uint_vme_address = ADD(BASE_ADDRESS[AXIS3], zDiagFFTCtrl);
+	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) == RET_FAILED)
+		printf("Register %6X access Faillure !  \n", uint_vme_address);
+
+	//Option to start acquire immediately
+	if (!trig) {
+		//check if RAM is Busy
+		if (!isRAMbusy(dev)) {
+			printf("Can not start acquisition while RAM is busy\n");
+			return -1;
+		}
+		//Start acquisition on axis 1 and 2
+		uint_vme_address = ADD(BASE_ADDRESS[AXIS1], zTestCmd1);
+		if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) == RET_FAILED)
+			printf("Register %6X access Faillure !  \n", uint_vme_address);
+		//Start acquisition on axis 3 and 4
+		uint_vme_address = ADD(BASE_ADDRESS[AXIS3], zTestCmd1);
+		if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) == RET_FAILED)
+			printf("Register %6X access Faillure !  \n", uint_vme_address);
+	}
+}
+int acquireFlyscanData(struct SIS1100_Device_Struct* dev, PUINT startAdress) {
+
+}
+bool isRAMbusy(dev) {
+	UINT uint_vme_data = 0, uint_vme_address = 0;
+	/* Check if RAM is busy*/
+	uint_vme_address = BASE_ADDRESS[AXIS3] + zTestStat1;
+	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) == RET_FAILED)
+		printf("Register %6X access Faillure !  \n", uint_vme_address);
+
+	if (!(uint_vme_data & 0x400)) {
+		printf("RAM is currently busy\n");
+		return FALSE;
+	}
+	return TRUE;
+}
+int setVMEIntVector(struct SIS1100_Device_Struct* dev, unsigned char axis, unsigned char IntVect) {
+	unsigned int uint_vme_address = 0, uint_vme_data;
+	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zIntVector);				// Disable VME interrupts 
+	uint_vme_data = 0;
+	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) == RET_FAILED)
+		printf("Register %6X access Faillure !  \n", uint_vme_address);
+	uint_vme_data |= (unsigned int)IntVect;
+	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) == RET_FAILED)
+		printf("Register %6X access Faillure !  \n", uint_vme_address);
+	return 0;
+}
+int setVMEIntLevel(struct SIS1100_Device_Struct* dev, unsigned char axis, unsigned char IntLevel) {
+	unsigned int uint_vme_address = 0, uint_vme_data=0;
+	if (IntLevel > INT_LEVEL7) {
+		printf("Bad interrupt level \n");
+		return -1;
+	}
+	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zIntVector);				// Disable VME interrupts 
+	uint_vme_data = 0;
+	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) == RET_FAILED)
+		printf("Register %6X access Faillure !  \n", uint_vme_address);
+	uint_vme_data |= ((unsigned int)IntLevel) << 8;
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) == RET_FAILED)
 		printf("Register %6X access Faillure !  \n", uint_vme_address);
 	return 0;
@@ -395,7 +1383,7 @@ int DisableGlobalInterrupt(struct SIS1100_Device_Struct* dev, unsigned char axis
 		printf("Register %6X access Faillure !  \n", uint_vme_address);
 	return 0;
 }
-int EnableInterrupt_bit(struct SIS1100_Device_Struct* dev, unsigned char axis, unsigned short intNumber){
+int EnableVMEInterrupt_bit(struct SIS1100_Device_Struct* dev, unsigned char axis, unsigned short intNumber){
 	unsigned int uint_vme_address = 0, uint_vme_data = 0;
 
 	if (intNumber < VME_EXT_FLAG_SAMPLE_ERR_INT)
@@ -604,7 +1592,7 @@ int EnableInterrupt_bit(struct SIS1100_Device_Struct* dev, unsigned char axis, u
 	}
 	return 0;
 }
-int DisableInterrupt_bit(struct SIS1100_Device_Struct* dev, unsigned char axis, unsigned short intNumber) {
+int DisableVMEInterrupt_bit(struct SIS1100_Device_Struct* dev, unsigned char axis, unsigned short intNumber) {
 	unsigned int uint_vme_address = 0, uint_vme_data;
 	if (intNumber < VME_EXT_FLAG_SAMPLE_ERR_INT)
 	{
@@ -815,7 +1803,6 @@ int DisableInterrupt_bit(struct SIS1100_Device_Struct* dev, unsigned char axis, 
 int ResetAxis(struct SIS1100_Device_Struct* dev, unsigned char axis) {
 	unsigned int uint_vme_address = 0, uint_vme_data =0;
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCmd);
-	printf("okoo  %X\n",uint_vme_data);
 	uint_vme_data = 0x20;
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) == RET_FAILED)
 		printf("Register %6X access Faillure !  \n", uint_vme_address);
@@ -1351,16 +2338,35 @@ int ClearEEPROMErrs(struct SIS1100_Device_Struct* dev) {
 
 	return 0;
 }
-int BoardControlMode(struct SIS1100_Device_Struct* dev, unsigned char axis, unsigned int biasMode, unsigned int APDGain) {
+int BoardControlMode(struct SIS1100_Device_Struct* dev, unsigned char axis, unsigned int biasMode) {
 	/*Activate APD Constant voltage mode*/
-	printf("Start 3 \n\n");
+	unsigned int defaultAPDGAinL2Set = 0xB3B, defaultAPDOptPwrL2Set = 0,
+		 defaultAPDSigRMSL2Set = 0x3390;
 	BiasControlMode(dev, axis, biasMode);
+	switch (biasMode)
+	{
+
+	case BIAS_CONSTANT_VOLT_MODE:
+		break;
+	case BIAS_CONSTANT_GAIN_MODE:
+		SetAPDGainL2(dev, axis, defaultAPDGAinL2Set);
+		break;
+	case BIAS_SIG_RMS_ADJUST_MODE:
+		SetAPDSigRMSL2(dev, axis, defaultAPDSigRMSL2Set);
+		break;
+	case BIAS_CONSTANT_OPT_PWR_MODE:
+		SetAPDOptPwrL2(dev, axis, defaultAPDOptPwrL2Set);
+		break;
+	default:
+		printf("Unknow Bias mode \n");
+		return -1;
+		break;
+	}
 	/*Set APD GAIN L2 to 892*/
-	Sleep(1000);
-	SetAPDGainL2(dev, axis, APDGain);
+	//SetAPDGainL2(dev, axis,APDGain);
 	/* Start bias calculation */
-	Sleep(1000);
 	StartBiasCalculation(dev, axis);
+	Sleep(1000);
 	return 0;
 }
 /// <summary>
@@ -1393,11 +2399,11 @@ int BiasControlMode(struct SIS1100_Device_Struct* dev, unsigned char axis, unsig
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCtrl5);//rw
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) == RET_FAILED)
 		printf("Register %06X access Faillure !  \n", uint_vme_address);
-	uint_vme_data = (uint_vme_data >> 3);
-	uint_vme_data = (uint_vme_data << 3);
+	uint_vme_data &= ~(7);
 	uint_vme_data |= mode;
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) == RET_FAILED)
 		printf("Register %06X access Faillure !  \n", uint_vme_address);
+	printf("Board switched to  %s\n", biasControlModeString[mode]);
 	return 0;
 }
 int StartBiasCalculation(struct SIS1100_Device_Struct* dev, unsigned char axis) {
@@ -1420,13 +2426,46 @@ int StartBiasCalculation(struct SIS1100_Device_Struct* dev, unsigned char axis) 
 }
 int SetAPDGainL2(struct SIS1100_Device_Struct* dev, unsigned char axis, unsigned int APDGain) {
 	unsigned int uint_vme_address = 0, uint_vme_data = 0;
+	//APDGain: the default val is 7(2875 L2); range: 4(2048 L2) to 32(5120 L2)
 	if (APDGain > 0xFFFF)
 	{
 		printf("Inapropriate value. range is 0 to 0xFFFF \n");
 		return -1;
 	}
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zAPDGain_L2_set);
+	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zAPDGainL2Set);
 	uint_vme_data = APDGain;
+	EnableAuxRegisters(dev, axis);
+	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) == RET_FAILED)
+		printf("Register %06X access Faillure !  \n", uint_vme_address);
+	DisableAuxRegisters(dev, axis);
+	return 0;
+}
+int SetAPDSigRMSL2(struct SIS1100_Device_Struct* dev, unsigned char axis, unsigned int APDSigRMS) {
+	unsigned int uint_vme_address = 0, uint_vme_data = 0;
+	//APDGain: the default val is 7(2875 L2); range: 4(2048 L2) to 32(5120 L2)
+	if (APDSigRMS > 0xFFFF)
+	{
+		printf("Inapropriate value. range is 0 to 0xFFFF \n");
+		return -1;
+	}
+	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zAPDSigRMSL2);
+	uint_vme_data = APDSigRMS;
+	EnableAuxRegisters(dev, axis);
+	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) == RET_FAILED)
+		printf("Register %06X access Faillure !  \n", uint_vme_address);
+	DisableAuxRegisters(dev, axis);
+	return 0;
+}
+int SetAPDOptPwrL2(struct SIS1100_Device_Struct* dev, unsigned char axis, unsigned int APDOptPwr) {
+	unsigned int uint_vme_address = 0, uint_vme_data = 0;
+	//APDGain: the default val is 7(2875 L2); range: 4(2048 L2) to 32(5120 L2)
+	if (APDOptPwr > 0xFFFF)
+	{
+		printf("Inapropriate value. range is 0 to 0xFFFF \n");
+		return -1;
+	}
+	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zAPDOptPwrL2);
+	uint_vme_data = APDOptPwr;
 	EnableAuxRegisters(dev, axis);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) == RET_FAILED)
 		printf("Register %06X access Faillure !  \n", uint_vme_address);
@@ -1609,13 +2648,13 @@ int ParseAPDErrCode(struct SIS1100_Device_Struct* dev, unsigned char axis, unsig
 		printf("APD Math Poly error, Invalid APD bias equation coeffs(0) \n");
 		break;
 	case 137:
-		printf("APD Math Temp error, Invalid APD temperature, range is 10°C to 70°C \n");
+		printf("APD Math Temp error, Invalid APD temperature, range is 10 degreeC to 70 degreeC \n");
 		break;
 	case 138:
-		printf("APD Math T0, Invalid APD bias equation T0, range is 10°C to 50°C \n");
+		printf("APD Math T0, Invalid APD bias equation T0, range is 10 degreeC to 50 degreeC \n");
 		break;
 	case 139:
-		printf("APD Math TC, Invalid APD bias equation TC, range is 0.3 to 0.9V/°C \n");
+		printf("APD Math TC, Invalid APD bias equation TC, range is 0.3 to 0.9V/degreeC \n");
 		break;
 	case 140:
 		printf("APD Temp Op Error \n");
@@ -1817,7 +2856,9 @@ int ReadPosition37(struct SIS1100_Device_Struct* dev, unsigned char axis, double
 	Enable37bitsSignExtension(dev, axis);
 	//EnableSampleTimer(dev);
 	SampleVMEPosition(dev, axis);
+	while (!GetVMEExtSampFlag(dev, axis)); // Wait for the VME external sample flag to be set before reading
 	SetHoldSampEnable(dev);
+	//clearVMEExtSampFlag(dev, axis); // Clear VME external sample flag before reading
 	//Read the MSB and LSB	
 	if (Read_Write("A24D32", dev, uint_vme_address, &uint_vme_data, 0) == RET_FAILED)
 		printf("Register %6X access Faillure !  \n", uint_vme_address);
@@ -1850,8 +2891,9 @@ int ReadPosition32(struct SIS1100_Device_Struct* dev, unsigned char axis, double
 	Disable37bitsSignExtension(dev, axis);
 	//EnableSampleTimer(dev);	
 	SampleVMEPosition(dev, axis);
-	while(!GetVMEExtSampFlag(dev, axis)); // Wait for the VME external sample flag to be set before reading
+	while (!GetVMEExtSampFlag(dev, axis)); // Wait for the VME external sample flag to be set before reading
 	SetHoldSampEnable(dev); // value of the position register is held until its LSB is read 
+	//clearVMEExtSampFlag(dev, axis); // Clear VME external sample flag before reading
 	//Read the MSB and LSB	
 	if (Read_Write("A24D32", dev, uint_vme_address, &uint_vme_data, 0) == RET_FAILED)
 		printf("Register %6X access Faillure !  \n", uint_vme_address);
@@ -2293,7 +3335,7 @@ int ReadOpticalPowerUsingSSIav(struct SIS1100_Device_Struct* dev) {
 
 	return 0;
 }
-int SetSSISquelch(int squelchValue, unsigned short axis, struct SIS1100_Device_Struct* dev) {
+int SetSSISquelch(struct SIS1100_Device_Struct* dev, unsigned short axis, int squelchValue ) {
 
 	//Set SSI Squelch(minimum AC optical signal that causes measurement signal ZMIError)
 	// default value is 0x80
@@ -2354,7 +3396,7 @@ int ResetSSIMinAndMax(struct SIS1100_Device_Struct* dev, unsigned char axis)
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
 		printf("Register %6X access Faillure !  \n", uint_vme_address);
 	uint_vme_data |= 0x2;
-	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
+	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
 		printf("Register %6X access Faillure !  \n", uint_vme_address);
 	return 0;
 
@@ -2368,7 +3410,7 @@ int ResetPhaseNoisePeak(struct SIS1100_Device_Struct* dev, unsigned char axis)
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
 		printf("Register %6X access Faillure !  \n", uint_vme_address);
 	uint_vme_data |= 0x1;
-	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
+	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
 		printf("Register %6X access Faillure !  \n", uint_vme_address);
 	return 0;
 
@@ -2381,11 +3423,50 @@ int ResetSigRMSL2MinAndMax(struct SIS1100_Device_Struct* dev, unsigned char axis
 
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
 		printf("Register %6X access Faillure !  \n", uint_vme_address);
-	uint_vme_data |= 0x4;
-	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
+	uint_vme_data = (1 << 2);
+	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
 		printf("Register %6X access Faillure !  \n", uint_vme_address);
 	return 0;
 
+}
+int setGainControlMax(struct SIS1100_Device_Struct* dev, unsigned char axis)
+{
+	unsigned int uint_vme_data = 0,
+		uint_vme_address = 0;
+	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCtrl5);
+
+	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
+		printf("Register %6X access Faillure !  \n", uint_vme_address);
+	uint_vme_data |= (1 << 3);
+	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
+		printf("Register %6X access Faillure !  \n", uint_vme_address);
+	return 0;
+}
+int setGainControlMin(struct SIS1100_Device_Struct* dev, unsigned char axis)
+{
+	unsigned int uint_vme_data = 0,
+		uint_vme_address = 0;
+	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCtrl5);
+
+	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
+		printf("Register %6X access Faillure !  \n", uint_vme_address);
+	uint_vme_data |= (1 << 4);
+	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
+		printf("Register %6X access Faillure !  \n", uint_vme_address);
+	return 0;
+}
+int AdjustGainControl(struct SIS1100_Device_Struct* dev, unsigned char axis)
+{
+	unsigned int uint_vme_data = 0,
+		uint_vme_address = 0;
+	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCtrl5);
+
+	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
+		printf("Register %6X access Faillure !  \n", uint_vme_address);
+	uint_vme_data |= (1 << 5);
+	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
+		printf("Register %6X access Faillure !  \n", uint_vme_address);
+	return 0;
 }
 int ResetOptPowL2MinAndMax(struct SIS1100_Device_Struct* dev, unsigned char axis)
 {
@@ -2396,8 +3477,8 @@ int ResetOptPowL2MinAndMax(struct SIS1100_Device_Struct* dev, unsigned char axis
 
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
 		printf("Register %6X access Faillure !  \n", uint_vme_address);
-	uint_vme_data |= 0x4;
-	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
+	uint_vme_data |= (1 << 2);
+	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
 		printf("Register %6X access Faillure !  \n", uint_vme_address);
 	return 0;
 
@@ -2453,7 +3534,7 @@ int ReadAPDGain(struct SIS1100_Device_Struct* dev, unsigned char axis, double* A
 
 	EnableAuxRegisters(dev, axis);
 	printf("Reading APD GAIN L2 on Axis %d...  \n", axis);
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zAPDGain_L2);
+	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zAPDGainL2);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) == RET_FAILED)
 		printf("Register %6X access Faillure !  \n", uint_vme_address);
 
@@ -2727,6 +3808,13 @@ bool GetVMEExtSampFlag(struct SIS1100_Device_Struct* dev, unsigned char axis) {
 	}
 	return false;
 }
+bool clearVMEExtSampFlag(struct SIS1100_Device_Struct* dev, unsigned char axis) {
+	unsigned int uint_vme_data = 0, uint_vme_address = 0;
+	uint_vme_data = 0x100;
+	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) == RET_FAILED)
+		printf("Register %6X access Faillure !  \n", uint_vme_address);
+	return true;
+}
 bool IsVMEIntReqPending(struct SIS1100_Device_Struct* dev, unsigned char axis) {
 	unsigned int uint_vme_data = 0, uint_vme_address = 0;
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zStat0);
@@ -2815,14 +3903,10 @@ int Read_Write(char* ch_access_mode,
 	unsigned int* uint_vme_data,
 	unsigned short read_write) {
 
-	/*
-	read_wreite: 0->read, 1 -> write
-	*/
-
 	/**************************************************************************/
 	/***   "A24D32":   A24  privileged data access                       ***/
 	/**************************************************************************/
-
+	uint8_t comp_valid_flag=0;
 	comp_err = strncmp(ch_access_mode, "A24D32P", 7);
 	if (comp_err == 0) {
 		comp_valid_flag = 1;

@@ -41,5 +41,11 @@
     <ClInclude Include="..\..\sis1100_lib\sis3100_vme_calls.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\sis1100_lib\sis3302.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Documents\sis1100w-tests-master\sis1100w-tests-master\VmeLib\sis3100.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

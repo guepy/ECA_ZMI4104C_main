@@ -21,8 +21,10 @@
 #define zVMEIntEnab2 0x1C 
 #define zP2IntEnab0 0x20 
 #define zP2IntEnab1 0x22 
-#define zAPDGain_L2 0x1A2
-#define zAPDGain_L2_set 0x18C 
+#define zAPDGainL2 0x1A2
+#define zAPDSigRMSL2 0x190
+#define zAPDOptPwrL2 0x18E
+#define zAPDGainL2Set 0x18C 
 #define zAPDBiasDAC 0x18C 
 #define zP2ErrStat0 0xDE				// read only 
 #define zP2ErrClr0 0x24					// write only 
@@ -94,8 +96,10 @@
 #define zDiagSSIRam 0x200 // to 0x3FE 
 #define zDiagRamData 0x800 // to 0xFFE 
 #define zCECCtl 0x102 // AUX register 
-#define zOptPower_L2 0x192 // Optical Power L2 
+#define zOptPowerL2 0x192 // Optical Power L2 
 #define zEEReadCmd		0x2000 
 #define zAPDErr		0x18A 
 #define zBdAxInf		0x15
 #define ADD(base, offset) ((unsigned int )(base + offset)) 
+#define SIS3100IntReg		0x104
+#define zDiagFFTCtrl		0xB4

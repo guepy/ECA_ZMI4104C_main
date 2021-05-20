@@ -131,7 +131,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\ECA_ZMI4104C_main;C:\Users\guekam\source\repos\ECA_ZMI4104_Project\sis1100_lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\guekam\source\repos\ECA_ZMI4104_Project\sis1100_lib;C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\ECA_ZMI4104C_main;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -148,8 +148,10 @@
     <ClCompile Include="wingetopt.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\Documents\sis1100w-tests-master\sis1100w-tests-master\VmeLib\sis3100.h" />
     <ClInclude Include="..\..\sis1100_lib\sis1100w.h" />
     <ClInclude Include="..\..\sis1100_lib\sis3100_vme_calls.h" />
+    <ClInclude Include="..\..\sis1100_lib\sis3302.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="wingetopt.h" />
     <ClInclude Include="zVME_const.h" />
