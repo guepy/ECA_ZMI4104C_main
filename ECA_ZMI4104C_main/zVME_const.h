@@ -103,3 +103,4 @@
 #define ADD(base, offset) ((unsigned int )(base + offset)) 
 #define SIS3100IntReg		0x104
 #define zDiagFFTCtrl		0xB4
+#define zDiagFFTRamData		0x400

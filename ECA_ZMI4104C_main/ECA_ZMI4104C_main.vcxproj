@@ -153,6 +153,7 @@
     <ClInclude Include="..\..\sis1100_lib\sis3100_vme_calls.h" />
     <ClInclude Include="..\..\sis1100_lib\sis3302.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="vmeInterruptConst.h" />
     <ClInclude Include="wingetopt.h" />
     <ClInclude Include="zVME_const.h" />
   </ItemGroup>

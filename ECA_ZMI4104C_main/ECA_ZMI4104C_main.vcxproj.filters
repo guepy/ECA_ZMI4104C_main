@@ -47,5 +47,8 @@
     <ClInclude Include="..\..\..\..\..\Documents\sis1100w-tests-master\sis1100w-tests-master\VmeLib\sis3100.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="vmeInterruptConst.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
