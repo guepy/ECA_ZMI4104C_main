@@ -2430,7 +2430,7 @@ int SetPositionOffset32(struct SIS1100_Device_Struct* dev, unsigned char axis, u
 	return RET_SUCCESS;
 }
 /// <summary>
-/// The function sets the value of the compare register A on a specific axis
+/// The function sets the 32 bits value of the compare register A on a specific axis
 /// </summary>
 /// <param name="dev">device</param>
 /// <param name="axis">the axis' number</param>
@@ -2495,7 +2495,10 @@ int Disable37bitsSignExtension(struct SIS1100_Device_Struct* dev, unsigned char 
 /// <param name="axis">the axis number</param>
 /// <param name="Kp">Value of the Kp coefficient</param>
 /// <param name="Kv">Value of the kv coefficient</param>
-/// <returns></returns>
+/// <returns>
+/// 0 if success
+/// -1 else
+/// </returns>
 int SetKpAndKvCoeff(struct SIS1100_Device_Struct* dev, unsigned char axis, unsigned short Kp, unsigned short Kv) {
 	
 	if ((Kp > 7) || (Kv > 7))
@@ -2513,6 +2516,16 @@ int SetKpAndKvCoeff(struct SIS1100_Device_Struct* dev, unsigned char axis, unsig
 		{printf("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	return RET_SUCCESS;
 }
+/// <summary>
+/// This function set the value of the glitch filter time ranged from 0 to 255
+/// </summary>
+/// <param name="dev">device</param>
+/// <param name="axis">the axis number</param>
+/// <param name="glitchFilterTime">value of the register</param>
+/// <returns>
+/// 0 if success
+/// -1 else
+/// </returns>
 int EnableGlitchFilter(struct SIS1100_Device_Struct* dev, unsigned char axis, unsigned short glitchFilterTime) {
 
 	if (glitchFilterTime > 0xF)
@@ -2530,6 +2543,17 @@ int EnableGlitchFilter(struct SIS1100_Device_Struct* dev, unsigned char axis, un
 		{printf("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	return RET_SUCCESS;
 }
+/// <summary>
+/// The function sets the 37bits value of the compare register A on a specific axis
+/// </summary>
+/// <param name="dev">device</param>
+/// <param name="axis">the axis' number</param>
+/// <param name="compAval32">The 32bits packet</param>
+/// <param name="compAvalExt">The 5bits packet</param>
+/// <returns>
+/// 0 if success
+/// -1 else
+/// </returns>
 int SetCompARegVal37(struct SIS1100_Device_Struct* dev, unsigned char axis, unsigned int compAval32, unsigned int compAvalExt) {
 	unsigned int uint_vme_address = 0, uint_vme_data;
 	SetCompARegVal32(dev, axis, compAval32);
@@ -2539,6 +2563,16 @@ int SetCompARegVal37(struct SIS1100_Device_Struct* dev, unsigned char axis, unsi
 		{printf("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	return RET_SUCCESS;
 }
+/// <summary>
+/// The function sets the 32 bits value of the compare register B on a specific axis
+/// </summary>
+/// <param name="dev">device</param>
+/// <param name="axis">the axis' number</param>
+/// <param name="compBval32">The 32bits value to be set</param>
+/// <returns>
+/// 0 if success
+/// -1 else
+/// </returns>
 int SetCompBRegVal32(struct SIS1100_Device_Struct* dev, unsigned char axis, unsigned int compBval32) {
 	unsigned int uint_vme_address = 0, uint_vme_data;
 
@@ -2548,6 +2582,17 @@ int SetCompBRegVal32(struct SIS1100_Device_Struct* dev, unsigned char axis, unsi
 		{printf("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	return RET_SUCCESS;
 }
+/// <summary>
+/// The function sets the 37bits value of the compare register B on a specific axis
+/// </summary>
+/// <param name="dev">device</param>
+/// <param name="axis">the axis' number</param>
+/// <param name="compBval32">The 32bits packet</param>
+/// <param name="compBvalExt">The 5bits packet</param>
+/// <returns>
+/// 0 if success
+/// -1 else
+/// </returns>
 int SetCompBRegVal37(struct SIS1100_Device_Struct* dev, unsigned char axis, unsigned int compBval32, unsigned int compBvalExt) {
 	unsigned int uint_vme_address = 0, uint_vme_data;
 	SetCompBRegVal32(dev, axis, compBval32);
@@ -2557,6 +2602,17 @@ int SetCompBRegVal37(struct SIS1100_Device_Struct* dev, unsigned char axis, unsi
 		{printf("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	return RET_SUCCESS;
 }
+/// <summary>
+/// The function sets the 37bits value of the offset position register on a specific axis
+/// </summary>
+/// <param name="dev">device</param>
+/// <param name="axis">the axis' number</param>
+/// <param name="offsetPos32">The 32bits packet</param>
+/// <param name="offsetPosExt">The 5bits packet</param>
+/// <returns>
+/// 0 if success
+/// -1 else
+/// </returns>
 int SetPositionOffset37(struct SIS1100_Device_Struct* dev, unsigned char axis, unsigned int offsetPos32, unsigned int offsetPosExt) {
 	unsigned int uint_vme_address = 0, uint_vme_data;
 	SetPositionOffset32(dev, axis, offsetPos32);
@@ -2566,6 +2622,16 @@ int SetPositionOffset37(struct SIS1100_Device_Struct* dev, unsigned char axis, u
 		{printf("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	return RET_SUCCESS;
 }
+/// <summary>
+/// The function sets the 32bits value of the offset position register on a specific axis
+/// </summary>
+/// <param name="dev">device</param>
+/// <param name="axis">the axis' number</param>
+/// <param name="presetPos">The 32bits packet</param>
+/// <returns>
+/// 0 if success
+/// -1 else
+/// </returns>
 int SetPresetPosition32(struct SIS1100_Device_Struct* dev, unsigned char axis, unsigned int presetPos) {
 	unsigned int uint_vme_address = 0, uint_vme_data;
 	uint_vme_data = presetPos;
@@ -2574,6 +2640,17 @@ int SetPresetPosition32(struct SIS1100_Device_Struct* dev, unsigned char axis, u
 		{printf("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	return RET_SUCCESS;
 }
+/// <summary>
+/// The function sets the 32bits value of the offset position register on a specific axis
+/// </summary>
+/// <param name="dev">device</param>
+/// <param name="axis">the axis' number</param>
+/// <param name="presetPos32">The 32bits packet</param>
+/// <param name="presetPosExt">The 5bits packet</param>
+/// <returns>
+/// 0 if success
+/// -1 else
+/// </returns>
 int SetPresetPosition37(struct SIS1100_Device_Struct* dev, unsigned char axis, unsigned int presetPos32, unsigned int presetPosExt) {
 	unsigned int uint_vme_address = 0, uint_vme_data;
 	SetPositionOffset32(dev, axis, presetPos32);
@@ -2583,6 +2660,15 @@ int SetPresetPosition37(struct SIS1100_Device_Struct* dev, unsigned char axis, u
 		{printf("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	return RET_SUCCESS;
 }
+/// <summary>
+/// The function reads and parses values of all VME Error registers on a specific axis
+/// </summary>
+/// <param name="dev">device</param>
+/// <param name="axis">the axis' number</param>
+/// <returns>
+/// 0 if success
+/// -1 else
+/// </returns>
 int ReadVMEErrs(struct SIS1100_Device_Struct* dev, unsigned char axis) {
 	unsigned int
 		uint_vme_address = 0,
@@ -2608,11 +2694,28 @@ int ReadVMEErrs(struct SIS1100_Device_Struct* dev, unsigned char axis) {
 	ParseAPDErrCode(dev, axis, &APDError);
 	return RET_SUCCESS;
 }
+/// <summary>
+/// The function reads and parses values of both VME Error registers and APD registers on a specific axis
+/// </summary>
+/// <param name="dev">device</param>
+/// <param name="axis">the axis' number</param>
+/// <returns>
+/// 0 if success
+/// -1 else
+/// </returns>
 int ReadAllErrs(struct SIS1100_Device_Struct* dev, unsigned char axis) {
 	ReadVMEErrs(dev, axis);
 	ReadAPDCtrlSoftErrs(dev, axis);
 	return RET_SUCCESS;
 }
+/// <summary>
+/// The function clears all EEPROM errors
+/// </summary>
+/// <param name="dev">device</param>
+/// <returns>
+/// 0 if success
+/// -1 else
+/// </returns>
 int ClearEEPROMErrs(struct SIS1100_Device_Struct* dev) {
 	unsigned int uint_vme_address = 0, uint_vme_data = 0;
 	uint_vme_address = ADD(BASE_ADDRESS[2], zTestCmd1);
@@ -2625,6 +2728,16 @@ int ClearEEPROMErrs(struct SIS1100_Device_Struct* dev) {
 
 	return RET_SUCCESS;
 }
+/// <summary>
+/// The function configures the Board control Mode. It operates using BoardControlMode function.
+/// </summary>
+/// <param name="dev">device</param>
+/// <param name="axis">the axis number</param>
+/// <param name="biasMode">the bias mode. There are 5 bias modes(from 0 to 4)</param>
+/// <returns>
+/// 0 if success
+/// -1 else
+/// </returns>
 int BoardControlMode(struct SIS1100_Device_Struct* dev, unsigned char axis, unsigned int biasMode) {
 	/*Activate APD Constant voltage mode*/
 	unsigned int defaultAPDGAinL2Set = 0xB3B, defaultAPDOptPwrL2Set = 0,
@@ -2657,23 +2770,20 @@ int BoardControlMode(struct SIS1100_Device_Struct* dev, unsigned char axis, unsi
 	return RET_SUCCESS;
 }
 /// <summary>
-/// Configure Bias control mode for either axis.
+/// The function configures the Bias control Mode for a specific axis. See the documentation for the details of each mode
 /// </summary>
-/// <param device="dev">
-/// The device subjected to the change
-/// </param>
-/// <param axis="axis">
-/// The targeted axis
-/// </param>
+/// <param name="dev">device</param>
+/// <param name="axis">the axis number</param>
 /// <param Mode="mode">
 /// 0 -> Off: The APD bias is set to the minimum value i.e 55V
-/// 1 -> CONSTANT vOLTAGE Mode(For Diagnostic use only)
+/// 1 -> Constant Voltage Mode(For Diagnostic use only)
 /// 2 -> Constant Gain Mode
 /// 3 -> Constant Optical Power Mode  
 /// 4 -> Sig RMS Adjust Mode
 /// </param>
 /// <returns>
-/// 0 if successful
+/// 0 if success
+/// -1 else
 /// </returns>
 int BiasControlMode(struct SIS1100_Device_Struct* dev, unsigned char axis, unsigned int mode) {
 	unsigned int uint_vme_address = 0, uint_vme_data = 0;
@@ -2693,6 +2803,15 @@ int BiasControlMode(struct SIS1100_Device_Struct* dev, unsigned char axis, unsig
 	printf("Board switched to  %s\n", biasControlModeString[mode]);
 	return RET_SUCCESS;
 }
+/// <summary>
+/// The function triggers the bias calculation. It's used after setting up the bias mode 
+/// </summary>
+/// <param name="dev">device</param>
+/// <param name="axis">the axis number</param>
+/// <returns>
+/// 0 if success
+/// -1 else
+/// </returns>
 int StartBiasCalculation(struct SIS1100_Device_Struct* dev, unsigned char axis) {
 	unsigned int uint_vme_address = 0, uint_vme_data = 0;
 	printf("Starting Bias calculation...\n");
@@ -2711,10 +2830,20 @@ int StartBiasCalculation(struct SIS1100_Device_Struct* dev, unsigned char axis) 
 	printf("Bias calculation complete \n");
 	return RET_SUCCESS;
 }
+/// <summary>
+/// This function sets the value of APDGainL2 register.
+/// </summary>
+/// <param name="dev">device</param>
+/// <param name="axis">the axis number</param>
+/// <param name="APDGain">The APDGain value</param>
+/// <returns>
+/// 0 if success
+/// -1 else
+/// </returns>
 int SetAPDGainL2(struct SIS1100_Device_Struct* dev, unsigned char axis, unsigned int APDGain) {
 	unsigned int uint_vme_address = 0, uint_vme_data = 0;
 	//APDGain: the default val is 7(2875 L2); range: 4(2048 L2) to 32(5120 L2)
-	if (APDGain > 0xFFFF)
+	if (!checkValues(APDGain,0,0xFFF))
 	{
 		printf("Inapropriate value. range is 0 to 0xFFFF \n");
 		return RET_FAILED;
@@ -2727,38 +2856,67 @@ int SetAPDGainL2(struct SIS1100_Device_Struct* dev, unsigned char axis, unsigned
 	DisableAuxRegisters(dev, axis);
 	return RET_SUCCESS;
 }
-int SetAPDSigRMSL2(struct SIS1100_Device_Struct* dev, unsigned char axis, unsigned int APDSigRMS) {
+/// <summary>
+/// This function sets the value of APDSigRMSL2 register.
+/// </summary>
+/// <param name="dev">device</param>
+/// <param name="axis">the axis number</param>
+/// <param name="APDSigRMSL2">The APDSigRMSL2 value</param>
+/// <returns>
+/// 0 if success
+/// -1 else
+/// </returns>
+int SetAPDSigRMSL2(struct SIS1100_Device_Struct* dev, unsigned char axis, unsigned int APDSigRMSL2) {
 	unsigned int uint_vme_address = 0, uint_vme_data = 0;
-	//APDGain: the default val is 7(2875 L2); range: 4(2048 L2) to 32(5120 L2)
-	if (APDSigRMS > 0xFFFF)
+	if (checkValues(APDSigRMSL2, 0, 0xFFFF))
 	{
 		printf("Inapropriate value. range is 0 to 0xFFFF \n");
 		return RET_FAILED;
 	}
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zAPDSigRMSL2);
-	uint_vme_data = APDSigRMS;
+	uint_vme_data = APDSigRMSL2;
 	EnableAuxRegisters(dev, axis);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
 		printf("Register %06X access Faillure !  \n", uint_vme_address);
 	DisableAuxRegisters(dev, axis);
 	return RET_SUCCESS;
 }
-int SetAPDOptPwrL2(struct SIS1100_Device_Struct* dev, unsigned char axis, unsigned int APDOptPwr) {
+/// <summary>
+/// This function sets the value of APD Opt Pwr L2 set register.
+/// </summary>
+/// <param name="dev">device</param>
+/// <param name="axis">the axis number</param>
+/// <param name="APDOptPwrL2">The APDOptPwrL2 value</param>
+/// <returns>
+/// 0 if success
+/// -1 else
+/// </returns>
+int SetAPDOptPwrL2(struct SIS1100_Device_Struct* dev, unsigned char axis, unsigned int APDOptPwrL2) {
 	unsigned int uint_vme_address = 0, uint_vme_data = 0;
-	//APDGain: the default val is 7(2875 L2); range: 4(2048 L2) to 32(5120 L2)
-	if (APDOptPwr > 0xFFFF)
+	// the default value is 1uw(0 L2); range: 70nW(-3930 L2) to 10uW(3402 L2)
+	if (checkValues(APDOptPwrL2, -3930, 3402))
 	{
 		printf("Inapropriate value. range is 0 to 0xFFFF \n");
 		return RET_FAILED;
 	}
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zAPDOptPwrL2);
-	uint_vme_data = APDOptPwr;
+	uint_vme_data = APDOptPwrL2;
 	EnableAuxRegisters(dev, axis);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
 		printf("Register %06X access Faillure !  \n", uint_vme_address);
 	DisableAuxRegisters(dev, axis);
 	return RET_SUCCESS;
 }
+/// <summary>
+/// This function specifies the value of APD Bias DAC register
+/// </summary>
+/// <param name="dev">device</param>
+/// <param name="axis">the axis number</param>
+/// <param name="APDBiasDac">The APDBiasDAC value</param>
+/// <returns>
+/// 0 if success
+/// -1 else
+/// </returns>
 int SetAPDBiasDAC(struct SIS1100_Device_Struct* dev, unsigned char axis, unsigned int APDBiasDac) {
 	unsigned int uint_vme_address = 0, uint_vme_data = 0;
 	if (APDBiasDac > 0xFFFF)
@@ -2772,6 +2930,16 @@ int SetAPDBiasDAC(struct SIS1100_Device_Struct* dev, unsigned char axis, unsigne
 		printf("Register %06X access Faillure !  \n", uint_vme_address);
 	return RET_SUCCESS;
 }
+/// <summary>
+/// The function reads and parses VME Error Status 2 register
+/// </summary>
+/// <param name="dev">device</param>
+/// <param name="axis">the axis number</param>
+/// <param name="VMEErrorStatus2Reg">stores the contain of the register</param>
+/// <returns>
+/// 0 if success
+/// -1 else
+/// </returns>
 int ParseVMEErrorStatus2(struct SIS1100_Device_Struct* dev, unsigned char axis, unsigned int* VMEErrorStatus2Reg) {
 	unsigned int uint_vme_address = 0, uint_vme_data = 0;
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEErrStat2);		//Read VME errors
@@ -2809,6 +2977,16 @@ int ParseVMEErrorStatus2(struct SIS1100_Device_Struct* dev, unsigned char axis, 
 
 	return RET_SUCCESS;
 }
+/// <summary>
+/// The function reads and parses VME Position register
+/// </summary>
+/// <param name="dev">device</param>
+/// <param name="axis">the axis number</param>
+/// <param name="VMEPosErrReg">stores the contain of the register</param>
+/// <returns>
+/// 0 if success
+/// -1 else
+/// </returns>
 int ParseVMEPosErrs(struct SIS1100_Device_Struct* dev, unsigned char axis, unsigned int* VMEPosErrReg) {
 	unsigned int uint_vme_address = 0, uint_vme_data = 0;
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEPosErr);		//Read VME errors
@@ -2822,6 +3000,16 @@ int ParseVMEPosErrs(struct SIS1100_Device_Struct* dev, unsigned char axis, unsig
 		printf("Ref Error has been detected\n");
 	return RET_SUCCESS;
 }
+/// <summary>
+/// The function reads and parses VME Error Status 1 register
+/// </summary>
+/// <param name="dev"></param>
+/// <param name="axis"></param>
+/// <param name="VMEErrorStatus1Reg">stores the contain of the register</param>
+/// <returns>
+/// 0 if success
+/// -1 else
+/// </returns>
 int ParseVMEErrorStatus1(struct SIS1100_Device_Struct* dev, unsigned char axis, unsigned int* VMEErrorStatus1Reg) {
 	unsigned int uint_vme_address = 0, uint_vme_data = 0;
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEErrStat1);		//Read VME errors
