@@ -1,21 +1,8 @@
-﻿  ECA_ZMI4104C_main.c
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\ECA_ZMI4104C_main\ECA_ZMI4104C_main.c(1291,16): warning C4013: 'isRAMbusy' undefined; assuming extern returning int
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\ECA_ZMI4104C_main\ECA_ZMI4104C_main.c(1339,17): warning C4047: '=': 'unsigned int' differs in levels of indirection from 'PUINT'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\ECA_ZMI4104C_main\ECA_ZMI4104C_main.c(1340,21): warning C4047: '=': 'unsigned int' differs in levels of indirection from 'PUINT'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\ECA_ZMI4104C_main\ECA_ZMI4104C_main.c(1343,76): error C2059: syntax error: ')'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\ECA_ZMI4104C_main\ECA_ZMI4104C_main.c(1343,78): error C2143: syntax error: missing ')' before '{'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\ECA_ZMI4104C_main\ECA_ZMI4104C_main.c(1344,48): error C2065: 'uint_vme_address': undeclared identifier
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\ECA_ZMI4104C_main\ECA_ZMI4104C_main.c(1344,64): error C2065: 'uint_vme_data': undeclared identifier
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\ECA_ZMI4104C_main\ECA_ZMI4104C_main.c(1345,64): error C2065: 'uint_vme_address': undeclared identifier
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\ECA_ZMI4104C_main\ECA_ZMI4104C_main.c(1346,16): error C2065: 'uint_vme_data': undeclared identifier
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\ECA_ZMI4104C_main\ECA_ZMI4104C_main.c(1346,40): error C2065: 'IntVect': undeclared identifier
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\ECA_ZMI4104C_main\ECA_ZMI4104C_main.c(1347,48): error C2065: 'uint_vme_address': undeclared identifier
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\ECA_ZMI4104C_main\ECA_ZMI4104C_main.c(1347,64): error C2065: 'uint_vme_data': undeclared identifier
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\ECA_ZMI4104C_main\ECA_ZMI4104C_main.c(1348,64): error C2065: 'uint_vme_address': undeclared identifier
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\ECA_ZMI4104C_main\ECA_ZMI4104C_main.c(1359,66): warning C4133: 'function': incompatible types - from 'PUINT' to 'uint16_t *'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\ECA_ZMI4104C_main\ECA_ZMI4104C_main.c(1359,98): warning C4047: 'function': 'uint32_t *' differs in levels of indirection from 'UINT'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\ECA_ZMI4104C_main\ECA_ZMI4104C_main.c(1359,87): warning C4024: 'vme_A24DMA_D16_read': different types for formal and actual parameter 5
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\ECA_ZMI4104C_main\ECA_ZMI4104C_main.c(1364,67): warning C4133: 'function': incompatible types - from 'PUINT' to 'uint16_t *'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\ECA_ZMI4104C_main\ECA_ZMI4104C_main.c(1364,99): warning C4047: 'function': 'uint32_t *' differs in levels of indirection from 'UINT'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\ECA_ZMI4104C_main\ECA_ZMI4104C_main.c(1364,88): warning C4024: 'vme_A24DMA_D16_read': different types for formal and actual parameter 5
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\ECA_ZMI4104C_main\ECA_ZMI4104C_main.c(1370,6): error C2371: 'isRAMbusy': redefinition; different basic types
+﻿  sis3100_vme_calls.c
+  ECA_ZMI4104C_main.c
+  wingetopt.c
+  Generating code
+  Previous IPDB not found, fall back to full compilation.
+  All 77 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Finished generating code
+  ECA_ZMI4104C_main.vcxproj -> C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\x64\Release\ECA_ZMI4104C_main.exe
