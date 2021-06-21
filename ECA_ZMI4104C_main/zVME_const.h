@@ -69,10 +69,10 @@
 #define zTestStat1 0xA0 // read axis 1, 3 only 
 #define zTestCmd1 0xA0 // write axis 1, 3 only 
 #define zTestCtrl1 0xA2 // axis 1, 3 only 
-#define zDiagTempCtrl 0xA4 // axis 1, 3 only 
-#define zDiagTempWr 0xA6 // axis 1, 3 only 
-#define zDiagTempRd 0xA8 // read axis 1, 3 only 
-#define zDiagADCRd 0xAA // read axis 3 only 
+#define zDiagTempCtrl				0xA4 // axis 1, 3 only 
+#define zDiagTempWr					0xA6 // axis 1, 3 only 
+#define zDiagTempRd					0xA8 // read axis 1, 3 only 
+#define zDiagADCRd					0xAA // read axis 3 only 
 #define zEEpromCtrl 0xAC // axis 3 only 
 #define zEEpromWr 0xAE // axis 3 only 
 #define zEEpromReadReg 0xB0 // read axis 3 only 
@@ -92,9 +92,18 @@
 #define zPhNoisePeak 0xD8 // read only 
 #define zPhNoiseAvg 0xDA // read only 
 #define zCECstat 0x100 // read only 
-#define zDataAgeRam 0x100 // to 0x1FE 
-#define zDiagSSIRam 0x200 // to 0x3FE 
-#define zDiagRamData 0x800 // to 0xFFE 
+#define zCECcmd 0x100 // write only 
+#define zCEMaxVel 0x10E // read/write 
+#define zCEMinVel 0x10C // read/write 
+#define zCEC0UserCoeff				0x124 // read/write 
+#define zCEC1UserCoeff				0x11C // read/write 
+#define zCECNUserCoeff				0x134 // read/write 
+#define zCEC0CalcCoeff				0x120 // read/write 
+#define zCEC1CalcCoeff				0x118 // read/write 
+#define zCECNCalcCoeff				0x130 // read/write 
+#define zDataAgeRam					0x100 // to 0x1FE 
+#define zDiagSSIRam					0x200 // to 0x3FE 
+#define zDiagRamData				0x800 // to 0xFFE 
 #define zCECCtl 0x102 // AUX register 
 #define zOptPowerL2 0x192 // Optical Power L2 
 #define zEEReadCmd		0x2000 
