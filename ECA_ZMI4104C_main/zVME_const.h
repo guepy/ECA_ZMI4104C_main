@@ -98,9 +98,17 @@
 #define zCEC0UserCoeff				0x124 // read/write 
 #define zCEC1UserCoeff				0x11C // read/write 
 #define zCECNUserCoeff				0x134 // read/write 
-#define zCEC0CalcCoeff				0x120 // read/write 
-#define zCEC1CalcCoeff				0x118 // read/write 
-#define zCECNCalcCoeff				0x130 // read/write 
+#define zCEC0CalcCoeff				0x120 // read
+#define zCEC1CalcCoeff				0x118 // read
+#define zCECNCalcCoeff				0x130 // read
+#define zCE0Limit					0x128 // read/write
+#define zCE0Mag						0x12A // read
+#define zCE0Min						0x12C // read
+#define zCE0Max						0x12E // read
+#define zCENLimit					0x138 // read/write
+#define zCENMag						0x13A // read
+#define zCENMin						0x13C // read
+#define zCENMax						0x13E // read
 #define zDataAgeRam					0x100 // to 0x1FE 
 #define zDiagSSIRam					0x200 // to 0x3FE 
 #define zDiagRamData				0x800 // to 0xFFE 
