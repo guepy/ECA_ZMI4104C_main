@@ -50,5 +50,8 @@
     <ClInclude Include="vmeInterruptConst.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ECA_ZMI4104C_main.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -41,6 +41,7 @@
 #define zCtrl16 0x3C // axis 1, 3 only 
 #define zCtrl17 0x3E // axis 1, 3 only 
 #define zVMEPosMSB 0x40 // read only 
+#define zVMEFifoPos 0x80 // read only 
 #define zVMEPosLSB 0x42 // read only 
 #define zVMEPosExt 0x44 // read only 
 #define zVMEPosErr 0x46 // read only 
@@ -91,8 +92,9 @@
 #define zSSIOffset 0xD6 // read only 
 #define zPhNoisePeak 0xD8 // read only 
 #define zPhNoiseAvg 0xDA // read only 
-#define zCECstat 0x100 // read only 
-#define zCECcmd 0x100 // write only 
+#define zCEstat 0x100 // read only 
+#define zCEcmd 0x100 // write only 
+#define zCEerrorStat 0x108 // read only 
 #define zCEMaxVel 0x10E // read/write 
 #define zCEMinVel 0x10C // read/write 
 #define zCEC0UserCoeff				0x124 // read/write 
@@ -109,7 +111,7 @@
 #define zCENMag						0x13A // read
 #define zCENMin						0x13C // read
 #define zCENMax						0x13E // read
-#define zDataAgeRam					0x100 // to 0x1FE 
+#define zDataAgeRam					0x100 // to 0x1FE /read
 #define zDiagSSIRam					0x200 // to 0x3FE 
 #define zDiagRamData				0x800 // to 0xFFE 
 #define zCECCtl 0x102 // AUX register 

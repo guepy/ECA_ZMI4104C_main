@@ -1,13 +1,8 @@
-﻿  sis3100_vme_calls.c
-  ECA_ZMI4104C_main.c
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\ECA_ZMI4104C_main\ECA_ZMI4104C_main.c(2861,60): warning C4244: '=': conversion from 'double' to 'SHORT', possible loss of data
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\ECA_ZMI4104C_main\ECA_ZMI4104C_main.c(2862,62): warning C4244: '=': conversion from 'double' to 'SHORT', possible loss of data
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\ECA_ZMI4104C_main\ECA_ZMI4104C_main.c(2866,18): warning C4101: 'mant': unreferenced local variable
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\ECA_ZMI4104C_main\ECA_ZMI4104C_main.c(2866,7): warning C4101: 'sign': unreferenced local variable
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\ECA_ZMI4104C_main\ECA_ZMI4104C_main.c(2866,13): warning C4101: 'exp': unreferenced local variable
-  wingetopt.c
+﻿  ECA_ZMI4104C_main.c
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\ECA_ZMI4104C_main\ECA_ZMI4104C_main.c(315,13): warning C4101: 'val2': unreferenced local variable
   Generating code
-  Previous IPDB not found, fall back to full compilation.
-  All 83 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  1 of 73 functions ( 1.4%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    0 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
   ECA_ZMI4104C_main.vcxproj -> C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\x64\Release\ECA_ZMI4104C_main.exe

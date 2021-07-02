@@ -1,271 +1,26 @@
-/***************************************************************************/
+ï»¿/***************************************************************************/
 /*                                                                         */
-/*  Filename: vme_single_cycles.c								           */
+/*  Filename: ECA_ZMI4104C_main.c								           */
 /*                                                                         */
-/*  FunCtion:  SIS1100/SIS310x Visual C TEST								*/
+/*  FunCtion:  SIS1100/SIS310x Visual C								*/
 /*                                                                         */
-/*  Autor:                Pythagore Guekam                                 */
+/*  Author:                Pythagore Guekam                                 */
 /*  date:                 19.03.2021                                       */
 /*  last modification:    20.03.2021                                       */
 /*                                                                         */
 
-/*  © 2021                                                                 */
+/*  Â© 2021                                                                 */
 /*                                                                         */
 /***************************************************************************/
 
 //#include "stdafx.h"
-#include <windows.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdarg.h>
-#include <math.h>
-#include <string.h>
-#include <stdbool.h>
-#include <time.h>
-#include <assert.h>
-#include "zVME_const.h"
-#include "wingetopt.h" 
-#include "sis3100_vme_calls.h"
-#include "sis1100w.h"
-#include "sis3302.h"
-#include "sis3100.h"
-#include "vmeInterruptConst.h"
-#pragma comment (lib, "sis1100w.lib")
 
-#define FFTRAM_SIZE_PER_AXIS				16384
-#define MAX_NOF_ACCESS_MODE_DEFINES			11 
-#define RET_SUCCESS							0
-#define RET_FAILED							-1
-#define LAMBDA								632.9911 //"Nominal Vacuum Wavelength: 632.9911 ± 0.0001 nm"
-#define SINGLE_PASS_INT_POS_COEF			0.309077685546875*1e-6 // LAMBDA/2048 ==> 0.31 nm resolution
-#define DOUBLE_PASS_INT_POS_COEF			0.1545388427734375*1e-6 // LAMBDA/4096	==> 0.15 nm resolution
-#define SSI_MAX_SAT							2047
-#define SINGLE_PASS_INT_VEL_COEF			2.946705 * (1e-3)	//  ± 5.1 m/sec resolution
-#define DOUBLE_PASS_INT_VEL_COEF			1.473352 * (1e-3)	// ± 2.55 m/sec resolution
-#define CE_MAX_VEL_DFLT						31457
-#define CE_MIN_VEL_DFLT						96
-
-#define NO_EXCEPTION_ERROR					0
-#define EXCEPTION_ERROR						1
-#define STACK_OVERFLOW						2
-#define SWITCH_DEFAULT_ERROR				3
-#define COMM_ERROR							4
-#define AXIS1								1
-#define AXIS2								2
-#define AXIS3								3
-#define AXIS4								4
-#define PI									3.14159265359
-#define BIAS_CTRL_MODE_NBR					5		
-
-#define SAMP_FREQ_MIN	0.000305	// 1/(65536*005) in Mhz
-#define SAMP_FREQ_MIN_DIV_2		0.000305/2	//in Mhz. min ferq with divide by 2 enable in control register 16
-#define SAMP_FREQ_MAX	20			// 1/(005) in Mhz
-#define DESCRIPTOR_1_TEST
-#define DESCRIPTOR_2_TEST
-#define DESCRIPTOR_3_TEST
-#define DESCRIPTOR_4_TEST
-#define DESCRIPTOR_5_TEST
-// get SIS3104 base address as argument at the process startup
-#define SIS3104_BASE_ADDRESS				0x0
-
-const char* const access_mode_Selection[MAX_NOF_ACCESS_MODE_DEFINES] = {
-	"CRCSRD8",  // Configuration ROM/Control&Status Register (CR/CSR)
-	"CRCSRD16", // Configuration ROM/Control&Status Register (CR/CSR)
-	"A16D8",    // A16 non privileged access
-	"A16D16",   // A16 non privileged access
-	"A16D32",   // A16 non privileged access
-	"A24D8",    // A24 non privileged data access
-	"A24D16",   // A24 non privileged data access
-	"A24D32",   // A24 non privileged data access
-	"A32D8",    // A32 non privileged data access
-	"A32D16",   // A32 non privileged data access
-	"A32D32"    // A32 non privileged data access
-};
-const char* const biasControlModeString[BIAS_CTRL_MODE_NBR] = {
-	"BIAS_OFF_MODE",
-	"BIAS_CONSTANT_VOLTAGE_MODE",
-	"BIAS_CONSTANT_GAIN_MODE",
-	"BIAS_ACONSTANT_OPTICAL_POWER_MODE",
-	"BIAS_SIG_RMS_ADJUST_MODE",
-};
-
-SIS1100W_STATUS stat;
-struct SIS1100_Device_Struct dev;
-
-unsigned int	BASE_ADDRESS[] = { 0x4000, 0x5000, 0x6000, 0x7000 }, // Base adresses 
-return_code = 0,
-comp_err = 0,
-valid_flag = 0,
-NbrBdAx = 0;
-//uint32_t sis_irq_array[16]; // 16 IRQs
-uint32_t vme_irq_level=0, vme_irq_vector=0;
-uint8_t read_irq_vector=0;
-
-unsigned short	IntVector[] = { 0x101, 0, 0x202, 0 },
-SCLKDrive = 2,
-Direction[] = { 0, 0, 0, 0 };
-
-/**/
-//GUID sis1100w_GUID = { 0x944adde8, 0x4f6d, 0x4bee, 0xa309, 0x7ad62ab0b4bb };
-
-/// <summary>
-/// APD Bias Mode typedef
-/// </summary>
-typedef enum _BIAS_MODE {
-	BIAS_OFF_MODE = 0,
-	BIAS_CONSTANT_VOLT_MODE = 1,
-	BIAS_CONSTANT_GAIN_MODE = 2,
-	BIAS_CONSTANT_OPT_PWR_MODE = 3,
-	BIAS_SIG_RMS_ADJUST_MODE = 4
-}BIAS_MODE;
-
-
-double	SSICalMin[4][2] = { {0, 0}, {0, 0}, {0, 0}, {0, 0} },    //( (Ax1SSI,Ax1uW),(Ax2SSI,Ax2uW), etc) 
-SSICalNom[4][2] = { {0, 0}, {0, 0}, {0, 0}, {0, 0} },
-SSICalMax[4][2] = { {1, 1}, {1, 1}, {1, 1}, {1, 1} },     //1 all by default to prevent /0
-SSICalValues[4][2] = { {1, 1}, {1, 1}, {1, 1}, {1, 1} },  //( (Ax1m,Ax1b),(Ax2m,Ax2b), etc) 
-SSIsquelch[] = { 1, 1, 1, 1 },								//Squelch with default values in uW
-SSIMax[4][2] = { {0, 0}, {0, 0}, {0, 0}, {0, 0} },    //( (Ax1SSIMax,Ax1MaxuW),(Ax2MaxSSI,Ax2MaxuW), etc)
-SSIMin[4][2] = { {0, 0}, {0, 0}, {0, 0}, {0, 0} },    //( (Ax1SSIMin,Ax1MinuW),(Ax2SSIMin,Ax2MinuW), etc)
-positionScale = DOUBLE_PASS_INT_POS_COEF,    //Converts to mm as default
-velocityScale = DOUBLE_PASS_INT_VEL_COEF * (1e-3),      //Converts to mm/s
-OpticalPower_uW[] = { 0, 0, 0, 0 };
-
-bool	enableResetFindsVelocity[] = { false, false, false, false },
-ZMIError[] = { false, false, false, false, false },  //Extra ZMIError is for reference
-signal[] = { false, false, false, false, false }, //Extra signal is for ref
-testMode[] = { false, false, false, false }; //Extra signal is for ref
-
-// ZMI Scalars
-const double	timeScale = 25 * (1e-9),                   //Converts to s as default				
-TACI_Spacing_small = 7.19 * (1e-3),
-TACI_Spacing_large = (7.19 * 2) * (1e-3);
-
-int Read_Write(char*, struct SIS1100_Device_Struct*, unsigned int, unsigned int*, unsigned short);
-int ReadVMEErrs(struct SIS1100_Device_Struct*, unsigned char);
-int InitAxis(struct SIS1100_Device_Struct*, BIAS_MODE);
-int Init_SIS_boards(struct SIS1100_Device_Struct*);
-int Init_ZMI_bd(struct SIS1100_Device_Struct*);
-int ReadSamplePosition37(struct SIS1100_Device_Struct*, unsigned char, double*);
-int ReadSamplePosition32(struct SIS1100_Device_Struct*, unsigned char, double*);
-int ReadSamplePosition37_ForAllAxis(struct SIS1100_Device_Struct*, double*);
-int ReadSamplePosition32_ForAllAxis(struct SIS1100_Device_Struct*, double*);
-int ReadPosition37(struct SIS1100_Device_Struct*, unsigned char, double*);
-int ReadPosition32(struct SIS1100_Device_Struct*, unsigned char, double*);
-int ReadVelocity32(struct SIS1100_Device_Struct*, unsigned char, double*);
-int ReadPosition37_ForAllAxis(struct SIS1100_Device_Struct*, double*);
-int ReadPosition32_ForAllAxis(struct SIS1100_Device_Struct*, double*);
-int ReadVelocity32_ForAllAxis(struct SIS1100_Device_Struct*, double*);
-int ReadTime32(struct SIS1100_Device_Struct*, unsigned char, double*);
-int ReadTime32_ForAllAxis(struct SIS1100_Device_Struct*, double*);
-int ReadAllTime32(struct SIS1100_Device_Struct*, double*);
-int ReadOpticalPowerUsingSSIav(struct SIS1100_Device_Struct*);
-int ReadAPDGain(struct SIS1100_Device_Struct*, unsigned char, double*);
-int EnableAuxRegisters(struct SIS1100_Device_Struct*, unsigned char);
-int DisableAuxRegisters(struct SIS1100_Device_Struct*, unsigned char);
-int Disable37bitsSignExtension(struct SIS1100_Device_Struct*, unsigned char);
-int Sclk_On(struct SIS1100_Device_Struct*);
-int Sclk_Off(struct SIS1100_Device_Struct*);
-int SetSampTimerFreq(struct SIS1100_Device_Struct*, unsigned short);
-int SetHoldSampEnable(struct SIS1100_Device_Struct*);
-int ResetHoldSampEnable(struct SIS1100_Device_Struct*);
-int enableSampling(struct SIS1100_Device_Struct*, double);
-int VMESysReset(struct SIS1100_Device_Struct*);
-int startAquisition(struct SIS1100_Device_Struct*, unsigned char);
-int stopAquisition(struct SIS1100_Device_Struct*, unsigned char);
-bool GetVMEExtSampFlag(struct SIS1100_Device_Struct*, unsigned char);
-int Disable32bitsOverflow(struct SIS1100_Device_Struct*, unsigned char);
-int Enable32bitsOverflow(struct SIS1100_Device_Struct*, unsigned char);
-int Enable37bitsSignExtension(struct SIS1100_Device_Struct*, unsigned char);
-int EnableSinglePassInterferometer(void);
-int EnableDoublePassInterferometer(void);
-int ReadAPDGain_ForAllAxis(struct SIS1100_Device_Struct*, double*);
-int SampleVMEPosition(struct SIS1100_Device_Struct*, unsigned char);
-int ParseVMEErrorStatus2(struct SIS1100_Device_Struct*, unsigned char, unsigned int*);
-int ParseVMEPosErrs(struct SIS1100_Device_Struct*, unsigned char, unsigned int*);
-int ParseVMEErrorStatus1(struct SIS1100_Device_Struct*, unsigned char, unsigned int*);
-int ParseVMEErrorStatus0(struct SIS1100_Device_Struct*, unsigned char, unsigned int*);
-int ParseAPDErrCode(struct SIS1100_Device_Struct*, unsigned char, unsigned int*);
-int BoardControlMode(struct SIS1100_Device_Struct*, unsigned char, unsigned int);
-int BiasControlMode(struct SIS1100_Device_Struct*, unsigned char, unsigned int);
-int StartBiasCalculation(struct SIS1100_Device_Struct*, unsigned char);
-int SetAPDGainL2(struct SIS1100_Device_Struct*, unsigned char, unsigned int);
-int checkValues(UINT, UINT, UINT);
-int ClearAllVMEErrs_ForAllAxis(struct SIS1100_Device_Struct*);
-BOOL isRAMbusy(struct SIS1100_Device_Struct*);
-int SetAPDSigRMSL2(struct SIS1100_Device_Struct*, unsigned char, unsigned int);
-int SetAPDOptPwrL2(struct SIS1100_Device_Struct*, unsigned char, unsigned int);
-int ResetAxis(struct SIS1100_Device_Struct*, unsigned char);
-int WaitResetComplete(struct SIS1100_Device_Struct*, unsigned char);
-int SetPositionOffset32(struct SIS1100_Device_Struct*, unsigned char, unsigned int);
-int SetPositionOffset37(struct SIS1100_Device_Struct*, unsigned char, unsigned int, unsigned int);
-int EnableVMEInterrupt_bit(struct SIS1100_Device_Struct*, unsigned char, unsigned short);
-int DisableVMEInterrupt_bit(struct SIS1100_Device_Struct*, unsigned char, unsigned short);
-int EnableVMEGlobalInterrupt(struct SIS1100_Device_Struct*, unsigned char);
-int DisableGlobalInterrupt(struct SIS1100_Device_Struct*, unsigned char);
-int DisableAllVMEInterrupts(struct SIS1100_Device_Struct*, unsigned char);
-int SetKpAndKvCoeff(struct SIS1100_Device_Struct*, unsigned char, unsigned short, unsigned short);
-int ReadAPDCtrlSoftErrs(struct SIS1100_Device_Struct*, unsigned char);
-int ReadAllErrs(struct SIS1100_Device_Struct*, unsigned char);
-int SetTimeDelayBetweenResAndCompleteBit(struct SIS1100_Device_Struct*, unsigned char, unsigned char);
-int EnableAllVMEInterrupts(struct SIS1100_Device_Struct*, unsigned char );
-int EnableVMEGlobalInterrupt(struct SIS1100_Device_Struct*, unsigned char );
-int setVMEIntVector(struct SIS1100_Device_Struct* , unsigned char , unsigned char);
-int setVMEIntLevel(struct SIS1100_Device_Struct*, unsigned char , unsigned char );
-int sis3301w_Init(struct SIS1100_Device_Struct*, uint32_t, uint32_t, uint32_t);
-int	AckForSis3100VME_Irq(struct SIS1100_Device_Struct*, uint32_t);
-int getFlyscanData(struct SIS1100_Device_Struct*, PUINT, PUINT, PUINT);
-PUINT allocateMemSpace(UINT);
-int processRAMData(UINT, PUINT, PUINT);
-int configureFlyscan(struct SIS1100_Device_Struct*, unsigned char, double, UCHAR);
-int EEPROMread(struct SIS1100_Device_Struct*,
-	unsigned short,
-	unsigned int*,
-	unsigned short nBytes);
-
-
-#define THREADCOUNT 4 
-#define coeff_a   6.049264479990438e-8
-#define coeff_b   -1.351195412225471e-6
-#define coeff_c   -0.002995301725927718
-#define coeff_d   0.4474028058422057
-#define coeff_f   -9.023933972316671
-typedef struct _complex {
-	double rpart;
-	double ipart;
-}complex;
-typedef struct _CECoeffs {
-	complex CEC0coeff;
-	double CEC1coeff;
-	complex CECNcoeff;
-}CECoeffs;
-typedef struct _CEBoundaries {
-	USHORT CEMagcoeff;
-	USHORT CEMincoeff;
-	USHORT CEMaxcoeff;
-}CEBoundaries;
-typedef struct _CEratios {
-	double measSignal;
-	double CE0ratio;
-	double CENratio;
-}CEratios;
-typedef struct _CEratiosBoundaries {
-	double CEMinratio;
-	double CEMaxratio;
-}CEratiosBoundaries;
-typedef enum _CEratioUnits {
-	ratio_in_dB=0,
-	ratio_in_percent=1,
-	ratio_in_nmRMS=2
-}CEratioUnits;
-typedef enum _InterferoConfig {
-	SGLE=1,
-	DBLE=2,
-}InterferoConfig;
+#include "ECA_ZMI4104C_main.h"
 HANDLE vmeIrq6Event, lemoIN1Event;
 HANDLE  hThreadArray[THREADCOUNT];
 HANDLE vmeIntThread, lemoIN1Thread, fastReadThread, WaitForSis3100IrqThread, WaitForVmeIrqThread;
 DWORD WINAPI vmeIntThreadFunc(LPVOID);
+int main(void);
 DWORD WINAPI lemoIN1ThreadFunc(LPVOID);
 DWORD WINAPI readThreadFunc(LPVOID); 
 DWORD WINAPI fastReadThreadFunc(LPVOID);
@@ -536,13 +291,29 @@ int main(void)
 
 	InitAxis(&dev, bias_mode);
 	EnableDoublePassInterferometer();
-	enableSampling(&dev, 3e-4);
+	//Here you should first strat up the motor at the planned running velocity to enable CEC hardware
+	// to calculate CE coefficients. thereafter you should start acquisition
 
+	enableSampling(&dev, 3e-4);
+#if ACTIVATE_CEC
+	if (configureCEChardware(&dev, 3, 96, 31457) != RET_SUCCESS) // used default velocity value;
+	{
+		printf("Can not configure CEC hardware\n");
+		return RET_FAILED;
+	}
+#endif
 	double pos = 0.0, temp_pos=0.0;
 	FILE* fd=NULL;
 	vme_irq_level = INT_LEVEL6;
 	vme_irq_vector = 12;
+	char fifoAxis[2];
 	int ret = 0;
+	CEratios ceRatios = { 0.0,0.0,0.0 };
+	CECoeffs ceCoeffs = { 0.0,0.0,0.0 };
+	CEratioUnits ratioUnits = ratio_in_percent;
+	fifoParam testparam;
+	UINT val1, val2;
+	double pos1;
 	dwWaitResult = WaitForSingleObject( //wait for the main thread to sent an event
 		ghMutex, // event handle
 		INFINITE);    // indefinite wait*/
@@ -550,35 +321,92 @@ int main(void)
 		return RET_FAILED;
 	if (!(base_A24D32_FR_ptr = allocateMemSpace(64 * 1024)))
 		return RET_FAILED;
+
+	/*  test the flyscan mode*/
+#if FLYSCAN_MODE_ON
 	if (configureFlyscan(&dev, 1, 3e-4, 0) != RET_SUCCESS) {
 		return RET_FAILED;
 	}
+#endif	
 	CreateThreads();
 	while (1)
 	{
 		//ReadOpticalPowerUsingSSIav(&dev);
-		ReadPosition32(&dev, AXIS3, position);
+		// rmq: some functions I wrote tend to be incompatible with readposition32 function, need
+		// to check its implementation
+		//ReadPosition32(&dev, AXIS3, position);
 		//ReadSamplePosition32(&dev, AXIS3, position);
 		//ReadTime32_ForAllAxis(&dev, time);
-		ReadVelocity32_ForAllAxis(&dev, time);
+		//ReadVelocity32_ForAllAxis(&dev, time);
 		/*dwWaitResult = WaitForSingleObject( //wait for the main thread to sent an event
 			ghMutex, // event handle
 			INFINITE);    // indefinite wait*/
 			//ReadAllErrs(&dev, AXIS3);
 			/*if (!ReleaseMutex(ghMutex))
 				printf("Error while releasing mutex\n");*/
-		stopAquisition(&dev, 1);
-
+		//*/
+#if ACTIVATE_CEC
+		if (readCalcCECoeffs(&dev, 3, &ceCoeffs) != RET_SUCCESS)
+		{
+			printf("Failed to calculate CE ratios \n");
+			valid_flag = 1;
+			break;
+		}
+		printf("CEC0coeff %f+i%f, CEC1coeff %f, CECNcoeff  %f+i%f\n", ceCoeffs.CEC0coeff.rpart, 
+			ceCoeffs.CEC0coeff.ipart, ceCoeffs.CEC1coeff, ceCoeffs.CECNcoeff.rpart, ceCoeffs.CECNcoeff.ipart);
+		if (calculateCEratio(&dev, 3, &ceRatios, ratioUnits) != RET_SUCCESS)
+		{
+			printf("Failed to calculate CE ratios \n");
+			valid_flag = 1;
+			break;
+		}
+		printf("Meas signal %f, CE0 Ratio %f, CEN Ratio %f \n", ceRatios.measSignal, ceRatios.CE0ratio, ceRatios.CENratio);
+		ceRatios.measSignal = 0;
+		ceRatios.CE0ratio = 0;
+		ceRatios.CENratio = 0;
+		if(getAproximateCEratio(&dev, 3, &ceRatios, ratioUnits) != RET_SUCCESS)
+		{
+			printf("Failed to calculate CE ratios \n");
+			valid_flag = 1;
+			break;
+		}
+		printf("Approximate Meas signal %f, CE0 Ratio %f, CEN Ratio %f \n", ceRatios.measSignal, ceRatios.CE0ratio, ceRatios.CENratio);
+		//*/
+		readCEerrorStatReg(&dev, 3, &ret);
 		printf(" Press \'a\' to start acquisition \'q\' to exit \n");
 		//*/
+#endif
+
+		printf(" Press \'a\' to start acquisition \'q\' to exit \n");
 		scanf_s("%c", sc_char, 2);
 		if (!strncmp(sc_char, "q", 1))
 		{
 			valid_flag = 1;
 			break;
 		}
-//*/
+		/*  test the FIFO flyscan mode*/
+#if FIFO_FLYSCAN_MODE
+		fifoAxis[0] = AXIS3;
+		fifoAxis[1] = AXIS2;
+		testparam.acqTime = 0;
+		testparam.freq = 8000;
+		testparam.nbrPts = (UINT)4000;
+		configureFifoFlyscan(&dev, 3, &testparam, base_A24D32_ptr);
+		if (fopen_s(&fd, "C:\\Users\\guekam\\source\\repos\\ECA_ZMI4104_Project\\ECA_ZMI4104C_main\\FIFO_Position_values.csv", "a") != RET_SUCCESS)
+			return RET_FAILED;
 
+		fprintf(fd, "Axis1; ; Axis3\n");
+		for (UINT j = 0; j < (testparam.nbrPts); j++) {
+			val1 = (unsigned int)(base_A24D32_ptr[j]);
+			pos1 = (double)(((int)val1) * positionScale);
+			fprintf(fd, "%lf; 0x%x\n", pos1, val1);
+			val1 = 0;
+			pos1 = 0;
+		}
+		printf("file closed \n");
+#endif
+//*/
+#if FLYSCAN_MODE_ON
 		printf("Sampling data... \n");
 		if (getFlyscanData(&dev, base_A24D32_FR_ptr, base_A24D32_ptr, &ret) != RET_SUCCESS)
 		{
@@ -590,6 +418,7 @@ int main(void)
 			valid_flag = 1;
 			break;
 		}
+#endif
 		//*/
 		if (valid_flag == 1)
 			break;
@@ -816,7 +645,7 @@ DWORD WINAPI readThreadFunc(LPVOID lpParam)
 	return 1;
 }
 */
-int allocateWinMemSpace(struct SIS1100_Device_Struct* dev, UCHAR *nof_windows) {
+int allocateWinMemSpace(SIS1100_Device_Struct* dev, UCHAR *nof_windows) {
 
 	UINT nof_vme_windows = 2;
 	UINT mapParams[2 * 4] = {  // 2 descriptors (Address windows) each contains 4 32-bit entries 
@@ -873,8 +702,7 @@ int allocateWinMemSpace(struct SIS1100_Device_Struct* dev, UCHAR *nof_windows) {
 	//To use in central read thread
 
 }
-
-int releaseWinMemSpace(struct SIS1100_Device_Struct* dev, UCHAR nof_vme_windows) {
+int releaseWinMemSpace(SIS1100_Device_Struct* dev, UCHAR nof_vme_windows) {
 	// cleanup
 	stat = sis1100w_vme_unmap(dev, nof_vme_windows * 4);
 	if (stat != Stat1100Success) {
@@ -886,12 +714,7 @@ int releaseWinMemSpace(struct SIS1100_Device_Struct* dev, UCHAR nof_vme_windows)
 	printf("Windows -vme map demo- finished \n");
 
 }
-int sis3301w_Init(
-	struct SIS1100_Device_Struct* dev,
-	uint32_t mod_base,
-	uint32_t vme_irq_level,
-	uint32_t vme_irq_vector
-)
+int sis3301w_Init(SIS1100_Device_Struct* dev, uint32_t mod_base, uint32_t vme_irq_level, uint32_t vme_irq_vector)
 {
 	int rc;
 	uint32_t addr, data;
@@ -987,13 +810,26 @@ int sis3301w_Init(
 
 	return RET_SUCCESS;
 }
-	
-	int configureCEC(struct SIS1100_Device_Struct* dev) {
+/// <summary>
+/// This function configure and enable the CE compensation
+/// </summary>
+/// <param name="dev">device </param>
+/// <param name="axis">the axis number</param>
+/// <param name="ceVelMin">his value specifies the minimum velocity where CEC will be applied</param>
+/// <param name="ceVelMax">This value specifies the maximum velocity where CEC will be applied</param>
+/// <returns>
+/// 0 if success
+/// -1 else
+/// </returns>
+int configureCEChardware(SIS1100_Device_Struct* dev, UCHAR axis, USHORT ceVelMin, USHORT ceVelMax) {
+		unsigned int uint_vme_address = 0, uint_vme_data=0;
+		char sc_char[3];
 		/*At the startup CEC is disabled*/
 		/*When a motion occurs, CEC coeff are calculated*/
 		/*1-First of all we should set CE_Min_Vel and CE_Max_Vel
 		 * - The default value of CE_Min_Vel is 96 which represents a 7.3Khz Doppler shift or 
-		 * a velocity of approximately 1.2mm/s. Its value shouldn't be less than 24 which represents a 1.8Khz Doppler shift
+		 * a velocity of approximately 1.2mm/s. . The units of this register are 76.3 Hz, or 12 Î¼m/sec for a double-pass
+		 * interferometer Its value shouldn't be less than 24 which represents a 1.8Khz Doppler shift
 		 * and may cause improper operation of the CEC fuction
 		 * - The default value of CE_Max_Vel is 31457  which represents a 2.4Mhz Doppler shift or a velocity of approximately 
 		 * 0.38m/s(double pass)*/
@@ -1001,8 +837,56 @@ int sis3301w_Init(
 
 		/*1-Then, we should perform a motion at a velocity higher than the CE_Min_Vel and 
 		 *greater than CE_Max_Vel so that the the CEC coeff can be calculated. The motion should last at least
-		 *4.1ms before CEC coeff can be updated*/
+		 *4.1ms before CEC coeff can be updated
+		 */
 
+		if (ceVelMin < 24) {
+			printf("ERROR: The CE Min Velocity should not be set to a value smaller than 24, which represents a \
+				1.8 kHz Doppler shift, or a velocity of approximately 0.29 mm/s. this may cause improper operation of the CEC function\n");
+			return RET_FAILED;
+		}
+		//set ce min velocity
+		SetCEMinVel(dev, axis, CE_MIN_VEL);
+		//set ce max velocity
+		SetCEMaxVel(dev, axis, CE_MAX_VEL);
+		printf("Start the motor for a displacement of at least 1s then press Enter. CEC hardware need to observe the motion at startup \
+in order to determine correct CE coefficients \n");
+		scanf_s("%c", sc_char, 2);
+		if (waitCEinit2Complete(dev, axis) != RET_SUCCESS) {
+			printf("failed to initialize CE hardware\n");
+			return RET_FAILED;
+		}
+		printf(" CE hardware configuration is complete\n");
+		
+		if (EnableCECcompensation(dev, axis) != RET_SUCCESS) {
+			printf("failed to enable CE compensation\n");
+			return RET_FAILED;
+		}
+
+		readCEerrorStatReg(dev, axis, &uint_vme_data);
+		return RET_SUCCESS;
+
+}
+int readCEerrorStatReg(SIS1100_Device_Struct* dev, unsigned char axis, PUINT CEstatReg) {
+	unsigned int uint_vme_address = 0, uint_vme_data;
+	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCEerrorStat);
+	uint_vme_data = 0;
+	printf("Reading CE status register\n");
+	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
+	{
+		printf("Register %6X access Faillure !  \n", uint_vme_address); return RET_FAILED;
+	}
+	*CEstatReg = uint_vme_data;
+	if ((uint_vme_data & 0x1)) {
+		printf("The cyclic error 0 has exceeded the value set in the CE 0 Limit register\n ");
+	}
+	if ((uint_vme_data & 0x2)) {
+		printf("The cyclic error N has exceeded the value set in the CE N Limit register\n ");
+	}
+	if ((uint_vme_data & 0xFFF0)) {
+		printf("An arithmetic overflow has occured at some point in the CEC signal processing.This may occur if the CE levels are greater than 20 percent . \n");
+	}
+	return RET_SUCCESS;
 }
 DWORD WaitForVmeIrqThreadFunc(LPVOID lpParam)
 	{
@@ -1148,7 +1032,7 @@ DWORD WaitForSis3100IrqThreadFunc(LPVOID lpParam)
 		printf("Terminating Thread %d..\n", GetCurrentThreadId());
 		return RET_SUCCESS;
 	}
-int	AckForSis3100VME_Irq(struct SIS1100_Device_Struct* dev,uint32_t sis_get_irq_level)
+int	AckForSis3100VME_Irq(SIS1100_Device_Struct* dev,uint32_t sis_get_irq_level)
 	{
 		int rc;
 		uint32_t irq_level;
@@ -1212,7 +1096,7 @@ int EnableDoublePassInterferometer(void) {
 	return RET_SUCCESS;
 }
 
-int InitAxis(struct SIS1100_Device_Struct* dev, BIAS_MODE bias_mode) {
+int InitAxis(SIS1100_Device_Struct* dev, BIAS_MODE bias_mode) {
 	/*************************Axis Initialization***********************************/
 	char	ch_access_mode[16];
 	unsigned int	vme_data = 0,
@@ -1243,14 +1127,11 @@ int InitAxis(struct SIS1100_Device_Struct* dev, BIAS_MODE bias_mode) {
 	}
 
 	uint_vme_data = 0;
-	// Verifying reset complete for only 1 axis is sufficient
-	if (WaitResetComplete(dev, 4) < 0)	// Wait for reset complete on the main axis
-		exit(EXIT_FAILURE);
-	//Sleep(10);
+
 
 	return RET_SUCCESS;
 }
-int DisableAllVMEInterrupts(struct SIS1100_Device_Struct* dev, unsigned char axis) {
+int DisableAllVMEInterrupts(SIS1100_Device_Struct* dev, unsigned char axis) {
 	unsigned int uint_vme_address = 0, uint_vme_data;
 	uint_vme_address = ADD(BASE_ADDRESS[axis-1], zVMEIntEnab0);				// Disable VME interrupts 0
 	uint_vme_data = 0;
@@ -1265,7 +1146,7 @@ int DisableAllVMEInterrupts(struct SIS1100_Device_Struct* dev, unsigned char axi
 		{printf("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	return RET_SUCCESS;
 }
-int EnableAllVMEInterrupts(struct SIS1100_Device_Struct* dev, unsigned char axis) {
+int EnableAllVMEInterrupts(SIS1100_Device_Struct* dev, unsigned char axis) {
 	unsigned int uint_vme_address = 0, uint_vme_data =0xFFFF;
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEIntEnab0);				// VME interrupts 0
 
@@ -1281,7 +1162,7 @@ int EnableAllVMEInterrupts(struct SIS1100_Device_Struct* dev, unsigned char axis
 		{printf("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	return RET_SUCCESS;
 }
-int EnableVMEGlobalInterrupt(struct SIS1100_Device_Struct* dev, unsigned char axis) {
+int EnableVMEGlobalInterrupt(SIS1100_Device_Struct* dev, unsigned char axis) {
 	unsigned int uint_vme_address = 0, uint_vme_data;
 
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEIntEnab1);				// Disable VME interrupts 
@@ -1380,6 +1261,102 @@ int processRAMData(UINT nbrAxis, PUINT base_A24D32_axis1_ptr, PUINT base_A24D32_
 	fclose(fd);
 	return RET_SUCCESS;
 }
+int configureFifoFlyscan(SIS1100_Device_Struct* dev, unsigned char Axis, fifoParam *param, PUINT startAdresses){
+
+	if (!(param->acqTime || param->freq) || !(param->nbrPts || param->freq) || !(param->nbrPts || param->acqTime)) {
+		printf("At most one of the fifo parameters can be nulled\n");
+		return RET_FAILED;
+	}
+	if (!(param->acqTime)) {
+		// this mean acquisition time has not be given so we need to infer it from the 
+		//other parameter
+		param->acqTime = (UINT)(((double)(param->nbrPts)) / ((double)(param->freq)));
+	}
+	if (!(param->nbrPts)) {
+		// this mean acquisition time has not be given so we need to infer it from the 
+		//other parameter
+		param->acqTime = (UINT)(((double)(param->acqTime)) * ((double)(param->freq)));
+	}
+	if (!(param->freq)) {
+		// this mean acquisition time has not be given so we need to infer it from the 
+		//other parameter
+		param->acqTime = (UINT)(((double)(param->nbrPts)) / ((double)(param->acqTime)));
+	}
+	printf("FIFO Flyscan configuration: Freq: %u \t Nbr_of_points: %u \t acquisition_time: %u \n", param->freq, param->nbrPts, param->acqTime);
+	if (fifoFlyscan(dev, Axis, *param, startAdresses) != RET_SUCCESS) {
+		printf("FIFO flyscan configuration failed\n");
+		return RET_FAILED;
+	}
+	return RET_SUCCESS;
+}
+int fifoFlyscan(SIS1100_Device_Struct* dev, unsigned char axis, fifoParam param, PUINT startAdress) {
+
+	UINT uint_vme_data = 0, uint_vme_address = 0, len=0, pos = 0;
+	len = 1;
+	printf("setting up FIFO flyscan...\n");
+	if ( !startAdress)	return	RET_FAILED;
+	/*/
+	if (strlen(axis) != strlen(startAdresses)) {
+		printf("number of axis should match the number of start addresses\n");
+		return	RET_FAILED;
+	}
+	*/
+	for (UINT i = 0; i < len; i++) {
+		if (checkValues(i, 0, 4)) {
+			printf("bad axis number\n");
+			return RET_FAILED;
+		}
+	}
+	//1- Disable SCLK Timer
+	DisableSampleTimer(dev);
+	//2- Reset all axis and wait for reset to complete
+	for (UINT i = 0; i < len; i++) {
+		if (ResetAxis(dev, axis)) {
+			return RET_FAILED;
+		}
+	}
+	// 3- enable sampling timer
+	enableSampling(dev, (param.freq)*1e-6);//convert to MHz
+	// 4- check if new data is avalaible and Read FIFO position
+	for (UINT i = 0; i < (param.nbrPts); i++) {
+		while (!(isFifoDavbitSet(dev, AXIS3)));
+		for (UINT j = 0; j < len; j++) {
+			ReadFIFOPosition(dev, axis, &pos);
+			*startAdress++ = pos;
+		}
+	}
+	// 5-disable sclk timer
+	DisableSampleTimer(dev);
+	//6-verify the FIFO overflow bit
+	for (UINT i = 0; i < len; i++) {
+		if (isFifoOVFbitSet(dev, axis)) {
+			printf("WARNING: some data samples have been missed on axis %d. The frequency must be decreased\n", axis);
+		}
+	}
+	return RET_SUCCESS;
+}
+bool isFifoDavbitSet(SIS1100_Device_Struct* dev, unsigned char axis) {
+	unsigned int uint_vme_data = 0, uint_vme_address = 0;
+	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zStat1);
+	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
+	{
+		printf("Register %6X access Faillure !  \n", uint_vme_address); return RET_FAILED;
+	}
+	if ((uint_vme_data & 0x400))
+		return true;
+	return false;
+}
+bool isFifoOVFbitSet(SIS1100_Device_Struct* dev, unsigned char axis) {
+	unsigned int uint_vme_data = 0, uint_vme_address = 0;
+	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zStat1);
+	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
+	{
+		printf("Register %6X access Faillure !  \n", uint_vme_address); return RET_FAILED;
+	}
+	if ((uint_vme_data & 0x200))
+		return true;
+	return false;
+}
 /// <summary>
 /// This function configures the Flyscan mode to continuously acquire position data from all 4 axes
 /// 
@@ -1398,7 +1375,7 @@ int processRAMData(UINT nbrAxis, PUINT base_A24D32_axis1_ptr, PUINT base_A24D32_
 /// -1 if unsuccessful
 /// 0 else
 /// </returns>
-int configureFlyscan(struct SIS1100_Device_Struct* dev, unsigned char nbrAxis, double freqMHz, UCHAR trig) {
+int configureFlyscan(SIS1100_Device_Struct* dev, unsigned char nbrAxis, double freqMHz, UCHAR trig) {
 	/*'
 		'4 X 8kSamples of 32 bit position values at FULL resolution of lambda/4096/8
 		' returns false if unsuccessful
@@ -1469,7 +1446,7 @@ int configureFlyscan(struct SIS1100_Device_Struct* dev, unsigned char nbrAxis, d
 /// <param name="dev"></param>
 /// <param name="nbrAxis"></param>
 /// <returns></returns>
-int startAquisition(struct SIS1100_Device_Struct* dev, unsigned char nbrAxis) {
+int startAquisition(SIS1100_Device_Struct* dev, unsigned char nbrAxis) {
 	UINT uint_vme_data = 0x8, uint_vme_address = 0;
 
 	//Start acquisition on axis 1
@@ -1490,7 +1467,7 @@ int startAquisition(struct SIS1100_Device_Struct* dev, unsigned char nbrAxis) {
 	return RET_SUCCESS;
 }
 
-int stopAquisition(struct SIS1100_Device_Struct* dev, unsigned char nbrAxis) {
+int stopAquisition(SIS1100_Device_Struct* dev, unsigned char nbrAxis) {
 	UINT uint_vme_data = 0x10, uint_vme_address = 0;
 
 	//Start acquisition on axis 1 
@@ -1550,9 +1527,7 @@ PUINT allocateMemSpace(UINT mem_size) {
 /// 0 if success
 /// -1 if failed 
 /// </returns>
-int readModifyWrite(char* accessMode, 
-	struct SIS1100_Device_Struct* dev,
-	unsigned int uint_vme_address, 
+int readModifyWrite(char* accessMode, SIS1100_Device_Struct* dev, unsigned int uint_vme_address, 
 	unsigned int uint_vme_data,
 	unsigned char opCode) {
 	UINT vme_data = 0;
@@ -1604,7 +1579,7 @@ int readModifyWrite(char* accessMode,
 /// 0 if success
 /// -1 if failed
 /// </returns>
-int getFlyscanData(struct SIS1100_Device_Struct* dev,PUINT startAddress_axis1, PUINT startAddress_axis3, PUINT nbrFlyscanAxis){
+int getFlyscanData(SIS1100_Device_Struct* dev,PUINT startAddress_axis1, PUINT startAddress_axis3, PUINT nbrFlyscanAxis){
 #define NBR_RAM_PAGES			64
 #define NBR_SAMP_PER_PAGE		512
 
@@ -1712,7 +1687,7 @@ int getFlyscanData(struct SIS1100_Device_Struct* dev,PUINT startAddress_axis1, P
 /// TRUE if RAM is busy
 /// FALSE else
 /// </returns>
-BOOL isRAMbusy(struct SIS1100_Device_Struct*  dev) {
+BOOL isRAMbusy(SIS1100_Device_Struct*  dev) {
 	UINT uint_vme_data = 0, uint_vme_address = 0;
 	/* Check if RAM is busy*/
 	uint_vme_address = BASE_ADDRESS[AXIS3-1] + zTestStat1;
@@ -1737,13 +1712,13 @@ BOOL isRAMbusy(struct SIS1100_Device_Struct*  dev) {
 /// axis to configure interrupt vector on
 /// </param>
 /// <param name="IntVect">
-/// value of the interrûpt vector to be set. range is 0 to 255
+/// value of the interrÃ»pt vector to be set. range is 0 to 255
 /// </param>
 /// <returns>
 /// 0 if success
 /// -1 if failed 
 /// </returns>
-int setVMEIntVector(struct SIS1100_Device_Struct* dev, unsigned char axis, unsigned char IntVect) {
+int setVMEIntVector(SIS1100_Device_Struct* dev, unsigned char axis, unsigned char IntVect) {
 	unsigned int uint_vme_address = 0;
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zIntVector);				// Disable VME interrupts 
 	if (checkValues(IntVect, 0, 255) < 0)
@@ -1790,7 +1765,7 @@ int checkValues(UINT num2check, UINT minVal, UINT maxVal) {
 /// 0 if success
 /// -1 else
 /// </returns>
-int setVMEIntLevel(struct SIS1100_Device_Struct* dev, unsigned char axis, unsigned char IntLevel) {
+int setVMEIntLevel(SIS1100_Device_Struct* dev, unsigned char axis, unsigned char IntLevel) {
 	unsigned int uint_vme_address = 0, uint_vme_data=0;
 	if (checkValues(IntLevel, INT_LEVEL0, INT_LEVEL7) < 0)
 		return RET_FAILED;
@@ -1812,7 +1787,7 @@ int setVMEIntLevel(struct SIS1100_Device_Struct* dev, unsigned char axis, unsign
 /// 0 if success
 /// -1 else
 /// </returns>
-int DisableGlobalInterrupt(struct SIS1100_Device_Struct* dev, unsigned char axis) {
+int DisableGlobalInterrupt(SIS1100_Device_Struct* dev, unsigned char axis) {
 	unsigned int uint_vme_address = 0;
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEIntEnab1);				
 	// Disable VME interrupts 
@@ -1834,7 +1809,7 @@ int DisableGlobalInterrupt(struct SIS1100_Device_Struct* dev, unsigned char axis
 /// 0 if success
 /// -1 else
 /// </returns>
-int EnableVMEInterrupt_bit(struct SIS1100_Device_Struct* dev, unsigned char axis, unsigned short intNumber){
+int EnableVMEInterrupt_bit(SIS1100_Device_Struct* dev, unsigned char axis, unsigned short intNumber){
 	unsigned int uint_vme_address = 0, uint_vme_data = 0;
 	if (checkValues(intNumber, MIN_INT_NBR, MAX_INT_NBR) < 0)
 		return RET_FAILED;
@@ -2059,7 +2034,7 @@ int EnableVMEInterrupt_bit(struct SIS1100_Device_Struct* dev, unsigned char axis
 /// 0 if success
 /// -1 else
 /// </returns>
-int DisableVMEInterrupt_bit(struct SIS1100_Device_Struct* dev, unsigned char axis, unsigned short intNumber) {
+int DisableVMEInterrupt_bit(SIS1100_Device_Struct* dev, unsigned char axis, unsigned short intNumber) {
 	unsigned int uint_vme_address = 0, uint_vme_data;
 	if (intNumber < VME_EXT_FLAG_SAMPLE_ERR_INT)
 	{
@@ -2278,7 +2253,7 @@ int DisableVMEInterrupt_bit(struct SIS1100_Device_Struct* dev, unsigned char axi
 /// 0 if success
 /// -1 else
 /// </returns>
-int ResetAxis(struct SIS1100_Device_Struct* dev, unsigned char axis) {
+int ResetAxis(SIS1100_Device_Struct* dev, unsigned char axis) {
 	unsigned int uint_vme_address = 0, uint_vme_data =0;
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCmd);
 	uint_vme_data = 0x20;
@@ -2287,6 +2262,8 @@ int ResetAxis(struct SIS1100_Device_Struct* dev, unsigned char axis) {
 		printf("Register %6X access Faillure !  \n", uint_vme_address);
 	return RET_FAILED;
 	}
+	if (WaitResetComplete(dev, axis) < 0)	// Wait for reset complete on the main axis
+		return RET_FAILED;
 	return RET_SUCCESS;
 }
 /// <summary>
@@ -2300,7 +2277,7 @@ int ResetAxis(struct SIS1100_Device_Struct* dev, unsigned char axis) {
 /// 0 if success
 /// -1 else
 /// </returns>
-int WaitResetComplete(struct SIS1100_Device_Struct* dev, unsigned char axis) {
+int WaitResetComplete(SIS1100_Device_Struct* dev, unsigned char axis) {
 	unsigned int uint_vme_address = 0, uint_vme_data = 0, ct = 0;
 	printf("Reseting Axis %d...  \n", axis);
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zStat1);
@@ -2327,7 +2304,7 @@ int WaitResetComplete(struct SIS1100_Device_Struct* dev, unsigned char axis) {
 /// 0 if success
 /// -1 else
 /// </returns>
-int Init_SIS_boards(struct SIS1100_Device_Struct* dev) {
+int Init_SIS_boards(SIS1100_Device_Struct* dev) {
 
 	/******************************************************************************************************************************/
 	/* VME Master Create, Open and Setup                                                                                          */
@@ -2469,7 +2446,7 @@ int Init_SIS_boards(struct SIS1100_Device_Struct* dev) {
 /// 0 if success
 /// -1 else
 /// </returns>
-int Init_ZMI_bd(struct SIS1100_Device_Struct* dev) {
+int Init_ZMI_bd(SIS1100_Device_Struct* dev) {
 	short value = 0;
 	char	ch_access_mode[16];
 	unsigned int	vme_data = 0,
@@ -2544,7 +2521,7 @@ int Init_ZMI_bd(struct SIS1100_Device_Struct* dev) {
 		printf("\t[FPGA_DLL Warning] The master and slave FPGA are not synchronized\n");
 
 	if (uint_vme_data & 0x00000040)
-		printf("\t[FPGA_Temp Warning] The FPGA temperature exceeds the preset limit (+85°C)");
+		printf("\t[FPGA_Temp Warning] The FPGA temperature exceeds the preset limit (+85Â°C)");
 	else
 		printf("\t[FPGA_Temp Ok] The FPGA temperature is good at all\n");
 
@@ -2687,7 +2664,7 @@ if (Read_Write(ch_access_mode, dev, ADD(BASE_ADDRESS[i], zCtrl3), &vme_data, 1) 
 /// 0 if success
 /// -1 else
 /// </returns>
-int SetPositionOffset32(struct SIS1100_Device_Struct* dev, unsigned char axis, unsigned int offsetPos) {
+int SetPositionOffset32(SIS1100_Device_Struct* dev, unsigned char axis, unsigned int offsetPos) {
 	unsigned int uint_vme_address = 0, uint_vme_data;
 
 	uint_vme_data = offsetPos;
@@ -2705,15 +2682,20 @@ int SetPositionOffset32(struct SIS1100_Device_Struct* dev, unsigned char axis, u
 /// 0 if success
 /// -1 else
 /// </returns>
-int EnableCECcompensation(struct SIS1100_Device_Struct* dev, unsigned char axis) {
+int EnableCECcompensation(SIS1100_Device_Struct* dev, unsigned char axis) {
 	unsigned int uint_vme_address = 0, uint_vme_data;
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCECCtl);
 	uint_vme_data = 0x3;// C0 and CN compensation
-	;
+	printf("Enabling CE compensation...\n");
+	EnableAuxRegisters(dev, 3);
 	if (readModifyWrite("A24D16", dev, uint_vme_address, uint_vme_data, 1) != RET_SUCCESS)
 	{
-		printf("readWriteModify failed!!!!!!\n"); return RET_FAILED;
+		printf("readWriteModify failed!!!!!!\n"); 
+		printf("Enabling CE compensation failed\n");
+		return RET_FAILED;
 	}
+	DisableAuxRegisters(dev, 3);
+	printf("Enabling CE compensation success\n");
 	return RET_SUCCESS;
 }
 /// <summary>
@@ -2725,15 +2707,17 @@ int EnableCECcompensation(struct SIS1100_Device_Struct* dev, unsigned char axis)
 /// 0 if success
 /// -1 else
 /// </returns>
-int disableCECcompensation(struct SIS1100_Device_Struct* dev, unsigned char axis) {
+int disableCECcompensation(SIS1100_Device_Struct* dev, unsigned char axis) {
 	unsigned int uint_vme_address = 0, uint_vme_data;
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCECCtl);
 	uint_vme_data = 0xFFFC;// C0 and CN compensation
-	;
+
+	EnableAuxRegisters(dev, 3);
 	if (readModifyWrite("A24D16", dev, uint_vme_address, uint_vme_data, 0) != RET_SUCCESS)
 	{
 		printf("readWriteModify failed!!!!!!\n"); return RET_FAILED;
 	}
+	DisableAuxRegisters(dev, 3);
 	return RET_SUCCESS;
 }
 /// <summary>
@@ -2747,15 +2731,16 @@ int disableCECcompensation(struct SIS1100_Device_Struct* dev, unsigned char axis
 /// 0 if success
 /// -1 else
 /// </returns>
-int useUserSuppliedCoeff(struct SIS1100_Device_Struct* dev, unsigned char axis) {
+int useCEUserSuppliedCoeff(SIS1100_Device_Struct* dev, unsigned char axis) {
 	unsigned int uint_vme_address = 0, uint_vme_data;
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCECCtl);
 	uint_vme_data = 0x1C;// C0 and CN compensation
-	;
+	EnableAuxRegisters(dev, 3);
 	if (readModifyWrite("A24D16", dev, uint_vme_address, uint_vme_data, 1) != RET_SUCCESS)
 	{
 		printf("readWriteModify failed!!!!!!\n"); return RET_FAILED;
 	}
+	DisableAuxRegisters(dev, 3);
 	return RET_SUCCESS;
 }
 /// <summary>
@@ -2770,15 +2755,16 @@ int useUserSuppliedCoeff(struct SIS1100_Device_Struct* dev, unsigned char axis) 
 /// 0 if success
 /// -1 else
 /// </returns>
-int useUserSuppCoeffAtStartup(struct SIS1100_Device_Struct* dev, unsigned char axis) {
+int useCEUserSupplyCoeffAtStartup(SIS1100_Device_Struct* dev, unsigned char axis) {
 	unsigned int uint_vme_address = 0, uint_vme_data;
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCECCtl);
 	uint_vme_data = 0x40;
-	;
+	EnableAuxRegisters(dev, 3);
 	if (readModifyWrite("A24D16", dev, uint_vme_address, uint_vme_data, 1) != RET_SUCCESS)
 	{
 		printf("readWriteModify failed!!!!!!\n"); return RET_FAILED;
 	}
+	DisableAuxRegisters(dev, 3);
 	return RET_SUCCESS;
 }
 /// <summary>
@@ -2790,18 +2776,57 @@ int useUserSuppCoeffAtStartup(struct SIS1100_Device_Struct* dev, unsigned char a
 /// 0 if success
 /// -1 else
 /// </returns>
-int ResetCECerrors(struct SIS1100_Device_Struct* dev, unsigned char axis) {
+int ResetCECerrors(SIS1100_Device_Struct* dev, unsigned char axis) {
 	unsigned int uint_vme_address = 0, uint_vme_data;
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCECcmd);
+	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCEcmd);
 	uint_vme_data = 0x1;
+	EnableAuxRegisters(dev, 3);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
 	{
 		printf("Register %6X access Faillure !  \n", uint_vme_address); return RET_FAILED;
 	}
+	DisableAuxRegisters(dev, 3);
 	return RET_SUCCESS;
 }
 /// <summary>
-/// This function set the value of CE Max Vel register. The default value is 31457
+/// This function check whether  the initialization of the Cyclic Error coefficients is 
+///complete.This occurs after an axis reset and a  Motion at a velocity where Cyclic Error coefficients are calculated.
+/// </summary>
+/// <param name="dev">device</param>
+/// <param name="axis">the axis number</param>
+/// <returns>
+/// 0 if success
+/// -1 else
+/// </returns>
+int waitCEinit2Complete(SIS1100_Device_Struct* dev, unsigned char axis) {
+	unsigned int uint_vme_address = 0,ct=0, uint_vme_data;
+	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCEstat);
+	uint_vme_data = 0;
+	EnableAuxRegisters(dev, 3);
+	while (!(uint_vme_data & 0x20)) {
+		printf("Initializing CE coefficients...\n");
+		if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
+		{
+			printf("Register %6X access Faillure !  \n", uint_vme_address); return RET_FAILED;
+		}
+		Sleep(1);// sleep for 1ms
+		ct++;
+		if (ct > 3000) {
+			printf("Any motion has been detected for more than 30 secs\n");
+			printf("CEC hardware initialization has failed \n");
+			return RET_FAILED;
+		}
+	}
+	DisableAuxRegisters(dev, 3);
+	if (ct < 3000) {
+		printf("CEC hardware initialization success \n");
+	}
+	return RET_SUCCESS;
+}
+/// <summary>
+/// This function sets This specifies the maximum velocity where CEC will be applied. The units of this register are 
+///76.3 Hz, or 12 Î¼m / sec for a double - pass interferometer.The default value is 0x7ae1 (31457),
+///which corresponds to 2.4 MHz or 380 mm / s.
 /// </summary>
 /// <param name="dev">device</param>
 /// <param name="axis">the axis number</param>
@@ -2810,18 +2835,23 @@ int ResetCECerrors(struct SIS1100_Device_Struct* dev, unsigned char axis) {
 /// 0 if success
 /// -1 else
 /// </returns>
-int SetCEMaxVel(struct SIS1100_Device_Struct* dev, unsigned char axis, unsigned int CEMaxVelValue) {
+int SetCEMaxVel(SIS1100_Device_Struct* dev, unsigned char axis, unsigned int CEMaxVelValue) {
 	unsigned int uint_vme_address = 0, uint_vme_data;
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCEMaxVel);
 	uint_vme_data = CEMaxVelValue;
+	EnableAuxRegisters(dev, 3);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
 	{
 		printf("Register %6X access Faillure !  \n", uint_vme_address); return RET_FAILED;
 	}
+	DisableAuxRegisters(dev, 3);
 	return RET_SUCCESS;
 }
 /// <summary>
-/// This function set the value of CE Min Vel register. The default value is 96
+/// This function sets the minimum velocity where CEC will be applied. The units of this register are 
+///76.3 Hz, or 12 Î¼m / sec for a double - pass interferometer.The default value is 0x0060 (96), which
+///corresponds to 7.3 kHz or 1.2 mm / s.Settings lower than this value may adversely affect CE
+///functionality
 /// </summary>
 /// <param name="dev">device</param>
 /// <param name="axis">the axis number</param>
@@ -2830,28 +2860,30 @@ int SetCEMaxVel(struct SIS1100_Device_Struct* dev, unsigned char axis, unsigned 
 /// 0 if success
 /// -1 else
 /// </returns>
-int SetCEMinVel(struct SIS1100_Device_Struct* dev, unsigned char axis, unsigned int CEMinVelValue) {
+int SetCEMinVel(SIS1100_Device_Struct* dev, unsigned char axis, unsigned int CEMinVelValue) {
 	unsigned int uint_vme_address = 0, uint_vme_data;
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCEMinVel);
 	uint_vme_data = CEMinVelValue;
+	EnableAuxRegisters(dev, 3);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
 	{
 		printf("Register %6X access Faillure !  \n", uint_vme_address); return RET_FAILED;
 	}
+	DisableAuxRegisters(dev, 3);
 	return RET_SUCCESS;
 }
 /// <summary>
-/// The function retrieve the CE calculated coeffs from the ZMI card
+/// The function gets the CE coeffs that have been calculated by the Zygo integrated microcontroler
 /// </summary>
-/// <param name="dev"></param>
-/// <param name="axis"></param>
+/// <param name="dev">device</param>
+/// <param name="axis">the axis number</param>
 /// <param name="coeffs">This is a value return argument and will contain the read coeffs in
 /// the following order C0 -> C1 -> CN</param>
 /// <returns>
 /// 0 if success
 /// -1 else
 /// </returns>
-int readCalcCECoeffs(struct SIS1100_Device_Struct* dev, unsigned char axis,CECoeffs* CECalcCoeffs) {
+int readCalcCECoeffs(SIS1100_Device_Struct* dev, unsigned char axis,CECoeffs* CECalcCoeffs) {
 	unsigned int uint_vme_address = 0, uint_vme_data=0;
 	if (!CECalcCoeffs) {
 		printf("None of the pointer passed as argument should be NULL\n");
@@ -2859,7 +2891,8 @@ int readCalcCECoeffs(struct SIS1100_Device_Struct* dev, unsigned char axis,CECoe
 	}
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCEC0CalcCoeff);
 
-	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
+	EnableAuxRegisters(dev, 3);
+	if (Read_Write("A24D32", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
 	{
 		printf("Register %6X access Faillure !  \n", uint_vme_address); return RET_FAILED;
 	}
@@ -2868,7 +2901,7 @@ int readCalcCECoeffs(struct SIS1100_Device_Struct* dev, unsigned char axis,CECoe
 	convertCInt162Complex(uint_vme_data, &(CECalcCoeffs->CEC0coeff));  //coeffs[0] = uint_vme_data;
 
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCEC1CalcCoeff);
-	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
+	if (Read_Write("A24D32", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
 	{
 		printf("Register %6X access Faillure !  \n", uint_vme_address); return RET_FAILED;
 	}
@@ -2877,36 +2910,51 @@ int readCalcCECoeffs(struct SIS1100_Device_Struct* dev, unsigned char axis,CECoe
 	convertFloat2Double(uint_vme_data, &(CECalcCoeffs->CEC1coeff));// coeffs[1] = uint_vme_data;
 
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCECNCalcCoeff);
-	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
+	if (Read_Write("A24D32", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
 	{
 		printf("Register %6X access Faillure !  \n", uint_vme_address); return RET_FAILED;
 	}
+	DisableAuxRegisters(dev, 3);
 	// CEN val is stored in zygo register as a complex float value so we should 
 // convert it to a complex number
 	convertCFloat2Complex(uint_vme_data, &(CECalcCoeffs->CECNcoeff));//coeffs[2] = uint_vme_data;
 	return RET_SUCCESS;
 }
-int readCEboundaries(struct SIS1100_Device_Struct* dev, unsigned char axis, CEBoundaries* CE0Bound, CEBoundaries* CENBound) {
+/// <summary>
+/// The function gets the CE coeffs that have been calculated by the Zygo integrated microcontroler
+/// </summary>
+/// <param name="dev">device</param>
+/// <param name="axis">the axis number</param>
+/// <param name="coeffs">This is a value return argument and will contain the read coeffs in
+/// the following order C0 -> C1 -> CN</param>
+/// <returns>
+/// 0 if success
+/// -1 else
+/// </returns>
+int readCECoeffboundaries(SIS1100_Device_Struct* dev, unsigned char axis, CECoeffBoundaries* CE0CoeffBound, CECoeffBoundaries* CENCoeffBound) {
 	unsigned int uint_vme_address = 0, uint_vme_data = 0;
 	USHORT tmp1 = 0, tmp2 = 0;
-	if (!CE0Bound || !CENBound) {
+	if (!CE0CoeffBound || !CENCoeffBound) {
 		printf("None of the pointer passed as argument should be NULL\n");
 		return RET_FAILED;
 	}
+
+	EnableAuxRegisters(dev, 3);
 	for (int i = 0; i < 2; i++) {
 		// Read CE mag coefficient
-		uint_vme_address = ADD(BASE_ADDRESS[axis - 1], i==0 ? zCE0Mag: zCENMag);
-
+		uint_vme_address = ADD(BASE_ADDRESS[axis - 1], (i==0 ? zCE0Mag: zCENMag));
 		if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
 		{
 			printf("Register %6X access Faillure !  \n", uint_vme_address); return RET_FAILED;
 		}
 		// CE Mag val is stored in zygo register as an unsigned short value so we should 
 		// convert it to a real number
-		convertUSFloat2Double(uint_vme_data, &(CE0Bound->CEMagcoeff));
+		convertUSFloat2Double(uint_vme_data, (i == 0 ? &(CE0CoeffBound->CEMagcoeff) : &(CENCoeffBound->CEMagcoeff)));
 
+		printf("CE0 mag Bare val 0x%X, CE mag %f \n", uint_vme_data, (i == 0 ? (CE0CoeffBound->CEMagcoeff) : (CENCoeffBound->CEMagcoeff)));
 		// Read CE min and max coefficients
-		uint_vme_address = ADD(BASE_ADDRESS[axis - 1], i == 0 ? zCE0Min : zCENMin);
+		uint_vme_address = ADD(BASE_ADDRESS[axis - 1], (i == 0 ? zCE0Min : zCENMin));
+		uint_vme_data = 0;
 		if (Read_Write("A24D32", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
 		{
 			printf("Register %6X access Faillure !  \n", uint_vme_address); return RET_FAILED;
@@ -2916,62 +2964,97 @@ int readCEboundaries(struct SIS1100_Device_Struct* dev, unsigned char axis, CEBo
 		tmp2 = (uint_vme_data >> 16) & 0xFFFF; //  CE max
 		// CE1 val is stored in zygo register as a float value so we should 
 	// convert it to double
-		convertUSFloat2Double(tmp1, i==0? &(CE0Bound->CEMincoeff): &(CENBound->CEMincoeff));
-		convertUSFloat2Double(tmp2, i==0? &(CE0Bound->CEMaxcoeff): &(CENBound->CEMaxcoeff));
+		convertUSFloat2Double(tmp1, (i==0? &(CE0CoeffBound->CEMincoeff): &(CENCoeffBound->CEMincoeff)));
+		convertUSFloat2Double(tmp2, (i==0? &(CE0CoeffBound->CEMaxcoeff): &(CENCoeffBound->CEMaxcoeff)));
+		uint_vme_data = 0;
 	}
+	DisableAuxRegisters(dev, 3);
 	return RET_SUCCESS;
 }
-int calculateCEratio(struct SIS1100_Device_Struct* dev, unsigned char axis, CEratios* ceRatios, CEratioUnits units){
-	CECoeffs CECoeffs;
+/// <summary>
+/// The function use CE coeffs that have been calculated by the Zygo integrated microcontroler to determine
+/// CE Ratios.
+/// /// </summary>
+/// <param name="dev">device</param>
+/// <param name="axis">axis number</param>
+/// <param name="ceRatios">stores CE ratios</param>
+/// <param name="units">ratio units(%,dB,nm RMS) to use</param>
+/// <returns>
+/// 0 if success
+/// -1 else
+/// </returns>
+int calculateCEratio(SIS1100_Device_Struct* dev, unsigned char axis, CEratios* ceRatios, CEratioUnits units){
+	CECoeffs ceCoeffs;
 	CEratios ceRatiotmp;
 	double temp;
-	readCalcCECoeffs(dev, axis, &CECoeffs);
-	temp= sqrt(CECoeffs.CEC1coeff);
+	if (readCalcCECoeffs(dev, axis, &ceCoeffs) != RET_SUCCESS)
+		RET_FAILED;
+	if (!(temp = sqrt(ceCoeffs.CEC1coeff))) {
+		printf("Can not perform CEC ratios calculation, Measurement signal value is 0\n");
+		goto exit_flag;
+	}
 	ceRatiotmp.measSignal = temp;
-	ceRatiotmp.CE0ratio = (sqrt(pow(CECoeffs.CEC0coeff.rpart, 2) + pow(CECoeffs.CEC0coeff.ipart, 2))) / temp;
-	ceRatiotmp.CENratio = (sqrt(pow(CECoeffs.CECNcoeff.rpart, 2) + pow(CECoeffs.CECNcoeff.ipart, 2))) / pow(temp,2);
+	ceRatiotmp.CE0ratio = sqrt(pow(ceCoeffs.CEC0coeff.rpart, 2) + pow(ceCoeffs.CEC0coeff.ipart, 2)) / temp;
+	ceRatiotmp.CENratio = sqrt(pow(ceCoeffs.CECNcoeff.rpart, 2) + pow(ceCoeffs.CECNcoeff.ipart, 2)) / pow(temp,2);
+	ceRatios->measSignal = temp;
 	switch (units)
 	{
 	case ratio_in_dB:
-		ceRatios->measSignal = 20 * log10(ceRatiotmp.measSignal);
+		//ceRatios->measSignal = 20 * log10(ceRatiotmp.measSignal);
 		ceRatios->CE0ratio= 20 * log10(ceRatiotmp.CE0ratio);
 		ceRatios->CENratio = 20 * log10(ceRatiotmp.CENratio);
 		break;
 	case ratio_in_percent:
-		ceRatios->measSignal = 100 * ceRatiotmp.measSignal;
+		//ceRatios->measSignal = 100*ceRatiotmp.measSignal;
 		ceRatios->CE0ratio = 100 * ceRatiotmp.CE0ratio;
 		ceRatios->CENratio = 100 * ceRatiotmp.CENratio;
 		break;
 	case ratio_in_nmRMS:
-		ceRatios->measSignal =  ceRatiotmp.measSignal *(1/(2*PI))*(LAMBDA/(2*curInterferoConfig))* 0.70710678118654;
-		ceRatios->CE0ratio = ceRatiotmp.CE0ratio * (1 / (2 * PI)) * (LAMBDA / (2 * curInterferoConfig)) * 0.70710678118654;
-		ceRatios->CENratio = ceRatiotmp.CENratio * (1 / (2 * PI)) * (LAMBDA / (2 * curInterferoConfig)) * 0.70710678118654;
+		//ceRatios->measSignal =  ceRatiotmp.measSignal *(1/(2*PI))*(LAMBDA/(2*(double)(curInterferoConfig)))* 0.70710678118654;
+		ceRatios->CE0ratio = ceRatiotmp.CE0ratio * (1 / (2 * PI)) * (LAMBDA / (2 * (double)(curInterferoConfig))) * 0.70710678118654;
+		ceRatios->CENratio = ceRatiotmp.CENratio * (1 / (2 * PI)) * (LAMBDA / (2 * (double)(curInterferoConfig))) * 0.70710678118654;
 		break;
 	default:
 		break;
 	}
+exit_flag: 
 	return RET_SUCCESS;
 }
-int getAproximateCEratio(struct SIS1100_Device_Struct* dev, unsigned char axis, CEratios* ceRatios, CEratioUnits units) {
-	CECoeffs CECoeffs;
-	CEBoundaries CE0bound, CENbound;
+/// <summary>
+/// The function use an approximation to calculate the cyclic error percentage.Due to the approximation used, these values may
+///differ from values calculated from the coefficient calculated by calculateCEratio() by approximately 10 %, depending on the phase of the coefficient.
+/// </summary>
+/// <param name="dev">device</param>
+/// <param name="axis">axis number</param>
+/// <param name="ceRatios">stores CE ratios</param>
+/// <param name="units">ratio units(%,dB,nm RMS) to use</param>
+/// <returns>
+/// 0 if success
+/// -1 else
+/// </returns>
+int getAproximateCEratio(SIS1100_Device_Struct* dev, unsigned char axis, CEratios* ceRatios, CEratioUnits units) {
+	CECoeffs ceCoeffs;
+	CECoeffBoundaries CE0bound = { 0,0,0 }, CENbound = { 0,0,0 };
 	double tmp;
-	readCalcCECoeffs(dev, axis, &CECoeffs);
-	readCEboundaries(dev, axis, &CE0bound, &CENbound);
-	tmp = sqrt(CECoeffs.CEC1coeff);
+	if (readCalcCECoeffs(dev, axis, &ceCoeffs) != RET_SUCCESS)
+		RET_FAILED;
+	if (readCECoeffboundaries(dev, axis, &CE0bound, &CENbound) != RET_SUCCESS)
+		RET_FAILED;
+	tmp = sqrt(ceCoeffs.CEC1coeff);
 	switch (units)
 	{
 	case ratio_in_dB:
-		ceRatios->CE0ratio = 20 * log10(CE0bound.CEMagcoeff) / tmp;
+		ceRatios->CE0ratio = 20 * log10(CE0bound.CEMagcoeff);
 		ceRatios->CENratio = 20 * log10(CENbound.CEMagcoeff);
 		break;
 	case ratio_in_percent:
-		ceRatios->CE0ratio = 100 * (CE0bound.CEMagcoeff) / tmp;
-		ceRatios->CENratio = 100 * (CENbound.CEMagcoeff);
+		ceRatios->CE0ratio = 100 * ((double)(CE0bound.CEMagcoeff)) / tmp;
+		ceRatios->CENratio = 100 * ((double)(CENbound.CEMagcoeff));
+		printf("CE0 mag %f, CEN mag %f \n", CE0bound.CEMagcoeff, CENbound.CEMagcoeff);
 		break;
 	case ratio_in_nmRMS:
-		ceRatios->CE0ratio = CE0bound.CEMagcoeff * (1 / (2 * PI)) * (LAMBDA / (2 * curInterferoConfig)) * 0.70710678118654;
-		ceRatios->CENratio = CENbound.CEMagcoeff * (1 / (2 * PI)) * (LAMBDA / (2 * curInterferoConfig)) * 0.70710678118654;
+		ceRatios->CE0ratio = CE0bound.CEMagcoeff * (1 / (2 * PI)) * (LAMBDA / (2 * (double)(curInterferoConfig))) * 0.70710678118654;
+		ceRatios->CENratio = CENbound.CEMagcoeff * (1 / (2 * PI)) * (LAMBDA / (2 * (double)(curInterferoConfig))) * 0.70710678118654;
 		break;
 	default:
 		break;
@@ -2979,50 +3062,79 @@ int getAproximateCEratio(struct SIS1100_Device_Struct* dev, unsigned char axis, 
 	return RET_SUCCESS;
 }
 
-int getCERatioLimits(struct SIS1100_Device_Struct* dev, unsigned char axis, CEratios* ceRatioLimits, CEratioUnits units) {
-	CECoeffs CECoeffs;
+/// <summary>
+/// This function gets the CE limits the CE values that will result in a corresponding CE Max Limit 0 or CE Max Limit N error indication in the CE Error
+///Status register
+/// </summary>
+/// <param name="dev">device</param>
+/// <param name="axis">axis number</param>
+/// <param name="ceRatios">stores CE ratios limits</param>
+/// <param name="units">ratio units(%,dB,nm RMS) to use</param>
+/// <param name="units"></param>
+/// <returns>
+/// 0 if success
+/// -1 else
+/// </returns>
+int getCERatioLimits(SIS1100_Device_Struct* dev, unsigned char axis, CEratios* ceRatioLimits, CEratioUnits units) {
+	CECoeffs ceCoeffs;
 	CEratios ceRatiotmp;
-	CEBoundaries CE0bound, CENbound;
+	CECoeffBoundaries CE0bound = { 0.0,0.0,0.0 }, CENbound = { 0.0,0.0,0.0 };
 	double tmp;
-	readCalcCECoeffs(dev, axis, &CECoeffs);
-	calculateCEratio(dev, axis, &ceRatiotmp, units);
-	tmp = sqrt(CECoeffs.CEC1coeff);
+	if (readCalcCECoeffs(dev, axis, &ceCoeffs) != RET_SUCCESS)
+		RET_FAILED;
+	if (calculateCEratio(dev, axis, &ceRatiotmp, units) != RET_SUCCESS)
+		RET_FAILED;
+	tmp = sqrt(ceCoeffs.CEC1coeff);
 
 	ceRatioLimits->CE0ratio = tmp * (ceRatiotmp.CE0ratio) / 100;
 	ceRatioLimits->CENratio = (ceRatiotmp.CE0ratio) / 100;
 
 	return RET_SUCCESS;
 }
-int getAproximateCEratioBoundaries(struct SIS1100_Device_Struct* dev, unsigned char axis, 
+/// <summary>
+/// The function give an approximation of the minimum and maximum values reach by the CE 
+/// ratios since the card has been powered up.
+/// </summary>
+/// <param name="dev">device</param>
+/// <param name="axis">axis number</param>
+/// <param name="ceRatios">stores CE ratios boundaries</param>
+/// <param name="units">ratio units(%,dB,nm RMS) to use</param>
+/// <returns>
+/// 0 if success
+/// -1 else
+/// </returns>
+int getAproximateCEratioBoundaries(SIS1100_Device_Struct* dev, unsigned char axis, 
 	CEratiosBoundaries* ce0RatiosBoundaries, CEratiosBoundaries* ceNRatiosBoundaries,CEratioUnits units) {
-	CECoeffs CECoeffs;
-	CEBoundaries CE0bound, CENbound;
+	CECoeffs ceCoeffs = { 0.0,0.0,0.0 };
+	CECoeffBoundaries CE0bound = {0.0,0.0,0.0}, CENbound={ 0.0,0.0,0.0 };
 	double tmp;
-	readCalcCECoeffs(dev, axis, &CECoeffs);
-	readCEboundaries(dev, axis, &CE0bound, &CENbound);
-	tmp = sqrt(CECoeffs.CEC1coeff);
+	if (readCalcCECoeffs(dev, axis, &ceCoeffs) != RET_SUCCESS)
+		RET_FAILED;
+	if (readCECoeffboundaries(dev, axis, &CE0bound, &CENbound) != RET_SUCCESS)
+		RET_FAILED;
+	tmp = sqrt(ceCoeffs.CEC1coeff);
 	switch (units)
 	{
 	case ratio_in_dB:
-		ce0RatiosBoundaries->CEMinratio = 20 * log10(CE0bound.CEMincoeff) / tmp;
-		ce0RatiosBoundaries->CEMaxratio = 20 * log10(CE0bound.CEMaxcoeff) / tmp;
+		ce0RatiosBoundaries->CEMinratio = 20 * log10(((double)CE0bound.CEMincoeff)) / tmp;
+		ce0RatiosBoundaries->CEMaxratio = 20 * log10(((double)CE0bound.CEMaxcoeff)) / tmp;
 
-		ceNRatiosBoundaries->CEMinratio = 20 * log10(CENbound.CEMincoeff);
-		ceNRatiosBoundaries->CEMaxratio = 20 * log10(CENbound.CEMaxcoeff);
+		ceNRatiosBoundaries->CEMinratio = 20 * log10(((double)CENbound.CEMincoeff));
+		ceNRatiosBoundaries->CEMaxratio = 20 * log10(((double)CENbound.CEMaxcoeff));
 		break;
 	case ratio_in_percent:
-		ce0RatiosBoundaries->CEMinratio = 100 * (CE0bound.CEMincoeff) / tmp;
-		ce0RatiosBoundaries->CEMaxratio = 100 * (CE0bound.CEMaxcoeff) / tmp;
+		ce0RatiosBoundaries->CEMinratio = 100 * ((double)(CE0bound.CEMincoeff)) / tmp;
+		ce0RatiosBoundaries->CEMaxratio = 100 * ((double)(CE0bound.CEMaxcoeff)) / tmp;
 
-		ceNRatiosBoundaries->CEMinratio = 100 * (CENbound.CEMincoeff);
-		ceNRatiosBoundaries->CEMaxratio = 100 * (CENbound.CEMaxcoeff);
+		ceNRatiosBoundaries->CEMinratio = 100 * ((double)(CENbound.CEMincoeff));
+		ceNRatiosBoundaries->CEMaxratio = 100 * ((double)(CENbound.CEMaxcoeff));
 		break;
 	case ratio_in_nmRMS:
-		ce0RatiosBoundaries->CEMinratio = CE0bound.CEMincoeff * (1 / (2 * PI)) * (LAMBDA / (2 * curInterferoConfig)) * 0.70710678118654;
-		ce0RatiosBoundaries->CEMaxratio = CE0bound.CEMaxcoeff * (1 / (2 * PI)) * (LAMBDA / (2 * curInterferoConfig)) * 0.70710678118654;
+		ce0RatiosBoundaries->CEMinratio = CE0bound.CEMincoeff * (1 / (2 * PI)) * (LAMBDA / (2 * (double)(curInterferoConfig))) * 0.70710678118654;
+		ce0RatiosBoundaries->CEMaxratio = CE0bound.CEMaxcoeff * (1 / (2 * PI)) * (LAMBDA / (2 * (double)(curInterferoConfig))) * 0.70710678118654;
 
-		ceNRatiosBoundaries->CEMinratio = CENbound.CEMincoeff * (1 / (2 * PI)) * (LAMBDA / (2 * curInterferoConfig)) * 0.70710678118654;
-		ceNRatiosBoundaries->CEMaxratio = CENbound.CEMaxcoeff * (1 / (2 * PI)) * (LAMBDA / (2 * curInterferoConfig)) * 0.70710678118654;
+		ceNRatiosBoundaries->CEMinratio = CENbound.CEMincoeff * (1 / (2 * PI)) * (LAMBDA / (2 * (double)(curInterferoConfig))) * 0.70710678118654;
+		ceNRatiosBoundaries->CEMaxratio = CENbound.CEMaxcoeff * (1 / (2 * PI)) * (LAMBDA / (2 * (double)(curInterferoConfig))) * 0.70710678118654;
 		break;
 	default:
 		break;
@@ -3030,15 +3142,29 @@ int getAproximateCEratioBoundaries(struct SIS1100_Device_Struct* dev, unsigned c
 	return RET_SUCCESS;
 }
 
-int getCEboundaries(struct SIS1100_Device_Struct* dev, unsigned char axis, CEratios* ceRatios, CEratioUnits units) {
-	CECoeffs CECoeffs;
+/// <summary>
+/// The function gets minimum and maximum value the CEMag register has reached since the card has been powered up.
+/// The CEMag register contains an approximation of the CE ratio in percentage 
+/// </summary>
+/// <param name="dev">device</param>
+/// <param name="axis">axis number</param>
+/// <param name="ce0RatiosBoundaries">Stores the CE0boundaries ratios(CE0min and CE0max)</param>
+/// <param name="ceNRatiosBoundaries">Stores the CE0boundaries ratios(CENmin and CENmax)</param>
+/// <param name="units">ratio units to use (%,dB,nm RMS)</param>
+/// <returns>
+/// 0 if success
+/// -1 else
+/// </returns>
+int getCERatioboundaries(SIS1100_Device_Struct* dev, unsigned char axis, CEratios* ceRatios, CEratioUnits units) {
+	CECoeffs ceCoeffs;
 	CEratios ceRatiotmp;
 	double temp;
-	readCalcCECoeffs(dev, axis, &CECoeffs);
-	temp = sqrt(CECoeffs.CEC1coeff);
+	if(readCalcCECoeffs(dev, axis, &ceCoeffs) != RET_SUCCESS)
+		RET_FAILED;
+	temp = sqrt(ceCoeffs.CEC1coeff);
 	ceRatiotmp.measSignal = temp;
-	ceRatiotmp.CE0ratio = (sqrt(pow(CECoeffs.CEC0coeff.rpart, 2) + pow(CECoeffs.CEC0coeff.ipart, 2))) / temp;
-	ceRatiotmp.CENratio = (sqrt(pow(CECoeffs.CECNcoeff.rpart, 2) + pow(CECoeffs.CECNcoeff.ipart, 2))) / pow(temp, 2);
+	ceRatiotmp.CE0ratio = (sqrt(pow(ceCoeffs.CEC0coeff.rpart, 2) + pow(ceCoeffs.CEC0coeff.ipart, 2))) / temp;
+	ceRatiotmp.CENratio = (sqrt(pow(ceCoeffs.CECNcoeff.rpart, 2) + pow(ceCoeffs.CECNcoeff.ipart, 2))) / pow(temp, 2);
 	switch (units)
 	{
 	case ratio_in_dB:
@@ -3052,9 +3178,9 @@ int getCEboundaries(struct SIS1100_Device_Struct* dev, unsigned char axis, CErat
 		ceRatios->CENratio = 100 * ceRatiotmp.CENratio;
 		break;
 	case ratio_in_nmRMS:
-		ceRatios->measSignal = ceRatiotmp.measSignal * (1 / (2 * PI)) * (LAMBDA / (2 * curInterferoConfig)) * 0.70710678118654;
-		ceRatios->CE0ratio = ceRatiotmp.CE0ratio * (1 / (2 * PI)) * (LAMBDA / (2 * curInterferoConfig)) * 0.70710678118654;
-		ceRatios->CENratio = ceRatiotmp.CENratio * (1 / (2 * PI)) * (LAMBDA / (2 * curInterferoConfig)) * 0.70710678118654;
+		ceRatios->measSignal = ceRatiotmp.measSignal * (1 / (2 * PI)) * (LAMBDA / (2 * (double)(curInterferoConfig))) * 0.70710678118654;
+		ceRatios->CE0ratio = ceRatiotmp.CE0ratio * (1 / (2 * PI)) * (LAMBDA / (2 * (double)(curInterferoConfig))) * 0.70710678118654;
+		ceRatios->CENratio = ceRatiotmp.CENratio * (1 / (2 * PI)) * (LAMBDA / (2 * (double)(curInterferoConfig))) * 0.70710678118654;
 		break;
 	default:
 		break;
@@ -3068,8 +3194,9 @@ int getCEboundaries(struct SIS1100_Device_Struct* dev, unsigned char axis, CErat
 /// <param name=" val">a complex variable to store the converted value in</param>
 /// <returns></returns>
 int convertCInt162Complex(UINT nbr, complex* val) {
-	val->ipart = (nbr & 0xFFFF);
-	val->rpart = (nbr & 0xFFFF0000) >> 16;
+
+	val->ipart = (double)((short)(nbr & 0xFFFF));
+	val->rpart = (double)((short)(nbr & 0xFFFF0000) >> 16);
 	return RET_SUCCESS;
 }
 /// <summary>
@@ -3079,8 +3206,8 @@ int convertCInt162Complex(UINT nbr, complex* val) {
 /// <param name="nbr">the complex number </param>
 /// <param name="val"> a pointer on a variable to store the result</param>
 /// <returns> 0 </returns>
-int convertUint2CInt16(complex nbr, PUINT val) {
-	*val = ((UINT)(nbr.rpart) & 0xFFFF) << 16 + (UINT)(nbr.ipart) & 0xFFFF;
+int convertComplex2Uint(complex nbr, PUINT val) {
+	*val = (((UINT)(nbr.rpart) & 0xFFFF) << 16) | (UINT)(nbr.ipart) & (UINT)0xFFFF;
 	return RET_SUCCESS;
 }
 /// <summary>
@@ -3099,8 +3226,8 @@ int convertCFloat2Complex(UINT cfloatNbr, complex* complexVal) {
 	temp = ((cfloatNbr >> 11) & 0xFFF);
 	Isign = temp & 0x1;
 	Rmant= temp >> 1;
-	complexVal->ipart = (1 - 2 * Isign) * Imant * pow(2, (double)exp - 127 - 10);
-	complexVal->rpart = (1 - 2 * Rsign) * Rmant * pow(2, (double)exp - 127 - 10);
+	complexVal->ipart = (1 - 2 *(double) Isign) * Imant * pow(2, (double)exp - 127 - 10);
+	complexVal->rpart = (1 - 2 * (double)Rsign) * Rmant * pow(2, (double)exp - 127 - 10);
 	return RET_SUCCESS;
 }
 
@@ -3111,13 +3238,13 @@ int convertCFloat2Complex(UINT cfloatNbr, complex* complexVal) {
 /// <param name="cfloatVal">the complex float pointer to store the result </param>
 /// <returns>0 </returns>
 int convertComplex2CFloat(complex complexNbr, PUINT cfloatVal) {
-	UINT rexp, iexp, exp;
-	rexp= floor(log2(complexNbr.rpart));
-	iexp = floor(log2(complexNbr.ipart));
+	UINT rexp=0, iexp=0, exp=0;
+	rexp= (UINT)floor(log2(complexNbr.rpart));
+	iexp = (UINT)floor(log2(complexNbr.ipart));
 	exp = max(rexp, iexp);
 	*cfloatVal = (exp + 127) * 0x1000000 + (complexNbr.rpart < 0 ? 0x8000000 : 0)
-		+ (UINT)(round(abs(complexNbr.rpart) * pow(2, -(double)exp + 10))) * 0x1000
-		+ (UINT)((complexNbr.ipart < 0 ? 0x800 : 0) + round(abs(complexNbr.ipart) * pow(2, -(double)exp + 10)));
+		+ (UINT)(round(sqrt(pow(complexNbr.rpart, 2)) * pow(2, -(double)exp + 10))) * 0x1000
+		+ (UINT)((complexNbr.ipart < 0 ? 0x800 : 0) + round(sqrt(pow((complexNbr.ipart),2)) * pow(2, -(double)exp + 10)));//use sqrt bcuz abs() does take only integer
 	return RET_SUCCESS;
 }
 /// <summary>
@@ -3127,12 +3254,12 @@ int convertComplex2CFloat(complex complexNbr, PUINT cfloatVal) {
 /// <param name="doubleVal">the real pointer to store the result</param>
 /// <returns>0 </returns>
 int convertFloat2Double(UINT floatNbr, double* doubleVal) {
-	UINT sign, exp, mant, temp;
-	temp = floatNbr & 0x01FFFFFF;
+	UINT sign=0, exp=0, mant=0, temp=0;
+	temp = floatNbr & (UINT)0x1FFFFFF;
 	sign = temp >> 24;
-	exp = (temp >> 16) & 0xFF;
-	mant = temp & 0xFFFF;
-	*doubleVal = (1 - 2 * sign) * (mant + 0x10000) * pow(2, (double)exp - 127 - 16);
+	exp = (temp >> 16) & (UINT)0xFF;
+	mant = temp & (UINT)0xFFFF;
+	*doubleVal = (1 - 2 * (double)sign) * (double)(mant + (UINT)0x10000) * pow(2, (double)exp - 127 - 16);
 	return RET_SUCCESS;
 }
 /// <summary>
@@ -3143,9 +3270,9 @@ int convertFloat2Double(UINT floatNbr, double* doubleVal) {
 /// <returns>0 </returns>
 int convertDouble2Float(double doubleNbr, PUINT floatVal) {
 	USHORT exp = 0;
-	exp = floor(log2(doubleNbr));
+	exp = (USHORT)floor(log2(doubleNbr));
 	*floatVal = (doubleNbr < 0 ? 0x1000000 : 0) + (exp + 127) * 0x10000 
-		+ (UINT)(round(abs(doubleNbr) * pow(2, 16 - (double)exp))) & 0xFFFF;
+		+ (UINT)(round(sqrt(pow(doubleNbr, 2)) * pow(2, 16 - (double)exp))) & 0xFFFF;//sqrt(pow(doubleNbr,2))=abs(doubleNbr)
 	return RET_SUCCESS;
 }
 /// <summary>
@@ -3155,10 +3282,10 @@ int convertDouble2Float(double doubleNbr, PUINT floatVal) {
 /// <param name="doubleVal">the real pointer to store the result</param>
 /// <returns>0 </returns>
 int convertUSFloat2Double(USHORT USFloatNbr, double* doubleVal) {
-	USHORT exp, mant, temp;
-	exp = (temp >> 8) & 0xFF;
-	mant = temp & 0xFF;
-	*doubleVal = (mant + 0x100) * pow(2, (double)exp - 127 - 8);
+	USHORT exp=0, mant=0;
+	exp = (USHORT)(USFloatNbr >> 8) & (USHORT)0xFF;
+	mant = (USHORT)USFloatNbr & (USHORT)0xFF;
+	*doubleVal = (double)(mant + (USHORT)0x100) * pow(2, (double)exp - 127 - 8);
 	return RET_SUCCESS;
 }
 
@@ -3170,7 +3297,7 @@ int convertUSFloat2Double(USHORT USFloatNbr, double* doubleVal) {
 /// <returns>0 </returns>
 int convertDouble2USFloat(double doubleNbr, PUSHORT USFloatVal) {
 	USHORT exp = 0;
-	exp = floor(log2(doubleNbr));
+	exp = (USHORT)floor(log2(doubleNbr));
 	*USFloatVal = (exp + 127)*0x100 + (UINT)(round((doubleNbr) *pow(2,8-(double)exp))) & 0x00FF;
 	return RET_SUCCESS;
 }
@@ -3185,7 +3312,7 @@ int convertDouble2USFloat(double doubleNbr, PUSHORT USFloatVal) {
 /// 0 if success
 /// -1 else
 /// </returns>
-int SetCompARegVal32(struct SIS1100_Device_Struct* dev, unsigned char axis, unsigned int compAval32) {
+int SetCompARegVal32(SIS1100_Device_Struct* dev, unsigned char axis, unsigned int compAval32) {
 	unsigned int uint_vme_address = 0, uint_vme_data;
 
 	uint_vme_data = compAval32;
@@ -3203,7 +3330,7 @@ int SetCompARegVal32(struct SIS1100_Device_Struct* dev, unsigned char axis, unsi
 /// 0 if success
 /// -1 else
 /// </returns>
-int Enable37bitsSignExtension(struct SIS1100_Device_Struct* dev, unsigned char axis) {
+int Enable37bitsSignExtension(SIS1100_Device_Struct* dev, unsigned char axis) {
 	unsigned int uint_vme_address = 0, uint_vme_data;
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCtrl0);
 	uint_vme_data = 0;
@@ -3223,7 +3350,7 @@ int Enable37bitsSignExtension(struct SIS1100_Device_Struct* dev, unsigned char a
 /// 0 if success
 /// -1 else
 /// </returns>
-int Disable37bitsSignExtension(struct SIS1100_Device_Struct* dev, unsigned char axis) {
+int Disable37bitsSignExtension(SIS1100_Device_Struct* dev, unsigned char axis) {
 	unsigned int uint_vme_address = 0, uint_vme_data;
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCtrl0);
 	uint_vme_data = 0;
@@ -3245,7 +3372,7 @@ int Disable37bitsSignExtension(struct SIS1100_Device_Struct* dev, unsigned char 
 /// 0 if success
 /// -1 else
 /// </returns>
-int SetKpAndKvCoeff(struct SIS1100_Device_Struct* dev, unsigned char axis, unsigned short Kp, unsigned short Kv) {
+int SetKpAndKvCoeff(SIS1100_Device_Struct* dev, unsigned char axis, unsigned short Kp, unsigned short Kv) {
 	
 	if ((Kp > 7) || (Kv > 7))
 	{
@@ -3272,7 +3399,7 @@ int SetKpAndKvCoeff(struct SIS1100_Device_Struct* dev, unsigned char axis, unsig
 /// 0 if success
 /// -1 else
 /// </returns>
-int EnableGlitchFilter(struct SIS1100_Device_Struct* dev, unsigned char axis, unsigned short glitchFilterTime) {
+int EnableGlitchFilter(SIS1100_Device_Struct* dev, unsigned char axis, unsigned short glitchFilterTime) {
 
 	if (glitchFilterTime > 0xF)
 	{
@@ -3300,7 +3427,7 @@ int EnableGlitchFilter(struct SIS1100_Device_Struct* dev, unsigned char axis, un
 /// 0 if success
 /// -1 else
 /// </returns>
-int SetCompARegVal37(struct SIS1100_Device_Struct* dev, unsigned char axis, unsigned int compAval32, unsigned int compAvalExt) {
+int SetCompARegVal37(SIS1100_Device_Struct* dev, unsigned char axis, unsigned int compAval32, unsigned int compAvalExt) {
 	unsigned int uint_vme_address = 0, uint_vme_data;
 	SetCompARegVal32(dev, axis, compAval32);
 	uint_vme_data = compAvalExt;
@@ -3319,7 +3446,7 @@ int SetCompARegVal37(struct SIS1100_Device_Struct* dev, unsigned char axis, unsi
 /// 0 if success
 /// -1 else
 /// </returns>
-int SetCompBRegVal32(struct SIS1100_Device_Struct* dev, unsigned char axis, unsigned int compBval32) {
+int SetCompBRegVal32(SIS1100_Device_Struct* dev, unsigned char axis, unsigned int compBval32) {
 	unsigned int uint_vme_address = 0, uint_vme_data;
 
 	uint_vme_data = compBval32;
@@ -3339,7 +3466,7 @@ int SetCompBRegVal32(struct SIS1100_Device_Struct* dev, unsigned char axis, unsi
 /// 0 if success
 /// -1 else
 /// </returns>
-int SetCompBRegVal37(struct SIS1100_Device_Struct* dev, unsigned char axis, unsigned int compBval32, unsigned int compBvalExt) {
+int SetCompBRegVal37(SIS1100_Device_Struct* dev, unsigned char axis, unsigned int compBval32, unsigned int compBvalExt) {
 	unsigned int uint_vme_address = 0, uint_vme_data;
 	SetCompBRegVal32(dev, axis, compBval32);
 	uint_vme_data = compBvalExt;
@@ -3359,7 +3486,7 @@ int SetCompBRegVal37(struct SIS1100_Device_Struct* dev, unsigned char axis, unsi
 /// 0 if success
 /// -1 else
 /// </returns>
-int SetPositionOffset37(struct SIS1100_Device_Struct* dev, unsigned char axis, unsigned int offsetPos32, unsigned int offsetPosExt) {
+int SetPositionOffset37(SIS1100_Device_Struct* dev, unsigned char axis, unsigned int offsetPos32, unsigned int offsetPosExt) {
 	unsigned int uint_vme_address = 0, uint_vme_data;
 	SetPositionOffset32(dev, axis, offsetPos32);
 	uint_vme_data = offsetPosExt;
@@ -3378,7 +3505,7 @@ int SetPositionOffset37(struct SIS1100_Device_Struct* dev, unsigned char axis, u
 /// 0 if success
 /// -1 else
 /// </returns>
-int SetPresetPosition32(struct SIS1100_Device_Struct* dev, unsigned char axis, unsigned int presetPos) {
+int SetPresetPosition32(SIS1100_Device_Struct* dev, unsigned char axis, unsigned int presetPos) {
 	unsigned int uint_vme_address = 0, uint_vme_data;
 	uint_vme_data = presetPos;
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zPresPosMSB);
@@ -3397,7 +3524,7 @@ int SetPresetPosition32(struct SIS1100_Device_Struct* dev, unsigned char axis, u
 /// 0 if success
 /// -1 else
 /// </returns>
-int SetPresetPosition37(struct SIS1100_Device_Struct* dev, unsigned char axis, unsigned int presetPos32, unsigned int presetPosExt) {
+int SetPresetPosition37(SIS1100_Device_Struct* dev, unsigned char axis, unsigned int presetPos32, unsigned int presetPosExt) {
 	unsigned int uint_vme_address = 0, uint_vme_data;
 	SetPositionOffset32(dev, axis, presetPos32);
 	uint_vme_data = presetPosExt;
@@ -3415,7 +3542,7 @@ int SetPresetPosition37(struct SIS1100_Device_Struct* dev, unsigned char axis, u
 /// 0 if success
 /// -1 else
 /// </returns>
-int ReadVMEErrs(struct SIS1100_Device_Struct* dev, unsigned char axis) {
+int ReadVMEErrs(SIS1100_Device_Struct* dev, unsigned char axis) {
 	unsigned int
 		uint_vme_address = 0,
 		VMEErrorStatus0 = 0,
@@ -3449,7 +3576,7 @@ int ReadVMEErrs(struct SIS1100_Device_Struct* dev, unsigned char axis) {
 /// 0 if success
 /// -1 else
 /// </returns>
-int ReadAllErrs(struct SIS1100_Device_Struct* dev, unsigned char axis) {
+int ReadAllErrs(SIS1100_Device_Struct* dev, unsigned char axis) {
 	ReadVMEErrs(dev, axis);
 	ReadAPDCtrlSoftErrs(dev, axis);
 	return RET_SUCCESS;
@@ -3462,7 +3589,7 @@ int ReadAllErrs(struct SIS1100_Device_Struct* dev, unsigned char axis) {
 /// 0 if success
 /// -1 else
 /// </returns>
-int ClearEEPROMErrs(struct SIS1100_Device_Struct* dev) {
+int ClearEEPROMErrs(SIS1100_Device_Struct* dev) {
 	unsigned int uint_vme_address = 0, uint_vme_data = 0;
 	uint_vme_address = ADD(BASE_ADDRESS[2], zTestCmd1);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
@@ -3484,7 +3611,7 @@ int ClearEEPROMErrs(struct SIS1100_Device_Struct* dev) {
 /// 0 if success
 /// -1 else
 /// </returns>
-int BoardControlMode(struct SIS1100_Device_Struct* dev, unsigned char axis, unsigned int biasMode) {
+int BoardControlMode(SIS1100_Device_Struct* dev, unsigned char axis, unsigned int biasMode) {
 	/*Activate APD Constant voltage mode*/
 	unsigned int defaultAPDGAinL2Set = 0xB3B, defaultAPDOptPwrL2Set = 0,
 		 defaultAPDSigRMSL2Set = 0x3390;
@@ -3531,7 +3658,7 @@ int BoardControlMode(struct SIS1100_Device_Struct* dev, unsigned char axis, unsi
 /// 0 if success
 /// -1 else
 /// </returns>
-int BiasControlMode(struct SIS1100_Device_Struct* dev, unsigned char axis, unsigned int mode) {
+int BiasControlMode(SIS1100_Device_Struct* dev, unsigned char axis, unsigned int mode) {
 	unsigned int uint_vme_address = 0, uint_vme_data = 0;
 	
 	if (mode > 4)
@@ -3558,7 +3685,7 @@ int BiasControlMode(struct SIS1100_Device_Struct* dev, unsigned char axis, unsig
 /// 0 if success
 /// -1 else
 /// </returns>
-int StartBiasCalculation(struct SIS1100_Device_Struct* dev, unsigned char axis) {
+int StartBiasCalculation(SIS1100_Device_Struct* dev, unsigned char axis) {
 	unsigned int uint_vme_address = 0, uint_vme_data = 0;
 	printf("Starting Bias calculation...\n");
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCmd);
@@ -3586,7 +3713,7 @@ int StartBiasCalculation(struct SIS1100_Device_Struct* dev, unsigned char axis) 
 /// 0 if success
 /// -1 else
 /// </returns>
-int SetAPDGainL2(struct SIS1100_Device_Struct* dev, unsigned char axis, unsigned int APDGain) {
+int SetAPDGainL2(SIS1100_Device_Struct* dev, unsigned char axis, unsigned int APDGain) {
 	unsigned int uint_vme_address = 0, uint_vme_data = 0;
 	//APDGain: the default val is 7(2875 L2); range: 4(2048 L2) to 32(5120 L2)
 	if (!checkValues(APDGain,0,0xFFFF))
@@ -3609,7 +3736,7 @@ int SetAPDGainL2(struct SIS1100_Device_Struct* dev, unsigned char axis, unsigned
 /// 0 if success
 /// -1 else
 /// </returns>
-int SetAPDSigRMSL2(struct SIS1100_Device_Struct* dev, unsigned char axis, unsigned int APDSigRMSL2) {
+int SetAPDSigRMSL2(SIS1100_Device_Struct* dev, unsigned char axis, unsigned int APDSigRMSL2) {
 	unsigned int uint_vme_address = 0, uint_vme_data = 0;
 	if (checkValues(APDSigRMSL2, 0, 0xFFFF))
 	{
@@ -3634,7 +3761,7 @@ int SetAPDSigRMSL2(struct SIS1100_Device_Struct* dev, unsigned char axis, unsign
 /// 0 if success
 /// -1 else
 /// </returns>
-int SetAPDOptPwrL2(struct SIS1100_Device_Struct* dev, unsigned char axis, unsigned int APDOptPwrL2) {
+int SetAPDOptPwrL2(SIS1100_Device_Struct* dev, unsigned char axis, unsigned int APDOptPwrL2) {
 	unsigned int uint_vme_address = 0, uint_vme_data = 0;
 	// the default value is 1uw(0 L2); range: 70nW(-3930 L2) to 10uW(3402 L2)
 	if (checkValues(APDOptPwrL2, -3930, 3402))
@@ -3660,7 +3787,7 @@ int SetAPDOptPwrL2(struct SIS1100_Device_Struct* dev, unsigned char axis, unsign
 /// 0 if success
 /// -1 else
 /// </returns>
-int SetAPDBiasDAC(struct SIS1100_Device_Struct* dev, unsigned char axis, unsigned int APDBiasDac) {
+int SetAPDBiasDAC(SIS1100_Device_Struct* dev, unsigned char axis, unsigned int APDBiasDac) {
 	unsigned int uint_vme_address = 0, uint_vme_data = 0;
 	if (APDBiasDac > 0xFFFF)
 	{
@@ -3683,7 +3810,7 @@ int SetAPDBiasDAC(struct SIS1100_Device_Struct* dev, unsigned char axis, unsigne
 /// 0 if success
 /// -1 else
 /// </returns>
-int ParseVMEErrorStatus2(struct SIS1100_Device_Struct* dev, unsigned char axis, unsigned int* VMEErrorStatus2Reg) {
+int ParseVMEErrorStatus2(SIS1100_Device_Struct* dev, unsigned char axis, unsigned int* VMEErrorStatus2Reg) {
 	unsigned int uint_vme_address = 0, uint_vme_data = 0;
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEErrStat2);		//Read VME errors
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
@@ -3730,7 +3857,7 @@ int ParseVMEErrorStatus2(struct SIS1100_Device_Struct* dev, unsigned char axis, 
 /// 0 if success
 /// -1 else
 /// </returns>
-int ParseVMEPosErrs(struct SIS1100_Device_Struct* dev, unsigned char axis, unsigned int* VMEPosErrReg) {
+int ParseVMEPosErrs(SIS1100_Device_Struct* dev, unsigned char axis, unsigned int* VMEPosErrReg) {
 	unsigned int uint_vme_address = 0, uint_vme_data = 0;
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEPosErr);		//Read VME errors
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
@@ -3753,7 +3880,7 @@ int ParseVMEPosErrs(struct SIS1100_Device_Struct* dev, unsigned char axis, unsig
 /// 0 if success
 /// -1 else
 /// </returns>
-int ParseVMEErrorStatus1(struct SIS1100_Device_Struct* dev, unsigned char axis, unsigned int* VMEErrorStatus1Reg) {
+int ParseVMEErrorStatus1(SIS1100_Device_Struct* dev, unsigned char axis, unsigned int* VMEErrorStatus1Reg) {
 	unsigned int uint_vme_address = 0, uint_vme_data = 0;
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEErrStat1);		//Read VME errors
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
@@ -3780,7 +3907,7 @@ int ParseVMEErrorStatus1(struct SIS1100_Device_Struct* dev, unsigned char axis, 
 /// 0 if success
 /// -1 else
 /// </returns>
-int ParseVMEErrorStatus0(struct SIS1100_Device_Struct* dev, unsigned char axis, unsigned int* VMEErrorStatus0Reg) {
+int ParseVMEErrorStatus0(SIS1100_Device_Struct* dev, unsigned char axis, unsigned int* VMEErrorStatus0Reg) {
 	unsigned int uint_vme_address = 0, uint_vme_data = 0;
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEErrStat0);		//Read VME errors
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
@@ -3830,7 +3957,7 @@ int ParseVMEErrorStatus0(struct SIS1100_Device_Struct* dev, unsigned char axis, 
 /// 0 if success
 /// -1 else
 /// </returns>
-int ParseAPDErrCode(struct SIS1100_Device_Struct* dev, unsigned char axis, unsigned int* APDErrCode) {
+int ParseAPDErrCode(SIS1100_Device_Struct* dev, unsigned char axis, unsigned int* APDErrCode) {
 	unsigned int uint_vme_address = 0, uint_vme_data = 0;
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zAPDErr);		//Read APD errors
 	EnableAuxRegisters(dev, axis);
@@ -3991,7 +4118,7 @@ int ParseAPDErrCode(struct SIS1100_Device_Struct* dev, unsigned char axis, unsig
 /// 0 if success | 
 /// -1 else
 /// </returns>
-int ReadSamplePosition37(struct SIS1100_Device_Struct* dev, unsigned char axis, double* position) {
+int ReadSamplePosition37(SIS1100_Device_Struct* dev, unsigned char axis, double* position) {
 	int val;
 	unsigned int uint_vme_data = 0,
 		uint_vme_address = 0;
@@ -4071,7 +4198,7 @@ int ReadSamplePosition37(struct SIS1100_Device_Struct* dev, unsigned char axis, 
 /// 0 if success
 /// -1 else
 /// </returns>
-int ReadSamplePosition32(struct SIS1100_Device_Struct* dev, unsigned char axis, double* position) {
+int ReadSamplePosition32(SIS1100_Device_Struct* dev, unsigned char axis, double* position) {
 
 	unsigned int uint_vme_data = 0,
 		uint_vme_address = 0;
@@ -4104,7 +4231,7 @@ int ReadSamplePosition32(struct SIS1100_Device_Struct* dev, unsigned char axis, 
 /// 0 if success
 /// -1 else
 /// </returns>
-int ReadPosition37(struct SIS1100_Device_Struct* dev, unsigned char axis, double* position) {
+int ReadPosition37(SIS1100_Device_Struct* dev, unsigned char axis, double* position) {
 	int val = 0, temp32 = 0;
 	unsigned int uint_vme_data = 0,
 		uint_vme_address = 0;
@@ -4145,7 +4272,7 @@ int ReadPosition37(struct SIS1100_Device_Struct* dev, unsigned char axis, double
 /// 0 if success
 /// -1 else
 /// </returns>
-int ReadPosition32(struct SIS1100_Device_Struct* dev, unsigned char axis, double* position) {
+int ReadPosition32(SIS1100_Device_Struct* dev, unsigned char axis, double* position) {
 
 	unsigned int uint_vme_data = 0,
 		uint_vme_address = 0;
@@ -4171,6 +4298,20 @@ int ReadPosition32(struct SIS1100_Device_Struct* dev, unsigned char axis, double
 
 	return RET_SUCCESS;
 }
+int ReadFIFOPosition(SIS1100_Device_Struct* dev, unsigned char axis, PUINT position) {
+
+	unsigned int uint_vme_data = 0,
+		uint_vme_address = 0;
+
+	printf("Reading FIFO Position on Axis %d...  \n", axis);
+	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEFifoPos);
+	if (Read_Write("A24D32", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
+	{
+		printf("Register %6X access Faillure !  \n", uint_vme_address); return RET_FAILED;
+	}
+	*position = uint_vme_data;
+	return RET_SUCCESS;
+}
 /// <summary>
 /// The function reads the 32bits velocity value on a specific axis
 /// </summary>
@@ -4180,7 +4321,7 @@ int ReadPosition32(struct SIS1100_Device_Struct* dev, unsigned char axis, double
 /// 0 if success
 /// -1 else
 /// </returns>
-int ReadVelocity32(struct SIS1100_Device_Struct* dev, unsigned char axis, double* velocity) {
+int ReadVelocity32(SIS1100_Device_Struct* dev, unsigned char axis, double* velocity) {
 
 	unsigned int uint_vme_data = 0,
 		uint_vme_address = 0;
@@ -4200,7 +4341,7 @@ int ReadVelocity32(struct SIS1100_Device_Struct* dev, unsigned char axis, double
 
 	return RET_SUCCESS;
 }
-int ReadSamplePosition32_ForAllAxis(struct SIS1100_Device_Struct* dev, double* SamplePosition32_buf) {
+int ReadSamplePosition32_ForAllAxis(SIS1100_Device_Struct* dev, double* SamplePosition32_buf) {
 
 	double position = 0.0;
 	for (int i = 1; i < 5; i++)
@@ -4211,7 +4352,7 @@ int ReadSamplePosition32_ForAllAxis(struct SIS1100_Device_Struct* dev, double* S
 	}
 	return RET_SUCCESS;
 }
-int ReadSamplePosition37_ForAllAxis(struct SIS1100_Device_Struct* dev, double* SamplePosition37_buf) {
+int ReadSamplePosition37_ForAllAxis(SIS1100_Device_Struct* dev, double* SamplePosition37_buf) {
 
 	double position = 0.0;
 	for (int i = 1; i < 5; i++)
@@ -4222,7 +4363,7 @@ int ReadSamplePosition37_ForAllAxis(struct SIS1100_Device_Struct* dev, double* S
 	}
 	return RET_SUCCESS;
 }
-int ReadPosition32_ForAllAxis(struct SIS1100_Device_Struct* dev, double* Position32_buf) {
+int ReadPosition32_ForAllAxis(SIS1100_Device_Struct* dev, double* Position32_buf) {
 
 	double position = 0.0;
 	for (int i = 1; i < 5; i++)
@@ -4233,7 +4374,7 @@ int ReadPosition32_ForAllAxis(struct SIS1100_Device_Struct* dev, double* Positio
 	}
 	return RET_SUCCESS;
 }
-int ReadVelocity32_ForAllAxis(struct SIS1100_Device_Struct* dev, double* Velocity32_buf) {
+int ReadVelocity32_ForAllAxis(SIS1100_Device_Struct* dev, double* Velocity32_buf) {
 
 	double Velocity = 0.0;
 	for (int i = 1; i < 5; i++)
@@ -4244,7 +4385,7 @@ int ReadVelocity32_ForAllAxis(struct SIS1100_Device_Struct* dev, double* Velocit
 	}
 	return RET_SUCCESS;
 }
-int ReadPosition37_ForAllAxis(struct SIS1100_Device_Struct* dev, double* Position37_buf) {
+int ReadPosition37_ForAllAxis(SIS1100_Device_Struct* dev, double* Position37_buf) {
 
 	double position = 0.0;
 	for (int i = 1; i < 5; i++)
@@ -4255,7 +4396,7 @@ int ReadPosition37_ForAllAxis(struct SIS1100_Device_Struct* dev, double* Positio
 	}
 	return RET_SUCCESS;
 }
-bool IsVMEPos32Overflow(struct SIS1100_Device_Struct* dev, unsigned char axis) {
+bool IsVMEPos32Overflow(SIS1100_Device_Struct* dev, unsigned char axis) {
 
 	unsigned int uint_vme_data = 0, uint_vme_address = 0;
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEErrStat1);
@@ -4265,7 +4406,7 @@ bool IsVMEPos32Overflow(struct SIS1100_Device_Struct* dev, unsigned char axis) {
 		return true;
 	return false;
 }
-bool IsVMEPos37Overflow(struct SIS1100_Device_Struct* dev, unsigned char axis) {
+bool IsVMEPos37Overflow(SIS1100_Device_Struct* dev, unsigned char axis) {
 
 	unsigned int uint_vme_data = 0,
 		uint_vme_address = 0;
@@ -4276,7 +4417,7 @@ bool IsVMEPos37Overflow(struct SIS1100_Device_Struct* dev, unsigned char axis) {
 		return true;
 	return false;
 }
-bool IsUserVelError(struct SIS1100_Device_Struct* dev, unsigned char axis) {
+bool IsUserVelError(SIS1100_Device_Struct* dev, unsigned char axis) {
 
 	unsigned int uint_vme_data = 0,
 		uint_vme_address = 0;
@@ -4287,7 +4428,7 @@ bool IsUserVelError(struct SIS1100_Device_Struct* dev, unsigned char axis) {
 		return true;
 	return false;
 }
-bool IsVelError(struct SIS1100_Device_Struct* dev, unsigned char axis) {
+bool IsVelError(SIS1100_Device_Struct* dev, unsigned char axis) {
 
 	unsigned int uint_vme_data = 0,
 		uint_vme_address = 0;
@@ -4298,7 +4439,7 @@ bool IsVelError(struct SIS1100_Device_Struct* dev, unsigned char axis) {
 		return true;
 	return false;
 }
-bool IsAccError(struct SIS1100_Device_Struct* dev, unsigned char axis) {
+bool IsAccError(SIS1100_Device_Struct* dev, unsigned char axis) {
 
 	unsigned int uint_vme_data = 0,
 		uint_vme_address = 0;
@@ -4309,7 +4450,7 @@ bool IsAccError(struct SIS1100_Device_Struct* dev, unsigned char axis) {
 		return true;
 	return false;
 }
-int ClearPosAndVelErrs(struct SIS1100_Device_Struct* dev, unsigned char axis) {
+int ClearPosAndVelErrs(SIS1100_Device_Struct* dev, unsigned char axis) {
 
 	unsigned int uint_vme_data = 0xF, uint_vme_address = 0;
 
@@ -4320,7 +4461,7 @@ int ClearPosAndVelErrs(struct SIS1100_Device_Struct* dev, unsigned char axis) {
 
 	return RET_SUCCESS;
 }
-int ClearAllVMEErrs(struct SIS1100_Device_Struct* dev, unsigned char axis) {
+int ClearAllVMEErrs(SIS1100_Device_Struct* dev, unsigned char axis) {
 
 	unsigned int uint_vme_data = 0xFFFF,
 		uint_vme_address = 0;
@@ -4350,7 +4491,7 @@ int ClearAllVMEErrs(struct SIS1100_Device_Struct* dev, unsigned char axis) {
 /// <returns>
 /// 0 if successful
 /// </returns>
-int ClearPosAndVelErrs_ForAllAxis(struct SIS1100_Device_Struct* dev, unsigned char axis) {
+int ClearPosAndVelErrs_ForAllAxis(SIS1100_Device_Struct* dev, unsigned char axis) {
 
 	unsigned int uint_vme_data = 0xFFFF,
 		uint_vme_address = 0;
@@ -4372,7 +4513,7 @@ int ClearPosAndVelErrs_ForAllAxis(struct SIS1100_Device_Struct* dev, unsigned ch
 /// <returns>
 /// 0 if successful
 /// </returns>
-int ClearAllVMEErrs_ForAllAxis(struct SIS1100_Device_Struct* dev) {
+int ClearAllVMEErrs_ForAllAxis(SIS1100_Device_Struct* dev) {
 
 	for (int i = 1; i < 5; i++)
 	{
@@ -4383,7 +4524,7 @@ int ClearAllVMEErrs_ForAllAxis(struct SIS1100_Device_Struct* dev) {
 }
 /*This fuction reads the ZMI "Time Register" on 32 bits
 */
-int ReadTime32(struct SIS1100_Device_Struct* dev, unsigned char axis, double* time) {
+int ReadTime32(SIS1100_Device_Struct* dev, unsigned char axis, double* time) {
 
 	unsigned int uint_vme_data = 0,
 		uint_vme_address = 0;
@@ -4400,7 +4541,7 @@ int ReadTime32(struct SIS1100_Device_Struct* dev, unsigned char axis, double* ti
 	printf("-------------------------------------------------------\n");
 	return RET_SUCCESS;
 }
-int ReadTime32_ForAllAxis(struct SIS1100_Device_Struct* dev, double* Time32_buf) {
+int ReadTime32_ForAllAxis(SIS1100_Device_Struct* dev, double* Time32_buf) {
 
 	double time = 0.0;
 	for (int i = 1; i < 5; i++)
@@ -4411,7 +4552,7 @@ int ReadTime32_ForAllAxis(struct SIS1100_Device_Struct* dev, double* Time32_buf)
 	}
 	return RET_SUCCESS;
 }
-int ResetTime(struct SIS1100_Device_Struct* dev, unsigned char axis)
+int ResetTime(SIS1100_Device_Struct* dev, unsigned char axis)
 {
 	unsigned int uint_vme_data = 0,
 		uint_vme_address = 0;
@@ -4425,7 +4566,7 @@ int ResetTime(struct SIS1100_Device_Struct* dev, unsigned char axis)
 	return RET_SUCCESS;
 
 }
-int ResetPositionQuick(struct SIS1100_Device_Struct* dev, unsigned char axis)
+int ResetPositionQuick(SIS1100_Device_Struct* dev, unsigned char axis)
 {
 	unsigned int uint_vme_data = 0,
 		uint_vme_address = 0;
@@ -4439,7 +4580,7 @@ int ResetPositionQuick(struct SIS1100_Device_Struct* dev, unsigned char axis)
 	return RET_SUCCESS;
 
 }
-int ResetPosition(struct SIS1100_Device_Struct* dev, unsigned char axis)
+int ResetPosition(SIS1100_Device_Struct* dev, unsigned char axis)
 {
 	unsigned int uint_vme_data = 0,
 		uint_vme_address = 0;
@@ -4453,7 +4594,7 @@ int ResetPosition(struct SIS1100_Device_Struct* dev, unsigned char axis)
 	return RET_SUCCESS;
 
 }
-int EnablePreset(struct SIS1100_Device_Struct* dev, unsigned char axis)
+int EnablePreset(SIS1100_Device_Struct* dev, unsigned char axis)
 {
 	unsigned int uint_vme_data = 0,
 		uint_vme_address = 0;
@@ -4467,7 +4608,7 @@ int EnablePreset(struct SIS1100_Device_Struct* dev, unsigned char axis)
 	return RET_SUCCESS;
 
 }
-int EnableSCLKResetOnAxisReset(struct SIS1100_Device_Struct* dev, unsigned char axis)
+int EnableSCLKResetOnAxisReset(SIS1100_Device_Struct* dev, unsigned char axis)
 {
 	unsigned int uint_vme_data = 0,
 		uint_vme_address = 0;
@@ -4481,7 +4622,7 @@ int EnableSCLKResetOnAxisReset(struct SIS1100_Device_Struct* dev, unsigned char 
 	return RET_SUCCESS;
 
 }
-int DisableSCLKResetOnAxisReset(struct SIS1100_Device_Struct* dev, unsigned char axis)
+int DisableSCLKResetOnAxisReset(SIS1100_Device_Struct* dev, unsigned char axis)
 {
 	unsigned int uint_vme_data = 0,
 		uint_vme_address = 0;
@@ -4495,7 +4636,7 @@ int DisableSCLKResetOnAxisReset(struct SIS1100_Device_Struct* dev, unsigned char
 	return RET_SUCCESS;
 
 }
-int EnableResetFindsVelocity(struct SIS1100_Device_Struct* dev, unsigned char axis)
+int EnableResetFindsVelocity(SIS1100_Device_Struct* dev, unsigned char axis)
 {
 	unsigned int uint_vme_data = 0,
 		uint_vme_address = 0;
@@ -4509,7 +4650,7 @@ int EnableResetFindsVelocity(struct SIS1100_Device_Struct* dev, unsigned char ax
 	return RET_SUCCESS;
 
 }
-int DisableResetFindsVelocity(struct SIS1100_Device_Struct* dev, unsigned char axis)
+int DisableResetFindsVelocity(SIS1100_Device_Struct* dev, unsigned char axis)
 {
 	unsigned int uint_vme_data = 0,
 		uint_vme_address = 0;
@@ -4523,7 +4664,7 @@ int DisableResetFindsVelocity(struct SIS1100_Device_Struct* dev, unsigned char a
 	return RET_SUCCESS;
 
 }
-int SCLKSelectOnAxisReset(struct SIS1100_Device_Struct* dev, unsigned char axis, unsigned char SCLK)
+int SCLKSelectOnAxisReset(SIS1100_Device_Struct* dev, unsigned char axis, unsigned char SCLK)
 {
 	unsigned int uint_vme_data = 0,
 		uint_vme_address = 0;
@@ -4544,7 +4685,7 @@ int SCLKSelectOnAxisReset(struct SIS1100_Device_Struct* dev, unsigned char axis,
 	return RET_SUCCESS;
 
 }
-int SetTimeDelayBetweenResAndCompleteBit(struct SIS1100_Device_Struct* dev, unsigned char axis, unsigned char timeDelay)
+int SetTimeDelayBetweenResAndCompleteBit(SIS1100_Device_Struct* dev, unsigned char axis, unsigned char timeDelay)
 {
 	unsigned int uint_vme_data = 0,
 		uint_vme_address = 0;
@@ -4565,7 +4706,7 @@ int SetTimeDelayBetweenResAndCompleteBit(struct SIS1100_Device_Struct* dev, unsi
 	return RET_SUCCESS;
 
 }
-int ReadOpticalPowerUsingSSIav(struct SIS1100_Device_Struct* dev) {
+int ReadOpticalPowerUsingSSIav(SIS1100_Device_Struct* dev) {
 
 	unsigned int uint_vme_data = 0,
 		uint_vme_address = 0;
@@ -4608,7 +4749,7 @@ int ReadOpticalPowerUsingSSIav(struct SIS1100_Device_Struct* dev) {
 
 	return RET_SUCCESS;
 }
-int SetSSISquelch(struct SIS1100_Device_Struct* dev, unsigned short axis, int squelchValue ) {
+int SetSSISquelch(SIS1100_Device_Struct* dev, unsigned short axis, int squelchValue ) {
 
 	//Set SSI Squelch(minimum AC optical signal that causes measurement signal ZMIError)
 	// default value is 0x80
@@ -4629,7 +4770,7 @@ int SetSSISquelch(struct SIS1100_Device_Struct* dev, unsigned short axis, int sq
 		{printf("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	return RET_SUCCESS;
 }
-int GetSSIMaxVal(struct SIS1100_Device_Struct* dev, unsigned char axis, unsigned int* SSIMax)
+int GetSSIMaxVal(SIS1100_Device_Struct* dev, unsigned char axis, unsigned int* SSIMax)
 {
 	unsigned int uint_vme_data = 0,
 		uint_vme_address = 0;
@@ -4646,7 +4787,7 @@ int GetSSIMaxVal(struct SIS1100_Device_Struct* dev, unsigned char axis, unsigned
 	return RET_SUCCESS;
 
 }
-int GetSSIMaxVal_ForAllAxis(struct SIS1100_Device_Struct* dev, unsigned int* SSIMax_Buf)
+int GetSSIMaxVal_ForAllAxis(SIS1100_Device_Struct* dev, unsigned int* SSIMax_Buf)
 {
 	unsigned int uint_vme_data = 0;
 	for (int i = 1; i < 5; i++)
@@ -4659,7 +4800,7 @@ int GetSSIMaxVal_ForAllAxis(struct SIS1100_Device_Struct* dev, unsigned int* SSI
 	return RET_SUCCESS;
 
 }
-int ResetSSIMinAndMax(struct SIS1100_Device_Struct* dev, unsigned char axis)
+int ResetSSIMinAndMax(SIS1100_Device_Struct* dev, unsigned char axis)
 {
 	unsigned int uint_vme_data = 0,
 		uint_vme_address = 0;
@@ -4674,7 +4815,7 @@ int ResetSSIMinAndMax(struct SIS1100_Device_Struct* dev, unsigned char axis)
 	return RET_SUCCESS;
 
 }
-int ResetPhaseNoisePeak(struct SIS1100_Device_Struct* dev, unsigned char axis)
+int ResetPhaseNoisePeak(SIS1100_Device_Struct* dev, unsigned char axis)
 {
 	unsigned int uint_vme_data = 0,
 		uint_vme_address = 0;
@@ -4688,7 +4829,7 @@ int ResetPhaseNoisePeak(struct SIS1100_Device_Struct* dev, unsigned char axis)
 	return RET_SUCCESS;
 
 }
-int ResetSigRMSL2MinAndMax(struct SIS1100_Device_Struct* dev, unsigned char axis)
+int ResetSigRMSL2MinAndMax(SIS1100_Device_Struct* dev, unsigned char axis)
 {
 	unsigned int uint_vme_data = 0,
 		uint_vme_address = 0;
@@ -4702,7 +4843,7 @@ int ResetSigRMSL2MinAndMax(struct SIS1100_Device_Struct* dev, unsigned char axis
 	return RET_SUCCESS;
 
 }
-int setGainControlMax(struct SIS1100_Device_Struct* dev, unsigned char axis)
+int setGainControlMax(SIS1100_Device_Struct* dev, unsigned char axis)
 {
 	unsigned int uint_vme_data = 0,
 		uint_vme_address = 0;
@@ -4715,7 +4856,7 @@ int setGainControlMax(struct SIS1100_Device_Struct* dev, unsigned char axis)
 		{printf("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	return RET_SUCCESS;
 }
-int setGainControlMin(struct SIS1100_Device_Struct* dev, unsigned char axis)
+int setGainControlMin(SIS1100_Device_Struct* dev, unsigned char axis)
 {
 	unsigned int uint_vme_data = 0,
 		uint_vme_address = 0;
@@ -4728,7 +4869,7 @@ int setGainControlMin(struct SIS1100_Device_Struct* dev, unsigned char axis)
 		{printf("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	return RET_SUCCESS;
 }
-int AdjustGainControl(struct SIS1100_Device_Struct* dev, unsigned char axis)
+int AdjustGainControl(SIS1100_Device_Struct* dev, unsigned char axis)
 {
 	unsigned int uint_vme_data = 0,
 		uint_vme_address = 0;
@@ -4741,7 +4882,7 @@ int AdjustGainControl(struct SIS1100_Device_Struct* dev, unsigned char axis)
 		{printf("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	return RET_SUCCESS;
 }
-int ResetOptPowL2MinAndMax(struct SIS1100_Device_Struct* dev, unsigned char axis)
+int ResetOptPowL2MinAndMax(SIS1100_Device_Struct* dev, unsigned char axis)
 {
 	unsigned int uint_vme_data = 0,
 		uint_vme_address = 0;
@@ -4756,7 +4897,7 @@ int ResetOptPowL2MinAndMax(struct SIS1100_Device_Struct* dev, unsigned char axis
 	return RET_SUCCESS;
 
 }
-int CheckSaturation(struct SIS1100_Device_Struct* dev, unsigned char axis, bool* sat)
+int CheckSaturation(SIS1100_Device_Struct* dev, unsigned char axis, bool* sat)
 {
 	unsigned int uint_vme_data = 0,
 		uint_vme_address = 0;
@@ -4785,7 +4926,7 @@ int CheckSaturation(struct SIS1100_Device_Struct* dev, unsigned char axis, bool*
 	return RET_SUCCESS;
 
 }
-int CheckSaturation_ForAllAxis(struct SIS1100_Device_Struct* dev, bool* sat_Buf)
+int CheckSaturation_ForAllAxis(SIS1100_Device_Struct* dev, bool* sat_Buf)
 {
 	unsigned int uint_vme_data = 0,
 		uint_vme_address = 0;
@@ -4799,7 +4940,7 @@ int CheckSaturation_ForAllAxis(struct SIS1100_Device_Struct* dev, bool* sat_Buf)
 	return RET_SUCCESS;
 
 }
-int ReadAPDGain(struct SIS1100_Device_Struct* dev, unsigned char axis, double* APD_Gain) {
+int ReadAPDGain(SIS1100_Device_Struct* dev, unsigned char axis, double* APD_Gain) {
 	unsigned int uint_vme_data = 0,
 		uint_vme_address = 0;
 	uint_vme_data = 0;
@@ -4819,7 +4960,7 @@ int ReadAPDGain(struct SIS1100_Device_Struct* dev, unsigned char axis, double* A
 	DisableAuxRegisters(dev, axis);
 	return RET_SUCCESS;
 }
-int ReadAPDGain_ForAllAxis(struct SIS1100_Device_Struct* dev, double* APD_Gain_Buf) {
+int ReadAPDGain_ForAllAxis(SIS1100_Device_Struct* dev, double* APD_Gain_Buf) {
 
 	double APD_Gain = 0.0;
 
@@ -4831,7 +4972,7 @@ int ReadAPDGain_ForAllAxis(struct SIS1100_Device_Struct* dev, double* APD_Gain_B
 	}
 	return RET_SUCCESS;
 }
-int EnableAuxRegisters(struct SIS1100_Device_Struct* dev, unsigned char axis) {
+int EnableAuxRegisters(SIS1100_Device_Struct* dev, unsigned char axis) {
 	unsigned int uint_vme_data = 0, uint_vme_address = 0;
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCtrl2);//rw
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
@@ -4843,7 +4984,7 @@ int EnableAuxRegisters(struct SIS1100_Device_Struct* dev, unsigned char axis) {
 
 	return RET_SUCCESS;
 }
-bool IsAPDCtrlSoftErrs(struct SIS1100_Device_Struct* dev, unsigned char axis) {
+bool IsAPDCtrlSoftErrs(SIS1100_Device_Struct* dev, unsigned char axis) {
 	unsigned int uint_vme_data = 0, uint_vme_address = 0;
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEErrStat2);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
@@ -4852,7 +4993,7 @@ bool IsAPDCtrlSoftErrs(struct SIS1100_Device_Struct* dev, unsigned char axis) {
 		return true;
 	return false;
 }
-int ReadAPDCtrlSoftErrs(struct SIS1100_Device_Struct* dev, unsigned char axis) {
+int ReadAPDCtrlSoftErrs(SIS1100_Device_Struct* dev, unsigned char axis) {
 	unsigned int uint_vme_data = 0, uint_vme_address = 0;
 
 	printf("*************************APD Errors****************************\n");
@@ -4916,7 +5057,7 @@ int ReadAPDCtrlSoftErrs(struct SIS1100_Device_Struct* dev, unsigned char axis) {
 	DisableAuxRegisters(dev, axis); // Enable auxiliary registers
 	return RET_SUCCESS;
 }
-int Enable32bitsOverflow(struct SIS1100_Device_Struct* dev, unsigned char axis) {
+int Enable32bitsOverflow(SIS1100_Device_Struct* dev, unsigned char axis) {
 	unsigned int uint_vme_data = 0, uint_vme_address = 0;
 	// Enable auxiliary registers
 
@@ -4930,7 +5071,7 @@ int Enable32bitsOverflow(struct SIS1100_Device_Struct* dev, unsigned char axis) 
 		{printf("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	return RET_SUCCESS;
 }
-int Disable32bitsOverflow(struct SIS1100_Device_Struct* dev, unsigned char axis) {
+int Disable32bitsOverflow(SIS1100_Device_Struct* dev, unsigned char axis) {
 	unsigned int uint_vme_data = 0, uint_vme_address = 0;
 	// Enable auxiliary registers
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCtrl2);
@@ -4943,7 +5084,7 @@ int Disable32bitsOverflow(struct SIS1100_Device_Struct* dev, unsigned char axis)
 		{printf("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	return RET_SUCCESS;
 }
-int DisableAuxRegisters(struct SIS1100_Device_Struct* dev, unsigned char axis) {
+int DisableAuxRegisters(SIS1100_Device_Struct* dev, unsigned char axis) {
 	unsigned int uint_vme_data = 0, uint_vme_address = 0;
 	// Disable auxiliary registers
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCtrl2);
@@ -4956,7 +5097,7 @@ int DisableAuxRegisters(struct SIS1100_Device_Struct* dev, unsigned char axis) {
 		{printf("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	return RET_SUCCESS;
 }
-int SampleVMEPosition(struct SIS1100_Device_Struct* dev, unsigned char axis) {
+int SampleVMEPosition(SIS1100_Device_Struct* dev, unsigned char axis) {
 	unsigned int uint_vme_data = 0, ctr=0, uint_vme_address = 0x200;
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCmd);
 	printf("Sampling velocity and position on axis %d...\n", axis);
@@ -4975,12 +5116,12 @@ int SampleVMEPosition(struct SIS1100_Device_Struct* dev, unsigned char axis) {
 	while (!GetVMEExtSampFlag(dev, axis)); // Wait for the VME external sample flag to be set before reading
 	return RET_SUCCESS;
 }
-int Sclk_On(struct SIS1100_Device_Struct* dev) {
+int Sclk_On(SIS1100_Device_Struct* dev) {
 	//Turn on bits 7 and 9 (SCLK Timer enable and SCLK0 output)
 
 	return (readModifyWrite("A24D16", dev, ADD(BASE_ADDRESS[2], zCtrl16), 0x280, 1) != RET_SUCCESS);
 }
-int VMESysReset(struct SIS1100_Device_Struct* dev) {
+int VMESysReset(SIS1100_Device_Struct* dev) {
 	printf("Hard reseting the system...\n");
 	stat = sis1100w_VmeSysreset(dev);
 
@@ -4991,7 +5132,7 @@ int VMESysReset(struct SIS1100_Device_Struct* dev) {
 	printf("Reseting Zygo board...\n");
 	return RET_SUCCESS;
 }
-int Sclk_Off(struct SIS1100_Device_Struct* dev) {
+int Sclk_Off(SIS1100_Device_Struct* dev) {
 	unsigned int uint_vme_data = 0, uint_vme_address = 0;
 	uint_vme_address = ADD(BASE_ADDRESS[2], zCtrl16);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
@@ -5011,7 +5152,7 @@ int Sclk_Off(struct SIS1100_Device_Struct* dev) {
 /// 0 if success
 /// -1 if failed
 /// </returns>
-int SetSampTimerFreq(struct SIS1100_Device_Struct* dev, unsigned short sampTimerVal) {
+int SetSampTimerFreq(SIS1100_Device_Struct* dev, unsigned short sampTimerVal) {
 	unsigned int uint_vme_data = 0, uint_vme_address = 0;
 	uint_vme_address = ADD(BASE_ADDRESS[2], zSampleTimer);
 	uint_vme_data = sampTimerVal;
@@ -5019,7 +5160,7 @@ int SetSampTimerFreq(struct SIS1100_Device_Struct* dev, unsigned short sampTimer
 		{printf("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	return RET_SUCCESS;
 }
-int SetHoldSampEnable(struct SIS1100_Device_Struct* dev) {
+int SetHoldSampEnable(SIS1100_Device_Struct* dev) {
 	unsigned int uint_vme_data = 0, uint_vme_address = 0;
 	uint_vme_address = ADD(BASE_ADDRESS[2], zCtrl2);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
@@ -5031,7 +5172,7 @@ int SetHoldSampEnable(struct SIS1100_Device_Struct* dev) {
 		{printf("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	return RET_SUCCESS;
 }
-int ResetHoldSampEnable(struct SIS1100_Device_Struct* dev) {
+int ResetHoldSampEnable(SIS1100_Device_Struct* dev) {
 	unsigned int uint_vme_data = 0, uint_vme_address = 0;
 	uint_vme_address = ADD(BASE_ADDRESS[2], zCtrl2);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
@@ -5052,7 +5193,7 @@ int ResetHoldSampEnable(struct SIS1100_Device_Struct* dev) {
 /// 0 if success
 /// -1 if failed
 /// </returns>
-int enableSampling(struct SIS1100_Device_Struct* dev, double sampleFreq) {
+int enableSampling(SIS1100_Device_Struct* dev, double sampleFreq) {
 	unsigned short rdVal = 0, sclkVal = 0;
 	if (sampleFreq <= 0 || sampleFreq > SAMP_FREQ_MAX)
 	{
@@ -5078,11 +5219,11 @@ int enableSampling(struct SIS1100_Device_Struct* dev, double sampleFreq) {
 	Sclk_On(dev);
 	return RET_SUCCESS;
 }
-int DisableSampleTimer(struct SIS1100_Device_Struct* dev) {
+int DisableSampleTimer(SIS1100_Device_Struct* dev) {
 	Sclk_Off(dev);
 	return RET_SUCCESS;
 }
-bool GetVMEExtSampFlag(struct SIS1100_Device_Struct* dev, unsigned char axis) {
+bool GetVMEExtSampFlag(SIS1100_Device_Struct* dev, unsigned char axis) {
 	unsigned int uint_vme_data = 0, uint_vme_address = 0;
 	uint_vme_address = ADD(BASE_ADDRESS[axis-1], zStat0);
 
@@ -5093,14 +5234,14 @@ bool GetVMEExtSampFlag(struct SIS1100_Device_Struct* dev, unsigned char axis) {
 	}
 	return false;
 }
-bool clearVMEExtSampFlag(struct SIS1100_Device_Struct* dev, unsigned char axis) {
+bool clearVMEExtSampFlag(SIS1100_Device_Struct* dev, unsigned char axis) {
 	unsigned int uint_vme_data = 0, uint_vme_address = 0;
 	uint_vme_data = 0x100;
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
 		{printf("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	return true;
 }
-bool IsVMEIntReqPending(struct SIS1100_Device_Struct* dev, unsigned char axis) {
+bool IsVMEIntReqPending(SIS1100_Device_Struct* dev, unsigned char axis) {
 	unsigned int uint_vme_data = 0, uint_vme_address = 0;
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zStat0);
 
@@ -5112,7 +5253,7 @@ bool IsVMEIntReqPending(struct SIS1100_Device_Struct* dev, unsigned char axis) {
 	return false;
 }
 int EEPROMread(
-	struct SIS1100_Device_Struct* dev,
+	SIS1100_Device_Struct* dev,
 	unsigned short offset,
 	unsigned int* uint_vme_data,
 	unsigned short nBytes) {
@@ -5183,7 +5324,7 @@ int EEPROMread(
 }
 
 int Read_Write(char* ch_access_mode,
-	struct SIS1100_Device_Struct* dev,
+	SIS1100_Device_Struct* dev,
 	unsigned int uint_vme_address,
 	unsigned int* uint_vme_data,
 	unsigned short read_write) {
