@@ -1,7 +1,6 @@
 ﻿  ECA_ZMI4104C_main.c
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\ECA_ZMI4104C_main\ECA_ZMI4104C_main.c(315,13): warning C4101: 'val2': unreferenced local variable
   Generating code
-  1 of 73 functions ( 1.4%) were compiled, the rest were copied from previous compilation.
+  53 of 64 functions (82.8%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
     0 functions had inline decision re-evaluated but remain unchanged
   Finished generating code

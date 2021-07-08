@@ -30,7 +30,8 @@
 #define DOUBLE_PASS_INT_VEL_COEF			1.473352 * (1e-3)	// ± 2.55 m/sec resolution
 #define CE_MAX_VEL_DFLT						31457
 #define CE_MIN_VEL_DFLT						96
-
+#define LOG_FILE_PATH						"C:\\Users\\guekam\\source\\repos\\ECA_ZMI4104_Project\\ECA_ZMI4104C_main\\LogFiles\\"
+#define POSITION_FILE_PATH					"C:\\Users\\guekam\\source\\repos\\ECA_ZMI4104_Project\\ECA_ZMI4104C_main\\data\\"
 #define NO_EXCEPTION_ERROR					0
 #define EXCEPTION_ERROR						1
 #define STACK_OVERFLOW						2
@@ -42,7 +43,9 @@
 #define AXIS4								4
 #define PI									3.14159265359
 #define BIAS_CTRL_MODE_NBR					5		
-
+#define NON_FATAL							0
+#define EXIT_FAILLURE						1
+#define INFO_PURPOSE						2
 #define SAMP_FREQ_MIN	0.000305	// 1/(65536*005) in Mhz
 #define SAMP_FREQ_MIN_DIV_2		0.000305/2	//in Mhz. min ferq with divide by 2 enable in control register 16
 #define SAMP_FREQ_MAX	20			// 1/(005) in Mhz
@@ -51,6 +54,15 @@
 #define DESCRIPTOR_3_TEST
 #define DESCRIPTOR_4_TEST
 #define DESCRIPTOR_5_TEST
+#define FATAL(errmsg, ...) do{											\
+handle_err(EXIT_FAILLURE, "FATAL:%s:%s:%d: " errmsg, __FILE__,__FUNCTION__, __LINE__, __VA_ARGS__); \
+}while(0)
+#define WARN(errmsg, ...) do{											\
+handle_err(NON_FATAL, "WARNING:%s:%s:%d: " errmsg, __FILE__,__FUNCTION__, __LINE__, __VA_ARGS__); \
+return RET_FAILED;}while(0)
+#define INFO(errmsg, ...) do{											\
+handle_err(INFO_PURPOSE, "INFO: " errmsg, __VA_ARGS__); \
+}while(0)
 // get SIS3104 base address as argument at the process startup
 #define SIS3104_BASE_ADDRESS				0x0
 
@@ -62,6 +74,7 @@ typedef struct _comp {
 	double rpart;
 	double ipart;
 }complex;
+
 typedef struct _CECoeffs {
 	complex CEC0coeff;	// 20MHz(Leakage) cyclic error
 	double CEC1coeff;	//Doppler signal magnitude 
@@ -73,8 +86,8 @@ typedef struct _CECoeffBoundaries {
 	double CEMaxcoeff;
 }CECoeffBoundaries;
 typedef struct _fifoParam {
-	UINT acqTime; // ACQUISITION TIME in seconds
-	UINT freq;	// sample frequency in Hz
+	double acqTime; // ACQUISITION TIME in seconds
+	double freq;	// sample frequency in Hz
 	UINT nbrPts;	// number of points to acquire
 }fifoParam;
 typedef struct _CEratios {
@@ -90,7 +103,11 @@ typedef enum _CEratioUnits {
 	ratio_in_dB = 0,
 	ratio_in_percent = 1,
 	ratio_in_nmRMS = 2
-}CEratioUnits;
+}CEratioUnits; 
+typedef enum _sclk {
+	SCLK0=0, 
+	SCLK1 = 1
+}sclk;
 typedef enum _InterferoConfig {
 	SGLE = 1,
 	DBLE = 2,
@@ -167,6 +184,7 @@ testMode[] = { false, false, false, false }; //Extra signal is for ref
 const double	timeScale = 25 * (1e-9),                   //Converts to s as default				
 TACI_Spacing_small = 7.19 * (1e-3),
 TACI_Spacing_large = (7.19 * 2) * (1e-3);
+int handle_err(int fatal, const char* fmt, ...);
 int convertUSFloat2Double(USHORT, double*);
 int calculateCEratio(SIS1100_Device_Struct*, unsigned char, CEratios*, CEratioUnits); 
 int configureCEChardware(SIS1100_Device_Struct*, UCHAR, USHORT, USHORT);
@@ -251,8 +269,9 @@ int	AckForSis3100VME_Irq(SIS1100_Device_Struct*, uint32_t);
 int getFlyscanData(SIS1100_Device_Struct*, PUINT, PUINT, PUINT);
 PUINT allocateMemSpace(UINT);
 int processRAMData(UINT, PUINT, PUINT);
-int configureFifoFlyscan(SIS1100_Device_Struct*, unsigned char Axis, fifoParam*, PUINT startAdresses);
-int fifoFlyscan(SIS1100_Device_Struct*, unsigned char axis, fifoParam, PUINT startAdresses);
+int processFifoData(UINT nbrAxis, PUCHAR axisTab, PUINT memPtr, UINT nbrOfPts);
+int configureFifoFlyscan(SIS1100_Device_Struct*, fifoParam*, PUINT, PUCHAR, PUCHAR );
+int fifoFlyscan(SIS1100_Device_Struct*, fifoParam, PUINT, UCHAR, ...);
 bool isFifoDavbitSet(SIS1100_Device_Struct*, unsigned char);
 bool isFifoOVFbitSet(SIS1100_Device_Struct*, unsigned char);
 int configureFlyscan(SIS1100_Device_Struct*, unsigned char, double, UCHAR);
