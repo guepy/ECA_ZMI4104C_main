@@ -144,6 +144,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\sis1100_lib\sis3100_vme_calls.c" />
+    <ClCompile Include="eca_zmi4104c_funcs.c" />
     <ClCompile Include="ECA_ZMI4104C_main.c" />
     <ClCompile Include="wingetopt.c" />
   </ItemGroup>

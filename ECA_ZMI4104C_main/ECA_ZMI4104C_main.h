@@ -15,6 +15,7 @@
 #include "sis3100.h"
 #include "vmeInterruptConst.h"
 #pragma comment (lib, "sis1100w.lib")
+
 #define FLYSCAN_MODE_ON						0
 #define READ_MODE							0
 #define WRITE_MODE							1
@@ -54,6 +55,13 @@
 #define DESCRIPTOR_3_TEST
 #define DESCRIPTOR_4_TEST
 #define DESCRIPTOR_5_TEST
+
+#define coeff_a   6.049264479990438e-8
+#define coeff_b   -1.351195412225471e-6
+#define coeff_c   -0.002995301725927718
+#define coeff_d   0.4474028058422057
+#define coeff_f   -9.023933972316671
+
 #define FATAL(errmsg, ...) do{											\
 handle_err(EXIT_FAILLURE, "FATAL:%s:%s:%d: " errmsg, __FILE__,__FUNCTION__, __LINE__, __VA_ARGS__); \
 }while(0)
@@ -112,7 +120,7 @@ typedef enum _InterferoConfig {
 	SGLE = 1,
 	DBLE = 2,
 }InterferoConfig;
-const char* const access_mode_Selection[MAX_NOF_ACCESS_MODE_DEFINES] = {
+static const char* const access_mode_Selection[MAX_NOF_ACCESS_MODE_DEFINES] = {
 	"CRCSRD8",  // Configuration ROM/Control&Status Register (CR/CSR)
 	"CRCSRD16", // Configuration ROM/Control&Status Register (CR/CSR)
 	"A16D8",    // A16 non privileged access
@@ -125,7 +133,7 @@ const char* const access_mode_Selection[MAX_NOF_ACCESS_MODE_DEFINES] = {
 	"A32D16",   // A32 non privileged data access
 	"A32D32"    // A32 non privileged data access
 };
-const char* const biasControlModeString[BIAS_CTRL_MODE_NBR] = {
+static const char* const biasControlModeString[BIAS_CTRL_MODE_NBR] = {
 	"BIAS_OFF_MODE",
 	"BIAS_CONSTANT_VOLTAGE_MODE",
 	"BIAS_CONSTANT_GAIN_MODE",
@@ -133,20 +141,15 @@ const char* const biasControlModeString[BIAS_CTRL_MODE_NBR] = {
 	"BIAS_SIG_RMS_ADJUST_MODE",
 };
 
-SIS1100W_STATUS stat;
-SIS1100_Device_Struct dev;
+static SIS1100W_STATUS stat;
+static SIS1100_Device_Struct dev;
 
-unsigned int	BASE_ADDRESS[] = { 0x4000, 0x5000, 0x6000, 0x7000 }, // Base adresses 
+static unsigned int	BASE_ADDRESS[] = { 0x4000, 0x5000, 0x6000, 0x7000 }, // Base adresses 
 return_code = 0,
 comp_err = 0,
 valid_flag = 0,
 NbrBdAx = 0;
-//uint32_t sis_irq_array[16]; // 16 IRQs
-uint32_t vme_irq_level = 0, vme_irq_vector = 0;
-uint8_t read_irq_vector = 0;
-
-unsigned short	IntVector[] = { 0x101, 0, 0x202, 0 },
-SCLKDrive = 2,
+static unsigned short	SCLKDrive = 2,
 Direction[] = { 0, 0, 0, 0 };
 
 /**/
@@ -164,7 +167,7 @@ typedef enum _BIAS_MODE {
 }BIAS_MODE;
 
 
-double	SSICalMin[4][2] = { {0, 0}, {0, 0}, {0, 0}, {0, 0} },    //( (Ax1SSI,Ax1uW),(Ax2SSI,Ax2uW), etc) 
+static double	SSICalMin[4][2] = { {0, 0}, {0, 0}, {0, 0}, {0, 0} },    //( (Ax1SSI,Ax1uW),(Ax2SSI,Ax2uW), etc) 
 SSICalNom[4][2] = { {0, 0}, {0, 0}, {0, 0}, {0, 0} },
 SSICalMax[4][2] = { {1, 1}, {1, 1}, {1, 1}, {1, 1} },     //1 all by default to prevent /0
 SSICalValues[4][2] = { {1, 1}, {1, 1}, {1, 1}, {1, 1} },  //( (Ax1m,Ax1b),(Ax2m,Ax2b), etc) 
@@ -175,120 +178,119 @@ positionScale = DOUBLE_PASS_INT_POS_COEF,    //Converts to mm as default
 velocityScale = DOUBLE_PASS_INT_VEL_COEF * (1e-3),      //Converts to mm/s
 OpticalPower_uW[] = { 0, 0, 0, 0 };
 
-bool	enableResetFindsVelocity[] = { false, false, false, false },
+static bool	enableResetFindsVelocity[] = { false, false, false, false },
 ZMIError[] = { false, false, false, false, false },  //Extra ZMIError is for reference
 signal[] = { false, false, false, false, false }, //Extra signal is for ref
 testMode[] = { false, false, false, false }; //Extra signal is for ref
 
 // ZMI Scalars
-const double	timeScale = 25 * (1e-9),                   //Converts to s as default				
-TACI_Spacing_small = 7.19 * (1e-3),
-TACI_Spacing_large = (7.19 * 2) * (1e-3);
-int handle_err(int fatal, const char* fmt, ...);
-int convertUSFloat2Double(USHORT, double*);
-int calculateCEratio(SIS1100_Device_Struct*, unsigned char, CEratios*, CEratioUnits); 
-int configureCEChardware(SIS1100_Device_Struct*, UCHAR, USHORT, USHORT);
-int readCEerrorStatReg(SIS1100_Device_Struct* dev, unsigned char axis, PUINT CEstatReg);
-int getAproximateCEratio(SIS1100_Device_Struct*, unsigned char, CEratios*, CEratioUnits );
-int Read_Write(char*, SIS1100_Device_Struct*, unsigned int, unsigned int*, unsigned short);
-int ReadVMEErrs(SIS1100_Device_Struct*, unsigned char);
-int InitAxis(SIS1100_Device_Struct*, BIAS_MODE);
-int Init_SIS_boards(SIS1100_Device_Struct*);
-int Init_ZMI_bd(SIS1100_Device_Struct*);
-int ReadSamplePosition37(SIS1100_Device_Struct*, unsigned char, double*);
-int ReadSamplePosition32(SIS1100_Device_Struct*, unsigned char, double*);
-int ReadSamplePosition37_ForAllAxis(SIS1100_Device_Struct*, double*);
-int ReadSamplePosition32_ForAllAxis(SIS1100_Device_Struct*, double*);
-int ReadPosition37(SIS1100_Device_Struct*, unsigned char, double*);
-int ReadPosition32(SIS1100_Device_Struct*, unsigned char, double*);
-int ReadFIFOPosition(SIS1100_Device_Struct*, unsigned char, PUINT position);
-int ReadVelocity32(SIS1100_Device_Struct*, unsigned char, double*);
-int ReadPosition37_ForAllAxis(SIS1100_Device_Struct*, double*);
-int ReadPosition32_ForAllAxis(SIS1100_Device_Struct*, double*);
-int ReadVelocity32_ForAllAxis(SIS1100_Device_Struct*, double*);
-int ReadTime32(SIS1100_Device_Struct*, unsigned char, double*);
-int ReadTime32_ForAllAxis(SIS1100_Device_Struct*, double*);
-int ReadAllTime32(SIS1100_Device_Struct*, double*);
-int ReadOpticalPowerUsingSSIav(SIS1100_Device_Struct*);
-int ReadAPDGain(SIS1100_Device_Struct*, unsigned char, double*);
-int EnableAuxRegisters(SIS1100_Device_Struct*, unsigned char);
-int DisableAuxRegisters(SIS1100_Device_Struct*, unsigned char);
-int Disable37bitsSignExtension(SIS1100_Device_Struct*, unsigned char);
-int Sclk_On(SIS1100_Device_Struct*);
-int Sclk_Off(SIS1100_Device_Struct*);
-int SetSampTimerFreq(SIS1100_Device_Struct*, unsigned short);
-int SetHoldSampEnable(SIS1100_Device_Struct*);
-int ResetHoldSampEnable(SIS1100_Device_Struct*);
-int enableSampling(SIS1100_Device_Struct*, double);
-int DisableSampleTimer(SIS1100_Device_Struct*);
-int VMESysReset(SIS1100_Device_Struct*);
-int startAquisition(SIS1100_Device_Struct*, unsigned char);
-int stopAquisition(SIS1100_Device_Struct*, unsigned char);
-bool GetVMEExtSampFlag(SIS1100_Device_Struct*, unsigned char);
-int Disable32bitsOverflow(SIS1100_Device_Struct*, unsigned char);
-int Enable32bitsOverflow(SIS1100_Device_Struct*, unsigned char);
-int Enable37bitsSignExtension(SIS1100_Device_Struct*, unsigned char);
-int EnableSinglePassInterferometer(void);
-int EnableDoublePassInterferometer(void);
-int ReadAPDGain_ForAllAxis(SIS1100_Device_Struct*, double*);
-int SampleVMEPosition(SIS1100_Device_Struct*, unsigned char);
-int ParseVMEErrorStatus2(SIS1100_Device_Struct*, unsigned char, unsigned int*);
-int ParseVMEPosErrs(SIS1100_Device_Struct*, unsigned char, unsigned int*);
-int ParseVMEErrorStatus1(SIS1100_Device_Struct*, unsigned char, unsigned int*);
-int ParseVMEErrorStatus0(SIS1100_Device_Struct*, unsigned char, unsigned int*);
-int ParseAPDErrCode(SIS1100_Device_Struct*, unsigned char, unsigned int*);
-int BoardControlMode(SIS1100_Device_Struct*, unsigned char, unsigned int);
-int BiasControlMode(SIS1100_Device_Struct*, unsigned char, unsigned int);
-int StartBiasCalculation(SIS1100_Device_Struct*, unsigned char);
-int SetAPDGainL2(SIS1100_Device_Struct*, unsigned char, unsigned int);
-int checkValues(UINT, UINT, UINT);
-int ClearAllVMEErrs_ForAllAxis(SIS1100_Device_Struct*);
-BOOL isRAMbusy(SIS1100_Device_Struct*);
-int SetAPDSigRMSL2(SIS1100_Device_Struct*, unsigned char, unsigned int);
-int SetAPDOptPwrL2(SIS1100_Device_Struct*, unsigned char, unsigned int);
-int ResetAxis(SIS1100_Device_Struct*, unsigned char);
-int WaitResetComplete(SIS1100_Device_Struct*, unsigned char);
-int SetPositionOffset32(SIS1100_Device_Struct*, unsigned char, unsigned int);
-int EnableCECcompensation(SIS1100_Device_Struct* , unsigned char );
-int SetPositionOffset37(SIS1100_Device_Struct*, unsigned char, unsigned int, unsigned int);
-int EnableVMEInterrupt_bit(SIS1100_Device_Struct*, unsigned char, unsigned short);
-int DisableVMEInterrupt_bit(SIS1100_Device_Struct*, unsigned char, unsigned short);
-int EnableVMEGlobalInterrupt(SIS1100_Device_Struct*, unsigned char);
-int DisableGlobalInterrupt(SIS1100_Device_Struct*, unsigned char);
-int DisableAllVMEInterrupts(SIS1100_Device_Struct*, unsigned char);
-int SetKpAndKvCoeff(SIS1100_Device_Struct*, unsigned char, unsigned short, unsigned short);
-int ReadAPDCtrlSoftErrs(SIS1100_Device_Struct*, unsigned char);
-int ReadAllErrs(SIS1100_Device_Struct*, unsigned char);
-int SetTimeDelayBetweenResAndCompleteBit(SIS1100_Device_Struct*, unsigned char, unsigned char);
-int EnableAllVMEInterrupts(SIS1100_Device_Struct*, unsigned char);
-int EnableVMEGlobalInterrupt(SIS1100_Device_Struct*, unsigned char);
-int setVMEIntVector(SIS1100_Device_Struct*, unsigned char, unsigned char);
-int setVMEIntLevel(SIS1100_Device_Struct*, unsigned char, unsigned char);
-int sis3301w_Init(SIS1100_Device_Struct*, uint32_t, uint32_t, uint32_t);
-int	AckForSis3100VME_Irq(SIS1100_Device_Struct*, uint32_t);
-int getFlyscanData(SIS1100_Device_Struct*, PUINT, PUINT, PUINT);
-PUINT allocateMemSpace(UINT);
-int processRAMData(UINT, PUINT, PUINT);
-int processFifoData(UINT nbrAxis, PUCHAR axisTab, PUINT memPtr, UINT nbrOfPts);
-int configureFifoFlyscan(SIS1100_Device_Struct*, fifoParam*, PUINT, PUCHAR, PUCHAR );
-int fifoFlyscan(SIS1100_Device_Struct*, fifoParam, PUINT, UCHAR, ...);
-bool isFifoDavbitSet(SIS1100_Device_Struct*, unsigned char);
-bool isFifoOVFbitSet(SIS1100_Device_Struct*, unsigned char);
-int configureFlyscan(SIS1100_Device_Struct*, unsigned char, double, UCHAR);
-int convertCInt162Complex(UINT, complex*);
-int convertCFloat2Complex(UINT, complex*);
-int waitCEinit2Complete(SIS1100_Device_Struct*, unsigned char);
-int SetCEMaxVel(SIS1100_Device_Struct*, unsigned char, unsigned int);
-int SetCEMinVel(SIS1100_Device_Struct*, unsigned char , unsigned int);
-int readCalcCECoeffs(SIS1100_Device_Struct*, unsigned char, CECoeffs*);
-int readCECoeffboundaries(SIS1100_Device_Struct*, unsigned char, CECoeffBoundaries*, CECoeffBoundaries*);
-int calculateCEratio(SIS1100_Device_Struct* dev, unsigned char axis, CEratios* ceRatios, CEratioUnits units);
-int EEPROMread(SIS1100_Device_Struct*, unsigned short, unsigned int*, unsigned short);
-int convertFloat2Double(UINT, double*);
+static const double	timeScale = 25 * (1e-9);                   //Converts to s as default	
 
-#define THREADCOUNT 4 
-#define coeff_a   6.049264479990438e-8
-#define coeff_b   -1.351195412225471e-6
-#define coeff_c   -0.002995301725927718
-#define coeff_d   0.4474028058422057
-#define coeff_f   -9.023933972316671
+static InterferoConfig curInterferoConfig;
+static FILE* fdLog;
+static SYSTEMTIME  lt;
+
+extern void CreateEvents(void);
+extern int  CreateThreads(void);
+extern void CloseThreads(void);
+extern int handle_err(int fatal, const char* fmt, ...);
+extern int convertUSFloat2Double(USHORT, double*);
+extern int calculateCEratio(SIS1100_Device_Struct*, unsigned char, CEratios*, CEratioUnits); 
+extern int configureCEChardware(SIS1100_Device_Struct*, UCHAR, USHORT, USHORT);
+extern int readCEerrorStatReg(SIS1100_Device_Struct* dev, unsigned char axis, PUINT CEstatReg);
+extern int getAproximateCEratio(SIS1100_Device_Struct*, unsigned char, CEratios*, CEratioUnits );
+extern int Read_Write(char*, SIS1100_Device_Struct*, unsigned int, unsigned int*, unsigned short);
+extern int ReadVMEErrs(SIS1100_Device_Struct*, unsigned char);
+extern int InitAxis(SIS1100_Device_Struct*, BIAS_MODE);
+extern int Init_SIS_boards(SIS1100_Device_Struct*);
+extern int Init_ZMI_bd(SIS1100_Device_Struct*);
+extern int ReadSamplePosition37(SIS1100_Device_Struct*, unsigned char, double*);
+extern int ReadSamplePosition32(SIS1100_Device_Struct*, unsigned char, double*);
+extern int ReadSamplePosition37_ForAllAxis(SIS1100_Device_Struct*, double*);
+extern int ReadSamplePosition32_ForAllAxis(SIS1100_Device_Struct*, double*);
+extern int ReadPosition37(SIS1100_Device_Struct*, unsigned char, double*);
+extern int ReadPosition32(SIS1100_Device_Struct*, unsigned char, double*);
+extern int ReadFIFOPosition(SIS1100_Device_Struct*, unsigned char, PUINT position);
+extern int ReadVelocity32(SIS1100_Device_Struct*, unsigned char, double*);
+extern int ReadPosition37_ForAllAxis(SIS1100_Device_Struct*, double*);
+extern int ReadPosition32_ForAllAxis(SIS1100_Device_Struct*, double*);
+extern int ReadVelocity32_ForAllAxis(SIS1100_Device_Struct*, double*);
+extern int ReadTime32(SIS1100_Device_Struct*, unsigned char, double*);
+extern int ReadTime32_ForAllAxis(SIS1100_Device_Struct*, double*);
+extern int ReadAllTime32(SIS1100_Device_Struct*, double*);
+extern int ReadOpticalPowerUsingSSIav(SIS1100_Device_Struct*);
+extern int ReadAPDGain(SIS1100_Device_Struct*, unsigned char, double*);
+extern int EnableAuxRegisters(SIS1100_Device_Struct*, unsigned char);
+extern int DisableAuxRegisters(SIS1100_Device_Struct*, unsigned char);
+extern int Disable37bitsSignExtension(SIS1100_Device_Struct*, unsigned char);
+extern int Sclk_On(SIS1100_Device_Struct*);
+extern int Sclk_Off(SIS1100_Device_Struct*);
+extern int SetSampTimerFreq(SIS1100_Device_Struct*, unsigned short);
+extern int SetHoldSampEnable(SIS1100_Device_Struct*);
+extern int ResetHoldSampEnable(SIS1100_Device_Struct*);
+extern int enableSampling(SIS1100_Device_Struct*, double);
+extern int DisableSampleTimer(SIS1100_Device_Struct*);
+extern int VMESysReset(SIS1100_Device_Struct*);
+extern int startAquisition(SIS1100_Device_Struct*, unsigned char);
+extern int stopAquisition(SIS1100_Device_Struct*, unsigned char);
+extern bool GetVMEExtSampFlag(SIS1100_Device_Struct*, unsigned char);
+extern int Disable32bitsOverflow(SIS1100_Device_Struct*, unsigned char);
+extern int Enable32bitsOverflow(SIS1100_Device_Struct*, unsigned char);
+extern int Enable37bitsSignExtension(SIS1100_Device_Struct*, unsigned char);
+extern int EnableSinglePassInterferometer(void);
+extern int EnableDoublePassInterferometer(void);
+extern int ReadAPDGain_ForAllAxis(SIS1100_Device_Struct*, double*);
+extern int SampleVMEPosition(SIS1100_Device_Struct*, unsigned char);
+extern int ParseVMEErrorStatus2(SIS1100_Device_Struct*, unsigned char, unsigned int*);
+extern int ParseVMEPosErrs(SIS1100_Device_Struct*, unsigned char, unsigned int*);
+extern int ParseVMEErrorStatus1(SIS1100_Device_Struct*, unsigned char, unsigned int*);
+extern int ParseVMEErrorStatus0(SIS1100_Device_Struct*, unsigned char, unsigned int*);
+extern int ParseAPDErrCode(SIS1100_Device_Struct*, unsigned char, unsigned int*);
+extern int BoardControlMode(SIS1100_Device_Struct*, unsigned char, unsigned int);
+extern int BiasControlMode(SIS1100_Device_Struct*, unsigned char, unsigned int);
+extern int StartBiasCalculation(SIS1100_Device_Struct*, unsigned char);
+extern int SetAPDGainL2(SIS1100_Device_Struct*, unsigned char, unsigned int);
+extern int checkValues(UINT, UINT, UINT);
+extern int ClearAllVMEErrs_ForAllAxis(SIS1100_Device_Struct*);
+extern BOOL isRAMbusy(SIS1100_Device_Struct*);
+extern int SetAPDSigRMSL2(SIS1100_Device_Struct*, unsigned char, unsigned int);
+extern int SetAPDOptPwrL2(SIS1100_Device_Struct*, unsigned char, unsigned int);
+extern int ResetAxis(SIS1100_Device_Struct*, unsigned char);
+extern int WaitResetComplete(SIS1100_Device_Struct*, unsigned char);
+extern int SetPositionOffset32(SIS1100_Device_Struct*, unsigned char, unsigned int);
+extern int EnableCECcompensation(SIS1100_Device_Struct* , unsigned char );
+extern int SetPositionOffset37(SIS1100_Device_Struct*, unsigned char, unsigned int, unsigned int);
+extern int EnableVMEInterrupt_bit(SIS1100_Device_Struct*, unsigned char, unsigned short);
+extern int DisableVMEInterrupt_bit(SIS1100_Device_Struct*, unsigned char, unsigned short);
+extern int EnableVMEGlobalInterrupt(SIS1100_Device_Struct*, unsigned char);
+extern int DisableGlobalInterrupt(SIS1100_Device_Struct*, unsigned char);
+extern int DisableAllVMEInterrupts(SIS1100_Device_Struct*, unsigned char);
+extern int SetKpAndKvCoeff(SIS1100_Device_Struct*, unsigned char, unsigned short, unsigned short);
+extern int ReadAPDCtrlSoftErrs(SIS1100_Device_Struct*, unsigned char);
+extern int ReadAllErrs(SIS1100_Device_Struct*, unsigned char);
+extern int SetTimeDelayBetweenResAndCompleteBit(SIS1100_Device_Struct*, unsigned char, unsigned char);
+extern int EnableAllVMEInterrupts(SIS1100_Device_Struct*, unsigned char);
+extern int EnableVMEGlobalInterrupt(SIS1100_Device_Struct*, unsigned char);
+extern int setVMEIntVector(SIS1100_Device_Struct*, unsigned char, unsigned char);
+extern int setVMEIntLevel(SIS1100_Device_Struct*, unsigned char, unsigned char);
+extern int sis3301w_Init(SIS1100_Device_Struct*, uint32_t, uint32_t, uint32_t);
+int	AckForSis3100VME_Irq(SIS1100_Device_Struct*, uint32_t);
+extern int getFlyscanData(SIS1100_Device_Struct*, PUINT, PUINT, PUINT);
+extern PUINT allocateMemSpace(UINT);
+extern int processRAMData(UINT, PUINT, PUINT);
+extern int processFifoData(UINT nbrAxis, PUCHAR axisTab, PUINT memPtr, UINT nbrOfPts);
+extern int configureFifoFlyscan(SIS1100_Device_Struct*, fifoParam*, PUINT, PUCHAR, PUCHAR );
+extern int fifoFlyscan(SIS1100_Device_Struct*, fifoParam, PUINT, UCHAR, ...);
+extern bool isFifoDavbitSet(SIS1100_Device_Struct*, unsigned char);
+extern bool isFifoOVFbitSet(SIS1100_Device_Struct*, unsigned char);
+extern int configureFlyscan(SIS1100_Device_Struct*, unsigned char, double, UCHAR);
+extern int convertCInt162Complex(UINT, complex*);
+extern int convertCFloat2Complex(UINT, complex*);
+extern int waitCEinit2Complete(SIS1100_Device_Struct*, unsigned char);
+extern int SetCEMaxVel(SIS1100_Device_Struct*, unsigned char, unsigned int);
+extern int SetCEMinVel(SIS1100_Device_Struct*, unsigned char , unsigned int);
+extern int readCalcCECoeffs(SIS1100_Device_Struct*, unsigned char, CECoeffs*);
+extern int readCECoeffboundaries(SIS1100_Device_Struct*, unsigned char, CECoeffBoundaries*, CECoeffBoundaries*);
+extern int calculateCEratio(SIS1100_Device_Struct* dev, unsigned char axis, CEratios* ceRatios, CEratioUnits units);
+extern int EEPROMread(SIS1100_Device_Struct*, unsigned short, unsigned int*, unsigned short);
+extern int convertFloat2Double(UINT, double*);

@@ -45,3 +45,42 @@
 
 #define MIN_INT_NBR							0		// value the smallest interrupt number
 #define MAX_INT_NBR							33		// value the Highest interrupt number
+#define THREADCOUNT							4 
+
+
+HANDLE vmeIrq6Event, lemoIN1Event;
+HANDLE  hThreadArray[THREADCOUNT];
+HANDLE vmeIntThread, lemoIN1Thread, fastReadThread, WaitForSis3100IrqThread, WaitForVmeIrqThread;
+DWORD WINAPI vmeIntThreadFunc(LPVOID);
+
+DWORD WINAPI lemoIN1ThreadFunc(LPVOID);
+DWORD WINAPI readThreadFunc(LPVOID);
+DWORD WINAPI fastReadThreadFunc(LPVOID);
+DWORD	WaitForVmeIrqThreadFunc(LPVOID);
+DWORD	WaitForSis3100IrqThreadFunc(LPVOID);
+
+static UINT sisIrqMask = DOORBELL_DSP_IRQ |
+DOORBELL_LEMO_IN1_IRQ |
+DOORBELL_LEMO_IN2_IRQ |
+DOORBELL_LEMO_IN3_IRQ |
+DOORBELL_FLAT_IN4_IRQ |
+DOORBELL_FLAT_IN3_IRQ |
+DOORBELL_FLAT_IN2_IRQ |
+DOORBELL_FLAT_IN1_IRQ;
+static UINT vmeIrqMask =
+DOORBELL_VME_IRQ1 |
+DOORBELL_VME_IRQ2 |
+DOORBELL_VME_IRQ3 |
+DOORBELL_VME_IRQ4 |
+DOORBELL_VME_IRQ5 |
+DOORBELL_VME_IRQ6;
+
+static int irq;//previously volatile
+static DWORD dwWaitResult;
+static HANDLE ghMutex;
+static struct sis1100_irq_ctl irqctl;
+static struct sis1100_irq_get irqget;
+static struct sis1100_irq_ack irqack;
+//uint32_t sis_irq_array[16]; // 16 IRQs
+static uint32_t vme_irq_level = 0, IntVector[] = { 0x101, 0, 0x202, 0 }, vme_irq_vector = 0;
+static uint8_t read_irq_vector = 0;

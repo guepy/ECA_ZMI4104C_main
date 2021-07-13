@@ -24,6 +24,9 @@
     <ClCompile Include="..\..\sis1100_lib\sis3100_vme_calls.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="eca_zmi4104c_funcs.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="zVME_const.h">
