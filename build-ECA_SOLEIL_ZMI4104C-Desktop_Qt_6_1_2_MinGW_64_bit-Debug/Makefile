@@ -202,6 +202,7 @@ Makefile: ../ECA_SOLEIL_ZMI4104C/ECA_SOLEIL_ZMI4104C.pro C:/Qt/6.1.2/mingw81_64/
 		C:/Qt/6.1.2/mingw81_64/lib/Qt6Core.prl \
 		C:/Qt/6.1.2/mingw81_64/lib/Qt6EntryPoint.prl \
 		C:/Qt/6.1.2/mingw81_64/mkspecs/features/build_pass.prf \
+		../ECA_SOLEIL_ZMI4104C/ressources.qrc \
 		debug/qmake_qmake_qm_files.qrc \
 		release/qmake_qmake_qm_files.qrc
 	$(QMAKE) -o Makefile ..\ECA_SOLEIL_ZMI4104C\ECA_SOLEIL_ZMI4104C.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug"
@@ -337,6 +338,7 @@ C:/Qt/6.1.2/mingw81_64/lib/Qt6Gui.prl:
 C:/Qt/6.1.2/mingw81_64/lib/Qt6Core.prl:
 C:/Qt/6.1.2/mingw81_64/lib/Qt6EntryPoint.prl:
 C:/Qt/6.1.2/mingw81_64/mkspecs/features/build_pass.prf:
+../ECA_SOLEIL_ZMI4104C/ressources.qrc:
 debug/qmake_qmake_qm_files.qrc:
 release/qmake_qmake_qm_files.qrc:
 qmake: FORCE

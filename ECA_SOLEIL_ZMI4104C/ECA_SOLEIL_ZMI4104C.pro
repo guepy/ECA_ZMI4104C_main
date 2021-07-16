@@ -11,15 +11,20 @@ CONFIG += c++11
 SOURCES += \
     flyscanform.cpp \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    myslots.cpp \
+    settingsform.cpp
 
 HEADERS += \
     flyscanform.h \
-    mainwindow.h
+    mainwindow.h \
+    myslots.h \
+    settingsform.h
 
 FORMS += \
     flyscanform.ui \
-    mainwindow.ui
+    mainwindow.ui \
+    settingsform.ui
 
 TRANSLATIONS += \
     ECA_SOLEIL_ZMI4104C_en_US.ts
@@ -30,3 +35,6 @@ CONFIG += embed_translations
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+RESOURCES += \
+    ressources.qrc

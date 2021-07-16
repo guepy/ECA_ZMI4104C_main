@@ -11,6 +11,7 @@
 
 #include <QtCore/QVariant>
 #include <QtGui/QAction>
+#include <QtGui/QIcon>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QComboBox>
 #include <QtWidgets/QHBoxLayout>
@@ -138,15 +139,15 @@ public:
     QSpacerItem *horizontalSpacer_3;
     QLabel *label_2;
     QComboBox *comboBox_4;
+    QLabel *label_3;
+    QComboBox *comboBox_2;
     QSpacerItem *horizontalSpacer_2;
-    QHBoxLayout *horizontalLayout_18;
-    QLabel *label_17;
-    QLabel *label_16;
+    QPushButton *pushButton_9;
     QSpacerItem *horizontalSpacer_7;
     QComboBox *comboBox;
     QSpacerItem *horizontalSpacer_8;
-    QLabel *label_3;
-    QComboBox *comboBox_2;
+    QWidget *horizontalWidget_14;
+    QHBoxLayout *horizontalLayout_2;
     QMenuBar *menubar;
     QMenu *menuSettings;
     QMenu *menuHelp;
@@ -156,20 +157,34 @@ public:
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QString::fromUtf8("MainWindow"));
-        MainWindow->resize(827, 841);
-        QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+        MainWindow->resize(827, 884);
+        QSizePolicy sizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
         sizePolicy.setHorizontalStretch(0);
         sizePolicy.setVerticalStretch(0);
         sizePolicy.setHeightForWidth(MainWindow->sizePolicy().hasHeightForWidth());
         MainWindow->setSizePolicy(sizePolicy);
+        MainWindow->setMinimumSize(QSize(70, 35));
+        QIcon icon;
+        icon.addFile(QString::fromUtf8(":/images/logo_soleil_min.png"), QSize(), QIcon::Normal, QIcon::Off);
+        MainWindow->setWindowIcon(icon);
         MainWindow->setStyleSheet(QString::fromUtf8("QLabel{\n"
 "font: 75 14pt \"MS Shell Dlg 2\";\n"
 "}\n"
-"QComboBox{\n"
+"QComboBox, QLineEdit{\n"
 "font: 75 12pt \"MS Shell Dlg 2\";\n"
+"border-radius:5px;\n"
 "}\n"
-"QPushButton{\n"
+"QPushButton, QToolButton{\n"
 "font: 75 12pt \"MS Shell Dlg 2\";\n"
+"border: 2px solid gray;\n"
+"padding: 0 8px;\n"
+"border-radius:10px;\n"
+"text-align: center;\n"
+"}\n"
+"#MainWindow{\n"
+"background-image: url(:/images/VueAerienneSynchrotronSOLEIL_mod);\n"
+"	border-color: rgb(85, 170, 255);\n"
+"	border-top-color:rgb(85, 170, 255);\n"
 "}"));
         actionAbout = new QAction(MainWindow);
         actionAbout->setObjectName(QString::fromUtf8("actionAbout"));
@@ -181,15 +196,21 @@ public:
         actionBoard_Infos_2->setObjectName(QString::fromUtf8("actionBoard_Infos_2"));
         centralwidget = new QWidget(MainWindow);
         centralwidget->setObjectName(QString::fromUtf8("centralwidget"));
+        centralwidget->setStyleSheet(QString::fromUtf8(""));
         pushButton_7 = new QPushButton(centralwidget);
         pushButton_7->setObjectName(QString::fromUtf8("pushButton_7"));
-        pushButton_7->setGeometry(QRect(40, 10, 151, 41));
+        pushButton_7->setGeometry(QRect(40, 40, 151, 41));
+        pushButton_7->setStyleSheet(QString::fromUtf8("\n"
+"background: blue;\n"
+"color: white;"));
         pushButton_13 = new QPushButton(centralwidget);
         pushButton_13->setObjectName(QString::fromUtf8("pushButton_13"));
-        pushButton_13->setGeometry(QRect(610, 750, 191, 41));
+        pushButton_13->setGeometry(QRect(610, 800, 191, 41));
+        pushButton_13->setStyleSheet(QString::fromUtf8("background:rgb(59, 118, 177);\n"
+"color: white;"));
         horizontalLayoutWidget_16 = new QWidget(centralwidget);
         horizontalLayoutWidget_16->setObjectName(QString::fromUtf8("horizontalLayoutWidget_16"));
-        horizontalLayoutWidget_16->setGeometry(QRect(29, 60, 771, 111));
+        horizontalLayoutWidget_16->setGeometry(QRect(30, 120, 771, 111));
         horizontalLayout_16 = new QHBoxLayout(horizontalLayoutWidget_16);
         horizontalLayout_16->setObjectName(QString::fromUtf8("horizontalLayout_16"));
         horizontalLayout_16->setContentsMargins(0, 0, 0, 0);
@@ -200,16 +221,19 @@ public:
 
         label_9 = new QLabel(centralwidget);
         label_9->setObjectName(QString::fromUtf8("label_9"));
-        label_9->setGeometry(QRect(550, 20, 71, 20));
+        label_9->setGeometry(QRect(550, 50, 71, 20));
         SysStatusEdit = new QTextEdit(centralwidget);
         SysStatusEdit->setObjectName(QString::fromUtf8("SysStatusEdit"));
-        SysStatusEdit->setGeometry(QRect(620, 10, 161, 41));
+        SysStatusEdit->setGeometry(QRect(620, 40, 161, 41));
         pushButton_8 = new QPushButton(centralwidget);
         pushButton_8->setObjectName(QString::fromUtf8("pushButton_8"));
-        pushButton_8->setGeometry(QRect(500, 750, 101, 41));
+        pushButton_8->setGeometry(QRect(500, 800, 101, 41));
+        pushButton_8->setStyleSheet(QString::fromUtf8("font: 75 12pt \"MS Shell Dlg 2\";\n"
+"background:rgb(85, 85, 0);\n"
+"color: white;"));
         CE_form = new QWidget(centralwidget);
         CE_form->setObjectName(QString::fromUtf8("CE_form"));
-        CE_form->setGeometry(QRect(30, 550, 771, 191));
+        CE_form->setGeometry(QRect(30, 600, 771, 191));
         CE_form->setStyleSheet(QString::fromUtf8("#CE_form{\n"
 "border: 1px solid;\n"
 "}"));
@@ -279,11 +303,14 @@ public:
         sizePolicy4.setVerticalStretch(0);
         sizePolicy4.setHeightForWidth(comboBox_6->sizePolicy().hasHeightForWidth());
         comboBox_6->setSizePolicy(sizePolicy4);
+        comboBox_6->setMinimumSize(QSize(90, 21));
 
         horizontalLayout_15->addWidget(comboBox_6);
 
         toolButton_2 = new QToolButton(verticalWidget_3);
         toolButton_2->setObjectName(QString::fromUtf8("toolButton_2"));
+        toolButton_2->setStyleSheet(QString::fromUtf8("background:rgb(59, 118, 177);\n"
+"color: white;"));
 
         horizontalLayout_15->addWidget(toolButton_2);
 
@@ -385,6 +412,9 @@ public:
 
         pushButton_10 = new QPushButton(CE_form);
         pushButton_10->setObjectName(QString::fromUtf8("pushButton_10"));
+        pushButton_10->setMinimumSize(QSize(0, 30));
+        pushButton_10->setStyleSheet(QString::fromUtf8("background:rgb(161, 0, 0);\n"
+"color: white;"));
 
         horizontalLayout_10->addWidget(pushButton_10);
 
@@ -405,7 +435,7 @@ public:
 
         MeasForm = new QWidget(centralwidget);
         MeasForm->setObjectName(QString::fromUtf8("MeasForm"));
-        MeasForm->setGeometry(QRect(30, 290, 771, 251));
+        MeasForm->setGeometry(QRect(30, 340, 771, 251));
         MeasForm->setStyleSheet(QString::fromUtf8("#MeasForm{\n"
 "border: 1px solid;\n"
 "}"));
@@ -441,11 +471,8 @@ public:
 
         lcdNumber = new QLCDNumber(verticalWidget);
         lcdNumber->setObjectName(QString::fromUtf8("lcdNumber"));
-        QSizePolicy sizePolicy6(QSizePolicy::Preferred, QSizePolicy::Preferred);
-        sizePolicy6.setHorizontalStretch(0);
-        sizePolicy6.setVerticalStretch(0);
-        sizePolicy6.setHeightForWidth(lcdNumber->sizePolicy().hasHeightForWidth());
-        lcdNumber->setSizePolicy(sizePolicy6);
+        sizePolicy.setHeightForWidth(lcdNumber->sizePolicy().hasHeightForWidth());
+        lcdNumber->setSizePolicy(sizePolicy);
 
         horizontalLayout_7->addWidget(lcdNumber);
 
@@ -470,8 +497,8 @@ public:
 
         lcdNumber_2 = new QLCDNumber(verticalWidget);
         lcdNumber_2->setObjectName(QString::fromUtf8("lcdNumber_2"));
-        sizePolicy6.setHeightForWidth(lcdNumber_2->sizePolicy().hasHeightForWidth());
-        lcdNumber_2->setSizePolicy(sizePolicy6);
+        sizePolicy.setHeightForWidth(lcdNumber_2->sizePolicy().hasHeightForWidth());
+        lcdNumber_2->setSizePolicy(sizePolicy);
 
         horizontalLayout_5->addWidget(lcdNumber_2);
 
@@ -497,8 +524,8 @@ public:
 
         lcdNumber_3 = new QLCDNumber(verticalWidget);
         lcdNumber_3->setObjectName(QString::fromUtf8("lcdNumber_3"));
-        sizePolicy6.setHeightForWidth(lcdNumber_3->sizePolicy().hasHeightForWidth());
-        lcdNumber_3->setSizePolicy(sizePolicy6);
+        sizePolicy.setHeightForWidth(lcdNumber_3->sizePolicy().hasHeightForWidth());
+        lcdNumber_3->setSizePolicy(sizePolicy);
 
         horizontalLayout_3->addWidget(lcdNumber_3);
 
@@ -521,8 +548,8 @@ public:
 
         lcdNumber_4 = new QLCDNumber(verticalWidget);
         lcdNumber_4->setObjectName(QString::fromUtf8("lcdNumber_4"));
-        sizePolicy6.setHeightForWidth(lcdNumber_4->sizePolicy().hasHeightForWidth());
-        lcdNumber_4->setSizePolicy(sizePolicy6);
+        sizePolicy.setHeightForWidth(lcdNumber_4->sizePolicy().hasHeightForWidth());
+        lcdNumber_4->setSizePolicy(sizePolicy);
 
         horizontalLayout->addWidget(lcdNumber_4);
 
@@ -561,7 +588,9 @@ public:
         pushButton_15->setObjectName(QString::fromUtf8("pushButton_15"));
         sizePolicy4.setHeightForWidth(pushButton_15->sizePolicy().hasHeightForWidth());
         pushButton_15->setSizePolicy(sizePolicy4);
-        pushButton_15->setMinimumSize(QSize(0, 30));
+        pushButton_15->setMinimumSize(QSize(75, 35));
+        pushButton_15->setStyleSheet(QString::fromUtf8("background:rgb(161, 0, 0);\n"
+"color: white;"));
 
         horizontalLayout_20->addWidget(pushButton_15);
 
@@ -591,7 +620,9 @@ public:
         pushButton_17->setObjectName(QString::fromUtf8("pushButton_17"));
         sizePolicy4.setHeightForWidth(pushButton_17->sizePolicy().hasHeightForWidth());
         pushButton_17->setSizePolicy(sizePolicy4);
-        pushButton_17->setMinimumSize(QSize(0, 30));
+        pushButton_17->setMinimumSize(QSize(75, 35));
+        pushButton_17->setStyleSheet(QString::fromUtf8("background:rgb(161, 0, 0);\n"
+"color: white;"));
 
         horizontalLayout_22->addWidget(pushButton_17);
 
@@ -602,7 +633,7 @@ public:
         horizontalWidget_16->setObjectName(QString::fromUtf8("horizontalWidget_16"));
         sizePolicy4.setHeightForWidth(horizontalWidget_16->sizePolicy().hasHeightForWidth());
         horizontalWidget_16->setSizePolicy(sizePolicy4);
-        horizontalWidget_16->setMinimumSize(QSize(0, 40));
+        horizontalWidget_16->setMinimumSize(QSize(75, 35));
         horizontalLayout_21 = new QHBoxLayout(horizontalWidget_16);
         horizontalLayout_21->setObjectName(QString::fromUtf8("horizontalLayout_21"));
         lineEdit_11 = new QLineEdit(horizontalWidget_16);
@@ -621,7 +652,9 @@ public:
         pushButton_16->setObjectName(QString::fromUtf8("pushButton_16"));
         sizePolicy4.setHeightForWidth(pushButton_16->sizePolicy().hasHeightForWidth());
         pushButton_16->setSizePolicy(sizePolicy4);
-        pushButton_16->setMinimumSize(QSize(0, 30));
+        pushButton_16->setMinimumSize(QSize(75, 35));
+        pushButton_16->setStyleSheet(QString::fromUtf8("background:rgb(161, 0, 0);\n"
+"color: white;"));
 
         horizontalLayout_21->addWidget(pushButton_16);
 
@@ -651,7 +684,9 @@ public:
         pushButton_18->setObjectName(QString::fromUtf8("pushButton_18"));
         sizePolicy4.setHeightForWidth(pushButton_18->sizePolicy().hasHeightForWidth());
         pushButton_18->setSizePolicy(sizePolicy4);
-        pushButton_18->setMinimumSize(QSize(75, 30));
+        pushButton_18->setMinimumSize(QSize(75, 35));
+        pushButton_18->setStyleSheet(QString::fromUtf8("background:rgb(161, 0, 0);\n"
+"color: white;"));
 
         horizontalLayout_23->addWidget(pushButton_18);
 
@@ -677,7 +712,7 @@ public:
 
         horizontalLayout_8->addWidget(label_7);
 
-        horizontalSpacer_4 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+        horizontalSpacer_4 = new QSpacerItem(375, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
 
         horizontalLayout_8->addItem(horizontalSpacer_4);
 
@@ -685,11 +720,13 @@ public:
         pushButton_6->setObjectName(QString::fromUtf8("pushButton_6"));
         sizePolicy4.setHeightForWidth(pushButton_6->sizePolicy().hasHeightForWidth());
         pushButton_6->setSizePolicy(sizePolicy4);
-        pushButton_6->setMinimumSize(QSize(0, 30));
+        pushButton_6->setMinimumSize(QSize(80, 35));
+        pushButton_6->setStyleSheet(QString::fromUtf8("background:rgb(161, 0, 0);\n"
+"color: white;"));
 
         horizontalLayout_8->addWidget(pushButton_6);
 
-        horizontalSpacer_15 = new QSpacerItem(8, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
+        horizontalSpacer_15 = new QSpacerItem(4, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
 
         horizontalLayout_8->addItem(horizontalSpacer_15);
 
@@ -698,7 +735,7 @@ public:
 
         SettingsForm = new QWidget(centralwidget);
         SettingsForm->setObjectName(QString::fromUtf8("SettingsForm"));
-        SettingsForm->setGeometry(QRect(30, 190, 771, 91));
+        SettingsForm->setGeometry(QRect(30, 240, 771, 91));
         SettingsForm->setStyleSheet(QString::fromUtf8("#SettingsForm{\n"
 "border: 1px solid;\n"
 "color: blue;\n"
@@ -709,6 +746,9 @@ public:
         horizontalLayout_11->setObjectName(QString::fromUtf8("horizontalLayout_11"));
         pushButton_11 = new QPushButton(SettingsForm);
         pushButton_11->setObjectName(QString::fromUtf8("pushButton_11"));
+        pushButton_11->setMinimumSize(QSize(0, 35));
+        pushButton_11->setStyleSheet(QString::fromUtf8("background:rgb(81, 81, 122);\n"
+"color:white;"));
 
         horizontalLayout_11->addWidget(pushButton_11);
 
@@ -718,6 +758,9 @@ public:
 
         pushButton_12 = new QPushButton(SettingsForm);
         pushButton_12->setObjectName(QString::fromUtf8("pushButton_12"));
+        pushButton_12->setMinimumSize(QSize(0, 35));
+        pushButton_12->setStyleSheet(QString::fromUtf8("background:rgb(81, 81, 122);\n"
+"color:white;"));
 
         horizontalLayout_11->addWidget(pushButton_12);
 
@@ -739,12 +782,18 @@ public:
         comboBox_3->addItem(QString());
         comboBox_3->addItem(QString());
         comboBox_3->setObjectName(QString::fromUtf8("comboBox_3"));
+        comboBox_3->setMinimumSize(QSize(0, 30));
+        comboBox_3->setStyleSheet(QString::fromUtf8("background:rgb(85, 85, 0);\n"
+"color:yellow;\n"
+"text-align: center;"));
 
         horizontalLayout_11->addWidget(comboBox_3);
 
         toolButton = new QToolButton(SettingsForm);
         toolButton->setObjectName(QString::fromUtf8("toolButton"));
         toolButton->setMinimumSize(QSize(50, 25));
+        toolButton->setStyleSheet(QString::fromUtf8("background:rgb(59, 118, 177);\n"
+"color: white;"));
 
         horizontalLayout_11->addWidget(toolButton);
 
@@ -753,7 +802,7 @@ public:
 
         horizontalLayout_6 = new QHBoxLayout();
         horizontalLayout_6->setObjectName(QString::fromUtf8("horizontalLayout_6"));
-        horizontalSpacer_3 = new QSpacerItem(40, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
+        horizontalSpacer_3 = new QSpacerItem(8, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
 
         horizontalLayout_6->addItem(horizontalSpacer_3);
 
@@ -761,7 +810,7 @@ public:
         label_2->setObjectName(QString::fromUtf8("label_2"));
         sizePolicy2.setHeightForWidth(label_2->sizePolicy().hasHeightForWidth());
         label_2->setSizePolicy(sizePolicy2);
-        label_2->setMinimumSize(QSize(50, 0));
+        label_2->setMinimumSize(QSize(70, 0));
         QFont font1;
         font1.setFamilies({QString::fromUtf8("Arial")});
         font1.setPointSize(12);
@@ -776,59 +825,19 @@ public:
         comboBox_4->addItem(QString());
         comboBox_4->addItem(QString());
         comboBox_4->addItem(QString());
+        comboBox_4->addItem(QString());
         comboBox_4->setObjectName(QString::fromUtf8("comboBox_4"));
+        sizePolicy4.setHeightForWidth(comboBox_4->sizePolicy().hasHeightForWidth());
+        comboBox_4->setSizePolicy(sizePolicy4);
+        comboBox_4->setMinimumSize(QSize(150, 35));
 
         horizontalLayout_6->addWidget(comboBox_4);
-
-        horizontalSpacer_2 = new QSpacerItem(150, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
-
-        horizontalLayout_6->addItem(horizontalSpacer_2);
-
-        horizontalLayout_18 = new QHBoxLayout();
-        horizontalLayout_18->setObjectName(QString::fromUtf8("horizontalLayout_18"));
-        label_17 = new QLabel(SettingsForm);
-        label_17->setObjectName(QString::fromUtf8("label_17"));
-        sizePolicy6.setHeightForWidth(label_17->sizePolicy().hasHeightForWidth());
-        label_17->setSizePolicy(sizePolicy6);
-        label_17->setMinimumSize(QSize(50, 1));
-
-        horizontalLayout_18->addWidget(label_17);
-
-        label_16 = new QLabel(SettingsForm);
-        label_16->setObjectName(QString::fromUtf8("label_16"));
-        sizePolicy6.setHeightForWidth(label_16->sizePolicy().hasHeightForWidth());
-        label_16->setSizePolicy(sizePolicy6);
-
-        horizontalLayout_18->addWidget(label_16);
-
-
-        horizontalLayout_6->addLayout(horizontalLayout_18);
-
-        horizontalSpacer_7 = new QSpacerItem(20, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
-
-        horizontalLayout_6->addItem(horizontalSpacer_7);
-
-        comboBox = new QComboBox(SettingsForm);
-        comboBox->addItem(QString());
-        comboBox->addItem(QString());
-        comboBox->addItem(QString());
-        comboBox->setObjectName(QString::fromUtf8("comboBox"));
-        QSizePolicy sizePolicy7(QSizePolicy::Fixed, QSizePolicy::Fixed);
-        sizePolicy7.setHorizontalStretch(50);
-        sizePolicy7.setVerticalStretch(50);
-        sizePolicy7.setHeightForWidth(comboBox->sizePolicy().hasHeightForWidth());
-        comboBox->setSizePolicy(sizePolicy7);
-
-        horizontalLayout_6->addWidget(comboBox);
-
-        horizontalSpacer_8 = new QSpacerItem(55, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
-
-        horizontalLayout_6->addItem(horizontalSpacer_8);
 
         label_3 = new QLabel(SettingsForm);
         label_3->setObjectName(QString::fromUtf8("label_3"));
         sizePolicy2.setHeightForWidth(label_3->sizePolicy().hasHeightForWidth());
         label_3->setSizePolicy(sizePolicy2);
+        label_3->setMinimumSize(QSize(50, 0));
         label_3->setStyleSheet(QString::fromUtf8("font: 75 12pt \"Arial\";"));
 
         horizontalLayout_6->addWidget(label_3);
@@ -842,16 +851,60 @@ public:
         comboBox_2->setObjectName(QString::fromUtf8("comboBox_2"));
         sizePolicy4.setHeightForWidth(comboBox_2->sizePolicy().hasHeightForWidth());
         comboBox_2->setSizePolicy(sizePolicy4);
+        comboBox_2->setMinimumSize(QSize(60, 35));
 
         horizontalLayout_6->addWidget(comboBox_2);
+
+        horizontalSpacer_2 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+
+        horizontalLayout_6->addItem(horizontalSpacer_2);
+
+        pushButton_9 = new QPushButton(SettingsForm);
+        pushButton_9->setObjectName(QString::fromUtf8("pushButton_9"));
+        sizePolicy4.setHeightForWidth(pushButton_9->sizePolicy().hasHeightForWidth());
+        pushButton_9->setSizePolicy(sizePolicy4);
+        pushButton_9->setMinimumSize(QSize(100, 35));
+        pushButton_9->setStyleSheet(QString::fromUtf8("background:rgb(59, 118, 177);\n"
+"color: white;"));
+
+        horizontalLayout_6->addWidget(pushButton_9);
+
+        horizontalSpacer_7 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+
+        horizontalLayout_6->addItem(horizontalSpacer_7);
+
+        comboBox = new QComboBox(SettingsForm);
+        comboBox->addItem(QString());
+        comboBox->addItem(QString());
+        comboBox->addItem(QString());
+        comboBox->setObjectName(QString::fromUtf8("comboBox"));
+        QSizePolicy sizePolicy6(QSizePolicy::Fixed, QSizePolicy::Fixed);
+        sizePolicy6.setHorizontalStretch(60);
+        sizePolicy6.setVerticalStretch(60);
+        sizePolicy6.setHeightForWidth(comboBox->sizePolicy().hasHeightForWidth());
+        comboBox->setSizePolicy(sizePolicy6);
+        comboBox->setMinimumSize(QSize(120, 35));
+
+        horizontalLayout_6->addWidget(comboBox);
+
+        horizontalSpacer_8 = new QSpacerItem(130, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
+
+        horizontalLayout_6->addItem(horizontalSpacer_8);
 
 
         verticalLayout_9->addLayout(horizontalLayout_6);
 
+        horizontalWidget_14 = new QWidget(centralwidget);
+        horizontalWidget_14->setObjectName(QString::fromUtf8("horizontalWidget_14"));
+        horizontalWidget_14->setGeometry(QRect(280, 10, 231, 101));
+        horizontalWidget_14->setStyleSheet(QString::fromUtf8("background-image: url(:/images/logo_soleil_min);"));
+        horizontalLayout_2 = new QHBoxLayout(horizontalWidget_14);
+        horizontalLayout_2->setObjectName(QString::fromUtf8("horizontalLayout_2"));
         MainWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(MainWindow);
         menubar->setObjectName(QString::fromUtf8("menubar"));
         menubar->setGeometry(QRect(0, 0, 827, 21));
+        menubar->setStyleSheet(QString::fromUtf8(""));
         menuSettings = new QMenu(menubar);
         menuSettings->setObjectName(QString::fromUtf8("menuSettings"));
         menuHelp = new QMenu(menubar);
@@ -859,6 +912,7 @@ public:
         MainWindow->setMenuBar(menubar);
         statusbar = new QStatusBar(MainWindow);
         statusbar->setObjectName(QString::fromUtf8("statusbar"));
+        statusbar->setStyleSheet(QString::fromUtf8(""));
         MainWindow->setStatusBar(statusbar);
 
         menubar->addAction(menuSettings->menuAction());
@@ -873,7 +927,7 @@ public:
 
     void retranslateUi(QMainWindow *MainWindow)
     {
-        MainWindow->setWindowTitle(QCoreApplication::translate("MainWindow", "MainWindow", nullptr));
+        MainWindow->setWindowTitle(QCoreApplication::translate("MainWindow", "ZMI4104C_ECA_Soft", nullptr));
         actionAbout->setText(QCoreApplication::translate("MainWindow", "About", nullptr));
         actionBoard_Infos->setText(QCoreApplication::translate("MainWindow", "Board Infos", nullptr));
         actionAbout_2->setText(QCoreApplication::translate("MainWindow", "About", nullptr));
@@ -920,12 +974,7 @@ public:
         comboBox_4->setItemText(0, QCoreApplication::translate("MainWindow", "Position", nullptr));
         comboBox_4->setItemText(1, QCoreApplication::translate("MainWindow", "Velocity", nullptr));
         comboBox_4->setItemText(2, QCoreApplication::translate("MainWindow", "Time", nullptr));
-
-        label_17->setText(QCoreApplication::translate("MainWindow", "Err", nullptr));
-        label_16->setText(QCoreApplication::translate("MainWindow", "M", nullptr));
-        comboBox->setItemText(0, QCoreApplication::translate("MainWindow", "APD Gain", nullptr));
-        comboBox->setItemText(1, QCoreApplication::translate("MainWindow", "Opt Power", nullptr));
-        comboBox->setItemText(2, QCoreApplication::translate("MainWindow", "SSI", nullptr));
+        comboBox_4->setItemText(3, QCoreApplication::translate("MainWindow", "FFT", nullptr));
 
         label_3->setText(QCoreApplication::translate("MainWindow", "units", nullptr));
         comboBox_2->setItemText(0, QCoreApplication::translate("MainWindow", "\302\265m", nullptr));
@@ -933,6 +982,11 @@ public:
         comboBox_2->setItemText(2, QCoreApplication::translate("MainWindow", "cm", nullptr));
         comboBox_2->setItemText(3, QCoreApplication::translate("MainWindow", "dm", nullptr));
         comboBox_2->setItemText(4, QCoreApplication::translate("MainWindow", "m", nullptr));
+
+        pushButton_9->setText(QCoreApplication::translate("MainWindow", "Refresh", nullptr));
+        comboBox->setItemText(0, QCoreApplication::translate("MainWindow", "APD Gain", nullptr));
+        comboBox->setItemText(1, QCoreApplication::translate("MainWindow", "Opt Power", nullptr));
+        comboBox->setItemText(2, QCoreApplication::translate("MainWindow", "SSI", nullptr));
 
         menuSettings->setTitle(QCoreApplication::translate("MainWindow", "Settings", nullptr));
         menuHelp->setTitle(QCoreApplication::translate("MainWindow", "Help", nullptr));

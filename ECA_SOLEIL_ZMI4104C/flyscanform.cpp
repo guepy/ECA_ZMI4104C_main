@@ -10,5 +10,6 @@ FlyscanForm::FlyscanForm(QWidget *parent) :
 
 FlyscanForm::~FlyscanForm()
 {
+    emit closeThis();
     delete ui;
 }

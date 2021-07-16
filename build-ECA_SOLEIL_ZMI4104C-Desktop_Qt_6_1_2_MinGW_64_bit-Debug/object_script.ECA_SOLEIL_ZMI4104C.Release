@@ -1,0 +1,11 @@
+release/flyscanform.o
+release/main.o
+release/mainwindow.o
+release/myslots.o
+release/settingsform.o
+release/qrc_ressources.o
+release/qrc_qmake_qmake_qm_files.o
+release/moc_flyscanform.o
+release/moc_mainwindow.o
+release/moc_myslots.o
+release/moc_settingsform.o

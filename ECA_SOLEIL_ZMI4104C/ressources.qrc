@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/images">
+        <file>VueAerienneSynchrotronSOLEIL.png</file>
+        <file>Logo_SOLEIL.png</file>
+        <file>logo_soleil_min.png</file>
+        <file>VueAerienneSynchrotronSOLEIL_mod.png</file>
+        <file>settings_logo.png</file>
+        <file>flyscan.png</file>
+    </qresource>
+    <qresource prefix="/icons"/>
+</RCC>

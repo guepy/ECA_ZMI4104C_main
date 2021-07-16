@@ -2,11 +2,9 @@
 #define FLYSCANFORM_H
 
 #include <QWidget>
-
 namespace Ui {
 class FlyscanForm;
 }
-
 class FlyscanForm : public QWidget
 {
     Q_OBJECT
@@ -14,7 +12,11 @@ class FlyscanForm : public QWidget
 public:
     explicit FlyscanForm(QWidget *parent = nullptr);
     ~FlyscanForm();
-
+    void openForm();
+    void closeForm();
+signals:
+    void openThis();
+    void closeThis();
 private:
     Ui::FlyscanForm *ui;
 };
