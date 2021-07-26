@@ -100,7 +100,7 @@ color: white;</string>
     </property>
     <layout class="QHBoxLayout" name="horizontalLayout_16">
      <item>
-      <widget class="QTextEdit" name="textEdit"/>
+      <widget class="QTextBrowser" name="textBrowser_2"/>
      </item>
     </layout>
    </widget>
@@ -115,16 +115,6 @@ color: white;</string>
     </property>
     <property name="text">
      <string>State</string>
-    </property>
-   </widget>
-   <widget class="QTextEdit" name="SysStatusEdit">
-    <property name="geometry">
-     <rect>
-      <x>620</x>
-      <y>40</y>
-      <width>161</width>
-      <height>41</height>
-     </rect>
     </property>
    </widget>
    <widget class="QPushButton" name="pushButton_8">
@@ -1529,6 +1519,16 @@ color: white;</string>
      <string notr="true">background-image: url(:/images/logo_soleil_min);</string>
     </property>
     <layout class="QHBoxLayout" name="horizontalLayout_2"/>
+   </widget>
+   <widget class="QTextBrowser" name="textBrowser">
+    <property name="geometry">
+     <rect>
+      <x>610</x>
+      <y>40</y>
+      <width>181</width>
+      <height>41</height>
+     </rect>
+    </property>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">

@@ -15,6 +15,9 @@ public:
     explicit SettingsForm(QWidget *parent = nullptr);
     ~SettingsForm();
 
+private slots:
+    void on_pushButton_5_clicked();
+
 private:
     Ui::SettingsForm *ui;
 };

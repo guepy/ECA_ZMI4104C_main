@@ -9,21 +9,30 @@ CONFIG += c++11
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    cesettingsform.cpp \
     flyscanform.cpp \
     main.cpp \
     mainwindow.cpp \
     myslots.cpp \
+    positionoffsetform.cpp \
+    presetpositionform.cpp \
     settingsform.cpp
 
 HEADERS += \
+    cesettingsform.h \
     flyscanform.h \
     mainwindow.h \
     myslots.h \
+    positionoffsetform.h \
+    presetpositionform.h \
     settingsform.h
 
 FORMS += \
+    cesettingsform.ui \
     flyscanform.ui \
     mainwindow.ui \
+    positionoffsetform.ui \
+    presetpositionform.ui \
     settingsform.ui
 
 TRANSLATIONS += \

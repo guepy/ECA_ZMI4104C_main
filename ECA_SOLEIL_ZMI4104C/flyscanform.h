@@ -17,6 +17,9 @@ public:
 signals:
     void openThis();
     void closeThis();
+private slots:
+    void on_pushButton_5_clicked();
+
 private:
     Ui::FlyscanForm *ui;
 };

@@ -1,10 +1,5 @@
 ﻿
-#ifndef ECA_ZMI4104C_MAIN_H
-#define ECA_ZMI4104C_MAIN_H
 #include "ECA_ZMI4104C_main.h"
-#endif
-
-
 
 void CreateEvents(void)
 {
@@ -40,7 +35,7 @@ void CreateEvents(void)
 	}
 
 }
-int  CreateThreads(void)
+int  CreateThreads(SIS1100_Device_Struct *dev)
 {
 	int i = 0;
 	DWORD dwThreadID;
@@ -54,7 +49,7 @@ int  CreateThreads(void)
 		NULL,              // default security
 		0,                 // default stack size
 		vmeIntThreadFunc,        // name of the thread function
-		NULL,              // no thread parameters
+		(LPVOID)dev,              //  thread parameters
 		0,                 // default startup flags
 		&dwThreadID);
 
@@ -70,7 +65,7 @@ int  CreateThreads(void)
 		NULL,              // default security
 		0,                 // default stack size
 		WaitForSis3100IrqThreadFunc,        // name of the thread function
-		NULL,              // no thread parameters
+		(LPVOID)dev,              //  thread parameters
 		0,                 // default startup flags
 		&dwThreadID);
 	if (WaitForSis3100IrqThread == NULL)
@@ -85,7 +80,7 @@ int  CreateThreads(void)
 		NULL,              // default security
 		0,                 // default stack size
 		WaitForVmeIrqThreadFunc,        // name of the thread function
-		NULL,              // no thread parameters
+		(LPVOID)dev,              //  thread parameters
 		0,                 // default startup flags
 		&dwThreadID);
 	if (WaitForVmeIrqThread == NULL)
@@ -100,7 +95,7 @@ int  CreateThreads(void)
 		NULL,              // default security
 		0,                 // default stack size
 		lemoIN1ThreadFunc,        // name of the thread function
-		NULL,              // no thread parameters
+		(LPVOID)dev,              //  thread parameters
 		0,                 // default startup flags
 		&dwThreadID);
 	if (lemoIN1Thread == NULL)
@@ -141,18 +136,17 @@ void CloseEvents()
 	CloseHandle(vmeIrq6Event);
 	CloseHandle(lemoIN1Event);
 }
-int lemoInterruptCallbackFunction(FILE* fd) {
+int lemoInterruptCallbackFunction(SIS1100_Device_Struct* dev, FILE* fd) {
 	double* pos;
 	pos = calloc(4, sizeof(double));
-	if (ReadSamplePosition37_ForAllAxis(&dev, pos) != RET_SUCCESS) WARN("read sample position faillure\n");
+	if (ReadSamplePosition37_ForAllAxis(dev, pos) != RET_SUCCESS) WARN("read sample position faillure\n");
 
 	fprintf(fd, "%lf;%lf;%lf;%lf\n", pos[0], pos[1], pos[2], pos[3]);
 	return RET_SUCCESS;
 }
 DWORD WINAPI lemoIN1ThreadFunc(LPVOID lpParam)
 {
-	// lpParam not used 
-	UNREFERENCED_PARAMETER(lpParam);
+	SIS1100_Device_Struct* dev = (SIS1100_Device_Struct*)lpParam;
 	FILE* fd;
 	GetLocalTime(&lt);
 	if (fopen_s(&fd, "interrupt_position_read.csv", "w") != RET_SUCCESS) WARN("fopen failed\n");
@@ -175,7 +169,7 @@ DWORD WINAPI lemoIN1ThreadFunc(LPVOID lpParam)
 		case WAIT_OBJECT_0:
 			INFO("Interrupt Thread %d is using the dev structure...\n", GetCurrentThreadId());
 			INFO("A LEMO INTERRUPT HAS OCCURED\n");
-			lemoInterruptCallbackFunction(fd);
+			//lemoInterruptCallbackFunction(fd);
 			fclose(fd);
 			loop_cnt++;
 			break;
@@ -184,7 +178,7 @@ DWORD WINAPI lemoIN1ThreadFunc(LPVOID lpParam)
 		default:
 			break;
 		}
-	} while (valid_flag != 1);
+	} while (1); //(valid_flag != 1);
 	INFO("==============================================================\n");
 	INFO("nbr of LEMO interrupt %d\n", loop_cnt);
 	INFO("==============================================================\n");
@@ -224,8 +218,8 @@ DWORD WINAPI lemoIN1ThreadFunc(LPVOID lpParam)
 }
 DWORD WINAPI vmeIntThreadFunc(LPVOID lpParam)
 {
-	// lpParam not used in this example.
-	UNREFERENCED_PARAMETER(lpParam);
+
+	SIS1100_Device_Struct* dev = (SIS1100_Device_Struct*)lpParam;
 	uint32_t get_irq_level = 0x6;
 	DWORD dwWaitResult = 0;
 	unsigned int loop_cnt, error_cnt;
@@ -245,7 +239,7 @@ DWORD WINAPI vmeIntThreadFunc(LPVOID lpParam)
 			// TODO: Write to the database
 			INFO("Interrupt Thread %d is using the dev structure...\n", GetCurrentThreadId());
 			INFO(" \tA VME INTERRUPT HAS OCCURED \n");
-			rc = vme_IACK_D8_read(&dev, get_irq_level, &read_irq_vector);
+			rc = vme_IACK_D8_read(dev, get_irq_level, &read_irq_vector);
 			if (rc != 0) INFO("IACK Cycle:  rc = 0x%08x\n", rc);
 			INFO(" read_irq_vector =  %x \r\n", read_irq_vector);
 			break;
@@ -254,7 +248,7 @@ DWORD WINAPI vmeIntThreadFunc(LPVOID lpParam)
 		default:
 			break;
 		}
-	} while (valid_flag != 1);
+	} while (1); //(valid_flag != 1);
 	//result = scanf("%s", line_in);
 
 	//------------------------------------------------------------------------------------
@@ -409,102 +403,7 @@ int releaseWinMemSpace(SIS1100_Device_Struct* dev, UCHAR nof_vme_windows) {
 
 }
 */
-int sis3301w_Init(SIS1100_Device_Struct* dev, uint32_t mod_base, uint32_t vme_irq_level, uint32_t vme_irq_vector)
-{
-	int rc;
-	uint32_t addr, data;
 
-	/* reset  */
-	addr = mod_base + SIS3302_KEY_RESET;
-	rc = s3100_control_write(dev, addr, 0x0);
-	if (rc != RET_SUCCESS) {
-		FATAL("vme_A32D32_write:  rc = 0x%08x  at address = 0x%08x\n", rc, addr);
-	}
-
-	/* irq level  vector  */
-	addr = mod_base + SIS3302_IRQ_CONFIG;
-	//data =  (vme_irq_vector & 0xff) + (((vme_irq_level & 0x7) + 0x8) << 8) ;
-	//data =  0x1b01 ;
-	//data =  0x1A01 ;
-	//data =  0x1801 + 0x300 ;
-	data = (vme_irq_vector & 0xff) + (((vme_irq_level & 0x7) + 0x8) << 8);
-	if (s3100_control_write(dev, addr, data) != RET_SUCCESS) {
-		FATAL("vme_A32D32_write:  rc = 0x%08x  at address = 0x%08x\n", rc, addr);
-	}
-
-	/* irq source  control  */
-	addr = mod_base + SIS3302_IRQ_CONTROL;
-	data = 0x2;
-	if (s3100_control_write(dev, addr, data) != RET_SUCCESS) {
-		FATAL("vme_A32D32_write:  rc = 0x%08x  at address = 0x%08x\n", rc, addr);
-	}
-
-
-	/* max_nof_events  */
-	addr = mod_base + SIS3302_MAX_NOF_EVENT;
-	data = 0x100;
-	if (s3100_control_write(dev, addr, data) != RET_SUCCESS) {
-		FATAL("vme_A32D32_write:  rc = 0x%08x  at address = 0x%08x\n", rc, addr);
-	}
-
-	// why ?
-#ifdef not_used
-	/* control  */
-	addr = mod_base + SIS3302_CONTROL_STATUS;
-	data = 0x0;
-	if (vme_A32D32_write(dev, addr, data) != RET_SUCCESS) {
-		FATAL("vme_A32D32_write:  rc = 0x%08x  at address = 0x%08x\n", rc, addr);
-	}
-	// why ?
-	/* control  */
-	addr = mod_base + SIS3302_CONTROL_STATUS;
-	data = 0x0;
-	if (vme_A32D32_write(dev, addr, data) != RET_SUCCESS) {
-		FATAL("vme_A32D32_write:  rc = 0x%08x  at address = 0x%08x\n", rc, addr);
-	}
-#endif
-
-	/* Acqconf  */
-	addr = mod_base + SIS3302_ACQUISTION_CONTROL;
-	data = 0x130; // SIS3302_ACQ_ENABLE_LEMO_START_STOP + SIS3302_ACQ_ENABLE_MULTIEVENT + SIS3302_ACQ_ENABLE_AUTOSTART
-	if (s3100_control_write(dev, addr, data) != RET_SUCCESS) {
-		FATAL("vme_A32D32_write:  rc = 0x%08x  at address = 0x%08x\n", rc, addr);
-	}
-
-	/* Startdelay  */
-	addr = mod_base + SIS3302_START_DELAY;
-	data = 0x20; //  
-	if (s3100_control_write(dev, addr, data) != RET_SUCCESS) {
-		FATAL("vme_A32D32_write:  rc = 0x%08x  at address = 0x%08x\n", rc, addr);
-	}
-	/* Stopdelay  */
-	addr = mod_base + SIS3302_STOP_DELAY;
-	data = 0x320; //  
-	if (s3100_control_write(dev, addr, data) != RET_SUCCESS) {
-		FATAL("vme_A32D32_write:  rc = 0x%08x  at address = 0x%08x\n", rc, addr);
-	}
-
-
-	/* Event Config  */
-	addr = mod_base + SIS3302_EVENT_CONFIG_ALL_ADC;
-	data = 0x17; //  EVENT_CONF_ENABLE_WRAP_PAGE_MODE + EVENT_CONF_PAGE_SIZE_1K_WRAP
-	if (s3100_control_write(dev, addr, data) != RET_SUCCESS) {
-		FATAL("vme_A32D32_write:  rc = 0x%08x  at address = 0x%08x\n", rc, addr);
-	}
-
-#ifdef not_used
-
-	/* Acqconf  */
-	addr = mod_base + SIS3302_ACQUISTION_CONTROL;
-	data = 0x130; // SIS3302_ACQ_ENABLE_LEMO_START_STOP + SIS3302_ACQ_ENABLE_MULTIEVENT + SIS3302_ACQ_ENABLE_AUTOSTART
-	if (vme_A32D32_write(dev, addr, data) != RET_SUCCESS) {
-		FATAL("vme_A32D32_write:  rc = 0x%08x  at address = 0x%08x\n", rc, addr);
-	}
-#endif
-
-
-	return RET_SUCCESS;
-}
 /// <summary>
 /// This function configure and enable the CE compensation
 /// </summary>
@@ -586,6 +485,8 @@ DWORD WaitForVmeIrqThreadFunc(LPVOID lpParam)
 	uint32_t doorbell_value = 0;
 	UINT sis_get_irq_level = 0;
 
+	SIS1100_Device_Struct* dev = (SIS1100_Device_Struct*)lpParam;
+
 	vmeIrq6Event = CreateEvent(
 		NULL,               // default security attributes
 		FALSE,               // Auto-reset event
@@ -596,17 +497,17 @@ DWORD WaitForVmeIrqThreadFunc(LPVOID lpParam)
 	{
 		WARN("CreateEvent failed (%d)\n", GetLastError());
 	}
-	sis1100w_sis310x_Register_For_Irq(&dev, vmeIrqMask); //Register to listen to IRQ level interrupt
+	sis1100w_sis310x_Register_For_Irq(dev, vmeIrqMask); //Register to listen to IRQ level interrupt
 	//PLX_INTERRUPT intSrc;
 	//CreateEvents();
 	do {
 		//IRQ update on SIS3100
-		rc = s3100_control_write(&dev, SIS3100_OPT_IN_IRQ_LATCH, DOORBELL_IRQ_UPDATE);
+		rc = s3100_control_write(dev, SIS3100_OPT_IN_IRQ_LATCH, DOORBELL_IRQ_UPDATE);
 		if (Stat1100Success != rc) {
 			INFO("Error in 's3100_control_write' (Thread Running: %s, stopping)\n", __FUNCTION__);
 			break;
 		}
-		rc = sis1100w_sis310x_Wait_For_Irq(&dev, 1000, &doorbell_value); //wait for 1s, use -1 for INFINITE
+		rc = sis1100w_sis310x_Wait_For_Irq(dev, 1000, &doorbell_value); //wait for 1s, use -1 for INFINITE
 		if (doorbell_value) {
 			INFO("Doorbell value is %X\n", doorbell_value);
 			sis_get_irq_level = 0;
@@ -624,7 +525,7 @@ DWORD WaitForVmeIrqThreadFunc(LPVOID lpParam)
 					WARN("SetEvent failed (%d)\n", GetLastError());
 					break;
 				}
-				rc = s3100_control_write(&dev, SIS3100_OPT_VME_IRQ_CTRL, VME_IRQ6_STA_CLR_BIT);
+				rc = s3100_control_write(dev, SIS3100_OPT_VME_IRQ_CTRL, VME_IRQ6_STA_CLR_BIT);
 				if (Stat1100Success != rc) {
 					WARN("\n\nError in 's3100_control_write' (Thread Running: %s, stopping)\n", __FUNCTION__);
 					break;
@@ -658,7 +559,7 @@ DWORD WaitForVmeIrqThreadFunc(LPVOID lpParam)
 
 		}
 		doorbell_value = 0;
-	} while (valid_flag != 1);
+	}  while (1); //(valid_flag != 1);
 
 	CloseHandle(vmeIrq6Event);
 	//INFO("Terminating Thread %d..\n", GetCurrentThreadId());
@@ -670,6 +571,7 @@ DWORD WaitForSis3100IrqThreadFunc(LPVOID lpParam)
 	uint32_t doorbell_value;
 	UINT sis_get_irq_level = 0;
 
+	SIS1100_Device_Struct* dev = (SIS1100_Device_Struct*)lpParam;
 	printf(" Thread %d is running...\n",
 		GetCurrentThreadId());
 	// Create a manual-reset event object. The write thread sets this
@@ -688,16 +590,16 @@ DWORD WaitForSis3100IrqThreadFunc(LPVOID lpParam)
 		return RET_FAILED;
 	}
 
-	sis1100w_sis310x_Register_For_Irq(&dev, sisIrqMask); //Register to listen to IRQ level interrupt
+	sis1100w_sis310x_Register_For_Irq(dev, sisIrqMask); //Register to listen to IRQ level interrupt
 	//CreateEvents();
 	do {
 		//IRQ update on SIS3100
-		rc = s3100_control_write(&dev, SIS3100_OPT_IN_IRQ_LATCH, DOORBELL_IRQ_UPDATE);
+		rc = s3100_control_write(dev, SIS3100_OPT_IN_IRQ_LATCH, DOORBELL_IRQ_UPDATE);
 		if (Stat1100Success != rc) {
 			printf("\n\nError in 's3100_control_write' (IRQ Running: %d, stopping)\n", rc);
 			continue;
 		}
-		rc = sis1100w_sis310x_Wait_For_Irq(&dev, 1000, &doorbell_value); //wait for 1s, use -1 for INFINITE
+		rc = sis1100w_sis310x_Wait_For_Irq(dev, 1000, &doorbell_value); //wait for 1s, use -1 for INFINITE
 		if (doorbell_value) {
 			printf("\n\n\nDoorbell value is %X \n\n\n", doorbell_value);
 			// LEMO IN1
@@ -709,7 +611,7 @@ DWORD WaitForSis3100IrqThreadFunc(LPVOID lpParam)
 					printf("SetEvent failed (%d)\n", GetLastError());
 					break;
 				}
-				rc = s3100_control_write(&dev, SIS3100_OPT_IN_IRQ_LATCH, FLAT_IN3_IRQ_STA_CLR_BIT);
+				rc = s3100_control_write(dev, SIS3100_OPT_IN_IRQ_LATCH, FLAT_IN3_IRQ_STA_CLR_BIT);
 				if (Stat1100Success != rc) {
 					printf("\n\nError in 's3100_control_write' (Thread Running: %s, stopping)\n", __FUNCTION__);
 					break;
@@ -717,7 +619,7 @@ DWORD WaitForSis3100IrqThreadFunc(LPVOID lpParam)
 			}
 		}
 		doorbell_value = 0;
-	} while (valid_flag != 1);
+	} while (1); //(valid_flag != 1);
 
 	CloseHandle(lemoIN1Event);
 	printf("Terminating Thread %d..\n", GetCurrentThreadId());
@@ -2180,6 +2082,7 @@ int Init_SIS_boards(SIS1100_Device_Struct* dev) {
 	unsigned int  nof_found_sis1100_devices = 0;
 	unsigned int sis3100_data = 0;
 	short sis3100_add = 0;
+	SIS1100W_STATUS stat;
 
 	INFO("Setting up SIS boards...\n");
 	INFO("Scanning connected SIS' PCIe card...\n");
@@ -2314,7 +2217,12 @@ int Init_ZMI_bd(SIS1100_Device_Struct* dev) {
 		uint_vme_address = 0,
 		uint_vme_data = 0;
 	unsigned int  uint_vme_data_buf[20];
-
+	static double	SSICalMin[4][2] = { {0, 0}, {0, 0}, {0, 0}, {0, 0} },    //( (Ax1SSI,Ax1uW),(Ax2SSI,Ax2uW), etc) 
+		SSICalNom[4][2] = { {0, 0}, {0, 0}, {0, 0}, {0, 0} },
+		SSICalMax[4][2] = { {1, 1}, {1, 1}, {1, 1}, {1, 1} },     //1 all by default to prevent /0
+		SSICalValues[4][2] = { {1, 1}, {1, 1}, {1, 1}, {1, 1} };  //( (Ax1m,Ax1b),(Ax2m,Ax2b), etc) 
+	int return_code = 0;
+	static bool enableResetFindsVelocity[] = { false, false, false, false };
 	memset(uint_vme_data_buf, 0, _countof(uint_vme_data_buf));
 	INFO("Initializing ZMI board... \n");
 	strcpy_s(ch_access_mode, sizeof(ch_access_mode), access_mode_Selection[6]);
@@ -3527,6 +3435,7 @@ int BoardControlMode(SIS1100_Device_Struct* dev, unsigned char axis, unsigned in
 		break;
 	case BIAS_CONSTANT_OPT_PWR_MODE:
 		SetAPDOptPwrL2(dev, axis, defaultAPDOptPwrL2Set);
+		SetAPDSigRMSL2(dev, axis, defaultAPDSigRMSL2Set);
 		break;
 	default:
 		INFO("Unknow Bias mode \n");
@@ -4611,7 +4520,7 @@ int SetTimeDelayBetweenResAndCompleteBit(SIS1100_Device_Struct* dev, unsigned ch
 	return RET_SUCCESS;
 
 }
-int ReadOpticalPowerUsingSSIav(SIS1100_Device_Struct* dev) {
+int ReadOpticalPowerUsingSSIav(SIS1100_Device_Struct* dev, double * OpticalPower_uW) {
 
 	unsigned int uint_vme_data = 0,
 		uint_vme_address = 0;
@@ -4662,7 +4571,6 @@ int SetSSISquelch(SIS1100_Device_Struct* dev, unsigned short axis, int squelchVa
 	unsigned int value = 0;
 	unsigned int uint_vme_address = 0;
 	INFO("Setting SSI Squelch value to %d on axis %u...\n", squelchValue, axis);
-	squelchValue = (unsigned short)((SSIsquelch[axis - 1] - SSICalValues[axis - 1][1]) / SSICalValues[axis - 1][0]);
 	if (squelchValue > 0xFFF)
 	{
 		INFO("[SSI_Squelch] Value given is too large or negative, setting to default value(0x80)\n");
@@ -5043,6 +4951,7 @@ int Sclk_On(SIS1100_Device_Struct* dev) {
 	return (readModifyWrite("A24D16", dev, ADD(BASE_ADDRESS[2], zCtrl16), 0x280, 1) != RET_SUCCESS);
 }
 int VMESysReset(SIS1100_Device_Struct* dev) {
+	SIS1100W_STATUS stat;
 	INFO("Reseting Zygo board...\n");
 	stat = sis1100w_VmeSysreset(dev);
 
@@ -5249,12 +5158,9 @@ int EEPROMread(SIS1100_Device_Struct* dev,unsigned short offset,unsigned int* ui
 
 }
 
-int Read_Write(char* ch_access_mode,
-	SIS1100_Device_Struct* dev,
-	unsigned int uint_vme_address,
-	unsigned int* uint_vme_data,
+int Read_Write(char* ch_access_mode, SIS1100_Device_Struct* dev, unsigned int uint_vme_address, unsigned int* uint_vme_data,
 	unsigned short read_write) {
-
+	int return_code = 0, comp_err = 0;
 	/**************************************************************************/
 	/***   "A24D32":   A24  privileged data access                       ***/
 	/**************************************************************************/

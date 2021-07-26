@@ -1,3 +1,8 @@
+#pragma once
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <windows.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -62,15 +67,10 @@
 #define coeff_d   0.4474028058422057
 #define coeff_f   -9.023933972316671
 
-#define FATAL(errmsg, ...) do{											\
-handle_err(EXIT_FAILLURE, "FATAL:%s:%s:%d: " errmsg, __FILE__,__FUNCTION__, __LINE__, __VA_ARGS__); \
-}while(0)
-#define WARN(errmsg, ...) do{											\
-handle_err(NON_FATAL, "WARNING:%s:%s:%d: " errmsg, __FILE__,__FUNCTION__, __LINE__, __VA_ARGS__); \
-return RET_FAILED;}while(0)
-#define INFO(errmsg, ...) do{											\
-handle_err(INFO_PURPOSE, "INFO: " errmsg, __VA_ARGS__); \
-}while(0)
+#define FATAL(errmsg, ...) do{handle_err(EXIT_FAILLURE, "FATAL:%s:%s:%d: " errmsg, __FILE__,__FUNCTION__, __LINE__, __VA_ARGS__); }while(0)
+#define WARN(errmsg, ...) do{handle_err(NON_FATAL, "WARNING:%s:%s:%d: " errmsg, __FILE__,__FUNCTION__, __LINE__, __VA_ARGS__); return RET_FAILED;}while(0)
+#define INFO(errmsg, ...) do{handle_err(INFO_PURPOSE, "INFO: " errmsg, __VA_ARGS__);}while(0)
+
 // get SIS3104 base address as argument at the process startup
 #define SIS3104_BASE_ADDRESS				0x0
 
@@ -141,16 +141,8 @@ static const char* const biasControlModeString[BIAS_CTRL_MODE_NBR] = {
 	"BIAS_SIG_RMS_ADJUST_MODE",
 };
 
-static SIS1100W_STATUS stat;
-static SIS1100_Device_Struct dev;
+static unsigned int	BASE_ADDRESS[] = { 0x4000, 0x5000, 0x6000, 0x7000 }; // Base adresses ;
 
-static unsigned int	BASE_ADDRESS[] = { 0x4000, 0x5000, 0x6000, 0x7000 }, // Base adresses 
-return_code = 0,
-comp_err = 0,
-valid_flag = 0,
-NbrBdAx = 0;
-static unsigned short	SCLKDrive = 2,
-Direction[] = { 0, 0, 0, 0 };
 
 /**/
 //GUID sis1100w_GUID = { 0x944adde8, 0x4f6d, 0x4bee, 0xa309, 0x7ad62ab0b4bb };
@@ -167,22 +159,8 @@ typedef enum _BIAS_MODE {
 }BIAS_MODE;
 
 
-static double	SSICalMin[4][2] = { {0, 0}, {0, 0}, {0, 0}, {0, 0} },    //( (Ax1SSI,Ax1uW),(Ax2SSI,Ax2uW), etc) 
-SSICalNom[4][2] = { {0, 0}, {0, 0}, {0, 0}, {0, 0} },
-SSICalMax[4][2] = { {1, 1}, {1, 1}, {1, 1}, {1, 1} },     //1 all by default to prevent /0
-SSICalValues[4][2] = { {1, 1}, {1, 1}, {1, 1}, {1, 1} },  //( (Ax1m,Ax1b),(Ax2m,Ax2b), etc) 
-SSIsquelch[] = { 1, 1, 1, 1 },								//Squelch with default values in uW
-SSIMax[4][2] = { {0, 0}, {0, 0}, {0, 0}, {0, 0} },    //( (Ax1SSIMax,Ax1MaxuW),(Ax2MaxSSI,Ax2MaxuW), etc)
-SSIMin[4][2] = { {0, 0}, {0, 0}, {0, 0}, {0, 0} },    //( (Ax1SSIMin,Ax1MinuW),(Ax2SSIMin,Ax2MinuW), etc)
-positionScale = DOUBLE_PASS_INT_POS_COEF,    //Converts to mm as default
-velocityScale = DOUBLE_PASS_INT_VEL_COEF * (1e-3),      //Converts to mm/s
-OpticalPower_uW[] = { 0, 0, 0, 0 };
-
-static bool	enableResetFindsVelocity[] = { false, false, false, false },
-ZMIError[] = { false, false, false, false, false },  //Extra ZMIError is for reference
-signal[] = { false, false, false, false, false }, //Extra signal is for ref
-testMode[] = { false, false, false, false }; //Extra signal is for ref
-
+static double positionScale = DOUBLE_PASS_INT_POS_COEF,    //Converts to mm as default
+velocityScale = DOUBLE_PASS_INT_VEL_COEF * (1e-3);      //Converts to mm/s
 // ZMI Scalars
 static const double	timeScale = 25 * (1e-9);                   //Converts to s as default	
 
@@ -191,7 +169,7 @@ static FILE* fdLog;
 static SYSTEMTIME  lt;
 
 extern void CreateEvents(void);
-extern int  CreateThreads(void);
+extern int  CreateThreads(SIS1100_Device_Struct* dev);
 extern void CloseThreads(void);
 extern int handle_err(int fatal, const char* fmt, ...);
 extern int convertUSFloat2Double(USHORT, double*);
@@ -218,7 +196,7 @@ extern int ReadVelocity32_ForAllAxis(SIS1100_Device_Struct*, double*);
 extern int ReadTime32(SIS1100_Device_Struct*, unsigned char, double*);
 extern int ReadTime32_ForAllAxis(SIS1100_Device_Struct*, double*);
 extern int ReadAllTime32(SIS1100_Device_Struct*, double*);
-extern int ReadOpticalPowerUsingSSIav(SIS1100_Device_Struct*);
+extern int ReadOpticalPowerUsingSSIav(SIS1100_Device_Struct* dev, double* OpticalPower_uW);
 extern int ReadAPDGain(SIS1100_Device_Struct*, unsigned char, double*);
 extern int EnableAuxRegisters(SIS1100_Device_Struct*, unsigned char);
 extern int DisableAuxRegisters(SIS1100_Device_Struct*, unsigned char);
@@ -294,3 +272,6 @@ extern int readCECoeffboundaries(SIS1100_Device_Struct*, unsigned char, CECoeffB
 extern int calculateCEratio(SIS1100_Device_Struct* dev, unsigned char axis, CEratios* ceRatios, CEratioUnits units);
 extern int EEPROMread(SIS1100_Device_Struct*, unsigned short, unsigned int*, unsigned short);
 extern int convertFloat2Double(UINT, double*);
+#ifdef __cplusplus
+}
+#endif

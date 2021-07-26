@@ -111,7 +111,8 @@ public:
 "padding: 0 8px;\n"
 "border-radius:10px;\n"
 "text-align: center;\n"
-"}"));
+"}\n"
+"background-image: url(:/images/system.png);"));
         SettingsForm = new QWidget(FlyscanForm);
         SettingsForm->setObjectName(QString::fromUtf8("SettingsForm"));
         SettingsForm->setGeometry(QRect(20, 230, 791, 251));

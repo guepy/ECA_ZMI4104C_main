@@ -1,4 +1,5 @@
 #pragma once
+
 #define zCmd 0x00						// write only 
 #define zStat0 0x00						// read only 
 #define zSCLKCmd 0x02					// write only 

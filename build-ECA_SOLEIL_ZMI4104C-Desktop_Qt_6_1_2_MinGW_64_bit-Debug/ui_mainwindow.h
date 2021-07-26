@@ -25,6 +25,7 @@
 #include <QtWidgets/QRadioButton>
 #include <QtWidgets/QSpacerItem>
 #include <QtWidgets/QStatusBar>
+#include <QtWidgets/QTextBrowser>
 #include <QtWidgets/QTextEdit>
 #include <QtWidgets/QToolButton>
 #include <QtWidgets/QVBoxLayout>
@@ -44,9 +45,8 @@ public:
     QPushButton *pushButton_13;
     QWidget *horizontalLayoutWidget_16;
     QHBoxLayout *horizontalLayout_16;
-    QTextEdit *textEdit;
+    QTextBrowser *textBrowser_2;
     QLabel *label_9;
-    QTextEdit *SysStatusEdit;
     QPushButton *pushButton_8;
     QWidget *CE_form;
     QHBoxLayout *horizontalLayout_9;
@@ -148,6 +148,7 @@ public:
     QSpacerItem *horizontalSpacer_8;
     QWidget *horizontalWidget_14;
     QHBoxLayout *horizontalLayout_2;
+    QTextBrowser *textBrowser;
     QMenuBar *menubar;
     QMenu *menuSettings;
     QMenu *menuHelp;
@@ -214,17 +215,14 @@ public:
         horizontalLayout_16 = new QHBoxLayout(horizontalLayoutWidget_16);
         horizontalLayout_16->setObjectName(QString::fromUtf8("horizontalLayout_16"));
         horizontalLayout_16->setContentsMargins(0, 0, 0, 0);
-        textEdit = new QTextEdit(horizontalLayoutWidget_16);
-        textEdit->setObjectName(QString::fromUtf8("textEdit"));
+        textBrowser_2 = new QTextBrowser(horizontalLayoutWidget_16);
+        textBrowser_2->setObjectName(QString::fromUtf8("textBrowser_2"));
 
-        horizontalLayout_16->addWidget(textEdit);
+        horizontalLayout_16->addWidget(textBrowser_2);
 
         label_9 = new QLabel(centralwidget);
         label_9->setObjectName(QString::fromUtf8("label_9"));
         label_9->setGeometry(QRect(550, 50, 71, 20));
-        SysStatusEdit = new QTextEdit(centralwidget);
-        SysStatusEdit->setObjectName(QString::fromUtf8("SysStatusEdit"));
-        SysStatusEdit->setGeometry(QRect(620, 40, 161, 41));
         pushButton_8 = new QPushButton(centralwidget);
         pushButton_8->setObjectName(QString::fromUtf8("pushButton_8"));
         pushButton_8->setGeometry(QRect(500, 800, 101, 41));
@@ -900,6 +898,9 @@ public:
         horizontalWidget_14->setStyleSheet(QString::fromUtf8("background-image: url(:/images/logo_soleil_min);"));
         horizontalLayout_2 = new QHBoxLayout(horizontalWidget_14);
         horizontalLayout_2->setObjectName(QString::fromUtf8("horizontalLayout_2"));
+        textBrowser = new QTextBrowser(centralwidget);
+        textBrowser->setObjectName(QString::fromUtf8("textBrowser"));
+        textBrowser->setGeometry(QRect(610, 40, 181, 41));
         MainWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(MainWindow);
         menubar->setObjectName(QString::fromUtf8("menubar"));

@@ -10,6 +10,13 @@ FlyscanForm::FlyscanForm(QWidget *parent) :
 
 FlyscanForm::~FlyscanForm()
 {
-    emit closeThis();
+    //emit closeThis();
     delete ui;
 }
+
+//-----Button cancel--------------------
+void FlyscanForm::on_pushButton_5_clicked()
+{
+    this->destroy(true);
+}
+

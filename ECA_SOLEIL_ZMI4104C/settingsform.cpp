@@ -12,3 +12,10 @@ SettingsForm::~SettingsForm()
 {
     delete ui;
 }
+
+//-----Button cancel-------
+void SettingsForm::on_pushButton_5_clicked()
+{
+    this->destroy(true);
+}
+

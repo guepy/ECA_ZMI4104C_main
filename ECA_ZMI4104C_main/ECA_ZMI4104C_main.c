@@ -15,14 +15,10 @@
 
 //#include "stdafx.h"
 
-#ifndef ECA_ZMI4104C_MAIN_H
-#define ECA_ZMI4104C_MAIN_H
 #include "ECA_ZMI4104C_main.h"
-#endif
-
-
 
 PUINT base_A24D32_FR_ptr, base_A24D32_ptr;
+static SIS1100_Device_Struct dev;
 
 int main(int argc, char** agrv)
 {
@@ -47,13 +43,9 @@ int main(int argc, char** agrv)
 		0x9   // A32 non privileged data access
 	};
 	char sc_char[4];
-	double unitScale[4][4] = { {positionScale * (10 ^ 3), positionScale * (10 ^ 6), positionScale * (10 ^ 9), 1} \
-					   , {timeScale, timeScale * (10 ^ 3), timeScale * (10 ^ 6), 1} \
-					   , {velocityScale, velocityScale * (10 ^ 3), velocityScale * (10 ^ 6), 1} \
-					   , {1 * (10 ^ -3), 1, 1 * (10 ^ 3), 1} };
 	BIAS_MODE bias_mode = BIAS_SIG_RMS_ADJUST_MODE;
 	// Create a mutex with no initial owner
-
+	/*/
 	ghMutex = CreateMutex(
 		NULL,              // default security attributes
 		FALSE,             // initially not owned
@@ -63,7 +55,7 @@ int main(int argc, char** agrv)
 	{
 		printf("CreateMutex error: %d\n", GetLastError());
 		return 1;
-	}
+	}*/
 	/*
 		printf("Parsing arguments ... \n");
 
@@ -147,6 +139,8 @@ int main(int argc, char** agrv)
 	CECoeffs ceCoeffs = { 0.0,0.0,0.0 };
 	CEratioUnits ratioUnits = ratio_in_percent;
 	fifoParam testparam;
+	int valid_flag = 0;
+	/*/
 	dwWaitResult = WaitForSingleObject( //wait for the main thread to sent an event
 		ghMutex, // event handle
 		INFINITE);    // indefinite wait*/
@@ -161,7 +155,7 @@ int main(int argc, char** agrv)
 		return RET_FAILED;
 	}
 #endif	
-	CreateThreads();
+	CreateThreads(&dev);
 	while (1)
 	{
 		//ReadOpticalPowerUsingSSIav(&dev);

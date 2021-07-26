@@ -6,6 +6,7 @@
         <file>VueAerienneSynchrotronSOLEIL_mod.png</file>
         <file>settings_logo.png</file>
         <file>flyscan.png</file>
+        <file>system.png</file>
     </qresource>
     <qresource prefix="/icons"/>
 </RCC>

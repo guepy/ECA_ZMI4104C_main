@@ -1,11 +1,17 @@
+release/cesettingsform.o
 release/flyscanform.o
 release/main.o
 release/mainwindow.o
 release/myslots.o
+release/positionoffsetform.o
+release/presetpositionform.o
 release/settingsform.o
 release/qrc_ressources.o
 release/qrc_qmake_qmake_qm_files.o
+release/moc_cesettingsform.o
 release/moc_flyscanform.o
 release/moc_mainwindow.o
 release/moc_myslots.o
+release/moc_positionoffsetform.o
+release/moc_presetpositionform.o
 release/moc_settingsform.o

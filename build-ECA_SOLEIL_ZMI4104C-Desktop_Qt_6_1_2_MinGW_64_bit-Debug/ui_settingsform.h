@@ -57,18 +57,22 @@ public:
     QLabel *label_3;
     QSpacerItem *horizontalSpacer;
     QLineEdit *lineEdit;
+    QPushButton *pushButton;
     QHBoxLayout *horizontalLayout_2;
     QLabel *label_2;
     QSpacerItem *horizontalSpacer_2;
     QLineEdit *lineEdit_5;
+    QPushButton *pushButton_3;
     QHBoxLayout *horizontalLayout_3;
     QLabel *label_4;
     QSpacerItem *horizontalSpacer_3;
     QLineEdit *lineEdit_6;
+    QPushButton *pushButton_4;
     QHBoxLayout *horizontalLayout_4;
     QLabel *label_5;
     QSpacerItem *horizontalSpacer_4;
     QLineEdit *lineEdit_2;
+    QPushButton *pushButton_6;
     QWidget *tab_3;
     QWidget *verticalWidget_2;
     QVBoxLayout *verticalLayout_2;
@@ -80,6 +84,7 @@ public:
     QSpacerItem *horizontalSpacer_5;
     QLabel *label_7;
     QLineEdit *lineEdit_4;
+    QPushButton *pushButton_7;
     QWidget *tab_4;
     QWidget *verticalWidget_3;
     QVBoxLayout *verticalLayout_3;
@@ -87,14 +92,17 @@ public:
     QLabel *label_9;
     QSpacerItem *horizontalSpacer_7;
     QLineEdit *lineEdit_7;
+    QPushButton *pushButton_8;
     QHBoxLayout *horizontalLayout_8;
     QLabel *label_10;
     QSpacerItem *horizontalSpacer_8;
     QLineEdit *lineEdit_8;
+    QPushButton *pushButton_9;
     QHBoxLayout *horizontalLayout_9;
     QLabel *label_11;
     QSpacerItem *horizontalSpacer_9;
     QLineEdit *lineEdit_9;
+    QPushButton *pushButton_10;
     QWidget *verticalWidget_4;
     QVBoxLayout *verticalLayout_5;
     QHBoxLayout *horizontalLayout_18;
@@ -109,6 +117,7 @@ public:
     QLabel *label_25;
     QSpacerItem *horizontalSpacer_16;
     QComboBox *comboBox_9;
+    QPushButton *pushButton_11;
     QWidget *tab_5;
     QWidget *clockForm;
     QVBoxLayout *verticalLayout_6;
@@ -122,6 +131,7 @@ public:
     QLineEdit *lineEdit_10;
     QSpacerItem *horizontalSpacer_6;
     QLabel *label_20;
+    QPushButton *pushButton_12;
     QWidget *tab_6;
     QWidget *horizontalLayoutWidget;
     QHBoxLayout *horizontalLayout_25;
@@ -155,6 +165,7 @@ public:
     QLabel *label_22;
     QSpacerItem *horizontalSpacer_22;
     QLineEdit *lineEdit_16;
+    QPushButton *pushButton_13;
     QWidget *ButtonForm;
     QHBoxLayout *horizontalLayout_11;
     QSpacerItem *horizontalSpacer_11;
@@ -168,6 +179,11 @@ public:
         if (SettingsForm->objectName().isEmpty())
             SettingsForm->setObjectName(QString::fromUtf8("SettingsForm"));
         SettingsForm->resize(709, 723);
+        QSizePolicy sizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+        sizePolicy.setHorizontalStretch(40);
+        sizePolicy.setVerticalStretch(40);
+        sizePolicy.setHeightForWidth(SettingsForm->sizePolicy().hasHeightForWidth());
+        SettingsForm->setSizePolicy(sizePolicy);
         QFont font;
         font.setBold(true);
         SettingsForm->setFont(font);
@@ -181,6 +197,7 @@ public:
 "font: 75 12pt \"MS Shell Dlg 2\";\n"
 "border-radius:1px;\n"
 "border: 2px solid;\n"
+"border-color: white;\n"
 "}\n"
 "QPushButton, QToolButton{\n"
 "font: 75 12pt \"MS Shell Dlg 2\";\n"
@@ -197,13 +214,13 @@ public:
 "}"));
         settingsTab = new QTabWidget(SettingsForm);
         settingsTab->setObjectName(QString::fromUtf8("settingsTab"));
-        settingsTab->setGeometry(QRect(10, 0, 691, 511));
-        QSizePolicy sizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
-        sizePolicy.setHorizontalStretch(0);
-        sizePolicy.setVerticalStretch(0);
-        sizePolicy.setHeightForWidth(settingsTab->sizePolicy().hasHeightForWidth());
-        settingsTab->setSizePolicy(sizePolicy);
-        settingsTab->setStyleSheet(QString::fromUtf8("#tab_4,#tab_5,#tab_3,#tab_2,#tab_6,#tab_7{\n"
+        settingsTab->setGeometry(QRect(0, 0, 691, 511));
+        QSizePolicy sizePolicy1(QSizePolicy::Maximum, QSizePolicy::Maximum);
+        sizePolicy1.setHorizontalStretch(0);
+        sizePolicy1.setVerticalStretch(0);
+        sizePolicy1.setHeightForWidth(settingsTab->sizePolicy().hasHeightForWidth());
+        settingsTab->setSizePolicy(sizePolicy1);
+        settingsTab->setStyleSheet(QString::fromUtf8("#tab_4,#tab_5,#tab_3,#tab_2,#tab_6,#tab_7,#tab{\n"
 "background-color: rgb(240, 240, 240);\n"
 "}\n"
 ""));
@@ -236,11 +253,11 @@ public:
 
         lineEdit_14 = new QLineEdit(verticalWidget);
         lineEdit_14->setObjectName(QString::fromUtf8("lineEdit_14"));
-        QSizePolicy sizePolicy1(QSizePolicy::Fixed, QSizePolicy::Fixed);
-        sizePolicy1.setHorizontalStretch(0);
-        sizePolicy1.setVerticalStretch(0);
-        sizePolicy1.setHeightForWidth(lineEdit_14->sizePolicy().hasHeightForWidth());
-        lineEdit_14->setSizePolicy(sizePolicy1);
+        QSizePolicy sizePolicy2(QSizePolicy::Fixed, QSizePolicy::Fixed);
+        sizePolicy2.setHorizontalStretch(0);
+        sizePolicy2.setVerticalStretch(0);
+        sizePolicy2.setHeightForWidth(lineEdit_14->sizePolicy().hasHeightForWidth());
+        lineEdit_14->setSizePolicy(sizePolicy2);
         lineEdit_14->setMinimumSize(QSize(70, 35));
 
         horizontalLayout_22->addWidget(lineEdit_14);
@@ -259,8 +276,8 @@ public:
         comboBox->addItem(QString());
         comboBox->addItem(QString());
         comboBox->setObjectName(QString::fromUtf8("comboBox"));
-        sizePolicy1.setHeightForWidth(comboBox->sizePolicy().hasHeightForWidth());
-        comboBox->setSizePolicy(sizePolicy1);
+        sizePolicy2.setHeightForWidth(comboBox->sizePolicy().hasHeightForWidth());
+        comboBox->setSizePolicy(sizePolicy2);
         comboBox->setMinimumSize(QSize(230, 35));
 
         horizontalLayout_21->addWidget(comboBox);
@@ -283,8 +300,8 @@ public:
         comboBox_5->addItem(QString());
         comboBox_5->addItem(QString());
         comboBox_5->setObjectName(QString::fromUtf8("comboBox_5"));
-        sizePolicy1.setHeightForWidth(comboBox_5->sizePolicy().hasHeightForWidth());
-        comboBox_5->setSizePolicy(sizePolicy1);
+        sizePolicy2.setHeightForWidth(comboBox_5->sizePolicy().hasHeightForWidth());
+        comboBox_5->setSizePolicy(sizePolicy2);
         comboBox_5->setMinimumSize(QSize(80, 35));
 
         horizontalLayout_19->addWidget(comboBox_5);
@@ -307,8 +324,8 @@ public:
         comboBox_8->addItem(QString());
         comboBox_8->addItem(QString());
         comboBox_8->setObjectName(QString::fromUtf8("comboBox_8"));
-        sizePolicy1.setHeightForWidth(comboBox_8->sizePolicy().hasHeightForWidth());
-        comboBox_8->setSizePolicy(sizePolicy1);
+        sizePolicy2.setHeightForWidth(comboBox_8->sizePolicy().hasHeightForWidth());
+        comboBox_8->setSizePolicy(sizePolicy2);
         comboBox_8->setMinimumSize(QSize(70, 35));
 
         horizontalLayout_20->addWidget(comboBox_8);
@@ -340,11 +357,16 @@ public:
 
         lineEdit = new QLineEdit(vWidget);
         lineEdit->setObjectName(QString::fromUtf8("lineEdit"));
-        sizePolicy1.setHeightForWidth(lineEdit->sizePolicy().hasHeightForWidth());
-        lineEdit->setSizePolicy(sizePolicy1);
+        sizePolicy2.setHeightForWidth(lineEdit->sizePolicy().hasHeightForWidth());
+        lineEdit->setSizePolicy(sizePolicy2);
         lineEdit->setMinimumSize(QSize(130, 35));
 
         horizontalLayout->addWidget(lineEdit);
+
+        pushButton = new QPushButton(vWidget);
+        pushButton->setObjectName(QString::fromUtf8("pushButton"));
+
+        horizontalLayout->addWidget(pushButton);
 
 
         verticalLayout->addLayout(horizontalLayout);
@@ -362,11 +384,16 @@ public:
 
         lineEdit_5 = new QLineEdit(vWidget);
         lineEdit_5->setObjectName(QString::fromUtf8("lineEdit_5"));
-        sizePolicy1.setHeightForWidth(lineEdit_5->sizePolicy().hasHeightForWidth());
-        lineEdit_5->setSizePolicy(sizePolicy1);
+        sizePolicy2.setHeightForWidth(lineEdit_5->sizePolicy().hasHeightForWidth());
+        lineEdit_5->setSizePolicy(sizePolicy2);
         lineEdit_5->setMinimumSize(QSize(130, 35));
 
         horizontalLayout_2->addWidget(lineEdit_5);
+
+        pushButton_3 = new QPushButton(vWidget);
+        pushButton_3->setObjectName(QString::fromUtf8("pushButton_3"));
+
+        horizontalLayout_2->addWidget(pushButton_3);
 
 
         verticalLayout->addLayout(horizontalLayout_2);
@@ -384,11 +411,16 @@ public:
 
         lineEdit_6 = new QLineEdit(vWidget);
         lineEdit_6->setObjectName(QString::fromUtf8("lineEdit_6"));
-        sizePolicy1.setHeightForWidth(lineEdit_6->sizePolicy().hasHeightForWidth());
-        lineEdit_6->setSizePolicy(sizePolicy1);
+        sizePolicy2.setHeightForWidth(lineEdit_6->sizePolicy().hasHeightForWidth());
+        lineEdit_6->setSizePolicy(sizePolicy2);
         lineEdit_6->setMinimumSize(QSize(130, 35));
 
         horizontalLayout_3->addWidget(lineEdit_6);
+
+        pushButton_4 = new QPushButton(vWidget);
+        pushButton_4->setObjectName(QString::fromUtf8("pushButton_4"));
+
+        horizontalLayout_3->addWidget(pushButton_4);
 
 
         verticalLayout->addLayout(horizontalLayout_3);
@@ -406,11 +438,16 @@ public:
 
         lineEdit_2 = new QLineEdit(vWidget);
         lineEdit_2->setObjectName(QString::fromUtf8("lineEdit_2"));
-        sizePolicy1.setHeightForWidth(lineEdit_2->sizePolicy().hasHeightForWidth());
-        lineEdit_2->setSizePolicy(sizePolicy1);
+        sizePolicy2.setHeightForWidth(lineEdit_2->sizePolicy().hasHeightForWidth());
+        lineEdit_2->setSizePolicy(sizePolicy2);
         lineEdit_2->setMinimumSize(QSize(130, 35));
 
         horizontalLayout_4->addWidget(lineEdit_2);
+
+        pushButton_6 = new QPushButton(vWidget);
+        pushButton_6->setObjectName(QString::fromUtf8("pushButton_6"));
+
+        horizontalLayout_4->addWidget(pushButton_6);
 
 
         verticalLayout->addLayout(horizontalLayout_4);
@@ -420,7 +457,7 @@ public:
         tab_3->setObjectName(QString::fromUtf8("tab_3"));
         verticalWidget_2 = new QWidget(tab_3);
         verticalWidget_2->setObjectName(QString::fromUtf8("verticalWidget_2"));
-        verticalWidget_2->setGeometry(QRect(20, 50, 351, 81));
+        verticalWidget_2->setGeometry(QRect(20, 50, 351, 111));
         verticalWidget_2->setStyleSheet(QString::fromUtf8("#verticalWidget_2{\n"
 "border: 1px solid;\n"
 "}"));
@@ -446,8 +483,8 @@ public:
 
         lineEdit_3 = new QLineEdit(verticalWidget_2);
         lineEdit_3->setObjectName(QString::fromUtf8("lineEdit_3"));
-        sizePolicy1.setHeightForWidth(lineEdit_3->sizePolicy().hasHeightForWidth());
-        lineEdit_3->setSizePolicy(sizePolicy1);
+        sizePolicy2.setHeightForWidth(lineEdit_3->sizePolicy().hasHeightForWidth());
+        lineEdit_3->setSizePolicy(sizePolicy2);
         lineEdit_3->setMinimumSize(QSize(130, 35));
 
         horizontalLayout_5->addWidget(lineEdit_3);
@@ -463,8 +500,8 @@ public:
 
         lineEdit_4 = new QLineEdit(verticalWidget_2);
         lineEdit_4->setObjectName(QString::fromUtf8("lineEdit_4"));
-        sizePolicy1.setHeightForWidth(lineEdit_4->sizePolicy().hasHeightForWidth());
-        lineEdit_4->setSizePolicy(sizePolicy1);
+        sizePolicy2.setHeightForWidth(lineEdit_4->sizePolicy().hasHeightForWidth());
+        lineEdit_4->setSizePolicy(sizePolicy2);
         lineEdit_4->setMinimumSize(QSize(130, 35));
 
         horizontalLayout_5->addWidget(lineEdit_4);
@@ -472,6 +509,11 @@ public:
 
         verticalLayout_2->addLayout(horizontalLayout_5);
 
+        pushButton_7 = new QPushButton(tab_3);
+        pushButton_7->setObjectName(QString::fromUtf8("pushButton_7"));
+        pushButton_7->setGeometry(QRect(170, 170, 70, 23));
+        sizePolicy2.setHeightForWidth(pushButton_7->sizePolicy().hasHeightForWidth());
+        pushButton_7->setSizePolicy(sizePolicy2);
         settingsTab->addTab(tab_3, QString());
         tab_4 = new QWidget();
         tab_4->setObjectName(QString::fromUtf8("tab_4"));
@@ -495,11 +537,16 @@ public:
 
         lineEdit_7 = new QLineEdit(verticalWidget_3);
         lineEdit_7->setObjectName(QString::fromUtf8("lineEdit_7"));
-        sizePolicy1.setHeightForWidth(lineEdit_7->sizePolicy().hasHeightForWidth());
-        lineEdit_7->setSizePolicy(sizePolicy1);
+        sizePolicy2.setHeightForWidth(lineEdit_7->sizePolicy().hasHeightForWidth());
+        lineEdit_7->setSizePolicy(sizePolicy2);
         lineEdit_7->setMinimumSize(QSize(130, 35));
 
         horizontalLayout_7->addWidget(lineEdit_7);
+
+        pushButton_8 = new QPushButton(verticalWidget_3);
+        pushButton_8->setObjectName(QString::fromUtf8("pushButton_8"));
+
+        horizontalLayout_7->addWidget(pushButton_8);
 
 
         verticalLayout_3->addLayout(horizontalLayout_7);
@@ -517,11 +564,16 @@ public:
 
         lineEdit_8 = new QLineEdit(verticalWidget_3);
         lineEdit_8->setObjectName(QString::fromUtf8("lineEdit_8"));
-        sizePolicy1.setHeightForWidth(lineEdit_8->sizePolicy().hasHeightForWidth());
-        lineEdit_8->setSizePolicy(sizePolicy1);
+        sizePolicy2.setHeightForWidth(lineEdit_8->sizePolicy().hasHeightForWidth());
+        lineEdit_8->setSizePolicy(sizePolicy2);
         lineEdit_8->setMinimumSize(QSize(130, 35));
 
         horizontalLayout_8->addWidget(lineEdit_8);
+
+        pushButton_9 = new QPushButton(verticalWidget_3);
+        pushButton_9->setObjectName(QString::fromUtf8("pushButton_9"));
+
+        horizontalLayout_8->addWidget(pushButton_9);
 
 
         verticalLayout_3->addLayout(horizontalLayout_8);
@@ -539,18 +591,23 @@ public:
 
         lineEdit_9 = new QLineEdit(verticalWidget_3);
         lineEdit_9->setObjectName(QString::fromUtf8("lineEdit_9"));
-        sizePolicy1.setHeightForWidth(lineEdit_9->sizePolicy().hasHeightForWidth());
-        lineEdit_9->setSizePolicy(sizePolicy1);
+        sizePolicy2.setHeightForWidth(lineEdit_9->sizePolicy().hasHeightForWidth());
+        lineEdit_9->setSizePolicy(sizePolicy2);
         lineEdit_9->setMinimumSize(QSize(130, 35));
 
         horizontalLayout_9->addWidget(lineEdit_9);
+
+        pushButton_10 = new QPushButton(verticalWidget_3);
+        pushButton_10->setObjectName(QString::fromUtf8("pushButton_10"));
+
+        horizontalLayout_9->addWidget(pushButton_10);
 
 
         verticalLayout_3->addLayout(horizontalLayout_9);
 
         verticalWidget_4 = new QWidget(tab_4);
         verticalWidget_4->setObjectName(QString::fromUtf8("verticalWidget_4"));
-        verticalWidget_4->setGeometry(QRect(20, 200, 431, 131));
+        verticalWidget_4->setGeometry(QRect(20, 200, 431, 191));
         verticalWidget_4->setStyleSheet(QString::fromUtf8("#verticalWidget_4{border: 1px solid;\n"
 "}"));
         verticalLayout_5 = new QVBoxLayout(verticalWidget_4);
@@ -570,8 +627,8 @@ public:
         comboBox_7->addItem(QString());
         comboBox_7->addItem(QString());
         comboBox_7->setObjectName(QString::fromUtf8("comboBox_7"));
-        sizePolicy1.setHeightForWidth(comboBox_7->sizePolicy().hasHeightForWidth());
-        comboBox_7->setSizePolicy(sizePolicy1);
+        sizePolicy2.setHeightForWidth(comboBox_7->sizePolicy().hasHeightForWidth());
+        comboBox_7->setSizePolicy(sizePolicy2);
         comboBox_7->setMinimumSize(QSize(70, 35));
 
         horizontalLayout_18->addWidget(comboBox_7);
@@ -594,8 +651,8 @@ public:
         comboBox_4->addItem(QString());
         comboBox_4->addItem(QString());
         comboBox_4->setObjectName(QString::fromUtf8("comboBox_4"));
-        sizePolicy1.setHeightForWidth(comboBox_4->sizePolicy().hasHeightForWidth());
-        comboBox_4->setSizePolicy(sizePolicy1);
+        sizePolicy2.setHeightForWidth(comboBox_4->sizePolicy().hasHeightForWidth());
+        comboBox_4->setSizePolicy(sizePolicy2);
         comboBox_4->setMinimumSize(QSize(70, 35));
 
         horizontalLayout_16->addWidget(comboBox_4);
@@ -618,14 +675,22 @@ public:
         comboBox_9->addItem(QString());
         comboBox_9->addItem(QString());
         comboBox_9->setObjectName(QString::fromUtf8("comboBox_9"));
-        sizePolicy1.setHeightForWidth(comboBox_9->sizePolicy().hasHeightForWidth());
-        comboBox_9->setSizePolicy(sizePolicy1);
+        sizePolicy2.setHeightForWidth(comboBox_9->sizePolicy().hasHeightForWidth());
+        comboBox_9->setSizePolicy(sizePolicy2);
         comboBox_9->setMinimumSize(QSize(70, 35));
 
         horizontalLayout_17->addWidget(comboBox_9);
 
 
         verticalLayout_5->addLayout(horizontalLayout_17);
+
+        pushButton_11 = new QPushButton(verticalWidget_4);
+        pushButton_11->setObjectName(QString::fromUtf8("pushButton_11"));
+        sizePolicy2.setHeightForWidth(pushButton_11->sizePolicy().hasHeightForWidth());
+        pushButton_11->setSizePolicy(sizePolicy2);
+        pushButton_11->setMinimumSize(QSize(45, 35));
+
+        verticalLayout_5->addWidget(pushButton_11);
 
         settingsTab->addTab(tab_4, QString());
         tab_5 = new QWidget();
@@ -671,8 +736,8 @@ public:
 
         lineEdit_10 = new QLineEdit(clockForm);
         lineEdit_10->setObjectName(QString::fromUtf8("lineEdit_10"));
-        sizePolicy1.setHeightForWidth(lineEdit_10->sizePolicy().hasHeightForWidth());
-        lineEdit_10->setSizePolicy(sizePolicy1);
+        sizePolicy2.setHeightForWidth(lineEdit_10->sizePolicy().hasHeightForWidth());
+        lineEdit_10->setSizePolicy(sizePolicy2);
         lineEdit_10->setMinimumSize(QSize(130, 35));
 
         horizontalLayout_10->addWidget(lineEdit_10);
@@ -690,6 +755,12 @@ public:
 
         verticalLayout_6->addLayout(horizontalLayout_10);
 
+        pushButton_12 = new QPushButton(tab_5);
+        pushButton_12->setObjectName(QString::fromUtf8("pushButton_12"));
+        pushButton_12->setGeometry(QRect(260, 160, 70, 35));
+        sizePolicy2.setHeightForWidth(pushButton_12->sizePolicy().hasHeightForWidth());
+        pushButton_12->setSizePolicy(sizePolicy2);
+        pushButton_12->setMinimumSize(QSize(45, 35));
         settingsTab->addTab(tab_5, QString());
         tab_6 = new QWidget();
         tab_6->setObjectName(QString::fromUtf8("tab_6"));
@@ -729,8 +800,8 @@ public:
 
         spinBox_2 = new QSpinBox(horizontalLayoutWidget);
         spinBox_2->setObjectName(QString::fromUtf8("spinBox_2"));
-        sizePolicy1.setHeightForWidth(spinBox_2->sizePolicy().hasHeightForWidth());
-        spinBox_2->setSizePolicy(sizePolicy1);
+        sizePolicy2.setHeightForWidth(spinBox_2->sizePolicy().hasHeightForWidth());
+        spinBox_2->setSizePolicy(sizePolicy2);
         spinBox_2->setMinimumSize(QSize(50, 35));
 
         horizontalLayout_25->addWidget(spinBox_2);
@@ -759,8 +830,8 @@ public:
 
         lineEdit_11 = new QLineEdit(vWidget_2);
         lineEdit_11->setObjectName(QString::fromUtf8("lineEdit_11"));
-        sizePolicy1.setHeightForWidth(lineEdit_11->sizePolicy().hasHeightForWidth());
-        lineEdit_11->setSizePolicy(sizePolicy1);
+        sizePolicy2.setHeightForWidth(lineEdit_11->sizePolicy().hasHeightForWidth());
+        lineEdit_11->setSizePolicy(sizePolicy2);
         lineEdit_11->setMinimumSize(QSize(130, 35));
 
         horizontalLayout_13->addWidget(lineEdit_11);
@@ -781,8 +852,8 @@ public:
 
         lineEdit_12 = new QLineEdit(vWidget_2);
         lineEdit_12->setObjectName(QString::fromUtf8("lineEdit_12"));
-        sizePolicy1.setHeightForWidth(lineEdit_12->sizePolicy().hasHeightForWidth());
-        lineEdit_12->setSizePolicy(sizePolicy1);
+        sizePolicy2.setHeightForWidth(lineEdit_12->sizePolicy().hasHeightForWidth());
+        lineEdit_12->setSizePolicy(sizePolicy2);
         lineEdit_12->setMinimumSize(QSize(130, 35));
 
         horizontalLayout_14->addWidget(lineEdit_12);
@@ -803,8 +874,8 @@ public:
 
         lineEdit_13 = new QLineEdit(vWidget_2);
         lineEdit_13->setObjectName(QString::fromUtf8("lineEdit_13"));
-        sizePolicy1.setHeightForWidth(lineEdit_13->sizePolicy().hasHeightForWidth());
-        lineEdit_13->setSizePolicy(sizePolicy1);
+        sizePolicy2.setHeightForWidth(lineEdit_13->sizePolicy().hasHeightForWidth());
+        lineEdit_13->setSizePolicy(sizePolicy2);
         lineEdit_13->setMinimumSize(QSize(130, 35));
 
         horizontalLayout_15->addWidget(lineEdit_13);
@@ -825,8 +896,8 @@ public:
 
         lineEdit_15 = new QLineEdit(vWidget_2);
         lineEdit_15->setObjectName(QString::fromUtf8("lineEdit_15"));
-        sizePolicy1.setHeightForWidth(lineEdit_15->sizePolicy().hasHeightForWidth());
-        lineEdit_15->setSizePolicy(sizePolicy1);
+        sizePolicy2.setHeightForWidth(lineEdit_15->sizePolicy().hasHeightForWidth());
+        lineEdit_15->setSizePolicy(sizePolicy2);
         lineEdit_15->setMinimumSize(QSize(130, 35));
 
         horizontalLayout_23->addWidget(lineEdit_15);
@@ -847,8 +918,8 @@ public:
 
         lineEdit_16 = new QLineEdit(vWidget_2);
         lineEdit_16->setObjectName(QString::fromUtf8("lineEdit_16"));
-        sizePolicy1.setHeightForWidth(lineEdit_16->sizePolicy().hasHeightForWidth());
-        lineEdit_16->setSizePolicy(sizePolicy1);
+        sizePolicy2.setHeightForWidth(lineEdit_16->sizePolicy().hasHeightForWidth());
+        lineEdit_16->setSizePolicy(sizePolicy2);
         lineEdit_16->setMinimumSize(QSize(130, 35));
 
         horizontalLayout_24->addWidget(lineEdit_16);
@@ -856,6 +927,9 @@ public:
 
         verticalLayout_4->addLayout(horizontalLayout_24);
 
+        pushButton_13 = new QPushButton(tab_7);
+        pushButton_13->setObjectName(QString::fromUtf8("pushButton_13"));
+        pushButton_13->setGeometry(QRect(400, 270, 81, 31));
         settingsTab->addTab(tab_7, QString());
         ButtonForm = new QWidget(SettingsForm);
         ButtonForm->setObjectName(QString::fromUtf8("ButtonForm"));
@@ -869,11 +943,11 @@ public:
 
         pushButton_2 = new QPushButton(ButtonForm);
         pushButton_2->setObjectName(QString::fromUtf8("pushButton_2"));
-        QSizePolicy sizePolicy2(QSizePolicy::Expanding, QSizePolicy::Expanding);
-        sizePolicy2.setHorizontalStretch(0);
-        sizePolicy2.setVerticalStretch(0);
-        sizePolicy2.setHeightForWidth(pushButton_2->sizePolicy().hasHeightForWidth());
-        pushButton_2->setSizePolicy(sizePolicy2);
+        QSizePolicy sizePolicy3(QSizePolicy::Expanding, QSizePolicy::Expanding);
+        sizePolicy3.setHorizontalStretch(0);
+        sizePolicy3.setVerticalStretch(0);
+        sizePolicy3.setHeightForWidth(pushButton_2->sizePolicy().hasHeightForWidth());
+        pushButton_2->setSizePolicy(sizePolicy3);
         pushButton_2->setStyleSheet(QString::fromUtf8("background: rgb(107, 107, 159);\n"
 "color: white;"));
 
@@ -881,8 +955,8 @@ public:
 
         StartButton = new QPushButton(ButtonForm);
         StartButton->setObjectName(QString::fromUtf8("StartButton"));
-        sizePolicy2.setHeightForWidth(StartButton->sizePolicy().hasHeightForWidth());
-        StartButton->setSizePolicy(sizePolicy2);
+        sizePolicy3.setHeightForWidth(StartButton->sizePolicy().hasHeightForWidth());
+        StartButton->setSizePolicy(sizePolicy3);
         QFont font1;
         font1.setFamilies({QString::fromUtf8("MS Shell Dlg 2")});
         font1.setPointSize(12);
@@ -897,8 +971,8 @@ public:
 
         pushButton_5 = new QPushButton(ButtonForm);
         pushButton_5->setObjectName(QString::fromUtf8("pushButton_5"));
-        sizePolicy2.setHeightForWidth(pushButton_5->sizePolicy().hasHeightForWidth());
-        pushButton_5->setSizePolicy(sizePolicy2);
+        sizePolicy3.setHeightForWidth(pushButton_5->sizePolicy().hasHeightForWidth());
+        pushButton_5->setSizePolicy(sizePolicy3);
         pushButton_5->setStyleSheet(QString::fromUtf8("background:red;\n"
 "color: white;"));
 
@@ -910,7 +984,7 @@ public:
 
         retranslateUi(SettingsForm);
 
-        settingsTab->setCurrentIndex(6);
+        settingsTab->setCurrentIndex(2);
 
 
         QMetaObject::connectSlotsByName(SettingsForm);
@@ -935,17 +1009,25 @@ public:
 
         settingsTab->setTabText(settingsTab->indexOf(tab), QCoreApplication::translate("SettingsForm", "General ", nullptr));
         label_3->setText(QCoreApplication::translate("SettingsForm", "APD Gain L2 Set", nullptr));
+        pushButton->setText(QCoreApplication::translate("SettingsForm", "Reset", nullptr));
         label_2->setText(QCoreApplication::translate("SettingsForm", "APD BIAS DAC", nullptr));
+        pushButton_3->setText(QCoreApplication::translate("SettingsForm", "Reset", nullptr));
         label_4->setText(QCoreApplication::translate("SettingsForm", "APD Sig RMS L2 Set", nullptr));
+        pushButton_4->setText(QCoreApplication::translate("SettingsForm", "Reset", nullptr));
         label_5->setText(QCoreApplication::translate("SettingsForm", "APD OPT PWR  L2 Set", nullptr));
+        pushButton_6->setText(QCoreApplication::translate("SettingsForm", "Reset", nullptr));
         settingsTab->setTabText(settingsTab->indexOf(tab_2), QCoreApplication::translate("SettingsForm", "Signal", nullptr));
         radioButton->setText(QCoreApplication::translate("SettingsForm", "Enable Glitch Filter", nullptr));
         label_6->setText(QCoreApplication::translate("SettingsForm", "Kp", nullptr));
         label_7->setText(QCoreApplication::translate("SettingsForm", "Kv", nullptr));
+        pushButton_7->setText(QCoreApplication::translate("SettingsForm", "Default", nullptr));
         settingsTab->setTabText(settingsTab->indexOf(tab_3), QCoreApplication::translate("SettingsForm", "Digital Filter", nullptr));
         label_9->setText(QCoreApplication::translate("SettingsForm", "SSI Squeltch", nullptr));
+        pushButton_8->setText(QCoreApplication::translate("SettingsForm", "Reset", nullptr));
         label_10->setText(QCoreApplication::translate("SettingsForm", "Gain  min", nullptr));
+        pushButton_9->setText(QCoreApplication::translate("SettingsForm", "Reset", nullptr));
         label_11->setText(QCoreApplication::translate("SettingsForm", "Gain max", nullptr));
+        pushButton_10->setText(QCoreApplication::translate("SettingsForm", "Reset", nullptr));
         label_26->setText(QCoreApplication::translate("SettingsForm", "Auto Gain adjust  mode", nullptr));
         comboBox_7->setItemText(0, QCoreApplication::translate("SettingsForm", "OFF", nullptr));
         comboBox_7->setItemText(1, QCoreApplication::translate("SettingsForm", "ON", nullptr));
@@ -958,12 +1040,14 @@ public:
         comboBox_9->setItemText(0, QCoreApplication::translate("SettingsForm", "OFF", nullptr));
         comboBox_9->setItemText(1, QCoreApplication::translate("SettingsForm", "ON", nullptr));
 
+        pushButton_11->setText(QCoreApplication::translate("SettingsForm", "Default", nullptr));
         settingsTab->setTabText(settingsTab->indexOf(tab_4), QCoreApplication::translate("SettingsForm", "APD Settings", nullptr));
         label_21->setText(QCoreApplication::translate("SettingsForm", "Type", nullptr));
         radioButton_2->setText(QCoreApplication::translate("SettingsForm", "SCLK1", nullptr));
         radioButton_3->setText(QCoreApplication::translate("SettingsForm", "SCLK2", nullptr));
         label_18->setText(QCoreApplication::translate("SettingsForm", "Frequency", nullptr));
         label_20->setText(QCoreApplication::translate("SettingsForm", "Hz", nullptr));
+        pushButton_12->setText(QCoreApplication::translate("SettingsForm", "Default", nullptr));
         settingsTab->setTabText(settingsTab->indexOf(tab_5), QCoreApplication::translate("SettingsForm", "Clock", nullptr));
         label_24->setText(QCoreApplication::translate("SettingsForm", "Vetor", nullptr));
         label_23->setText(QCoreApplication::translate("SettingsForm", "Level", nullptr));
@@ -973,6 +1057,7 @@ public:
         label_13->setText(QCoreApplication::translate("SettingsForm", "GSE Sig RMS Gain", nullptr));
         label_17->setText(QCoreApplication::translate("SettingsForm", "GSE Meas DC Low", nullptr));
         label_22->setText(QCoreApplication::translate("SettingsForm", "GSE Meas DC High", nullptr));
+        pushButton_13->setText(QCoreApplication::translate("SettingsForm", "Update", nullptr));
         settingsTab->setTabText(settingsTab->indexOf(tab_7), QCoreApplication::translate("SettingsForm", "Diagnostics", nullptr));
         pushButton_2->setText(QCoreApplication::translate("SettingsForm", "Apply", nullptr));
         StartButton->setText(QCoreApplication::translate("SettingsForm", "OK", nullptr));
