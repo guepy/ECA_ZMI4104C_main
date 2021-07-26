@@ -1,0 +1,367 @@
+﻿  pch.cpp
+  sis3100_vme_calls.cpp
+  dllmain.cpp
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\sis1100_lib\sis1100w.h(39,24): error C2011: 'sis1100_irq_ack': 'struct' type redefinition
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\sis1100_lib\sis1100w.h(39): message : see declaration of 'sis1100_irq_ack'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\sis1100_lib\sis1100w.h(42,24): error C2011: 'sis1100_irq_get': 'struct' type redefinition
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\sis1100_lib\sis1100w.h(42): message : see declaration of 'sis1100_irq_get'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\sis1100_lib\sis1100w.h(51,24): error C2011: 'sis1100_ctrl_rw': 'struct' type redefinition
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\sis1100_lib\sis1100w.h(51): message : see declaration of 'sis1100_ctrl_rw'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\sis1100_lib\sis1100w.h(59,24): error C2011: 'sis1100_irq_ctl': 'struct' type redefinition
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\sis1100_lib\sis1100w.h(59): message : see declaration of 'sis1100_irq_ctl'
+  eca_soleil_zmi4104c.cpp
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\sis1100_lib\sis1100w.h(39,24): error C2011: 'sis1100_irq_ack': 'struct' type redefinition
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\sis1100_lib\sis1100w.h(39): message : see declaration of 'sis1100_irq_ack'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\sis1100_lib\sis1100w.h(42,24): error C2011: 'sis1100_irq_get': 'struct' type redefinition
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\sis1100_lib\sis1100w.h(42): message : see declaration of 'sis1100_irq_get'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\sis1100_lib\sis1100w.h(51,24): error C2011: 'sis1100_ctrl_rw': 'struct' type redefinition
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\sis1100_lib\sis1100w.h(51): message : see declaration of 'sis1100_ctrl_rw'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\sis1100_lib\sis1100w.h(59,24): error C2011: 'sis1100_irq_ctl': 'struct' type redefinition
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\sis1100_lib\sis1100w.h(59): message : see declaration of 'sis1100_irq_ctl'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(5,1): warning C4273: 'CreateEvents': inconsistent dll linkage
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(179,32): message : see previous definition of 'CreateEvents'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(64,28): error C2664: 'HANDLE CreateThread(LPSECURITY_ATTRIBUTES,SIZE_T,LPTHREAD_START_ROUTINE,LPVOID,DWORD,LPDWORD)': cannot convert argument 3 from 'DWORD (__cdecl *)(LPVOID)' to 'LPTHREAD_START_ROUTINE'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(67,3): message : None of the functions with this name in scope match the target type
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\processthreadsapi.h(170,1): message : see declaration of 'CreateThread'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(79,24): error C2664: 'HANDLE CreateThread(LPSECURITY_ATTRIBUTES,SIZE_T,LPTHREAD_START_ROUTINE,LPVOID,DWORD,LPDWORD)': cannot convert argument 3 from 'DWORD (__cdecl *)(LPVOID)' to 'LPTHREAD_START_ROUTINE'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(82,3): message : None of the functions with this name in scope match the target type
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\processthreadsapi.h(170,1): message : see declaration of 'CreateThread'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(125,1): warning C4273: 'CloseThreads': inconsistent dll linkage
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(181,32): message : see previous definition of 'CloseThreads'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(141,33): error C2440: '=': cannot convert from 'void *' to 'double *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(141,14): message : Conversion from 'void*' to pointer to non-'void' requires an explicit cast
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(418,100): warning C4273: 'configureCEChardware': inconsistent dll linkage
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(185,31): message : see previous definition of 'configureCEChardware'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(461,89): warning C4273: 'readCEerrorStatReg': inconsistent dll linkage
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(186,31): message : see previous definition of 'readCEerrorStatReg'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(466,5): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(466,17): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(677,42): warning C4273: 'EnableSinglePassInterferometer': inconsistent dll linkage
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(226,31): message : see previous definition of 'EnableSinglePassInterferometer'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(684,42): warning C4273: 'EnableDoublePassInterferometer': inconsistent dll linkage
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(227,31): message : see previous definition of 'EnableDoublePassInterferometer'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(693,63): warning C4273: 'InitAxis': inconsistent dll linkage
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(190,31): message : see previous definition of 'InitAxis'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(728,77): warning C4273: 'DisableAllVMEInterrupts': inconsistent dll linkage
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(253,31): message : see previous definition of 'DisableAllVMEInterrupts'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(733,5): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(733,17): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(739,5): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(739,17): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(744,5): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(744,17): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(750,76): warning C4273: 'EnableAllVMEInterrupts': inconsistent dll linkage
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(258,31): message : see previous definition of 'EnableAllVMEInterrupts'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(755,5): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(755,17): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(761,5): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(761,17): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(767,5): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(767,17): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(773,78): warning C4273: 'EnableVMEGlobalInterrupt': inconsistent dll linkage
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(251,31): message : see previous definition of 'EnableVMEGlobalInterrupt'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(779,5): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(779,17): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(784,5): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(784,17): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(790,92): warning C4273: 'processRAMData': inconsistent dll linkage
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(266,31): message : see previous definition of 'processRAMData'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(876,80): warning C4273: 'processFifoData': inconsistent dll linkage
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(267,31): message : see previous definition of 'processFifoData'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(933,125): warning C4273: 'configureFifoFlyscan': inconsistent dll linkage
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(268,31): message : see previous definition of 'configureFifoFlyscan'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(995,102): warning C4273: 'fifoFlyscan': inconsistent dll linkage
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(269,31): message : see previous definition of 'fifoFlyscan'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(999,42): error C2440: '=': cannot convert from 'void *' to 'PUCHAR'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(999,18): message : Conversion from 'void*' to pointer to non-'void' requires an explicit cast
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1034,70): warning C4273: 'isFifoDavbitSet': inconsistent dll linkage
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(270,32): message : see previous definition of 'isFifoDavbitSet'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1037,5): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1037,17): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1039,3): warning C4305: 'return': truncation from 'int' to 'bool'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1045,70): warning C4273: 'isFifoOVFbitSet': inconsistent dll linkage
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(271,32): message : see previous definition of 'isFifoOVFbitSet'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1048,5): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1048,17): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1050,3): warning C4305: 'return': truncation from 'int' to 'bool'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1074,101): warning C4273: 'configureFlyscan': inconsistent dll linkage
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(272,31): message : see previous definition of 'configureFlyscan'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1109,6): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1109,18): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1116,6): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1116,18): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1122,6): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1122,18): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1144,72): warning C4273: 'startAquisition': inconsistent dll linkage
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(220,31): message : see previous definition of 'startAquisition'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1151,5): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1151,17): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1158,6): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1158,18): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1166,71): warning C4273: 'stopAquisition': inconsistent dll linkage
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(221,31): message : see previous definition of 'stopAquisition'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1173,5): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1173,17): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1180,6): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1180,18): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1195,39): warning C4273: 'allocateMemSpace': inconsistent dll linkage
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(265,33): message : see previous definition of 'allocateMemSpace'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1277,122): warning C4273: 'getFlyscanData': inconsistent dll linkage
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(264,31): message : see previous definition of 'getFlyscanData'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1289,6): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1289,18): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1353,7): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1353,19): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1379,44): warning C4273: 'isRAMbusy': inconsistent dll linkage
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(241,32): message : see previous definition of 'isRAMbusy'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1384,5): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1384,17): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1411,92): warning C4273: 'setVMEIntVector': inconsistent dll linkage
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(260,31): message : see previous definition of 'setVMEIntVector'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1417,61): error C2664: 'int readModifyWrite(char *,SIS1100_Device_Struct *,unsigned int,unsigned int,unsigned char)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1417,18): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1227,5): message : see declaration of 'readModifyWrite'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1436,59): warning C4273: 'checkValues': inconsistent dll linkage
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(239,31): message : see previous definition of 'checkValues'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1457,92): warning C4273: 'setVMEIntLevel': inconsistent dll linkage
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(261,31): message : see previous definition of 'setVMEIntLevel'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1464,5): error C2664: 'int readModifyWrite(char *,SIS1100_Device_Struct *,unsigned int,unsigned int,unsigned char)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1464,22): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1227,5): message : see declaration of 'readModifyWrite'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1480,76): warning C4273: 'DisableGlobalInterrupt': inconsistent dll linkage
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(252,31): message : see previous definition of 'DisableGlobalInterrupt'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1485,60): error C2664: 'int readModifyWrite(char *,SIS1100_Device_Struct *,unsigned int,unsigned int,unsigned char)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1485,18): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1227,5): message : see declaration of 'readModifyWrite'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1503,102): warning C4273: 'EnableVMEInterrupt_bit': inconsistent dll linkage
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(249,31): message : see previous definition of 'EnableVMEInterrupt_bit'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1511,6): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1511,18): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1519,7): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1519,19): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1526,7): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1526,19): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1533,7): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1533,19): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1540,7): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1540,19): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1547,7): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1547,19): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1554,7): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1554,19): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1561,7): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1561,19): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1568,7): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1568,19): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1575,7): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1575,19): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1582,7): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1582,19): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1589,7): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1589,19): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1596,7): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1596,19): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1603,7): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1603,19): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1610,7): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1610,19): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1617,7): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1617,19): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1624,7): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1624,19): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1636,6): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1636,18): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1644,7): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1644,19): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1651,7): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1651,19): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1658,7): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1658,19): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1665,7): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1665,19): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1672,7): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1672,19): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1679,7): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1679,19): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1692,6): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1692,18): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1700,7): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1700,19): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1707,7): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1707,19): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1714,7): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1714,19): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1721,7): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1721,19): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1728,7): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1728,19): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1735,7): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1735,19): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1742,7): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1742,19): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1749,7): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1749,19): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1756,7): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1756,19): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1763,7): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1763,19): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1770,7): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1770,19): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1777,7): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1777,19): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1803,103): warning C4273: 'DisableVMEInterrupt_bit': inconsistent dll linkage
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(250,31): message : see previous definition of 'DisableVMEInterrupt_bit'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1809,6): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1809,18): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1815,7): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1815,19): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1820,7): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1820,19): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1825,7): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1825,19): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1830,7): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1830,19): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1835,7): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1835,19): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1840,7): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1840,19): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1845,7): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1845,19): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1850,7): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1850,19): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1855,7): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1855,19): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1860,7): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1860,19): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1865,7): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1865,19): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1870,7): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1870,19): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1875,7): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1875,19): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1880,7): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1880,19): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1885,7): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1885,19): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1890,7): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1890,19): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1900,6): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1900,18): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1906,7): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1906,19): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1911,7): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1911,19): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1916,7): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1916,19): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1921,7): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1921,19): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1926,7): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1926,19): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1931,7): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1931,19): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1942,6): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1942,18): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1948,7): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1948,19): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1953,7): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1953,19): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1958,7): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1958,19): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1963,7): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1963,19): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1968,7): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1968,19): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1973,7): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1973,19): message : Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see declaration of 'Read_Write'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1978,7): error C2664: 'int Read_Write(char *,SIS1100_Device_Struct *,unsigned int,unsigned int *,unsigned short)': cannot convert argument 1 from 'const char [7]' to 'char *'
+C:\Users\guekam\source\repos\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1978,7): fatal error C1003: error count exceeds 100; stopping compilation
+  Generating Code...
