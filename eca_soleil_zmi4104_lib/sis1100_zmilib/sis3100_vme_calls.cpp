@@ -37,9 +37,9 @@
 /*---------------------------------------------------------------------------*/
 /* Include files                                                             */
 /*---------------------------------------------------------------------------*/
-
 #include "pch.h"
 #include "sis3100_vme_calls.h"
+#include "sis1100w.h"
 
 	typedef unsigned char           uint8_t;
 	typedef unsigned short          uint16_t;

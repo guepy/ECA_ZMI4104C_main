@@ -21,7 +21,8 @@ MainWindow::MainWindow(QWidget *parent)
     flyscanForm=new FlyscanForm;
     posOffsetForm=new positionOffsetForm;
     presPositionForm = new presetPositionForm;
-
+    dev = new SIS1100_Device_Struct;
+    bias_mode = BIAS_SIG_RMS_ADJUST_MODE;
 }
 
 MainWindow::~MainWindow()
@@ -132,5 +133,24 @@ void MainWindow::on_toolButton_2_clicked()
 {
     CEsettingsForm* cecForm=new CEsettingsForm;
     cecForm->show();
+}
+
+// INititialize ZMI button
+void MainWindow::on_pushButton_7_clicked()
+{
+    unsigned int a=0xFF546;
+    double d=0;
+    INFO("Qt app just started!!!\n");
+    convertFloat2Double(a,&d);
+    printf("double=%lf",d);
+    /*
+    if(Init_SIS_boards(dev)!=0) FATAL("Failed to initialize SIS boards\n");
+        //Sleep(10);
+        /*if(Init_ZMI_bd(dev) != 0) printf("Failed to initialize ZMI board\n");
+
+        if(InitAxis(dev, bias_mode) != 0) printf("Failed to initialize axis\n");
+        EnableDoublePassInterferometer();*/
+
+   // if(Init_SIS_boards(dev2)!=0) FAT
 }
 

@@ -20,12 +20,20 @@ SOURCES += \
 
 HEADERS += \
     cesettingsform.h \
+    eca_soleil_zmi4104c.h \
     flyscanform.h \
     mainwindow.h \
     myslots.h \
     positionoffsetform.h \
     presetpositionform.h \
-    settingsform.h
+    settingsform.h \
+    sis1100w.h \
+    sis1100wStat.h \
+    sis1100wType.h \
+    sis3100.h \
+    sis3100_vme_calls.h \
+    wingetopt.h \
+    zVME_const.h
 
 FORMS += \
     cesettingsform.ui \
@@ -47,3 +55,16 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 RESOURCES += \
     ressources.qrc
+
+
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../eca_soleil_zmi4104_lib/x64/Release/ -leca_soleil_zmi4104_lib
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../eca_soleil_zmi4104_lib/x64/Debug/ -leca_soleil_zmi4104_lib
+
+INCLUDEPATH += $$PWD/../eca_soleil_zmi4104_lib/x64/Release
+DEPENDPATH += $$PWD/../eca_soleil_zmi4104_lib/x64/Release
+
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../eca_soleil_zmi4104_lib/sis1100_zmilib/ -lsis1100w_x64
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../eca_soleil_zmi4104_lib/sis1100_zmilib/ -lsis1100w_x64
+
+INCLUDEPATH += $$PWD/../eca_soleil_zmi4104_lib/sis1100_zmilib
+DEPENDPATH += $$PWD/../eca_soleil_zmi4104_lib/sis1100_zmilib

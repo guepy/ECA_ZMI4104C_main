@@ -1,7 +1,13 @@
 ﻿#include "pch.h"
 #include "eca_soleil_zmi4104c.h"
 
-void CreateEvents(void)
+void modifyBaseAddress(UINT baseAddressAxis3) {
+	BASE_ADDRESS[0] = baseAddressAxis3 - 0x2000;
+	BASE_ADDRESS[1] = baseAddressAxis3 - 0x1000;
+	BASE_ADDRESS[2] = baseAddressAxis3;
+	BASE_ADDRESS[3] = baseAddressAxis3 + 0x1000;
+}
+void CreateEvents()
 {
 
 	// Create a manual-reset event object. The write thread sets this
@@ -137,8 +143,8 @@ void CloseEvents()
 	CloseHandle(lemoIN1Event);
 }
 int lemoInterruptCallbackFunction(SIS1100_Device_Struct* dev, FILE* fd) {
-	double* pos;
-	pos = calloc(4, sizeof(double));
+	double pos[4];
+
 	if (ReadSamplePosition37_ForAllAxis(dev, pos) != RET_SUCCESS) WARN("read sample position faillure\n");
 
 	fprintf(fd, "%lf;%lf;%lf;%lf\n", pos[0], pos[1], pos[2], pos[3]);
@@ -479,7 +485,7 @@ int readCEerrorStatReg(SIS1100_Device_Struct* dev, unsigned char axis, PUINT CEs
 	}
 	return RET_SUCCESS;
 }
-DWORD WaitForVmeIrqThreadFunc(LPVOID lpParam)
+DWORD WINAPI WaitForVmeIrqThreadFunc(LPVOID lpParam)
 {
 	int rc;
 	uint32_t doorbell_value = 0;
@@ -565,7 +571,7 @@ DWORD WaitForVmeIrqThreadFunc(LPVOID lpParam)
 	//INFO("Terminating Thread %d..\n", GetCurrentThreadId());
 	return RET_SUCCESS;
 }
-DWORD WaitForSis3100IrqThreadFunc(LPVOID lpParam)
+DWORD WINAPI WaitForSis3100IrqThreadFunc(LPVOID lpParam)
 {
 	int rc;
 	uint32_t doorbell_value;
@@ -793,7 +799,7 @@ int processRAMData(UINT nbrAxis, PUINT base_A24D32_axis1_ptr, PUINT base_A24D32_
 	static FILE* fd;
 	UINT val1 = 0, val2 = 0;
 	double pos1 = 0.0, pos2 = 0.0;
-
+	char path[600];
 	INFO("Processing RAM data\n");
 	if (nbrAxis >= 2) {
 		if (!base_A24D32_axis1_ptr || !base_A24D32_axis3_ptr) {
@@ -806,7 +812,8 @@ int processRAMData(UINT nbrAxis, PUINT base_A24D32_axis1_ptr, PUINT base_A24D32_
 		}
 	}
 	INFO("Opening file to store position values \n");
-	if (fopen_s(&fd, POSITION_FILE_PATH"Position_values.csv", "a") != RET_SUCCESS)
+	sprintf_s(path, sizeof(path), "%s\\Position_values.csv", POSITION_FILE_PATH);
+	if (fopen_s(&fd, path, "a") != RET_SUCCESS)
 		return RET_FAILED;
 	fprintf(fd, "[***********; %d/%d/%d at %d:%d] ;************\n", lt.wYear, lt.wMonth, lt.wDay, lt.wHour, lt.wMinute);
 	switch (nbrAxis)
@@ -879,10 +886,11 @@ int processFifoData(UINT nbrAxis, PUCHAR axisTab, PUINT memPtr, UINT nbrOfPts) {
 	static FILE* fd;
 	UINT val1 = 0, val2 = 0;
 	double pos1 = 0.0, pos2 = 0.0, pos3 = 0.0, pos4 = 0.0;
-
+	char path[600];
 	INFO("Processing Fifo data\n");
 	INFO("Opening file to store position values \n");
-	if (fopen_s(&fd, POSITION_FILE_PATH"Fifo_position_values.csv", "a") != RET_SUCCESS)
+	sprintf_s(path, sizeof(path), "%s\\Fifo_position_values.csv", POSITION_FILE_PATH);
+	if (fopen_s(&fd,path, "a") != RET_SUCCESS)
 		return RET_FAILED;
 	fprintf(fd, "[***********; %d/%d/%d at %d:%d] ;************\n", lt.wYear, lt.wMonth, lt.wDay, lt.wHour, lt.wMinute);
 	switch (nbrAxis)
@@ -996,7 +1004,7 @@ int fifoFlyscan(SIS1100_Device_Struct* dev, fifoParam param, PUINT startAddress,
 	UINT uint_vme_data = 0, uint_vme_address = 0, pos = 0;
 	PUCHAR axisPtr;
 	va_list argPtr;
-	axisPtr = calloc(nbrAxis, sizeof(UCHAR));
+	axisPtr = (PUCHAR)calloc(nbrAxis, sizeof(UCHAR));
 	INFO("setting up FIFO flyscan...\n");
 	va_start(argPtr, nbrAxis);
 	for (int i = 0; i < nbrAxis; i++) {
@@ -1224,7 +1232,7 @@ PUINT allocateMemSpace(UINT mem_size) {
 /// 0 if success
 /// -1 if failed 
 /// </returns>
-int readModifyWrite(char* accessMode, SIS1100_Device_Struct* dev, unsigned int uint_vme_address,
+int readModifyWrite(const char* accessMode, SIS1100_Device_Struct* dev, unsigned int uint_vme_address,
 	unsigned int uint_vme_data, unsigned char opCode) {
 	UINT vme_data = 0;
 	INFO("ReadModifyWrite function executing...\n");
@@ -2762,7 +2770,7 @@ int readCECoeffboundaries(SIS1100_Device_Struct* dev, unsigned char axis, CECoef
 int calculateCEratio(SIS1100_Device_Struct* dev, unsigned char axis, CEratios* ceRatios, CEratioUnits units) {
 	CECoeffs ceCoeffs;
 	CEratios ceRatiotmp;
-	double temp;
+	double temp=0.0;
 	if (readCalcCECoeffs(dev, axis, &ceCoeffs) != RET_SUCCESS)
 		RET_FAILED;
 	ceRatiotmp.measSignal = temp;
@@ -3049,7 +3057,8 @@ int convertFloat2Double(UINT floatNbr, double* doubleVal) {
 	sign = temp >> 24;
 	exp = (temp >> 16) & (UINT)0xFF;
 	mant = temp & (UINT)0xFFFF;
-	*doubleVal = (1 - 2 * (double)sign) * (double)(mant + (UINT)0x10000) * pow(2, (double)exp - 127 - 16);
+	*doubleVal = (1 - 2 * (double)sign) * (double)(mant + (UINT)0x10000) * pow(2, (double)exp-127 - 16);
+	INFO("doubleVal is %lf\n", *doubleVal);
 	return RET_SUCCESS;
 }
 /// <summary>
@@ -4050,7 +4059,7 @@ int ReadPosition37(SIS1100_Device_Struct* dev, unsigned char axis, double* posit
 	Disable32bitsOverflow(dev, axis);
 	Enable37bitsSignExtension(dev, axis);
 	SampleVMEPosition(dev, axis);
-	while (!GetVMEExtSampFlag(dev, axis)); // Wait for the VME external sample flag to be set before reading
+	while (GetVMEExtSampFlag(dev, axis)!=RET_SUCCESS); // Wait for the VME external sample flag to be set before reading
 	SetHoldSampEnable(dev); // lock values
 	//clearVMEExtSampFlag(dev, axis); // Clear VME external sample flag before reading
 	//Read the MSB and LSB	
@@ -4208,15 +4217,15 @@ int ReadPosition37_ForAllAxis(SIS1100_Device_Struct* dev, double* Position37_buf
 	}
 	return RET_SUCCESS;
 }
-bool IsVMEPos32Overflow(SIS1100_Device_Struct* dev, unsigned char axis) {
+int IsVMEPos32Overflow(SIS1100_Device_Struct* dev, unsigned char axis) {
 	unsigned int uint_vme_data = 0, uint_vme_address = 0;
 	INFO("Checking VME 32bits position overflow \n ");
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEErrStat1);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
 		WARN("Register %6X access Faillure !  \n", uint_vme_address);
 	if ((uint_vme_data & 0x0008))
-		return true;
-	return false;
+		return RET_SUCCESS;
+	return RET_FAILED;
 }
 bool IsVMEPos37Overflow(SIS1100_Device_Struct* dev, unsigned char axis) {
 
@@ -4480,6 +4489,7 @@ int DisableResetFindsVelocity(SIS1100_Device_Struct* dev, unsigned char axis)
 	return RET_SUCCESS;
 
 }
+
 int SCLKSelectOnAxisReset(SIS1100_Device_Struct* dev, unsigned char axis, sclk SCLK)
 {
 	unsigned int uint_vme_data = 0,
@@ -4942,7 +4952,7 @@ int SampleVMEPosition(SIS1100_Device_Struct* dev, unsigned char axis) {
 	}
 	//*/
 
-	while (!GetVMEExtSampFlag(dev, axis)); // Wait for the VME external sample flag to be set before reading
+	while (GetVMEExtSampFlag(dev, axis) != RET_SUCCESS); // Wait for the VME external sample flag to be set before reading
 	return RET_SUCCESS;
 }
 int Sclk_On(SIS1100_Device_Struct* dev) {
@@ -5057,7 +5067,7 @@ int DisableSampleTimer(SIS1100_Device_Struct* dev) {
 	Sclk_Off(dev);
 	return RET_SUCCESS;
 }
-bool GetVMEExtSampFlag(SIS1100_Device_Struct* dev, unsigned char axis) {
+int GetVMEExtSampFlag(SIS1100_Device_Struct* dev, unsigned char axis) {
 	unsigned int uint_vme_data = 0, uint_vme_address = 0;
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zStat0);
 
@@ -5065,9 +5075,9 @@ bool GetVMEExtSampFlag(SIS1100_Device_Struct* dev, unsigned char axis) {
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
 		WARN("Register %6X access Faillure !  \n", uint_vme_address);
 	if ((uint_vme_data &= 0x400)) {
-		return true;
+		return RET_SUCCESS;
 	}
-	return false;
+	return RET_FAILED;
 }
 bool clearVMEExtSampFlag(SIS1100_Device_Struct* dev, unsigned char axis) {
 	unsigned int uint_vme_data = 0, uint_vme_address = 0;
@@ -5158,7 +5168,7 @@ int EEPROMread(SIS1100_Device_Struct* dev, unsigned short offset, unsigned int* 
 
 }
 
-int Read_Write(char* ch_access_mode, SIS1100_Device_Struct* dev, unsigned int uint_vme_address, unsigned int* uint_vme_data,
+int Read_Write(const char* ch_access_mode, SIS1100_Device_Struct* dev, unsigned int uint_vme_address, unsigned int* uint_vme_data,
 	unsigned short read_write) {
 	int return_code = 0, comp_err = 0;
 	/**************************************************************************/
@@ -5256,24 +5266,78 @@ int Read_Write(char* ch_access_mode, SIS1100_Device_Struct* dev, unsigned int ui
 	comp_valid_flag = 0;
 	return RET_FAILED;
 }
-int handle_err(int fatal, const char* fmt, ...) {
-#define ERRSTRMAX 512
+
+int FATAL(const char* fmt,...) {
+	if (fopen_s(&fdLog, "logfile.txt", "a") != RET_SUCCESS)
+		return RET_FAILED;
 	va_list argPtr;
 	char* errStr;
-	errStr = malloc(ERRSTRMAX);
+	errStr = (PCHAR)malloc(ERRSTRMAX);
 	if (errStr == NULL) {
 		return RET_FAILED;
 	}
 	va_start(argPtr, fmt);
 	vsnprintf(errStr, ERRSTRMAX - 1, fmt, argPtr);
 	va_end(argPtr);
-	fprintf(fdLog, "%s", errStr);
+	GetLocalTime(&lt);
+	fprintf(fdLog, "%d/%d/%d|%d:%d:%d:%d [FATAL] %s", lt.wYear, lt.wMonth, lt.wDay, lt.wHour, lt.wMinute, lt.wSecond, lt.wMilliseconds, errStr);
 	if (errno) {
 		fprintf(stderr, " ");
 		perror("kernel says ");
 	}
+	fclose(fdLog);
 	free(errStr);
-	if (fatal == INFO_PURPOSE) return RET_SUCCESS;
-	if (fatal == NON_FATAL) return RET_FAILED;
 	exit(RET_FAILED);
+}
+int WARN(const char* fmt, ...) {
+	if (fopen_s(&fdLog, "logfile.txt", "a") != RET_SUCCESS)
+		return RET_FAILED;
+	va_list argPtr;
+	char* errStr;
+	errStr = (PCHAR)malloc(ERRSTRMAX);
+	if (errStr == NULL) {
+		return RET_FAILED;
+	}
+	va_start(argPtr, fmt);
+	vsnprintf(errStr, ERRSTRMAX - 1, fmt, argPtr);
+	va_end(argPtr);
+	GetLocalTime(&lt);
+	fprintf(fdLog, "%d/%d/%d|%d:%d:%d:%d [WARNING] %s", lt.wYear, lt.wMonth, lt.wDay, lt.wHour, lt.wMinute, lt.wSecond, lt.wMilliseconds, errStr);
+	if (errno) {
+		fprintf(stderr, " ");
+		perror("kernel says ");
+	}
+	fclose(fdLog);
+	free(errStr);
+	return RET_FAILED;
+}
+int INFO(const char* fmt, ...) {
+
+	if (fopen_s(&fdLog, "logfile.txt", "a") != RET_SUCCESS)
+		return RET_FAILED;
+	va_list argPtr;
+	char* errStr;
+	errStr = (PCHAR)malloc(ERRSTRMAX);
+	if (errStr == NULL) {
+		return RET_FAILED;
+	}
+	va_start(argPtr, fmt);
+	vsnprintf(errStr, ERRSTRMAX - 1, fmt, argPtr);
+	va_end(argPtr);
+	GetLocalTime(&lt);
+	fprintf(fdLog, "%d/%d/%d|%d:%d:%d:%d [INFO] %s", lt.wYear, lt.wMonth, lt.wDay, lt.wHour, lt.wMinute,lt.wSecond,lt.wMilliseconds, errStr);
+	if (errno) {
+		fprintf(stderr, " ");
+		perror("kernel says ");
+	}
+	fclose(fdLog);
+	free(errStr);
+	return RET_SUCCESS;
+}
+int setPositionFilePath( char* filePath) {
+	POSITION_FILE_PATH = (char*)malloc(500 * sizeof(char));
+	if (POSITION_FILE_PATH == NULL)
+		return RET_FAILED;
+	sprintf_s(POSITION_FILE_PATH, sizeof(POSITION_FILE_PATH), "%s", filePath);
+	return RET_SUCCESS;
 }

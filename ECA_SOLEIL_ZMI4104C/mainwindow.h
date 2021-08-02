@@ -1,5 +1,4 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#pragma once
 #include <QMainWindow>
 #include <QPainter>
 #include "flyscanform.h"
@@ -7,6 +6,7 @@
 #include "positionoffsetform.h"
 #include "presetpositionform.h"
 #include "cesettingsform.h"
+#include "eca_soleil_zmi4104c.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -31,6 +31,8 @@ public:
     presetPositionForm *presPositionForm;
     QAction     *a_openMenu;
     QMenu       *m_settingsMenu;
+    BIAS_MODE bias_mode;
+    SIS1100_Device_Struct* dev;
 signals:
 public slots:
     // --------------button continuous acquisition---------------------------
@@ -57,6 +59,8 @@ private slots:
     void on_pushButton_12_clicked();
     void on_toolButton_2_clicked();
 
+    void on_pushButton_7_clicked();
+
 private:
     Ui::MainWindow *ui;
 };
@@ -70,5 +74,5 @@ static int presPosForm_int=0;
 static int posOffForm_int=0;
 
 
-#endif // MAINWINDOW_H
+// MAINWINDOW_H
 

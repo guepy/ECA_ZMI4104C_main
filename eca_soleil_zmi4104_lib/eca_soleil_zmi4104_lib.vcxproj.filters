@@ -21,31 +21,25 @@
     <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ECA_ZMI4104_Project\sis1100_lib\sis1100w.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\ECA_ZMI4104_Project\sis1100_lib\sis1100wType.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\ECA_ZMI4104_Project\sis1100_lib\sis3100.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\ECA_ZMI4104_Project\sis1100_lib\sis3100_vme_calls.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="eca_soleil_zmi4104c.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ECA_ZMI4104_Project\ECA_ZMI4104C_main\ECA_ZMI4104C_main\vmeInterruptConst.h">
+    <ClInclude Include="sis1100_zmilib\sis1100w.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ECA_ZMI4104_Project\ECA_ZMI4104C_main\ECA_ZMI4104C_main\wingetopt.h">
+    <ClInclude Include="sis1100_zmilib\sis1100wStat.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ECA_ZMI4104_Project\ECA_ZMI4104C_main\ECA_ZMI4104C_main\zVME_const.h">
+    <ClInclude Include="sis1100_zmilib\sis1100wType.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ECA_ZMI4104_Project\sis1100_lib\sis3302.h">
+    <ClInclude Include="sis1100_zmilib\sis3100.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sis1100_zmilib\sis3100_vme_calls.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sis1100_zmilib\sis3302.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -56,10 +50,10 @@
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\ECA_ZMI4104_Project\sis1100_lib\sis3100_vme_calls.cpp">
+    <ClCompile Include="eca_soleil_zmi4104c.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="eca_soleil_zmi4104c.cpp">
+    <ClCompile Include="sis1100_zmilib\sis3100_vme_calls.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
