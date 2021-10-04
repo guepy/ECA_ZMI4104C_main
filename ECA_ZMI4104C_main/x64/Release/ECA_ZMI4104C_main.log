@@ -1,9 +1,11 @@
 ﻿  sis3100_vme_calls.c
   eca_zmi4104c_funcs.c
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\ECA_ZMI4104C_main\eca_zmi4104c_funcs.c(5274,16): warning C4047: 'function': 'FILE *const ' differs in levels of indirection from 'FILE **'
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\ECA_ZMI4104C_main\eca_zmi4104c_funcs.c(5274,10): warning C4024: 'fprintf': different types for formal and actual parameter 1
   ECA_ZMI4104C_main.c
   wingetopt.c
   Generating code
   Previous IPDB not found, fall back to full compilation.
-  All 64 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  All 76 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
   Finished generating code
   ECA_ZMI4104C_main.vcxproj -> C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\x64\Release\ECA_ZMI4104C_main.exe

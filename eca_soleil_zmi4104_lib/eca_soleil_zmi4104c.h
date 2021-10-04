@@ -10,7 +10,7 @@
 extern "C" {
 #endif
 	
-#pragma comment (lib, "sis1100w_x64.lib")
+#pragma comment (lib, "sis1100w.lib")
 
 #include <windows.h>
 #include <stdio.h>
@@ -66,12 +66,6 @@ extern "C" {
 #define DESCRIPTOR_4_TEST
 #define DESCRIPTOR_5_TEST
 
-#define coeff_a   6.049264479990438e-8
-#define coeff_b   -1.351195412225471e-6
-#define coeff_c   -0.002995301725927718
-#define coeff_d   0.4474028058422057
-#define coeff_f   -9.023933972316671
-
 #define ERRSTRMAX 512
 
 #define CE_MIN_VEL								50 // min vel is 0.5mm/s
@@ -120,7 +114,7 @@ extern "C" {
 		SGLE =1,
 		DBLE =2,
 	}InterferoConfig;
-	static const char* const access_mode_Selection[MAX_NOF_ACCESS_MODE_DEFINES] = {
+	static const char* access_mode_Selection[MAX_NOF_ACCESS_MODE_DEFINES] = {
 		"CRCSRD8",  // Configuration ROM/Control&Status Register (CR/CSR)
 		"CRCSRD16", // Configuration ROM/Control&Status Register (CR/CSR)
 		"A16D8",    // A16 non privileged access
@@ -163,17 +157,20 @@ extern "C" {
 	static double positionScale = DOUBLE_PASS_INT_POS_COEF,    //Converts to mm as default
 		velocityScale = DOUBLE_PASS_INT_VEL_COEF * (1e-3);      //Converts to mm/s
 		// ZMI Scalars
-	static const double	timeScale = 25 * (1e-9);                   //Converts to s as default	
+	static const double	timeScale = 25 * (1e-6);                   //Converts to ms as default	
+	static const double	SSIScale = 0.019073486328125;           //Converts to mV as default	
 
 	static InterferoConfig curInterferoConfig;
 	static FILE* fdLog;
 	static SYSTEMTIME  lt;
+
 	//static SIS1100_Device_Struct* dev;
+	ECASOLEILZMI4104CLIB_API int getLEDsStatus(SIS1100_Device_Struct* dev, bool* ledsStatus);
+	ECASOLEILZMI4104CLIB_API int getLEDsErrorStatus(SIS1100_Device_Struct* dev, bool* ledsErrorStatus);
 	ECASOLEILZMI4104CLIB_API void modifyBaseAddress(UINT baseAddressAxis3);
 	ECASOLEILZMI4104CLIB_API void CreateEvents();
 	ECASOLEILZMI4104CLIB_API int  CreateThreads(SIS1100_Device_Struct*);
 	ECASOLEILZMI4104CLIB_API void CloseThreads(void);
-	ECASOLEILZMI4104CLIB_API int handle_err(int fatal, const char* fmt, ...);
 	ECASOLEILZMI4104CLIB_API int convertUSFloat2Double(USHORT, double*);
 	ECASOLEILZMI4104CLIB_API int calculateCEratio(SIS1100_Device_Struct*, unsigned char, CEratios*, CEratioUnits);
 	ECASOLEILZMI4104CLIB_API int configureCEChardware(SIS1100_Device_Struct*, UCHAR, USHORT, USHORT);
@@ -184,9 +181,9 @@ extern "C" {
 	ECASOLEILZMI4104CLIB_API int WARN(const char* fmt, ...);
 	ECASOLEILZMI4104CLIB_API int INFO(const char* fmt, ...);
 	ECASOLEILZMI4104CLIB_API int ReadVMEErrs(SIS1100_Device_Struct*, unsigned char);
-	ECASOLEILZMI4104CLIB_API int InitAxis(SIS1100_Device_Struct*, BIAS_MODE);
-	ECASOLEILZMI4104CLIB_API int Init_SIS_boards(SIS1100_Device_Struct*);
-	ECASOLEILZMI4104CLIB_API int Init_ZMI_bd(SIS1100_Device_Struct*);
+	ECASOLEILZMI4104CLIB_API int initAxis(SIS1100_Device_Struct*, BIAS_MODE);
+	ECASOLEILZMI4104CLIB_API int initSISboards(SIS1100_Device_Struct*);
+	ECASOLEILZMI4104CLIB_API int initZMIboards(SIS1100_Device_Struct*);
 	ECASOLEILZMI4104CLIB_API int ReadSamplePosition37(SIS1100_Device_Struct*, unsigned char, double*);
 	ECASOLEILZMI4104CLIB_API int ReadSamplePosition32(SIS1100_Device_Struct*, unsigned char, double*);
 	ECASOLEILZMI4104CLIB_API int ReadSamplePosition37_ForAllAxis(SIS1100_Device_Struct*, double*);
@@ -202,7 +199,9 @@ extern "C" {
 	ECASOLEILZMI4104CLIB_API int ReadTime32_ForAllAxis(SIS1100_Device_Struct*, double*);
 	ECASOLEILZMI4104CLIB_API int ReadAllTime32(SIS1100_Device_Struct*, double*);
 	ECASOLEILZMI4104CLIB_API int IsVMEPos32Overflow(SIS1100_Device_Struct* dev, unsigned char axis);
-	ECASOLEILZMI4104CLIB_API int ReadOpticalPowerUsingSSIav(SIS1100_Device_Struct*);
+	ECASOLEILZMI4104CLIB_API int ReadOpticalPowerUsingSSIav(SIS1100_Device_Struct*, double*);
+	ECASOLEILZMI4104CLIB_API int ReadSSIav(SIS1100_Device_Struct* dev, double* ssiPtr);
+	ECASOLEILZMI4104CLIB_API int ReadSSICalibrationData(SIS1100_Device_Struct* dev, unsigned char axis, double* SSIMin, double* SSIMax, double* SSINom, double* SSIVal);
 	ECASOLEILZMI4104CLIB_API int ReadAPDGain(SIS1100_Device_Struct*, unsigned char, double*);
 	ECASOLEILZMI4104CLIB_API int EnableAuxRegisters(SIS1100_Device_Struct*, unsigned char);
 	ECASOLEILZMI4104CLIB_API int DisableAuxRegisters(SIS1100_Device_Struct*, unsigned char);
@@ -236,6 +235,7 @@ extern "C" {
 	ECASOLEILZMI4104CLIB_API int SetAPDGainL2(SIS1100_Device_Struct*, unsigned char, unsigned int);
 	ECASOLEILZMI4104CLIB_API int checkValues(UINT, UINT, UINT);
 	ECASOLEILZMI4104CLIB_API int ClearAllVMEErrs_ForAllAxis(SIS1100_Device_Struct*);
+	ECASOLEILZMI4104CLIB_API int ReadScaledSSIav(SIS1100_Device_Struct* dev, double* ssiPtr);
 	ECASOLEILZMI4104CLIB_API BOOL isRAMbusy(SIS1100_Device_Struct*);
 	ECASOLEILZMI4104CLIB_API int SetAPDSigRMSL2(SIS1100_Device_Struct*, unsigned char, unsigned int);
 	ECASOLEILZMI4104CLIB_API int SetAPDOptPwrL2(SIS1100_Device_Struct*, unsigned char, unsigned int);

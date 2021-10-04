@@ -2083,10 +2083,12 @@ int Init_SIS_boards(SIS1100_Device_Struct* dev) {
 	unsigned int sis3100_data = 0;
 	short sis3100_add = 0;
 	SIS1100W_STATUS stat;
-
+	printf("ok00");
 	INFO("Setting up SIS boards...\n");
 	INFO("Scanning connected SIS' PCIe card...\n");
+	
 	stat = sis1100w_Find_No_Of_sis1100(&nof_found_sis1100_devices);
+	printf("ok00");
 	if (stat != Stat1100Success) {
 		INFO("Error while connected SIS' PCIe card\n");
 		INFO("\tNo valid device were suplied or a Null argument were suplied\n");
@@ -2096,10 +2098,11 @@ int Init_SIS_boards(SIS1100_Device_Struct* dev) {
 	if (nof_found_sis1100_devices == 0) {
 		WARN("No SIS' PCIe card found, exiting...\n");
 	}
-
+	printf("ok00");
 	INFO("%u SIS' PCIe card found\n", nof_found_sis1100_devices);
 	INFO("Connecting to the first device...\n");
 	stat = sis1100w_Get_Handle_And_Open(0 /* first device */, dev); // 
+	printf("ok01");
 	if (stat != Stat1100Success) {
 		INFO("Connection to SIS' PCIe card failed\n");
 		WARN("\tError in 'sis1100w_Get_Handle_And_Open': %d\n", stat);
@@ -2156,9 +2159,9 @@ int Init_SIS_boards(SIS1100_Device_Struct* dev) {
 	}
 	short_data = sis3100_data >> 8;
 	INFO("\t Hardware Version: %d\n", (int)short_data);
-	short_data = sis3100_data >> 16; // error to be corrected
+	short_data = sis3100_data >> 16; // error to be solved
 	INFO("\t Firmware type: %d\n", (int)short_data);
-	short_data = sis3100_data >> 24; // error to be corrected
+	short_data = sis3100_data >> 24; // error to be solved
 	INFO("\t Firmware Version: %d\n", (int)short_data);
 
 	INFO("Reading VME/PCI card Firmware Register version...\n");
@@ -5267,7 +5270,8 @@ int handle_err(int fatal, const char* fmt, ...) {
 	va_start(argPtr, fmt);
 	vsnprintf(errStr, ERRSTRMAX - 1, fmt, argPtr);
 	va_end(argPtr);
-	fprintf(fdLog, "%s", errStr);
+	printf("ok0h");
+	fprintf(&fdLog, "%s", errStr);
 	if (errno) {
 		fprintf(stderr, " ");
 		perror("kernel says ");

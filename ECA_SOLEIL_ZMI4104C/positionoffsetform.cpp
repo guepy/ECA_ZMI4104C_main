@@ -6,6 +6,8 @@ positionOffsetForm::positionOffsetForm(QWidget *parent) :
     ui(new Ui::positionOffsetForm)
 {
     ui->setupUi(this);
+    //ui->lineEdit_11->textChanged()
+    ui->lineEdit_11->setValidator(new QRegExpValidator(QRegExp("[0-9]*"), ui->lineEdit_11));
 }
 
 positionOffsetForm::~positionOffsetForm()

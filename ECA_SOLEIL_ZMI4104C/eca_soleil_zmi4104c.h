@@ -26,7 +26,7 @@ extern "C" {
 #include "sis3302.h"
 #include "sis3100.h"
 #include "sis3100_vme_calls.h"
-#include "vmeInterruptConst.h"
+//#include "vmeInterruptConst.h"
 
 #define FLYSCAN_MODE_ON						0
 #define READ_MODE							0

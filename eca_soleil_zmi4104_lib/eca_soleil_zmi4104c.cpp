@@ -145,7 +145,10 @@ void CloseEvents()
 int lemoInterruptCallbackFunction(SIS1100_Device_Struct* dev, FILE* fd) {
 	double pos[4];
 
-	if (ReadSamplePosition37_ForAllAxis(dev, pos) != RET_SUCCESS) WARN("read sample position faillure\n");
+	if (ReadSamplePosition37_ForAllAxis(dev, pos) != RET_SUCCESS) {
+		WARN("read sample position faillure\n");
+		return RET_FAILED;
+	}
 
 	fprintf(fd, "%lf;%lf;%lf;%lf\n", pos[0], pos[1], pos[2], pos[3]);
 	return RET_SUCCESS;
@@ -443,6 +446,7 @@ int configureCEChardware(SIS1100_Device_Struct* dev, UCHAR axis, USHORT ceVelMin
 	if (ceVelMin < 24) {
 		WARN("ERROR: The CE Min Velocity should not be set to a value smaller than 24, which represents a \
 				1.8 kHz Doppler shift, or a velocity of approximately 0.29 mm/s. this may cause improper operation of the CEC function\n");
+		return RET_FAILED;
 	}
 	//set ce min velocity
 	SetCEMinVel(dev, axis, CE_MIN_VEL);
@@ -453,11 +457,13 @@ in order to determine correct CE coefficients \n");
 	scanf_s("%c", sc_char, 2);
 	if (waitCEinit2Complete(dev, axis) != RET_SUCCESS) {
 		WARN("failed to initialize CE hardware\n");
+		return RET_FAILED;
 	}
 	INFO(" CE hardware configuration is complete\n");
 
 	if (EnableCECcompensation(dev, axis) != RET_SUCCESS) {
 		WARN("failed to enable CE compensation\n");
+		return RET_FAILED;
 	}
 
 	readCEerrorStatReg(dev, axis, &uint_vme_data);
@@ -471,7 +477,7 @@ int readCEerrorStatReg(SIS1100_Device_Struct* dev, unsigned char axis, PUINT CEs
 	INFO("Reading CE status register\n");
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
 	{
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	}
 	*CEstatReg = uint_vme_data;
 	if ((uint_vme_data & 0x1)) {
@@ -501,7 +507,7 @@ DWORD WINAPI WaitForVmeIrqThreadFunc(LPVOID lpParam)
 	);
 	if (vmeIrq6Event == NULL)
 	{
-		WARN("CreateEvent failed (%d)\n", GetLastError());
+		WARN("CreateEvent failed (%d)\n", GetLastError()); return RET_FAILED;
 	}
 	sis1100w_sis310x_Register_For_Irq(dev, vmeIrqMask); //Register to listen to IRQ level interrupt
 	//PLX_INTERRUPT intSrc;
@@ -528,12 +534,12 @@ DWORD WINAPI WaitForVmeIrqThreadFunc(LPVOID lpParam)
 				INFO("Sending vmeIrq event to ISR..\n");
 				if (!SetEvent(vmeIrq6Event))
 				{
-					WARN("SetEvent failed (%d)\n", GetLastError());
+					WARN("SetEvent failed (%d)\n", GetLastError()); return RET_FAILED;
 					break;
 				}
 				rc = s3100_control_write(dev, SIS3100_OPT_VME_IRQ_CTRL, VME_IRQ6_STA_CLR_BIT);
 				if (Stat1100Success != rc) {
-					WARN("\n\nError in 's3100_control_write' (Thread Running: %s, stopping)\n", __FUNCTION__);
+					WARN("\n\nError in 's3100_control_write' (Thread Running: %s, stopping)\n", __FUNCTION__); return RET_FAILED;
 					break;
 				}
 			}
@@ -681,7 +687,7 @@ int	AckForSis3100VME_Irq(SIS1100_Device_Struct* dev, uint32_t sis_get_irq_level)
 	return rc;
 }
 int EnableSinglePassInterferometer(void) {
-	INFO("Double pass interferometer activated\n");
+	INFO("Single pass interferometer activated\n");
 	positionScale = SINGLE_PASS_INT_POS_COEF;    //Converts to mm as default
 	curInterferoConfig = SGLE;
 	velocityScale = SINGLE_PASS_INT_VEL_COEF * (1e-3);    //Converts to m/s as default
@@ -689,14 +695,14 @@ int EnableSinglePassInterferometer(void) {
 }
 int EnableDoublePassInterferometer(void) {
 
-	INFO("Single pass interferometer activated\n");
+	INFO("Double pass interferometer activated\n");
 	positionScale = DOUBLE_PASS_INT_POS_COEF;    //Converts to mm as default
 	curInterferoConfig = DBLE;
 	velocityScale = DOUBLE_PASS_INT_VEL_COEF * (1e-3);    //Converts to m/s as default
 	return RET_SUCCESS;
 }
 
-int InitAxis(SIS1100_Device_Struct* dev, BIAS_MODE bias_mode) {
+int initAxis(SIS1100_Device_Struct* dev, BIAS_MODE bias_mode) {
 	/*************************Axis Initialization***********************************/
 	char	ch_access_mode[16];
 	unsigned int	vme_data = 0,
@@ -738,18 +744,18 @@ int DisableAllVMEInterrupts(SIS1100_Device_Struct* dev, unsigned char axis) {
 	INFO("Disabling VME Interrupts\n");
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
 	{
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	}
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEIntEnab1);				// Disable VME interrupts 1
 	uint_vme_data = 0x8000;
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
 	{
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	}
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEIntEnab2);				// Disable VME interrupts 2
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
 	{
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	}
 	return RET_SUCCESS;
 }
@@ -760,19 +766,19 @@ int EnableAllVMEInterrupts(SIS1100_Device_Struct* dev, unsigned char axis) {
 	INFO("Enabling VME Interrupts\n");
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
 	{
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	}
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEIntEnab1);				// VME interrupts 1
 	uint_vme_data |= 0x811F;
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
 	{
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	}
 	uint_vme_data = 0xF0FF;
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEIntEnab2);				//  VME interrupts 2
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
 	{
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	}
 	return RET_SUCCESS;
 }
@@ -784,12 +790,12 @@ int EnableVMEGlobalInterrupt(SIS1100_Device_Struct* dev, unsigned char axis) {
 	uint_vme_data = 0;
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
 	{
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	}
 	uint_vme_data |= 0x8000;
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
 	{
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	}
 	return RET_SUCCESS;
 }
@@ -803,12 +809,12 @@ int processRAMData(UINT nbrAxis, PUINT base_A24D32_axis1_ptr, PUINT base_A24D32_
 	INFO("Processing RAM data\n");
 	if (nbrAxis >= 2) {
 		if (!base_A24D32_axis1_ptr || !base_A24D32_axis3_ptr) {
-			WARN("Based on the number of axis which is %d, none of the pointer argument is allow to be NULL", nbrAxis);
+			WARN("Based on the number of axis which is %d, none of the pointer argument is allow to be NULL", nbrAxis); return RET_FAILED;
 		}
 	}
 	else {
 		if (!base_A24D32_axis1_ptr && !base_A24D32_axis3_ptr) {
-			WARN("Based on the number of axis which is %d, both pointer arguments can not be NULL", nbrAxis);
+			WARN("Based on the number of axis which is %d, both pointer arguments can not be NULL", nbrAxis); return RET_FAILED;
 		}
 	}
 	INFO("Opening file to store position values \n");
@@ -944,9 +950,11 @@ int configureFifoFlyscan(SIS1100_Device_Struct* dev, fifoParam* param, PUINT sta
 	INFO("Configuring FIFO flyscan \n");
 	if (checkValues(tablen, 1, 4)) {
 		WARN("Checking axis tab lenght\n");
+		return RET_FAILED;
 	}
 	if (!(param->acqTime || param->freq) || !(param->nbrPts || param->freq) || !(param->nbrPts || param->acqTime)) {
 		WARN("At most one of the fifo parameters can be nulled\n");
+		return RET_FAILED;
 	}
 	for (int i = 0; i < tablen; i++) {
 		if (!checkValues((UINT)axisTab[i], 1, 4)) {
@@ -997,6 +1005,7 @@ int configureFifoFlyscan(SIS1100_Device_Struct* dev, fifoParam* param, PUINT sta
 	INFO("%u,%u,%u,%u is sent to fifo flyscan\n ", ftab[0], ftab[1], ftab[2], ftab[3]);
 	if (fifoFlyscan(dev, *param, startAdress, ctr, ftab[0], ftab[1], ftab[2], ftab[3]) != RET_SUCCESS) {
 		WARN("FIFO flyscan configuration failed\n");
+		return RET_FAILED;
 	}
 	return RET_SUCCESS;
 }
@@ -1033,7 +1042,8 @@ int fifoFlyscan(SIS1100_Device_Struct* dev, fifoParam param, PUINT startAddress,
 	//6-verify the FIFO overflow bit
 	for (UINT i = 0; i < nbrAxis; i++) {
 		if (isFifoOVFbitSet(dev, axisPtr[i])) {
-			INFO("WARNING: some data samples could have been missed on axis %d. The frequency must be decreased\n", axisPtr[i]);
+			WARN("some data samples could have been missed on axis %d. The frequency must be decreased\n", axisPtr[i]);
+			return RET_FAILED;
 		}
 	}
 	free(axisPtr);
@@ -1044,7 +1054,7 @@ bool isFifoDavbitSet(SIS1100_Device_Struct* dev, unsigned char axis) {
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zStat1);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
 	{
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	}
 	if ((uint_vme_data & 0x400))
 		return true;
@@ -1055,7 +1065,7 @@ bool isFifoOVFbitSet(SIS1100_Device_Struct* dev, unsigned char axis) {
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zStat1);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
 	{
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	}
 	if ((uint_vme_data & 0x200))
 		return true;
@@ -1095,12 +1105,14 @@ int configureFlyscan(SIS1100_Device_Struct* dev, unsigned char nbrAxis, double f
 	INFO("setting up flyscan...\n");
 	if (checkValues(nbrAxis, 0, 4)) {
 		WARN("Bad axis value\n");
+		return RET_FAILED;
 	}
 	do {
 		ctr++;
 		if (ctr > 1500)
 		{
 			WARN("\nRAM has been busy for more than %d stamps time \n exiting... \n\n", ctr);
+			return RET_FAILED;
 		}
 	} while (isRAMbusy(dev));
 
@@ -1116,20 +1128,20 @@ int configureFlyscan(SIS1100_Device_Struct* dev, unsigned char nbrAxis, double f
 		uint_vme_address = ADD(BASE_ADDRESS[AXIS3 - 1], zDiagFFTCtrl);
 		if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
 		{
-			WARN("Register %6X access Faillure !  \n", uint_vme_address);
+			{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 		}
 		break;
 	default:
 		uint_vme_address = ADD(BASE_ADDRESS[AXIS1 - 1], zDiagFFTCtrl);
 		if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
 		{
-			WARN("Register %6X access Faillure !  \n", uint_vme_address);
+			{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 		}
 		//Setup axis 3 and 4
 		uint_vme_address = ADD(BASE_ADDRESS[AXIS3 - 1], zDiagFFTCtrl);
 		if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
 		{
-			WARN("Register %6X access Faillure !  \n", uint_vme_address);
+			{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 		}
 
 		break;
@@ -1158,14 +1170,14 @@ int startAquisition(SIS1100_Device_Struct* dev, unsigned char nbrAxis) {
 	uint_vme_address = ADD(BASE_ADDRESS[AXIS3 - 1], zTestCmd1);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
 	{
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	}
 	if (nbrAxis >= 2) {
 		//Start acquisition on axis 3
 		uint_vme_address = ADD(BASE_ADDRESS[AXIS1 - 1], zTestCmd1);
 		if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
 		{
-			WARN("Register %6X access Faillure !  \n", uint_vme_address);
+			{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 		}
 	}
 	return RET_SUCCESS;
@@ -1180,14 +1192,14 @@ int stopAquisition(SIS1100_Device_Struct* dev, unsigned char nbrAxis) {
 	uint_vme_address = ADD(BASE_ADDRESS[AXIS3 - 1], zTestCmd1);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
 	{
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	}
 	if (nbrAxis >= 2) {
 		//Start acquisition on axis 3 
 		uint_vme_address = ADD(BASE_ADDRESS[AXIS1 - 1], zTestCmd1);
 		if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
 		{
-			WARN("Register %6X access Faillure !  \n", uint_vme_address);
+			{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 		}
 	}
 	return RET_SUCCESS;
@@ -1237,7 +1249,7 @@ int readModifyWrite(const char* accessMode, SIS1100_Device_Struct* dev, unsigned
 	UINT vme_data = 0;
 	INFO("ReadModifyWrite function executing...\n");
 	if (Read_Write(accessMode, dev, uint_vme_address, &vme_data, 0) != RET_SUCCESS) {
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	}
 	switch (opCode)
 	{
@@ -1254,7 +1266,7 @@ int readModifyWrite(const char* accessMode, SIS1100_Device_Struct* dev, unsigned
 		break;
 	}
 	if (Read_Write(accessMode, dev, uint_vme_address, &vme_data, 1) != RET_SUCCESS) {
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	}
 	return RET_SUCCESS;
 }
@@ -1296,13 +1308,14 @@ int getFlyscanData(SIS1100_Device_Struct* dev, PUINT startAddress_axis1, PUINT s
 	for (int k = 0; k < 2; k++) {
 		if (Read_Write("A24D16", dev, uint_vme_address, &ramPageAddr, 0) != RET_SUCCESS)
 		{
-			WARN("Register %6X access Faillure !  \n", uint_vme_address);
+			{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 		}
 		if ((ramPageAddr & 0x9000) != 0x8000) { // check the 15th and the 12th bits of the loaded value
 			if ((ramPageAddr & 0x9000) != 0x9000) {
 				if (ctr < 1) {// to take into account the 2 cycles
 					INFO("Flyscan is not properly configured. RAM FFT Ctrl value is 0x%X\n", ramPageAddr);
 					WARN("Note the main axis is axis 3. If you're setting up flyscan for measurement only on 1 axis, you should configure it on the main axis \n");
+					return RET_FAILED;
 				}
 			}
 			else {
@@ -1323,12 +1336,14 @@ int getFlyscanData(SIS1100_Device_Struct* dev, PUINT startAddress_axis1, PUINT s
 	if (ctr > 1) {
 		if ((!startAddress_axis1) || (!startAddress_axis3)) {
 			WARN("Bad arguments serve to %s. The current configuration does not allow any of the pointer passed as argument to be null\n", __FUNCTION__);
+			return RET_FAILED;
 		}
 		nbrAxis = 2;
 	}
 	else {
 		if ((!startAddress_axis3)) {
 			WARN("Bad arguments serve to %s. Axis 3 is the main axis.The corresponding argumentis not allowed to be null\n", __FUNCTION__);
+			return RET_FAILED;
 		}
 		nbrAxis = 1;
 	}
@@ -1342,6 +1357,7 @@ int getFlyscanData(SIS1100_Device_Struct* dev, PUINT startAddress_axis1, PUINT s
 		if (ctr > 15000)
 		{
 			WARN("RAM has been busy for more than %ds stamps time \n exiting... \n", ctr);
+			return RET_FAILED;
 		}
 	} while (isRAMbusy(dev));
 
@@ -1354,13 +1370,13 @@ int getFlyscanData(SIS1100_Device_Struct* dev, PUINT startAddress_axis1, PUINT s
 			INFO("-----------------------Page %u: Start address 0x%p ------------------------ \n", i + 1, startAddress);
 			if (vme_A24DMA_D32_read(dev, uint_vme_address, startAddress, NBR_SAMP_PER_PAGE / 2, &nbr_of_read) != RET_SUCCESS)
 			{
-				WARN("Register %6X access Faillure !  \n", uint_vme_address);
+				{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 			}
 			else INFO("%d 32bits words read from 0x%x  \n", nbr_of_read, uint_vme_address);
 			//request the next page
 			if (Read_Write("A24D16", dev, ramPageAddr, &ctr, 1) != RET_SUCCESS)
 			{
-				WARN("Register %6X access Faillure !  \n", uint_vme_address);
+				{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 			}
 			// Shift to the next page
 			startAddress += nbr_of_read;
@@ -1445,6 +1461,7 @@ int checkValues(UINT num2check, UINT minVal, UINT maxVal) {
 	if (num2check < minVal || num2check > maxVal) {
 		INFO("\tBad Value\n");
 		WARN("\tthe range allowed is %d to %d while the one recieve is %d\n", minVal, maxVal, num2check);
+		return RET_FAILED;
 	}
 	return RET_SUCCESS;
 }
@@ -1519,6 +1536,7 @@ int EnableVMEInterrupt_bit(SIS1100_Device_Struct* dev, unsigned char axis, unsig
 		if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
 		{
 			WARN("Register %6X access Faillure !  \n", uint_vme_address);
+			return RET_FAILED;
 		}
 		switch (intNumber)
 		{
@@ -1527,6 +1545,7 @@ int EnableVMEInterrupt_bit(SIS1100_Device_Struct* dev, unsigned char axis, unsig
 			if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
 			{
 				WARN("Register %6X access Faillure !  \n", uint_vme_address);
+				return RET_FAILED;
 			}
 			break;
 		case PHASE_NOISE_ERR_INT:
@@ -1534,6 +1553,7 @@ int EnableVMEInterrupt_bit(SIS1100_Device_Struct* dev, unsigned char axis, unsig
 			if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
 			{
 				WARN("Register %6X access Faillure !  \n", uint_vme_address);
+				return RET_FAILED;
 			}
 			break;
 		case ACCELERATION_ERR_INT:
@@ -1541,6 +1561,7 @@ int EnableVMEInterrupt_bit(SIS1100_Device_Struct* dev, unsigned char axis, unsig
 			if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
 			{
 				WARN("Register %6X access Faillure !  \n", uint_vme_address);
+				return RET_FAILED;
 			}
 			break;
 		case MEAS_SIG_GLITCH_ERR_INT:
@@ -1548,6 +1569,7 @@ int EnableVMEInterrupt_bit(SIS1100_Device_Struct* dev, unsigned char axis, unsig
 			if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
 			{
 				WARN("Register %6X access Faillure !  \n", uint_vme_address);
+				return RET_FAILED;
 			}
 			break;
 		case MEAS_SIG_DROP_ERR_INT:
@@ -1555,6 +1577,7 @@ int EnableVMEInterrupt_bit(SIS1100_Device_Struct* dev, unsigned char axis, unsig
 			if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
 			{
 				WARN("Register %6X access Faillure !  \n", uint_vme_address);
+				return RET_FAILED;
 			}
 			break;
 		case SSI_MAX_LIM_ERR_INT:
@@ -1562,6 +1585,7 @@ int EnableVMEInterrupt_bit(SIS1100_Device_Struct* dev, unsigned char axis, unsig
 			if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
 			{
 				WARN("Register %6X access Faillure !  \n", uint_vme_address);
+				return RET_FAILED;
 			}
 			break;
 		case MEAS_SIG_SAT_ERR_INT:
@@ -1569,6 +1593,7 @@ int EnableVMEInterrupt_bit(SIS1100_Device_Struct* dev, unsigned char axis, unsig
 			if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
 			{
 				WARN("Register %6X access Faillure !  \n", uint_vme_address);
+				return RET_FAILED;
 			}
 			break;
 		case MEAS_SIG_MIS_ERR_INT:
@@ -1576,6 +1601,7 @@ int EnableVMEInterrupt_bit(SIS1100_Device_Struct* dev, unsigned char axis, unsig
 			if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
 			{
 				WARN("Register %6X access Faillure !  \n", uint_vme_address);
+				return RET_FAILED;
 			}
 			break;
 		case OV_TMP_ERR_INT:
@@ -1583,6 +1609,7 @@ int EnableVMEInterrupt_bit(SIS1100_Device_Struct* dev, unsigned char axis, unsig
 			if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
 			{
 				WARN("Register %6X access Faillure !  \n", uint_vme_address);
+				return RET_FAILED;
 			}
 			break;
 		case FPGA_SYNC_ERR_INT:
@@ -1590,6 +1617,7 @@ int EnableVMEInterrupt_bit(SIS1100_Device_Struct* dev, unsigned char axis, unsig
 			if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
 			{
 				WARN("Register %6X access Faillure !  \n", uint_vme_address);
+				return RET_FAILED;
 			}
 			break;
 		case RES_FAIL_ERR_INT:
@@ -1597,6 +1625,7 @@ int EnableVMEInterrupt_bit(SIS1100_Device_Struct* dev, unsigned char axis, unsig
 			if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
 			{
 				WARN("Register %6X access Faillure !  \n", uint_vme_address);
+				return RET_FAILED;
 			}
 			break;
 		case RES_COMP_ERR_INT:
@@ -1604,6 +1633,7 @@ int EnableVMEInterrupt_bit(SIS1100_Device_Struct* dev, unsigned char axis, unsig
 			if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
 			{
 				WARN("Register %6X access Faillure !  \n", uint_vme_address);
+				return RET_FAILED;
 			}
 			break;
 		case REF_PLL_ERR_INT:
@@ -1611,6 +1641,7 @@ int EnableVMEInterrupt_bit(SIS1100_Device_Struct* dev, unsigned char axis, unsig
 			if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
 			{
 				WARN("Register %6X access Faillure !  \n", uint_vme_address);
+				return RET_FAILED;
 			}
 			break;
 		case REF_SIG_MIS_ERR_INT:
@@ -1618,6 +1649,7 @@ int EnableVMEInterrupt_bit(SIS1100_Device_Struct* dev, unsigned char axis, unsig
 			if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
 			{
 				WARN("Register %6X access Faillure !  \n", uint_vme_address);
+				return RET_FAILED;
 			}
 			break;
 		case WRT_ERR_INT:
@@ -1625,6 +1657,7 @@ int EnableVMEInterrupt_bit(SIS1100_Device_Struct* dev, unsigned char axis, unsig
 			if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
 			{
 				WARN("Register %6X access Faillure !  \n", uint_vme_address);
+				return RET_FAILED;
 			}
 			break;
 		case PWR_ERR_INT:
@@ -1632,6 +1665,7 @@ int EnableVMEInterrupt_bit(SIS1100_Device_Struct* dev, unsigned char axis, unsig
 			if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
 			{
 				WARN("Register %6X access Faillure !  \n", uint_vme_address);
+				return RET_FAILED;
 			}
 			break;
 		default:
@@ -1644,6 +1678,7 @@ int EnableVMEInterrupt_bit(SIS1100_Device_Struct* dev, unsigned char axis, unsig
 		if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
 		{
 			WARN("Register %6X access Faillure !  \n", uint_vme_address);
+			return RET_FAILED;
 		}
 		switch (intNumber)
 		{
@@ -1652,6 +1687,7 @@ int EnableVMEInterrupt_bit(SIS1100_Device_Struct* dev, unsigned char axis, unsig
 			if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
 			{
 				WARN("Register %6X access Faillure !  \n", uint_vme_address);
+				return RET_FAILED;
 			}
 			break;
 		case P32_POS_OV_ERR_INT:
@@ -1659,6 +1695,7 @@ int EnableVMEInterrupt_bit(SIS1100_Device_Struct* dev, unsigned char axis, unsig
 			if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
 			{
 				WARN("Register %6X access Faillure !  \n", uint_vme_address);
+				return RET_FAILED;
 			}
 			break;
 		case VME32_POS_OV_ERR_INT:
@@ -1666,6 +1703,7 @@ int EnableVMEInterrupt_bit(SIS1100_Device_Struct* dev, unsigned char axis, unsig
 			if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
 			{
 				WARN("Register %6X access Faillure !  \n", uint_vme_address);
+				return RET_FAILED;
 			}
 			break;
 		case VME37_POS_OV_ERR_INT:
@@ -1673,6 +1711,7 @@ int EnableVMEInterrupt_bit(SIS1100_Device_Struct* dev, unsigned char axis, unsig
 			if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
 			{
 				WARN("Register %6X access Faillure !  \n", uint_vme_address);
+				return RET_FAILED;
 			}
 			break;
 		case USR_VEL_ERR_INT:
@@ -1680,6 +1719,7 @@ int EnableVMEInterrupt_bit(SIS1100_Device_Struct* dev, unsigned char axis, unsig
 			if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
 			{
 				WARN("Register %6X access Faillure !  \n", uint_vme_address);
+				return RET_FAILED;
 			}
 			break;
 		case VEL_ERR_INT:
@@ -1687,6 +1727,7 @@ int EnableVMEInterrupt_bit(SIS1100_Device_Struct* dev, unsigned char axis, unsig
 			if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
 			{
 				WARN("Register %6X access Faillure !  \n", uint_vme_address);
+				return RET_FAILED;
 			}
 			break;
 		default:
@@ -1700,6 +1741,7 @@ int EnableVMEInterrupt_bit(SIS1100_Device_Struct* dev, unsigned char axis, unsig
 		if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
 		{
 			WARN("Register %6X access Faillure !  \n", uint_vme_address);
+			return RET_FAILED;
 		}
 		switch (intNumber)
 		{
@@ -1708,6 +1750,7 @@ int EnableVMEInterrupt_bit(SIS1100_Device_Struct* dev, unsigned char axis, unsig
 			if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
 			{
 				WARN("Register %6X access Faillure !  \n", uint_vme_address);
+				return RET_FAILED;
 			}
 			break;
 		case PROC_FAIL_ERR_INT:
@@ -1715,6 +1758,7 @@ int EnableVMEInterrupt_bit(SIS1100_Device_Struct* dev, unsigned char axis, unsig
 			if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
 			{
 				WARN("Register %6X access Faillure !  \n", uint_vme_address);
+				return RET_FAILED;
 			}
 			break;
 		case BIAS_SUPPLY_ERR_INT:
@@ -1722,6 +1766,7 @@ int EnableVMEInterrupt_bit(SIS1100_Device_Struct* dev, unsigned char axis, unsig
 			if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
 			{
 				WARN("Register %6X access Faillure !  \n", uint_vme_address);
+				return RET_FAILED;
 			}
 			break;
 		case WRT_PROTECT_ERR_INT:
@@ -1729,6 +1774,7 @@ int EnableVMEInterrupt_bit(SIS1100_Device_Struct* dev, unsigned char axis, unsig
 			if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
 			{
 				WARN("Register %6X access Faillure !  \n", uint_vme_address);
+				return RET_FAILED;
 			}
 			break;
 		case SIG_MAX_ERR_INT:
@@ -1736,6 +1782,7 @@ int EnableVMEInterrupt_bit(SIS1100_Device_Struct* dev, unsigned char axis, unsig
 			if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
 			{
 				WARN("Register %6X access Faillure !  \n", uint_vme_address);
+				return RET_FAILED;
 			}
 			break;
 		case SIG_MIN_ERR_INT:
@@ -1743,6 +1790,7 @@ int EnableVMEInterrupt_bit(SIS1100_Device_Struct* dev, unsigned char axis, unsig
 			if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
 			{
 				WARN("Register %6X access Faillure !  \n", uint_vme_address);
+				return RET_FAILED;
 			}
 			break;
 		case BIAS_CALC_COMP_INT:
@@ -1750,6 +1798,7 @@ int EnableVMEInterrupt_bit(SIS1100_Device_Struct* dev, unsigned char axis, unsig
 			if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
 			{
 				WARN("Register %6X access Faillure !  \n", uint_vme_address);
+				return RET_FAILED;
 			}
 			break;
 		case BIAS_ERR_INT:
@@ -1757,6 +1806,7 @@ int EnableVMEInterrupt_bit(SIS1100_Device_Struct* dev, unsigned char axis, unsig
 			if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
 			{
 				WARN("Register %6X access Faillure !  \n", uint_vme_address);
+				return RET_FAILED;
 			}
 			break;
 		case APD_DC_ERR_INT:
@@ -1764,6 +1814,7 @@ int EnableVMEInterrupt_bit(SIS1100_Device_Struct* dev, unsigned char axis, unsig
 			if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
 			{
 				WARN("Register %6X access Faillure !  \n", uint_vme_address);
+				return RET_FAILED;
 			}
 			break;
 		case BIAS_SET_ERR_INT:
@@ -1771,6 +1822,7 @@ int EnableVMEInterrupt_bit(SIS1100_Device_Struct* dev, unsigned char axis, unsig
 			if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
 			{
 				WARN("Register %6X access Faillure !  \n", uint_vme_address);
+				return RET_FAILED;
 			}
 			break;
 		case APD_FAIL_ERR_INT:
@@ -1778,6 +1830,7 @@ int EnableVMEInterrupt_bit(SIS1100_Device_Struct* dev, unsigned char axis, unsig
 			if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
 			{
 				WARN("Register %6X access Faillure !  \n", uint_vme_address);
+				return RET_FAILED;
 			}
 			break;
 		case APD_TMP_ERR_INT:
@@ -1785,6 +1838,7 @@ int EnableVMEInterrupt_bit(SIS1100_Device_Struct* dev, unsigned char axis, unsig
 			if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
 			{
 				WARN("Register %6X access Faillure !  \n", uint_vme_address);
+				return RET_FAILED;
 			}
 			break;
 		default:
@@ -1815,88 +1869,88 @@ int DisableVMEInterrupt_bit(SIS1100_Device_Struct* dev, unsigned char axis, unsi
 	{
 		uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEIntEnab0);
 		if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
-			WARN("Register %6X access Faillure !  \n", uint_vme_address);
+			{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 		switch (intNumber)
 		{
 		case CEC_ERR_INT:
 			uint_vme_data &= 0x7FFF;
 			if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
-				WARN("Register %6X access Faillure !  \n", uint_vme_address);
+				{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 			break;
 		case PHASE_NOISE_ERR_INT:
 			uint_vme_data &= 0xBFFF;
 			if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
-				WARN("Register %6X access Faillure !  \n", uint_vme_address);
+				{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 			break;
 		case ACCELERATION_ERR_INT:
 			uint_vme_data &= 0xDFFF;
 			if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
-				WARN("Register %6X access Faillure !  \n", uint_vme_address);
+				{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 			break;
 		case MEAS_SIG_GLITCH_ERR_INT:
 			uint_vme_data &= 0xEFFF;
 			if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
-				WARN("Register %6X access Faillure !  \n", uint_vme_address);
+				{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 			break;
 		case MEAS_SIG_DROP_ERR_INT:
 			uint_vme_data &= 0xF7FF;
 			if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
-				WARN("Register %6X access Faillure !  \n", uint_vme_address);
+				{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 			break;
 		case SSI_MAX_LIM_ERR_INT:
 			uint_vme_data &= 0xFBFF;
 			if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
-				WARN("Register %6X access Faillure !  \n", uint_vme_address);
+				{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 			break;
 		case MEAS_SIG_SAT_ERR_INT:
 			uint_vme_data &= 0xFDFF;
 			if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
-				WARN("Register %6X access Faillure !  \n", uint_vme_address);
+				{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 			break;
 		case MEAS_SIG_MIS_ERR_INT:
 			uint_vme_data &= 0xFEFF;
 			if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
-				WARN("Register %6X access Faillure !  \n", uint_vme_address);
+				{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 			break;
 		case OV_TMP_ERR_INT:
 			uint_vme_data &= 0xFF7F;
 			if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
-				WARN("Register %6X access Faillure !  \n", uint_vme_address);
+				{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 			break;
 		case FPGA_SYNC_ERR_INT:
 			uint_vme_data &= 0xFFBF;
 			if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
-				WARN("Register %6X access Faillure !  \n", uint_vme_address);
+				{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 			break;
 		case RES_FAIL_ERR_INT:
 			uint_vme_data &= 0xFFDF;
 			if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
-				WARN("Register %6X access Faillure !  \n", uint_vme_address);
+				{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 			break;
 		case RES_COMP_ERR_INT:
 			uint_vme_data &= 0xFFEF;
 			if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
-				WARN("Register %6X access Faillure !  \n", uint_vme_address);
+				{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 			break;
 		case REF_PLL_ERR_INT:
 			uint_vme_data &= 0xFFF7;
 			if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
-				WARN("Register %6X access Faillure !  \n", uint_vme_address);
+				{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 			break;
 		case REF_SIG_MIS_ERR_INT:
 			uint_vme_data &= 0xFFFB;
 			if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
-				WARN("Register %6X access Faillure !  \n", uint_vme_address);
+				{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 			break;
 		case WRT_ERR_INT:
 			uint_vme_data &= 0xFFFD;
 			if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
-				WARN("Register %6X access Faillure !  \n", uint_vme_address);
+				{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 			break;
 		case PWR_ERR_INT:
 			uint_vme_data &= 0xFFFE;
 			if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
-				WARN("Register %6X access Faillure !  \n", uint_vme_address);
+				{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 			break;
 		default:
 			break;
@@ -1906,38 +1960,38 @@ int DisableVMEInterrupt_bit(SIS1100_Device_Struct* dev, unsigned char axis, unsi
 	{
 		uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEIntEnab1);
 		if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
-			WARN("Register %6X access Faillure !  \n", uint_vme_address);
+			{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 		switch (intNumber)
 		{
 		case VME_EXT_FLAG_SAMPLE_ERR_INT:
 			uint_vme_data &= 0xFEFF;
 			if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
-				WARN("Register %6X access Faillure !  \n", uint_vme_address);
+				{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 			break;
 		case P32_POS_OV_ERR_INT:
 			uint_vme_data &= 0xFFEF;
 			if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
-				WARN("Register %6X access Faillure !  \n", uint_vme_address);
+				{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 			break;
 		case VME32_POS_OV_ERR_INT:
 			uint_vme_data &= 0xFFF7;
 			if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
-				WARN("Register %6X access Faillure !  \n", uint_vme_address);
+				{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 			break;
 		case VME37_POS_OV_ERR_INT:
 			uint_vme_data &= 0xFFFB;
 			if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
-				WARN("Register %6X access Faillure !  \n", uint_vme_address);
+				{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 			break;
 		case USR_VEL_ERR_INT:
 			uint_vme_data &= 0xFFFD;
 			if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
-				WARN("Register %6X access Faillure !  \n", uint_vme_address);
+				{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 			break;
 		case VEL_ERR_INT:
 			uint_vme_data &= 0xFFFE;
 			if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
-				WARN("Register %6X access Faillure !  \n", uint_vme_address);
+				{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 			break;
 		default:
 			printf(" Unknow interrupt number\n");
@@ -1948,68 +2002,68 @@ int DisableVMEInterrupt_bit(SIS1100_Device_Struct* dev, unsigned char axis, unsi
 	{
 		uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEIntEnab2);
 		if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
-			WARN("Register %6X access Faillure !  \n", uint_vme_address);
+			{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 		switch (intNumber)
 		{
 		case PROC_INIT_BSY_ERR_INT:
 			uint_vme_data &= 0x7FFF;
 			if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
-				WARN("Register %6X access Faillure !  \n", uint_vme_address);
+				{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 			break;
 		case PROC_FAIL_ERR_INT:
 			uint_vme_data &= 0xBFFF;
 			if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
-				WARN("Register %6X access Faillure !  \n", uint_vme_address);
+				{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 			break;
 		case BIAS_SUPPLY_ERR_INT:
 			uint_vme_data &= 0xDFFF;
 			if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
-				WARN("Register %6X access Faillure !  \n", uint_vme_address);
+				{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 			break;
 		case WRT_PROTECT_ERR_INT:
 			uint_vme_data &= 0xEFFF;
 			if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
-				WARN("Register %6X access Faillure !  \n", uint_vme_address);
+				{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 			break;
 		case SIG_MAX_ERR_INT:
 			uint_vme_data &= 0xFF7F;
 			if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
-				WARN("Register %6X access Faillure !  \n", uint_vme_address);
+				{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 			break;
 		case SIG_MIN_ERR_INT:
 			uint_vme_data &= 0xFFBF;
 			if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
-				WARN("Register %6X access Faillure !  \n", uint_vme_address);
+				{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 			break;
 		case BIAS_CALC_COMP_INT:
 			uint_vme_data &= 0xFFDF;
 			if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
-				WARN("Register %6X access Faillure !  \n", uint_vme_address);
+				{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 			break;
 		case BIAS_ERR_INT:
 			uint_vme_data &= 0xFFEF;
 			if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
-				WARN("Register %6X access Faillure !  \n", uint_vme_address);
+				{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 			break;
 		case APD_DC_ERR_INT:
 			uint_vme_data &= 0xFFF7;
 			if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
-				WARN("Register %6X access Faillure !  \n", uint_vme_address);
+				{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 			break;
 		case BIAS_SET_ERR_INT:
 			uint_vme_data &= 0xFFFB;
 			if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
-				WARN("Register %6X access Faillure !  \n", uint_vme_address);
+				{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 			break;
 		case APD_FAIL_ERR_INT:
 			uint_vme_data &= 0xFFFD;
 			if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
-				WARN("Register %6X access Faillure !  \n", uint_vme_address);
+				{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 			break;
 		case APD_TMP_ERR_INT:
 			uint_vme_data &= 0xFFFE;
 			if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
-				WARN("Register %6X access Faillure !  \n", uint_vme_address);
+				{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 			break;
 		default:
 			break;
@@ -2030,12 +2084,14 @@ int DisableVMEInterrupt_bit(SIS1100_Device_Struct* dev, unsigned char axis, unsi
 /// </returns>
 int ResetAxis(SIS1100_Device_Struct* dev, unsigned char axis) {
 	unsigned int uint_vme_address = 0, uint_vme_data = 0;
+	if(checkValues(axis, 1, 4)!=RET_SUCCESS)
+		INFO("BAD AXIS VALUE\n");
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCmd);
 	uint_vme_data = 0x20;
 	INFO("Reseting axis %u...\n", axis);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
 	{
-		INFO("Register %6X access Faillure !  \n", uint_vme_address);
+		INFO("Register 0x%6X access Faillure !  \n", uint_vme_address);
 		return RET_FAILED;
 	}
 	if (WaitResetComplete(dev, axis) < 0)	// Wait for reset complete on the main axis
@@ -2060,11 +2116,12 @@ int WaitResetComplete(SIS1100_Device_Struct* dev, unsigned char axis) {
 	while (!(uint_vme_data & 0x0001))	// Wait for reset complete 
 	{
 		if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
-			WARN("Register %6X access Faillure !  \n", uint_vme_address);
+			{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 		ct++;
 		if (ct > 0xFFFFFFF1) {
 
 			WARN("Failed to reset axis %d !  \n", axis);
+			return RET_FAILED;
 		}
 
 	}
@@ -2079,7 +2136,7 @@ int WaitResetComplete(SIS1100_Device_Struct* dev, unsigned char axis) {
 /// 0 if success
 /// -1 else
 /// </returns>
-int Init_SIS_boards(SIS1100_Device_Struct* dev) {
+int initSISboards(SIS1100_Device_Struct* dev) {
 
 	/******************************************************************************************************************************/
 	/* VME Master Create, Open and Setup                                                                                          */
@@ -2099,10 +2156,12 @@ int Init_SIS_boards(SIS1100_Device_Struct* dev) {
 		INFO("Error while connected SIS' PCIe card\n");
 		INFO("\tNo valid device were suplied or a Null argument were suplied\n");
 		WARN("\tError in 'sis1100w_Find_No_Of_sis1100': %d\n", stat);
+		return RET_FAILED;
 	}
 
 	if (nof_found_sis1100_devices == 0) {
 		WARN("No SIS' PCIe card found, exiting...\n");
+		return RET_FAILED;
 	}
 
 	INFO("%u SIS' PCIe card found\n", nof_found_sis1100_devices);
@@ -2111,6 +2170,7 @@ int Init_SIS_boards(SIS1100_Device_Struct* dev) {
 	if (stat != Stat1100Success) {
 		INFO("Connection to SIS' PCIe card failed\n");
 		WARN("\tError in 'sis1100w_Get_Handle_And_Open': %d\n", stat);
+		return RET_FAILED;
 	}
 	INFO("Connection successful\n");
 	/*
@@ -2124,6 +2184,7 @@ int Init_SIS_boards(SIS1100_Device_Struct* dev) {
 	if (stat != Stat1100Success) {
 		INFO("first SIS' PCIe card initialization failed...\n");
 		WARN("\tError in 'sis1100w_Init': %d\n", stat);
+		return RET_FAILED;
 	}
 	INFO("first SIS' PCIe card initialized\n");
 	INFO("Initializing VME/PCI gateway...\n");
@@ -2131,6 +2192,7 @@ int Init_SIS_boards(SIS1100_Device_Struct* dev) {
 	if (stat != Stat1100Success) {
 		INFO("VME/PCI gateway initialization failed...\n");
 		WARN("\tError in 'sis1100w_Init_sis3100': %d\n", stat);
+		return RET_FAILED;
 	}
 
 	INFO("VME/PCI gateway initialized\n");
@@ -2139,6 +2201,7 @@ int Init_SIS_boards(SIS1100_Device_Struct* dev) {
 	sis3100_add = 0x0;
 	if ((stat = sis1100w_sis1100_Control_Read(dev, sis3100_add, &sis3100_data)) != Stat1100Success) {
 		WARN("\tReading address %X of sis3100 card failed\n", sis3100_add);
+		return RET_FAILED;
 	}
 	INFO("\t 0x0 data: %010X\n", sis3100_data);
 	short_data = sis3100_data;
@@ -2218,17 +2281,24 @@ int Init_SIS_boards(SIS1100_Device_Struct* dev) {
 /// 0 if success
 /// -1 else
 /// </returns>
-int Init_ZMI_bd(SIS1100_Device_Struct* dev) {
+int initZMIboards(SIS1100_Device_Struct* dev) {
 	short value = 0;
+	bool queryBoard = false;
 	char	ch_access_mode[16];
+	bool* ledsStatus;
 	unsigned int	vme_data = 0,
 		uint_vme_address = 0,
 		uint_vme_data = 0;
 	unsigned int  uint_vme_data_buf[20];
-	static double	SSICalMin[4][2] = { {0, 0}, {0, 0}, {0, 0}, {0, 0} },    //( (Ax1SSI,Ax1uW),(Ax2SSI,Ax2uW), etc) 
+	static double	
+		SSICalMin[4][2] = { {0, 0}, {0, 0}, {0, 0}, {0, 0} },    //( (Ax1SSI,Ax1uW),(Ax2SSI,Ax2uW), etc) 
 		SSICalNom[4][2] = { {0, 0}, {0, 0}, {0, 0}, {0, 0} },
 		SSICalMax[4][2] = { {1, 1}, {1, 1}, {1, 1}, {1, 1} },     //1 all by default to prevent /0
-		SSICalValues[4][2] = { {1, 1}, {1, 1}, {1, 1}, {1, 1} };  //( (Ax1m,Ax1b),(Ax2m,Ax2b), etc) 
+		SSICalValues[4][2] = { {1, 1}, {1, 1}, {1, 1}, {1, 1} },  //( (Ax1m,Ax1b),(Ax2m,Ax2b), etc) 
+		pSSICalMin[2] = { 0, 0 },    //( (Ax1SSI,Ax1uW),(Ax2SSI,Ax2uW), etc) 
+		pSSICalNom[2] = { 0, 0 },
+		pSSICalMax[2] = { 1, 1 },     //1 all by default to prevent /0
+		pSSICalValues[2] = { 1, 1 };  //( (Ax1m,Ax1b),(Ax2m,Ax2b), etc) 
 	int return_code = 0;
 	static bool enableResetFindsVelocity[] = { false, false, false, false };
 	memset(uint_vme_data_buf, 0, _countof(uint_vme_data_buf));
@@ -2253,6 +2323,7 @@ int Init_ZMI_bd(SIS1100_Device_Struct* dev) {
 		break;
 	case 0b1011:
 		INFO("\tZMI System type: ZMI 4104C\n");
+		queryBoard = true;
 		break;
 	default:
 		if (uint_vme_data < 13) {
@@ -2262,6 +2333,13 @@ int Init_ZMI_bd(SIS1100_Device_Struct* dev) {
 			INFO("\tZMI System type: UNKNOW \n");
 		break;
 	}
+	if (!queryBoard) {
+		INFO("Either the bmeasurement board doesn't match with the one require by the library or you are getting incoherent data from your system\n");
+		INFO("This library has been developped to drive only the ZMI 4104C board\n");
+		WARN("Make sure your measurement board is the ZMI4104C one and if so, change the board position in the VME chassis\n");
+		return RET_FAILED;
+	}
+
 	uint_vme_data = vme_data;
 
 	if (uint_vme_data & 0x00000001)
@@ -2303,7 +2381,7 @@ int Init_ZMI_bd(SIS1100_Device_Struct* dev) {
 		INFO("\t[FPGA_Temp Ok] The FPGA temperature is good at all\n");
 
 	if (uint_vme_data & 0x00000100)
-		INFO("\t[VME_IRQ_PENDING] An error nit is asserted in the VME Error Status register");
+		INFO("\t[VME_IRQ_PENDING] An error is asserted in the VME Error Status register\n");
 
 	uint_vme_data = 0;
 	if ((return_code = EEPROMread(dev, ADD(BASE_ADDRESS[2], zBdAxInf), &uint_vme_data, 1)) < 0)
@@ -2311,15 +2389,17 @@ int Init_ZMI_bd(SIS1100_Device_Struct* dev) {
 	INFO("The number of axes is %d \n", uint_vme_data);
 
 	memset(uint_vme_data_buf, 0, _countof(uint_vme_data_buf));
+	ledsStatus = (bool*)calloc(5, sizeof(bool));
+	if (getLEDsStatus(dev, ledsStatus) != RET_SUCCESS) {
+		WARN("Faillure when retrieving led status\n");
+		return RET_FAILED;
+	}
 	for (int i = 0; i < 4; i++) {
 		uint_vme_data = 0;
-		if (Read_Write(ch_access_mode, dev, ADD(BASE_ADDRESS[i], zStat1), &uint_vme_data, 0) != RET_SUCCESS)
-			INFO("\n\nnot defined/programmed VME Access Mode !  \n\n");
-		if (uint_vme_data & 0x00000002)
+		if (ledsStatus[i])
 			INFO("\t[Meas_Sig OK] The measurement signal is present on Axis %d\n", i + 1);
 		else
 			INFO("\t[Meas_Sig Warning] The measurement signal is missing on Axis %d\n", i + 1);
-
 	}
 
 	if (uint_vme_data & 0x00000001)
@@ -2349,12 +2429,17 @@ int Init_ZMI_bd(SIS1100_Device_Struct* dev) {
 		uint_vme_data_buf[13], \
 		uint_vme_data_buf[14]);
 	strcpy_s(ch_access_mode, sizeof(ch_access_mode), access_mode_Selection[6]);
-	if (Read_Write(ch_access_mode, dev, ADD(BASE_ADDRESS[2], zFWVer), &vme_data, 0) != RET_SUCCESS)
+	if (Read_Write(ch_access_mode, dev, ADD(BASE_ADDRESS[2], zFWVer), &vme_data, 0) != RET_SUCCESS) {
 		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		return RET_FAILED;
+	}
 	INFO("\tFirmware Version: %d \n", uint_vme_data);
 
 	if (Read_Write(ch_access_mode, dev, ADD(BASE_ADDRESS[2], zFWRev), &vme_data, 0) != RET_SUCCESS)
+	{
 		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		return RET_FAILED;
+	}
 	INFO("\tFirmware Revision: ");
 	switch (uint_vme_data)
 	{
@@ -2369,39 +2454,17 @@ int Init_ZMI_bd(SIS1100_Device_Struct* dev) {
 		break;
 	}
 
-	int temp32 = 0,
-		offset = 0;
-	double m = 0.0, b = 0.0;
 	/*Read SSI calibration data*/
-
-	for (int i = 0; i < 4; i++)
-	{
-		/*SSI reading with minimum signal*/
-		if (EEPROMread(dev, 50 + 9 + (100 * i), &uint_vme_data, 1) != RET_SUCCESS)
-			INFO("EEPROM Offset %d access Faillure !  \n", i);
-		SSICalMin[i][0] = uint_vme_data;
-		if (EEPROMread(dev, 50 + 5 + (100 * i), &uint_vme_data, 1) != RET_SUCCESS) /*Read optical power L2*/
-			INFO("EEPROM Offset %d access Faillure !  \n", i);
-		SSICalMin[i][1] = pow(2, uint_vme_data / 1024);
-
-		if (EEPROMread(dev, 50 + 16 + (100 * i), &uint_vme_data, 1) != RET_SUCCESS)
-			INFO("EEPROM Offset %d access Faillure !  \n", i);
-		SSICalNom[i][0] = uint_vme_data;
-		if (EEPROMread(dev, 50 + 12 + (100 * i), &uint_vme_data, 1) != RET_SUCCESS)
-			INFO("EEPROM Offset %d access Faillure !  \n", i);
-		SSICalNom[i][1] = pow(2, uint_vme_data / 1024);
-
-		if (EEPROMread(dev, 50 + 23 + (100 * i), &uint_vme_data, 1) != RET_SUCCESS)
-			INFO("EEPROM Offset %d access Faillure !  \n", i);
-		SSICalMax[i][0] = uint_vme_data;
-		if (EEPROMread(dev, 50 + 19 + (100 * i), &uint_vme_data, 1) != RET_SUCCESS)
-			INFO("EEPROM Offset %d access Faillure !  \n", i);
-		SSICalMax[i][1] = pow(2, uint_vme_data / 1024);
-
-		m = (SSICalNom[i][1] - SSICalMin[i][1]) / (SSICalNom[i][0] - SSICalMin[i][0]);
-		b = SSICalMin[i][1] - (m * SSICalMin[i][0]);
-		SSICalValues[i][0] = m;
-		SSICalValues[i][1] = b;
+	for (UCHAR axis = 0; axis < 4; axis++) {
+		ReadSSICalibrationData(dev, axis+1, pSSICalMin, pSSICalMax, pSSICalNom, pSSICalValues);
+		SSICalMax[axis][0] = pSSICalMax[0];
+		SSICalMax[axis][1] = pSSICalMax[1];
+		SSICalNom[axis][0] = pSSICalNom[0];
+		SSICalNom[axis][1] = pSSICalNom[1];
+		SSICalMin[axis][0] = pSSICalMin[0];
+		SSICalMin[axis][1] = pSSICalMin[1];
+		SSICalValues[axis][0] = pSSICalValues[0];
+		SSICalValues[axis][1] = pSSICalValues[1];
 	}
 
 	/*Enable reset finds velocity*/
@@ -2420,13 +2483,96 @@ if (Read_Write(ch_access_mode, dev, ADD(BASE_ADDRESS[i], zCtrl3), &vme_data, 1) 
 		{
 			vme_data = 0x10;
 			if (Read_Write(ch_access_mode, dev, ADD(BASE_ADDRESS[i], zTestCtrl0), &vme_data, 1) != RET_SUCCESS)
+				{
 				WARN("Register %6X access Faillure !  \n", uint_vme_address);
+			return RET_FAILED;
+		}
 		}
 		else
 		{
 			vme_data = 0;
 			if (Read_Write(ch_access_mode, dev, ADD(BASE_ADDRESS[i], zTestCtrl0), &vme_data, 1) != RET_SUCCESS)
-				WARN("Register %6X access Faillure !  \n", uint_vme_address);
+			{WARN("Register %6X access Faillure !  \n", uint_vme_address);
+			return RET_FAILED;
+			}
+		}
+	}
+	return RET_SUCCESS;
+}
+
+int ReadSSICalibrationData(SIS1100_Device_Struct* dev, unsigned char axis, double * SSIMin, double* SSIMax, double* SSINom, double* SSIVal) {
+	unsigned int temp32 = 0,
+		offset = 0;
+	double m = 0.0, b = 0.0;
+	bool aSave = false;
+	unsigned int uint_vme_data = 0;
+	double 
+		SSICalMin[2] = { 0, 0 },    //( (Ax1SSI,Ax1uW),(Ax2SSI,Ax2uW), etc) 
+		SSICalNom[2] = { 0, 0 },
+		SSICalMax[2] = { 1, 1},     //1 all by default to prevent /0
+		SSICalValues[2] = { 1, 1 };  //( (Ax1m,Ax1b),(Ax2m,Ax2b), etc) 
+	/*Read SSI calibration data*/
+
+	if ((SSIMax != NULL) && (SSIMin != NULL) && (SSINom != NULL))
+		aSave = true;
+	offset = 50 + 9 + (100 * (axis - 1));
+		/*SSI reading with minimum signal*/
+		if (EEPROMread(dev, offset, &uint_vme_data, 1) != RET_SUCCESS) {
+			WARN("EEPROM Offset %d access Faillure !  \n", offset);
+			return RET_FAILED;
+		}
+		SSICalMin[0] = uint_vme_data;
+		offset = 50 + 5 + (100 * (axis - 1));
+		if (EEPROMread(dev, offset, &uint_vme_data, 1) != RET_SUCCESS) /*Read optical power L2*/
+		{
+			WARN("EEPROM Offset %d access Faillure !  \n", offset);
+			return RET_FAILED;
+		}
+		SSICalMin[1] = pow(2, uint_vme_data / 1024);
+
+		offset = 50 + 16 + (100 * (axis - 1));
+		if (EEPROMread(dev, offset, &uint_vme_data, 1) != RET_SUCCESS) {
+			WARN("EEPROM Offset %d access Faillure !  \n", offset);
+			return RET_FAILED;
+		}
+		SSICalNom[0] = uint_vme_data;
+		offset = 50 + 12 + (100 * (axis - 1));
+		if (EEPROMread(dev, offset, &uint_vme_data, 1) != RET_SUCCESS) {
+			WARN("EEPROM Offset %d access Faillure !  \n", offset);
+			return RET_FAILED;
+		}
+		SSICalNom[1] = pow(2, uint_vme_data / 1024);
+
+		offset = 50 + 23 + (100 * (axis - 1));
+		if (EEPROMread(dev, offset, &uint_vme_data, 1) != RET_SUCCESS) {
+			WARN("EEPROM Offset %d access Faillure !  \n", offset);
+			return RET_FAILED;
+		}
+		SSICalMax[0] = uint_vme_data;
+		offset = 50 + 19 + (100 * (axis - 1));
+		if (EEPROMread(dev, offset, &uint_vme_data, 1) != RET_SUCCESS) {
+			WARN("EEPROM Offset %d access Faillure !  \n", offset);
+			return RET_FAILED;
+		}
+		SSICalMax[1] = pow(2, uint_vme_data / 1024);
+
+		m = (SSICalNom[1] - SSICalMin[1]) / (SSICalNom[0] - SSICalMin[0]);
+		b = SSICalMin[1] - (m * SSICalMin[0]);
+		SSICalValues[0] = m;
+		SSICalValues[1] = b;
+		SSIVal[0] = m;
+		SSIVal[1] = b;
+
+	if (aSave)
+	{
+		for (int i = 0; i < 4; i++)
+		{
+			SSIMax[0] = SSICalMax[0];
+			SSIMax[1] = SSICalMax[1];
+			SSINom[0] = SSICalNom[0];
+			SSINom[1] = SSICalNom[1];
+			SSIMin[0] = SSICalMin[0];
+			SSIMin[1] = SSICalMin[1];
 		}
 	}
 	return RET_SUCCESS;
@@ -2448,7 +2594,9 @@ int SetPositionOffset32(SIS1100_Device_Struct* dev, unsigned char axis, unsigned
 	uint_vme_data = offsetPos;
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zOffsetMSB);
 	if (Read_Write("A24D32", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+	{WARN("Register %6X access Faillure !  \n", uint_vme_address);
+	return RET_FAILED;
+}
 	return RET_SUCCESS;
 }
 /// <summary>
@@ -2470,6 +2618,7 @@ int EnableCECcompensation(SIS1100_Device_Struct* dev, unsigned char axis) {
 	{
 		INFO("readWriteModify failed!!!!!!\n");
 		WARN("Enabling CE compensation failed\n");
+		return RET_FAILED;
 	}
 	DisableAuxRegisters(dev, 3);
 	printf("Enabling CE compensation success\n");
@@ -2494,6 +2643,7 @@ int disableCECcompensation(SIS1100_Device_Struct* dev, unsigned char axis) {
 	if (readModifyWrite("A24D16", dev, uint_vme_address, uint_vme_data, 0) != RET_SUCCESS)
 	{
 		WARN("readWriteModify failed!!!!!!\n");
+		return RET_FAILED;
 	}
 	DisableAuxRegisters(dev, 3);
 	return RET_SUCCESS;
@@ -2518,6 +2668,7 @@ int useCEUserSuppliedCoeff(SIS1100_Device_Struct* dev, unsigned char axis) {
 	if (readModifyWrite("A24D16", dev, uint_vme_address, uint_vme_data, 1) != RET_SUCCESS)
 	{
 		WARN("readWriteModify failed!!!!!!\n");
+		return RET_FAILED;
 	}
 	DisableAuxRegisters(dev, 3);
 	return RET_SUCCESS;
@@ -2543,6 +2694,7 @@ int useCEUserSupplyCoeffAtStartup(SIS1100_Device_Struct* dev, unsigned char axis
 	if (readModifyWrite("A24D16", dev, uint_vme_address, uint_vme_data, 1) != RET_SUCCESS)
 	{
 		WARN("readWriteModify failed!!!!!!\n");
+		return RET_FAILED;
 	}
 	DisableAuxRegisters(dev, 3);
 	return RET_SUCCESS;
@@ -2565,6 +2717,7 @@ int ResetCECerrors(SIS1100_Device_Struct* dev, unsigned char axis) {
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
 	{
 		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		return RET_FAILED;
 	}
 	DisableAuxRegisters(dev, 3);
 	return RET_SUCCESS;
@@ -2596,11 +2749,52 @@ int waitCEinit2Complete(SIS1100_Device_Struct* dev, unsigned char axis) {
 		if (ct > 3000) {
 			INFO("Any motion has been detected for more than 30 secs\n");
 			WARN("CEC hardware initialization has failed \n");
+			return RET_FAILED;
 		}
 	}
 	DisableAuxRegisters(dev, 3);
 	if (ct < 3000) {
 		INFO("CEC hardware initialization success \n");
+	}
+	return RET_SUCCESS;
+}
+
+int getLEDsStatus(SIS1100_Device_Struct* dev, bool* ledsStatus) {
+	unsigned int uint_vme_address = 0, uint_vme_data;
+
+	INFO("running getLEDsStatus\n");
+	for (int i = 0; i < 4; i++) {
+		uint_vme_address = ADD(BASE_ADDRESS[i], zStat1);
+		uint_vme_data = 0;
+		if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
+		{
+			WARN("Register %6X access Faillure !  \n", uint_vme_address);
+			return RET_FAILED;
+		}
+		if (uint_vme_data & 0x00000002) {
+			//INFO("\t[Meas_Sig OK] The measurement signal is present on Axis %d\n", i + 1);
+			ledsStatus[i] = true;
+		}
+		else{
+			//INFO("\t[Meas_Sig Warning] The measurement signal is missing on Axis %d\n", i + 1);
+			ledsStatus[i] = false;
+		}
+
+	}
+	uint_vme_data = 0;
+	uint_vme_address = ADD(BASE_ADDRESS[2], zStat0);
+	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
+	{
+		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		return RET_FAILED;
+	}
+	if (uint_vme_data & 0x00000002) {
+		//INFO("\t[Meas_Sig OK] The measurement signal is present on Axis %d\n", i + 1);
+		ledsStatus[4] = true;
+	}
+	else {
+		//INFO("\t[Meas_Sig Warning] The measurement signal is missing on Axis %d\n", i + 1);
+		ledsStatus[4] = false;
 	}
 	return RET_SUCCESS;
 }
@@ -2625,6 +2819,7 @@ int SetCEMaxVel(SIS1100_Device_Struct* dev, unsigned char axis, unsigned int CEM
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
 	{
 		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		return RET_FAILED;
 	}
 	DisableAuxRegisters(dev, 3);
 	return RET_SUCCESS;
@@ -2651,6 +2846,7 @@ int SetCEMinVel(SIS1100_Device_Struct* dev, unsigned char axis, unsigned int CEM
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
 	{
 		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		return RET_FAILED;
 	}
 	DisableAuxRegisters(dev, 3);
 	return RET_SUCCESS;
@@ -2671,6 +2867,7 @@ int readCalcCECoeffs(SIS1100_Device_Struct* dev, unsigned char axis, CECoeffs* C
 	INFO("Reading cyclic error calculated coefficients on axis %u...\n", axis);
 	if (!CECalcCoeffs) {
 		WARN("None of the pointer passed as argument should be NULL\n");
+		return RET_FAILED;
 	}
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCEC0CalcCoeff);
 
@@ -2678,6 +2875,7 @@ int readCalcCECoeffs(SIS1100_Device_Struct* dev, unsigned char axis, CECoeffs* C
 	if (Read_Write("A24D32", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
 	{
 		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		return RET_FAILED;
 	}
 	// CE0 val is stored in zygo register as a complex Int16 value so we should 
 	// convert it to a complex number
@@ -2687,6 +2885,7 @@ int readCalcCECoeffs(SIS1100_Device_Struct* dev, unsigned char axis, CECoeffs* C
 	if (Read_Write("A24D32", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
 	{
 		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		return RET_FAILED;
 	}
 	// CE1 val is stored in zygo register as a float value so we should 
 // convert it to double
@@ -2696,6 +2895,7 @@ int readCalcCECoeffs(SIS1100_Device_Struct* dev, unsigned char axis, CECoeffs* C
 	if (Read_Write("A24D32", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
 	{
 		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		return RET_FAILED;
 	}
 	DisableAuxRegisters(dev, 3);
 	// CEN val is stored in zygo register as a complex float value so we should 
@@ -2718,7 +2918,7 @@ int readCECoeffboundaries(SIS1100_Device_Struct* dev, unsigned char axis, CECoef
 	unsigned int uint_vme_address = 0, uint_vme_data = 0;
 	USHORT tmp1 = 0, tmp2 = 0;
 	if (!CE0CoeffBound || !CENCoeffBound) {
-		printf("None of the pointer passed as argument should be NULL\n");
+		WARN("None of the pointer passed as argument should be NULL\n");
 		return RET_FAILED;
 	}
 
@@ -2730,6 +2930,7 @@ int readCECoeffboundaries(SIS1100_Device_Struct* dev, unsigned char axis, CECoef
 		if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
 		{
 			WARN("Register %6X access Faillure !  \n", uint_vme_address);
+			return RET_FAILED;
 		}
 		// CE Mag val is stored in zygo register as an unsigned short value so we should 
 		// convert it to a real number
@@ -2742,6 +2943,7 @@ int readCECoeffboundaries(SIS1100_Device_Struct* dev, unsigned char axis, CECoef
 		if (Read_Write("A24D32", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
 		{
 			WARN("Register %6X access Faillure !  \n", uint_vme_address);
+			return RET_FAILED;
 		}
 		//split data to get CE min and CE max value
 		tmp1 = uint_vme_data & 0xFFFF; // CE Min
@@ -3118,7 +3320,10 @@ int SetCompARegVal32(SIS1100_Device_Struct* dev, unsigned char axis, unsigned in
 	uint_vme_data = compAval32;
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCompAMSB);
 	if (Read_Write("A24D32", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
+	{
 		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		return RET_FAILED;
+	}
 	return RET_SUCCESS;
 }
 /// <summary>
@@ -3137,10 +3342,16 @@ int Enable37bitsSignExtension(SIS1100_Device_Struct* dev, unsigned char axis) {
 
 	INFO("Enabling 37 bits sign extension on axis %u...\n", axis);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
+	{
 		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		return RET_FAILED;
+	}
 	uint_vme_data |= 0x40;
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
+	{
 		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		return RET_FAILED;
+	}
 	return RET_SUCCESS;
 }
 /// <summary>
@@ -3158,10 +3369,16 @@ int Disable37bitsSignExtension(SIS1100_Device_Struct* dev, unsigned char axis) {
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCtrl0);
 	uint_vme_data = 0;
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
+	{
 		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		return RET_FAILED;
+	}
 	uint_vme_data &= 0xFFBF;
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
+	{
 		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		return RET_FAILED;
+	}
 	return RET_SUCCESS;
 }
 /// <summary>
@@ -3181,15 +3398,22 @@ int SetKpAndKvCoeff(SIS1100_Device_Struct* dev, unsigned char axis, unsigned sho
 	if ((Kp > 7) || (Kv > 7))
 	{
 		WARN("Bad Kp or Kv value. range is 0 to 7\n");
+		return RET_FAILED;
 	}
 	unsigned int uint_vme_address = 0, uint_vme_data;
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCtrl1);
 	uint_vme_data = 0;
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
+	{
 		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		return RET_FAILED;
+	}
 	uint_vme_data |= (Kp << 4) + Kv;
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
+	{
 		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		return RET_FAILED;
+	}
 	return RET_SUCCESS;
 }
 /// <summary>
@@ -3211,15 +3435,22 @@ int EnableGlitchFilter(SIS1100_Device_Struct* dev, unsigned char axis, unsigned 
 	if (glitchFilterTime > 0xF)
 	{
 		WARN("Bad Glitch filter time value. range is 0 to 255\n");
+		return RET_FAILED;
 	}
 	unsigned int uint_vme_address = 0, uint_vme_data;
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCtrl1);
 	uint_vme_data = 0;
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
+	{
 		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		return RET_FAILED;
+	}
 	uint_vme_data |= (glitchFilterTime << 8);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
+	{
 		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		return RET_FAILED;
+	}
 	return RET_SUCCESS;
 }
 /// <summary>
@@ -3241,7 +3472,10 @@ int SetCompARegVal37(SIS1100_Device_Struct* dev, unsigned char axis, unsigned in
 	uint_vme_data = compAvalExt;
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCompAExt);
 	if (Read_Write("A24D8", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
+	{
 		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		return RET_FAILED;
+	}
 	return RET_SUCCESS;
 }
 /// <summary>
@@ -3260,7 +3494,10 @@ int SetCompBRegVal32(SIS1100_Device_Struct* dev, unsigned char axis, unsigned in
 	uint_vme_data = compBval32;
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCompBMSB);
 	if (Read_Write("A24D32", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
+	{
 		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		return RET_FAILED;
+	}
 	return RET_SUCCESS;
 }
 /// <summary>
@@ -3282,7 +3519,10 @@ int SetCompBRegVal37(SIS1100_Device_Struct* dev, unsigned char axis, unsigned in
 	uint_vme_data = compBvalExt;
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCompBExt);
 	if (Read_Write("A24D8", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
+	{
 		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		return RET_FAILED;
+	}
 	return RET_SUCCESS;
 }
 /// <summary>
@@ -3304,7 +3544,10 @@ int SetPositionOffset37(SIS1100_Device_Struct* dev, unsigned char axis, unsigned
 	uint_vme_data = offsetPosExt;
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zOffsetExt);
 	if (Read_Write("A24D8", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
+	{
 		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		return RET_FAILED;
+	}
 	return RET_SUCCESS;
 }
 /// <summary>
@@ -3323,7 +3566,10 @@ int SetPresetPosition32(SIS1100_Device_Struct* dev, unsigned char axis, unsigned
 	uint_vme_data = presetPos32;
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zPresPosMSB);
 	if (Read_Write("A24D32", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
+	{
 		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		return RET_FAILED;
+	}
 	return RET_SUCCESS;
 }
 /// <summary>
@@ -3345,7 +3591,10 @@ int SetPresetPosition37(SIS1100_Device_Struct* dev, unsigned char axis, unsigned
 	uint_vme_data = presetPosExt;
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zPresPosExt);
 	if (Read_Write("A24D8", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
+	{
 		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		return RET_FAILED;
+	}
 	return RET_SUCCESS;
 }
 /// <summary>
@@ -3371,7 +3620,10 @@ int ReadVMEErrs(SIS1100_Device_Struct* dev, unsigned char axis) {
 	INFO("Reading VME errors on axis %u ...\n", axis);
 	INFO("***************************VME Errors*******************************\n");
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
-		WARN("Register %06X access Faillure !  \n", uint_vme_address);
+	{
+		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		return RET_FAILED;
+	}
 	TestStat1 = uint_vme_data;
 	if (TestStat1 & 0x800)
 		INFO("EEPROM Error has been detected\n");
@@ -3408,10 +3660,13 @@ int ClearEEPROMErrs(SIS1100_Device_Struct* dev) {
 	unsigned int uint_vme_address = 0, uint_vme_data = 0;
 	uint_vme_address = ADD(BASE_ADDRESS[2], zTestCmd1);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
-		WARN("Register %06X access Faillure !  \n", uint_vme_address);
+	{
+		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		return RET_FAILED;
+	}
 	uint_vme_data |= 0x4;
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
-		WARN("Register %06X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 
 
 	return RET_SUCCESS;
@@ -3430,7 +3685,11 @@ int BoardControlMode(SIS1100_Device_Struct* dev, unsigned char axis, unsigned in
 	/*Activate APD Constant voltage mode*/
 	unsigned int defaultAPDGAinL2Set = 0xB3B, defaultAPDOptPwrL2Set = 0,
 		defaultAPDSigRMSL2Set = 0x3390;
-	BiasControlMode(dev, axis, biasMode);
+	if (BiasControlMode(dev, axis, biasMode) != RET_SUCCESS) {
+
+		WARN("Unknow Bias mode \n");
+		return RET_FAILED;
+	}
 	switch (biasMode)
 	{
 
@@ -3447,15 +3706,15 @@ int BoardControlMode(SIS1100_Device_Struct* dev, unsigned char axis, unsigned in
 		SetAPDSigRMSL2(dev, axis, defaultAPDSigRMSL2Set);
 		break;
 	default:
-		INFO("Unknow Bias mode \n");
-		return RET_FAILED;
 		break;
 	}
 	/*Set APD GAIN L2 to 892*/
 	//SetAPDGainL2(dev, axis,APDGain);
 	/* Start bias calculation */
-	StartBiasCalculation(dev, axis);
-	Sleep(1000);
+	if (StartBiasCalculation(dev, axis) != RET_SUCCESS) {
+		FATAL("Can not perform bias calculation");
+	}
+	//Sleep(1000);
 	return RET_SUCCESS;
 }
 /// <summary>
@@ -3480,14 +3739,17 @@ int BiasControlMode(SIS1100_Device_Struct* dev, unsigned char axis, unsigned int
 	if (mode > 4)
 	{
 		WARN("Unknow mode: mode is ranged 0 to 4 \n");
+		return RET_FAILED;
 	}
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCtrl5);//rw
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
-		WARN("Register %06X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);
+	return RET_FAILED;
+	}
 	uint_vme_data &= ~(7);
 	uint_vme_data |= mode;
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
-		WARN("Register %06X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	INFO("Board switched to  %s\n", biasControlModeString[mode]);
 	return RET_SUCCESS;
 }
@@ -3501,19 +3763,26 @@ int BiasControlMode(SIS1100_Device_Struct* dev, unsigned char axis, unsigned int
 /// -1 else
 /// </returns>
 int StartBiasCalculation(SIS1100_Device_Struct* dev, unsigned char axis) {
-	unsigned int uint_vme_address = 0, uint_vme_data = 0;
+	unsigned int uint_vme_address = 0, uint_vme_data = 0, ctr=0;
 	INFO("Starting Bias calculation on axis %u...\n", axis);
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCmd);
 	uint_vme_data = (1 << 6);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
-		WARN("Register %06X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEErrStat2);
 	uint_vme_data = 0;
 	while (!(uint_vme_data & (1 << 5)))
 	{
 		// wait for Bias calc complete to be asserted
 		if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
-			WARN("Register %06X access Faillure !  \n", uint_vme_address);
+			{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
+		Sleep(1000);
+		ctr++;
+		if (ctr > 10) {
+			INFO("Can not start bias calculation after 10seconds, aborting...");
+			WARN("Bias calculation failed");
+			return RET_FAILED;
+		}
 	}
 	INFO("Bias calculation complete \n");
 	return RET_SUCCESS;
@@ -3537,7 +3806,7 @@ int SetAPDGainL2(SIS1100_Device_Struct* dev, unsigned char axis, unsigned int AP
 	uint_vme_data = APDGain;
 	EnableAuxRegisters(dev, axis);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
-		WARN("Register %06X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	DisableAuxRegisters(dev, axis);
 	return RET_SUCCESS;
 }
@@ -3554,13 +3823,15 @@ int SetAPDGainL2(SIS1100_Device_Struct* dev, unsigned char axis, unsigned int AP
 int SetAPDSigRMSL2(SIS1100_Device_Struct* dev, unsigned char axis, unsigned int APDSigRMSL2) {
 	unsigned int uint_vme_address = 0, uint_vme_data = 0;
 	INFO("Setting APD Sig RMS L2 to 0x%04x on axis %u...\n", APDSigRMSL2, axis);
-	if (checkValues(APDSigRMSL2, 0, 0xFFFF))
+	if (checkValues(APDSigRMSL2, 0, 0xFFFF)) {
 		WARN("Inapropriate value. range is 0 to 0xFFFF \n");
+		return RET_FAILED;
+	}
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zAPDSigRMSL2);
 	uint_vme_data = APDSigRMSL2;
 	EnableAuxRegisters(dev, axis);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
-		WARN("Register %06X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	DisableAuxRegisters(dev, axis);
 	return RET_SUCCESS;
 }
@@ -3579,12 +3850,15 @@ int SetAPDOptPwrL2(SIS1100_Device_Struct* dev, unsigned char axis, unsigned int 
 	// the default value is 1uw(0 L2); range: 70nW(-3930 L2) to 10uW(3402 L2)
 	INFO("Setting APD optical power L2 to 0x%04x on axis %u...\n", APDOptPwrL2, axis);
 	if (checkValues(APDOptPwrL2, -3930, 3402))
+	{
 		WARN("Inapropriate value. range is 0 to 0xFFFF \n");
+		return RET_FAILED;
+	}
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zAPDOptPwrL2);
 	uint_vme_data = APDOptPwrL2;
 	EnableAuxRegisters(dev, axis);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
-		WARN("Register %06X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	DisableAuxRegisters(dev, axis);
 	return RET_SUCCESS;
 }
@@ -3602,11 +3876,14 @@ int SetAPDBiasDAC(SIS1100_Device_Struct* dev, unsigned char axis, unsigned int A
 	unsigned int uint_vme_address = 0, uint_vme_data = 0;
 	INFO("Setting APD BIAS DAC L2 to 0x%04x on axis %u...\n", APDBiasDac, axis);
 	if (APDBiasDac > 0xFFFF)
+	{
 		WARN("Inapropriate value. range is 0 to 0xFFFF \n");
+		return RET_FAILED;
+	}
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zAPDBiasDAC);
 	uint_vme_data = APDBiasDac;
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
-		WARN("Register %06X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	return RET_SUCCESS;
 }
 /// <summary>
@@ -3625,7 +3902,7 @@ int ParseVMEErrorStatus2(SIS1100_Device_Struct* dev, unsigned char axis, unsigne
 	INFO("-------------------------------------------------------------------");
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEErrStat2);		//Read VME errors
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
-		WARN("Register %06X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	INFO("Axis %u VME Status Error 2: %X \n", axis, uint_vme_data);
 	*VMEErrorStatus2Reg = uint_vme_data;
 
@@ -3675,7 +3952,7 @@ int ParseVMEPosErrs(SIS1100_Device_Struct* dev, unsigned char axis, unsigned int
 	INFO("-------------------------------------------------------------------");
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEPosErr);		//Read VME errors
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
-		WARN("Register %06X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	INFO("Axis %u Position Errors: %X \n", axis, uint_vme_data);
 	*VMEPosErrReg = uint_vme_data;
 	if (uint_vme_data & (1 << 3))
@@ -3701,7 +3978,7 @@ int ParseVMEErrorStatus1(SIS1100_Device_Struct* dev, unsigned char axis, unsigne
 	INFO("-------------------------------------------------------------------");
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEErrStat1);		//Read VME errors
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
-		WARN("Register %06X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	INFO("Axis %u VME Status Error 1: %X \n", axis, uint_vme_data);
 	*VMEErrorStatus1Reg = uint_vme_data;
 	if (uint_vme_data & (1 << 3))
@@ -3713,6 +3990,66 @@ int ParseVMEErrorStatus1(SIS1100_Device_Struct* dev, unsigned char axis, unsigne
 	if (uint_vme_data & (1 << 0))
 		INFO("Velocity error has been detected\n");
 	INFO("-------------------------------------------------------------------");
+	return RET_SUCCESS;
+}
+
+int getLEDsErrorStatus(SIS1100_Device_Struct* dev, bool* ledsErrorStatus) {
+	unsigned int uint_vme_address = 0, uint_vme_data = 0;
+
+	INFO("running getLEDsErrorStatus\n");
+	for (int axis = 0; axis < 4; axis++) {
+		uint_vme_address = ADD(BASE_ADDRESS[axis], zVMEErrStat0);		//Read VME errors
+		if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
+		{
+			WARN("Register %6X access Faillure !  \n", uint_vme_address); return RET_FAILED;
+		}
+		if ((uint_vme_data & 0x1B20)) {
+			ledsErrorStatus[axis] = true;
+		}
+		else
+		{
+			ledsErrorStatus[axis] = false;
+		}
+		uint_vme_address = ADD(BASE_ADDRESS[axis], zVMEErrStat2);		//Read VME errors
+		if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
+		{
+			WARN("Register %6X access Faillure !  \n", uint_vme_address); return RET_FAILED;
+		}
+		if ((uint_vme_data & 0x001A)) {
+			ledsErrorStatus[axis] = true;
+		}
+		else
+		{
+			ledsErrorStatus[axis] = ledsErrorStatus[axis] | false;
+		}
+	}
+
+	/*uint_vme_address = ADD(BASE_ADDRESS[2], zVMEErrStat2);		//Read VME errors
+	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
+	{
+		WARN("Register %6X access Faillure !  \n", uint_vme_address); return RET_FAILED;
+	}*/
+	if ((uint_vme_data & 0xA)) {
+		ledsErrorStatus[4] = true;
+	}
+	else
+	{
+		ledsErrorStatus[4] = false;
+	}
+
+	uint_vme_address = ADD(BASE_ADDRESS[2], zVMEErrStat0);
+	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
+	{
+		WARN("Register %6X access Faillure !  \n", uint_vme_address); return RET_FAILED;
+	}
+	if ((uint_vme_data & 0x2C)) {
+		ledsErrorStatus[4] = true;
+	}
+	else
+	{
+		ledsErrorStatus[4] = ledsErrorStatus[4] | false;
+	}
+
 	return RET_SUCCESS;
 }
 /// <summary>
@@ -3731,7 +4068,7 @@ int ParseVMEErrorStatus0(SIS1100_Device_Struct* dev, unsigned char axis, unsigne
 	INFO("-------------------------------------------------------------------");
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEErrStat0);		//Read VME errors
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
-		WARN("Register %06X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	INFO("Axis %u VME Status Error 0: %X \n", axis, uint_vme_data);
 	*VMEErrorStatus0Reg = uint_vme_data;
 
@@ -3785,7 +4122,7 @@ int ParseAPDErrCode(SIS1100_Device_Struct* dev, unsigned char axis, unsigned int
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zAPDErr);		//Read APD errors
 	EnableAuxRegisters(dev, axis);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
-		WARN("Register %06X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	INFO("Axis %u APD Error Code: %X \n", axis, uint_vme_data);
 	*APDErrCode = uint_vme_data;
 	DisableAuxRegisters(dev, axis);
@@ -3951,13 +4288,15 @@ int ReadSamplePosition37(SIS1100_Device_Struct* dev, unsigned char axis, double*
 	//Read the MSB and LSB
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMESampPosMSB);
 	if (Read_Write("A24D32", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+	{
+		WARN("Register %6X access Faillure !  \n", uint_vme_address); return RET_FAILED;
+	}
 
 	temp32 = (int)uint_vme_data;
 	uint_vme_data = 0;
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMESampPosExt);		//Read the Ext
 	if (Read_Write("A24D8", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
-		WARN("Register %06X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	val = (int)((short)uint_vme_data);
 	/*
 		if (((short)uint_vme_data & (short)(0x80)) != 0)	// If position is negative
@@ -4029,7 +4368,10 @@ int ReadSamplePosition32(SIS1100_Device_Struct* dev, unsigned char axis, double*
 	//Read the MSB and LSB
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMESampPosMSB);
 	if (Read_Write("A24D32", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
+	{
 		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		return RET_FAILED;
+	}
 
 	*position = (double)((int)(uint_vme_data) * (positionScale));
 
@@ -4051,9 +4393,9 @@ int ReadSamplePosition32(SIS1100_Device_Struct* dev, unsigned char axis, double*
 /// -1 else
 /// </returns>
 int ReadPosition37(SIS1100_Device_Struct* dev, unsigned char axis, double* position) {
-	int val = 0, temp32 = 0;
+	int val = 0;
 	unsigned int uint_vme_data = 0,
-		uint_vme_address = 0;
+		uint_vme_address = 0, temp32 = 0;
 	INFO("Reading the 37bits Position value on Axis %d...  \n", axis);
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEPosMSB);
 	Disable32bitsOverflow(dev, axis);
@@ -4064,18 +4406,21 @@ int ReadPosition37(SIS1100_Device_Struct* dev, unsigned char axis, double* posit
 	//clearVMEExtSampFlag(dev, axis); // Clear VME external sample flag before reading
 	//Read the MSB and LSB	
 	if (Read_Write("A24D32", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
+	{
 		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		return RET_FAILED;
+	}
 
-	val = (int)uint_vme_data;
+	temp32 = uint_vme_data;
 	uint_vme_data = 0;
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEPosExt);		//Read the Ext
 	if (Read_Write("A24D8", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
-		WARN("Register %06X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	ResetHoldSampEnable(dev);
 	val = (int)((short)uint_vme_data);
-	*position = ((double)(val)) * (2 ^ 32) + (double)((unsigned int)temp32) * positionScale;
+	*position = ((double)(val) * (2 ^ 32) + (double)(temp32)) * positionScale;
 	INFO("-------------------------------------------------------\n");
-	INFO("The 32bits Measured Position on axis %d: %f mm \n", axis, *position);
+	INFO("The 37bits Measured Position on axis %d: %f mm \n", axis, *position);
 	INFO("-------------------------------------------------------\n");
 
 	return RET_SUCCESS;
@@ -4104,7 +4449,10 @@ int ReadPosition32(SIS1100_Device_Struct* dev, unsigned char axis, double* posit
 	//clearVMEExtSampFlag(dev, axis); // Clear VME external sample flag before reading
 	//Read the MSB and LSB	
 	if (Read_Write("A24D32", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
+	{
 		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		return RET_FAILED;
+	}
 	ResetHoldSampEnable(dev);
 	*position = (double)((int)uint_vme_data) * positionScale;
 	INFO("-------------------------------------------------------\n");
@@ -4124,6 +4472,7 @@ int ReadFIFOPosition(SIS1100_Device_Struct* dev, unsigned char axis, PUINT posit
 	if (Read_Write("A24D32", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
 	{
 		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		return RET_FAILED;
 	}
 	*position = uint_vme_data;
 	return RET_SUCCESS;
@@ -4148,7 +4497,7 @@ int ReadVelocity32(SIS1100_Device_Struct* dev, unsigned char axis, double* veloc
 	//Read the MSB and LSB	
 	SetHoldSampEnable(dev);
 	if (Read_Write("A24D32", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	ResetHoldSampEnable(dev);
 	*velocity = (double)((int)uint_vme_data) * velocityScale;
 	INFO("-------------------------------------------------------\n");
@@ -4222,7 +4571,7 @@ int IsVMEPos32Overflow(SIS1100_Device_Struct* dev, unsigned char axis) {
 	INFO("Checking VME 32bits position overflow \n ");
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEErrStat1);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	if ((uint_vme_data & 0x0008))
 		return RET_SUCCESS;
 	return RET_FAILED;
@@ -4234,7 +4583,7 @@ bool IsVMEPos37Overflow(SIS1100_Device_Struct* dev, unsigned char axis) {
 	INFO("Checking VME 37bits position overflow \n ");
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEErrStat1);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	if ((uint_vme_data & 0x0004))
 		return true;
 	return false;
@@ -4246,7 +4595,7 @@ bool IsUserVelError(SIS1100_Device_Struct* dev, unsigned char axis) {
 	INFO("Checking VME 32bits position overflow bit...\n ");
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEErrStat1);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	if ((uint_vme_data & 0x0002))
 		return true;
 	return false;
@@ -4258,7 +4607,7 @@ bool IsVelError(SIS1100_Device_Struct* dev, unsigned char axis) {
 	INFO("Checking velocity error bit...\n ");
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEErrStat1);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	if ((uint_vme_data & 0x0001))
 		return true;
 	return false;
@@ -4270,7 +4619,7 @@ bool IsAccError(SIS1100_Device_Struct* dev, unsigned char axis) {
 	INFO("Checking acceleration error bit...\n ");
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEErrStat0);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	if (uint_vme_data & 0x2000)
 		return true;
 	return false;
@@ -4282,7 +4631,7 @@ int ClearPosAndVelErrs(SIS1100_Device_Struct* dev, unsigned char axis) {
 	INFO("Reseting Position and velocity errors on Axis %d...  \n", axis);
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEErrClr1);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 
 	return RET_SUCCESS;
 }
@@ -4294,17 +4643,17 @@ int ClearAllVMEErrs(SIS1100_Device_Struct* dev, unsigned char axis) {
 	INFO("Reseting all VME errors on Axis %d...  \n", axis);
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEErrClr0);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEErrClr1);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEErrClr2);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	uint_vme_data = 1;
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCmd);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	return RET_SUCCESS;
 }
 /// <summary>
@@ -4358,11 +4707,11 @@ int ReadTime32(SIS1100_Device_Struct* dev, unsigned char axis, double* time) {
 	//Read the MSB and LSB
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMETimeMSB);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 
 	*time = uint_vme_data * timeScale;
 	INFO("-------------------------------------------------------\n");
-	INFO("Elapsed time is : %f s\n", *time);
+	INFO("Elapsed time is : %f ms\n", *time);
 	INFO("-------------------------------------------------------\n");
 	return RET_SUCCESS;
 }
@@ -4384,10 +4733,10 @@ int ResetTime(SIS1100_Device_Struct* dev, unsigned char axis)
 	INFO("Reseting Time on Axis: %d...\n", axis);
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCmd);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	uint_vme_data |= (1 << 3);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	return RET_SUCCESS;
 
 }
@@ -4398,10 +4747,10 @@ int ResetPositionQuick(SIS1100_Device_Struct* dev, unsigned char axis)
 	INFO("Quick position reset on Axis: %d...\n", axis);
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCmd);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	uint_vme_data |= (1 << 4);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	return RET_SUCCESS;
 
 }
@@ -4412,10 +4761,10 @@ int ResetPosition(SIS1100_Device_Struct* dev, unsigned char axis)
 	INFO("Reseting Position on Axis: %d...\n", axis);
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCmd);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	uint_vme_data |= (1 << 2);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	return RET_SUCCESS;
 
 }
@@ -4426,10 +4775,10 @@ int EnablePreset(SIS1100_Device_Struct* dev, unsigned char axis)
 	INFO("Enabling preset position on Axis: %d...\n", axis);
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCtrl3);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	uint_vme_data |= (1 << 8);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	return RET_SUCCESS;
 
 }
@@ -4440,10 +4789,10 @@ int EnableSCLKResetOnAxisReset(SIS1100_Device_Struct* dev, unsigned char axis)
 	INFO("Enabling sampling clock reset on axis %u reset...\n", axis);
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCtrl3);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	uint_vme_data |= (1 << 9);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	return RET_SUCCESS;
 
 }
@@ -4454,10 +4803,10 @@ int DisableSCLKResetOnAxisReset(SIS1100_Device_Struct* dev, unsigned char axis)
 	INFO("Disabling sampling clock reset on axis %u reset...\n", axis);
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCtrl3);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	uint_vme_data &= ~(1 << 9);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	return RET_SUCCESS;
 
 }
@@ -4468,10 +4817,10 @@ int EnableResetFindsVelocity(SIS1100_Device_Struct* dev, unsigned char axis)
 	INFO("Enabling reset finds velocity  on Axis %d... \n", axis);
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCtrl3);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	uint_vme_data |= (1 << 11);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	return RET_SUCCESS;
 
 }
@@ -4482,10 +4831,10 @@ int DisableResetFindsVelocity(SIS1100_Device_Struct* dev, unsigned char axis)
 	INFO("Disabling reset finds velocity  on Axis %d... \n", axis);
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCtrl3);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	uint_vme_data &= ~(1 << 11);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	return RET_SUCCESS;
 
 }
@@ -4497,17 +4846,16 @@ int SCLKSelectOnAxisReset(SIS1100_Device_Struct* dev, unsigned char axis, sclk S
 
 	if (SCLK != SCLK0 && SCLK != SCLK1)
 	{
-		INFO("SCLK selection fatal error. unknow value passed to the function %s "\
-			"file %s, line %d\n", __FUNCTION__, __FILE__, __LINE__);
-		WARN("SCLK value is ranged 0 to 1\n");
+		INFO("SCLK selection fatal error");
+		WARN("SCLK value is ranged 0 to 1\n"); return RET_FAILED;
 	}
 	INFO("Setting sampling clock to %s on axis %u reset... \n", (SCLK == SCLK0 ? "SCLK0" : "SCLK1"), axis);
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCtrl3);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	uint_vme_data |= (SCLK << 10);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	return RET_SUCCESS;
 
 }
@@ -4518,39 +4866,76 @@ int SetTimeDelayBetweenResAndCompleteBit(SIS1100_Device_Struct* dev, unsigned ch
 	INFO("Setting time delay between axis %d and the assertion of position reset complete bit to %u... \n", axis, timeDelay);
 	if (((int)timeDelay) > 7)
 	{
-		WARN("Time delay value is ranged 0 to 7\n");
+		WARN("Time delay value is ranged 0 to 7\n"); return RET_FAILED;
 	}
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCtrl3);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	uint_vme_data |= (timeDelay << 12);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	INFO("Setting time delay between axis reset and and reset complete assertion on Axis: %d  \n", axis);
 	return RET_SUCCESS;
 
+}
+
+/// <summary>
+/// Returns the SSI value in mV
+/// </summary>
+/// <param name="dev">device</param>
+/// <param name="ssiPtr">value return parameter</param>
+/// <returns>
+/// 0 if success
+/// -1 else
+/// </returns>
+int ReadScaledSSIav(SIS1100_Device_Struct* dev, double* ssiPtr) {
+	double temp=0.0;
+	if(ReadSSIav(dev, ssiPtr)!=RET_SUCCESS)
+		return RET_FAILED;
+	for (int i = 0; i < 4; i++)
+		ssiPtr[i] *= SSIScale;
+	return RET_SUCCESS;
+}
+/// <summary>
+/// Returns the SSI bare value in decimal
+/// </summary>
+/// <param name="dev">device</param>
+/// <param name="ssiPtr">value return parameter</param>
+/// <returns>
+/// 0 if success
+/// -1 else
+/// </returns>
+int ReadSSIav(SIS1100_Device_Struct* dev, double* ssiPtr) {
+	unsigned int uint_vme_address = 0;
+	unsigned int  uint_vme_data = 0;
+	for (int i = 0; i < 4; i++)
+	{
+		// The max SSI Average value (0xFFFF) corresponds to 1.25V
+		INFO("Reading SSI average on Axis %u...  \n", i + 1);
+		if(ResetAxis(dev, i+1) != RET_SUCCESS)
+			return RET_FAILED;
+		uint_vme_address = ADD(BASE_ADDRESS[i], zSSIAvg);
+		if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
+		{
+			WARN("Register %6X access Faillure !  \n", uint_vme_address); return RET_FAILED;
+		}
+
+		ssiPtr[i] = (double)(uint_vme_data);
+	}
+	return RET_SUCCESS;
 }
 int ReadOpticalPowerUsingSSIav(SIS1100_Device_Struct* dev, double* OpticalPower_uW) {
 
 	unsigned int uint_vme_data = 0,
 		uint_vme_address = 0;
 
-	uint_vme_data = 0;
 	double APD_Gain[] = { 0.0, 0.0, 0.0, 0.0 },
 		SSI[] = { 0.0, 0.0, 0.0, 0.0 };
-	//Read the MSB and LSB
-	for (int i = 0; i < 4; i++)
-	{
-		// The max SSI Average value (0xFFFF) corresponds to 1.25V
-		INFO("Reading SSI average on Axis %u...  \n", i + 1);
-		uint_vme_address = ADD(BASE_ADDRESS[i], zSSIAvg);
-		if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
-			WARN("Register %6X access Faillure !  \n", uint_vme_address);
 
-		SSI[i] = (double)uint_vme_data;
-	}
-
-	ReadAPDGain_ForAllAxis(dev, APD_Gain);
+	if(ReadSSIav(dev, SSI) != RET_SUCCESS)
+		return RET_FAILED;
+	if (ReadAPDGain_ForAllAxis(dev, APD_Gain) != RET_SUCCESS)
+		return RET_FAILED;
 
 	for (int i = 0; i < 4; i++)
 	{
@@ -4591,7 +4976,7 @@ int SetSSISquelch(SIS1100_Device_Struct* dev, unsigned short axis, int squelchVa
 
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zSSISquelch);
 	if (Read_Write("A24D16", dev, uint_vme_address, &value, 1) != RET_SUCCESS)
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	return RET_SUCCESS;
 }
 int GetSSIMaxVal(SIS1100_Device_Struct* dev, unsigned char axis, unsigned int* SSIMax)
@@ -4604,7 +4989,7 @@ int GetSSIMaxVal(SIS1100_Device_Struct* dev, unsigned char axis, unsigned int* S
 
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zSSIMax);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 
 	*SSIMax = uint_vme_data;
 	INFO("SSI Max val on Axis %u is : %d  \n", axis, uint_vme_data);
@@ -4634,10 +5019,10 @@ int ResetSSIMinAndMax(SIS1100_Device_Struct* dev, unsigned char axis)
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zTestCmd0);
 
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	uint_vme_data |= 0x2;
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	return RET_SUCCESS;
 
 }
@@ -4649,10 +5034,10 @@ int ResetPhaseNoisePeak(SIS1100_Device_Struct* dev, unsigned char axis)
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zTestCmd0);
 
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	uint_vme_data |= 0x1;
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	return RET_SUCCESS;
 
 }
@@ -4664,10 +5049,10 @@ int ResetSigRMSL2MinAndMax(SIS1100_Device_Struct* dev, unsigned char axis)
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zTestCmd0);
 
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	uint_vme_data = (1 << 2);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	return RET_SUCCESS;
 
 }
@@ -4679,10 +5064,10 @@ int setGainControlMax(SIS1100_Device_Struct* dev, unsigned char axis)
 
 	INFO("Enabling Gain control max value on axis %u...\n", axis);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	uint_vme_data |= (1 << 3);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	return RET_SUCCESS;
 }
 int setGainControlMin(SIS1100_Device_Struct* dev, unsigned char axis)
@@ -4693,10 +5078,10 @@ int setGainControlMin(SIS1100_Device_Struct* dev, unsigned char axis)
 	INFO("Enabling Gain control min value on axis %u...\n", axis);
 
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	uint_vme_data |= (1 << 4);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	return RET_SUCCESS;
 }
 int AdjustGainControl(SIS1100_Device_Struct* dev, unsigned char axis)
@@ -4707,10 +5092,10 @@ int AdjustGainControl(SIS1100_Device_Struct* dev, unsigned char axis)
 	INFO("Allowing Gain control to be continuously be adjusted in response to changing signal levels on axis %u...\n", axis);
 
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	uint_vme_data |= (1 << 5);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	return RET_SUCCESS;
 }
 int ResetOptPowL2MinAndMax(SIS1100_Device_Struct* dev, unsigned char axis)
@@ -4722,10 +5107,10 @@ int ResetOptPowL2MinAndMax(SIS1100_Device_Struct* dev, unsigned char axis)
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zTestCmd0);
 
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	uint_vme_data |= (1 << 2);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	return RET_SUCCESS;
 
 }
@@ -4738,7 +5123,7 @@ int CheckSaturation(SIS1100_Device_Struct* dev, unsigned char axis, bool* sat)
 
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEErrStat0);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 
 	if (uint_vme_data & (0x200))
 	{
@@ -4783,7 +5168,7 @@ int ReadAPDGain(SIS1100_Device_Struct* dev, unsigned char axis, double* APD_Gain
 	INFO("Reading APD GAIN L2 on Axis %d...  \n", axis);
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zAPDGainL2);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 
 	APD_Gain_L2 = (double)uint_vme_data;
 	*APD_Gain = pow(2, ((int)(APD_Gain_L2 / 1024)));
@@ -4811,11 +5196,11 @@ int EnableAuxRegisters(SIS1100_Device_Struct* dev, unsigned char axis) {
 	INFO("Enabling auxiliary registers on all axis %u...  \n", axis);
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCtrl2);//rw
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 
 	uint_vme_data |= 0x200;
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 
 	return RET_SUCCESS;
 }
@@ -4825,7 +5210,8 @@ bool IsAPDCtrlSoftErrs(SIS1100_Device_Struct* dev, unsigned char axis) {
 
 	INFO("Checking the APD control software errors on axis %u...  \n", axis);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);
+	return RET_FAILED;}
 	if (uint_vme_data & 0x100)
 		return true;
 	return false;
@@ -4838,12 +5224,13 @@ int ReadAPDCtrlSoftErrs(SIS1100_Device_Struct* dev, unsigned char axis) {
 	if (!IsAPDCtrlSoftErrs(dev, axis))
 	{
 		WARN("No APD Controller software error detected\n");
+		return RET_FAILED;
 	}
 
 	EnableAuxRegisters(dev, axis); // Enable auxiliary registers to read the register value
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zSoftErrID);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 
 	switch (uint_vme_data >> 12)
 	{
@@ -4901,11 +5288,11 @@ int Enable32bitsOverflow(SIS1100_Device_Struct* dev, unsigned char axis) {
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCtrl2);
 	uint_vme_data = 0;
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 
 	uint_vme_data |= 0x800;
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	return RET_SUCCESS;
 }
 int Disable32bitsOverflow(SIS1100_Device_Struct* dev, unsigned char axis) {
@@ -4915,11 +5302,11 @@ int Disable32bitsOverflow(SIS1100_Device_Struct* dev, unsigned char axis) {
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCtrl2);
 	uint_vme_data = 0;
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 
 	uint_vme_data &= 0xF7FF;
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	return RET_SUCCESS;
 }
 int DisableAuxRegisters(SIS1100_Device_Struct* dev, unsigned char axis) {
@@ -4929,26 +5316,26 @@ int DisableAuxRegisters(SIS1100_Device_Struct* dev, unsigned char axis) {
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCtrl2);
 	uint_vme_data = 0;
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 
 	uint_vme_data &= 0xFDFF;
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	return RET_SUCCESS;
 }
 int SampleVMEPosition(SIS1100_Device_Struct* dev, unsigned char axis) {
-	unsigned int uint_vme_data = 0, ctr = 0, uint_vme_address = 0x200;
+	unsigned int uint_vme_data = 0x200, ctr = 0, uint_vme_address = 0;
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCmd);
 	INFO("Sampling velocity and position on axis %d...\n", axis);
 	//*
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
 	{
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	}
 	while (!(uint_vme_data & 0x400))
 	{
 		if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
-			WARN("Register %6X access Faillure !  \n", uint_vme_address);
+			{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	}
 	//*/
 
@@ -4967,6 +5354,7 @@ int VMESysReset(SIS1100_Device_Struct* dev) {
 
 	if (stat != Stat1100Success) {
 		WARN("Errors occured while hard reseting the card\n");
+		return RET_FAILED;
 	}
 	return RET_SUCCESS;
 }
@@ -4975,11 +5363,11 @@ int Sclk_Off(SIS1100_Device_Struct* dev) {
 	INFO("Disabling sampling timer...\n");
 	uint_vme_address = ADD(BASE_ADDRESS[2], zCtrl16);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 
 	uint_vme_data &= 0xFD7F;
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	return RET_SUCCESS;
 }
 /// <summary>
@@ -4997,7 +5385,7 @@ int SetSampTimerFreq(SIS1100_Device_Struct* dev, unsigned short sampTimerVal) {
 	uint_vme_address = ADD(BASE_ADDRESS[2], zSampleTimer);
 	uint_vme_data = sampTimerVal;
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	return RET_SUCCESS;
 }
 int SetHoldSampEnable(SIS1100_Device_Struct* dev) {
@@ -5005,12 +5393,12 @@ int SetHoldSampEnable(SIS1100_Device_Struct* dev) {
 	INFO("Holding measured samples...\n");
 	uint_vme_address = ADD(BASE_ADDRESS[2], zCtrl2);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 
 	uint_vme_address = ADD(BASE_ADDRESS[2], zCtrl2);
 	uint_vme_data |= 0x2000;
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	return RET_SUCCESS;
 }
 int ResetHoldSampEnable(SIS1100_Device_Struct* dev) {
@@ -5018,12 +5406,12 @@ int ResetHoldSampEnable(SIS1100_Device_Struct* dev) {
 	uint_vme_address = ADD(BASE_ADDRESS[2], zCtrl2);
 	INFO("Updating measured samples...\n");
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 
 	uint_vme_address = ADD(BASE_ADDRESS[2], zCtrl2);
 	uint_vme_data &= 0xDFFF;
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	return RET_SUCCESS;
 }
 /// <summary>
@@ -5073,7 +5461,7 @@ int GetVMEExtSampFlag(SIS1100_Device_Struct* dev, unsigned char axis) {
 
 	INFO("Getting VME external sampling flag on axis %u...\n", axis);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	if ((uint_vme_data &= 0x400)) {
 		return RET_SUCCESS;
 	}
@@ -5084,7 +5472,7 @@ bool clearVMEExtSampFlag(SIS1100_Device_Struct* dev, unsigned char axis) {
 	uint_vme_data = 0x100;
 	INFO("Clearing VME external sampling flag bit on axis %u...\n", axis);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	return true;
 }
 bool IsVMEIntReqPending(SIS1100_Device_Struct* dev, unsigned char axis) {
@@ -5093,7 +5481,7 @@ bool IsVMEIntReqPending(SIS1100_Device_Struct* dev, unsigned char axis) {
 	INFO("Checking VME external sample flag interrupt request  on axis %u...\n", axis);
 
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	if ((uint_vme_data &= 0x100)) {
 		return true;
 	}
@@ -5108,13 +5496,13 @@ int EEPROMread(SIS1100_Device_Struct* dev, unsigned short offset, unsigned int* 
 	strcpy_s(ch_access_mode, sizeof(ch_access_mode), access_mode_Selection[6]);
 	uint_vme_address = ADD(BASE_ADDRESS[2], zTestStat1);
 	if (Read_Write("A24D16", dev, uint_vme_address, &vme_data, 0) != RET_SUCCESS)
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	// Verify the EEPROM is error-free 
 	if ((vme_data & 0x800) != 0) {
 		uint_vme_address = ADD(BASE_ADDRESS[2], zTestCmd1); // Clear the error 
 		vme_data = 0x04;
 		if (Read_Write(ch_access_mode, dev, uint_vme_address, &vme_data, 1) != RET_SUCCESS)
-			WARN("Register %6X access Faillure !  \n", uint_vme_address);
+			{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 	}
 	// Wait until EEPROM Busy clears 
 	vme_data = 0x0200;
@@ -5122,7 +5510,7 @@ int EEPROMread(SIS1100_Device_Struct* dev, unsigned short offset, unsigned int* 
 		uint_vme_address = ADD(BASE_ADDRESS[2], zTestStat1);
 		vme_data = 0;
 		if (Read_Write(ch_access_mode, dev, uint_vme_address, &vme_data, 0) != RET_SUCCESS)
-			WARN("Register %6X access Faillure !  \n", uint_vme_address);
+			{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 
 	}; // Wait while EEPROM busy 
 		// Start EEPROM Read 
@@ -5130,14 +5518,14 @@ int EEPROMread(SIS1100_Device_Struct* dev, unsigned short offset, unsigned int* 
 	uint_vme_address = ADD(BASE_ADDRESS[2], zEEpromCtrl);
 	vme_data = zEEReadCmd | (offset & 0x3ff); // keep the last 10 bits and add them to the eerdcmd
 	if (Read_Write(ch_access_mode, dev, uint_vme_address, &vme_data, 1) != RET_SUCCESS)
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 
 	vme_data = 0x0200;
 	uint_vme_address = ADD(BASE_ADDRESS[2], zTestStat1);
 	while (vme_data & 0x0200) {
 
 		if (Read_Write(ch_access_mode, dev, uint_vme_address, &vme_data, 0) != RET_SUCCESS)
-			WARN("Register %6X access Faillure !  \n", uint_vme_address);
+			{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 
 	} // Wait while EEPROM busy 
 
@@ -5162,7 +5550,7 @@ int EEPROMread(SIS1100_Device_Struct* dev, unsigned short offset, unsigned int* 
 	uint_vme_address = ADD(BASE_ADDRESS[2], zEEpromReadReg);
 	*uint_vme_data = 0;
 	if (Read_Write(ch_access_mode, dev, uint_vme_address, uint_vme_data, 0) != RET_SUCCESS)
-		WARN("Register %6X access Faillure !  \n", uint_vme_address);
+		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 
 	return RET_SUCCESS;
 

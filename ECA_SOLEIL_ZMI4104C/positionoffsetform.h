@@ -2,7 +2,7 @@
 #define POSITIONOFFSETFORM_H
 
 #include <QWidget>
-
+#include <QRegExpValidator>
 namespace Ui {
 class positionOffsetForm;
 }

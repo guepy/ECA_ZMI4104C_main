@@ -23,7 +23,6 @@ static SIS1100_Device_Struct dev;
 int main(int argc, char** agrv)
 {
 	
-
 	//======================================================================
 	double position[] = { 0, 0, 0, 0 },
 	time[] = { 0, 0, 0, 0 },
@@ -106,16 +105,19 @@ int main(int argc, char** agrv)
 		printf("\n Arguments Parsed\n");
 	*/
 	//_CRT_SECURE_NO_WARNINGS = 1;
-
 	GetLocalTime(&lt);
-	if (fopen_s(&fdLog, LOG_FILE_PATH"logfile", "a") != RET_SUCCESS)
+	if (fopen_s(&fdLog, "logfile.txt", "a") != RET_SUCCESS)
 		return RET_FAILED;
+	
 	fprintf(fdLog, "[***********; %d/%d/%d at %d:%d:%d] ;************]\n", lt.wYear, lt.wMonth, lt.wDay, lt.wHour, lt.wMinute,lt.wSecond);
+	printf("ok0");
 	if(Init_SIS_boards(&dev)!=RET_SUCCESS) FATAL("Failed to initialize SIS boards\n");
 	//Sleep(10);
+	printf("ok1");
 	if(Init_ZMI_bd(&dev) != RET_SUCCESS) FATAL("Failed to initialize ZMI board\n");
-	
+	printf("ok2");
 	if(InitAxis(&dev, bias_mode) != RET_SUCCESS) FATAL("Failed to initialize axis\n");
+	printf("ok3");
 	EnableDoublePassInterferometer();
 	//Here you should first strat up the motor at the planned running velocity to enable CEC hardware
 	// to calculate CE coefficients. thereafter you should start acquisition
@@ -158,13 +160,13 @@ int main(int argc, char** agrv)
 	CreateThreads(&dev);
 	while (1)
 	{
-		//ReadOpticalPowerUsingSSIav(&dev);
+		ReadOpticalPowerUsingSSIav(&dev, position);
 		// rmq: some functions I wrote tend to be incompatible with readposition32 function, need
 		// to check its implementation
 		//ReadPosition32(&dev, AXIS3, position);
-		//ReadSamplePosition32(&dev, AXIS3, position);
+		ReadSamplePosition32(&dev, AXIS3, position);
 		//ReadTime32_ForAllAxis(&dev, time);
-		//ReadVelocity32_ForAllAxis(&dev, time);
+		ReadVelocity32_ForAllAxis(&dev, time);
 		/*dwWaitResult = WaitForSingleObject( //wait for the main thread to sent an event
 			ghMutex, // event handle
 			INFINITE);    // indefinite wait*/
