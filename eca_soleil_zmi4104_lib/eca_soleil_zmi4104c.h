@@ -26,7 +26,7 @@ extern "C" {
 #include "sis3302.h"
 #include "sis3100.h"
 #include "sis3100_vme_calls.h"
-#include "vmeInterruptConst.h"
+//#include "vmeInterruptConst.h"
 
 #define FLYSCAN_MODE_ON						0
 #define READ_MODE							0
@@ -165,6 +165,8 @@ extern "C" {
 	static SYSTEMTIME  lt;
 
 	//static SIS1100_Device_Struct* dev;
+	ECASOLEILZMI4104CLIB_API int disableCECcompensation(SIS1100_Device_Struct* dev, unsigned char axis);
+	ECASOLEILZMI4104CLIB_API int readCEerrorStatReg(SIS1100_Device_Struct* dev, unsigned char axis, PUINT CEstatReg);
 	ECASOLEILZMI4104CLIB_API int getLEDsStatus(SIS1100_Device_Struct* dev, bool* ledsStatus);
 	ECASOLEILZMI4104CLIB_API int getLEDsErrorStatus(SIS1100_Device_Struct* dev, bool* ledsErrorStatus);
 	ECASOLEILZMI4104CLIB_API void modifyBaseAddress(UINT baseAddressAxis3);
@@ -241,9 +243,11 @@ extern "C" {
 	ECASOLEILZMI4104CLIB_API int SetAPDOptPwrL2(SIS1100_Device_Struct*, unsigned char, unsigned int);
 	ECASOLEILZMI4104CLIB_API int ResetAxis(SIS1100_Device_Struct*, unsigned char);
 	ECASOLEILZMI4104CLIB_API int WaitResetComplete(SIS1100_Device_Struct*, unsigned char);
+	ECASOLEILZMI4104CLIB_API int SetPresetPosition32(SIS1100_Device_Struct* dev, unsigned char axis, unsigned int presetPos32);
 	ECASOLEILZMI4104CLIB_API int SetPositionOffset32(SIS1100_Device_Struct*, unsigned char, unsigned int);
 	ECASOLEILZMI4104CLIB_API int EnableCECcompensation(SIS1100_Device_Struct*, unsigned char);
 	ECASOLEILZMI4104CLIB_API int SetPositionOffset37(SIS1100_Device_Struct*, unsigned char, unsigned int, unsigned int);
+	ECASOLEILZMI4104CLIB_API int SetPresetPosition37(SIS1100_Device_Struct*, unsigned char, unsigned int, unsigned int);
 	ECASOLEILZMI4104CLIB_API int EnableVMEInterrupt_bit(SIS1100_Device_Struct*, unsigned char, unsigned short);
 	ECASOLEILZMI4104CLIB_API int DisableVMEInterrupt_bit(SIS1100_Device_Struct*, unsigned char, unsigned short);
 	ECASOLEILZMI4104CLIB_API int EnableVMEGlobalInterrupt(SIS1100_Device_Struct*, unsigned char);

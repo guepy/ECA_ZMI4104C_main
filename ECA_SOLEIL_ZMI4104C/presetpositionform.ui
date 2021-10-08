@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>491</width>
-    <height>357</height>
+    <width>549</width>
+    <height>426</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -40,8 +40,8 @@ color: red;
   <widget class="QWidget" name="ButtonForm" native="true">
    <property name="geometry">
     <rect>
-     <x>40</x>
-     <y>280</y>
+     <x>110</x>
+     <y>360</y>
      <width>401</width>
      <height>51</height>
     </rect>
@@ -67,7 +67,7 @@ color: red;
      </spacer>
     </item>
     <item>
-     <widget class="QPushButton" name="pushButton_2">
+     <widget class="QPushButton" name="applyButton">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
         <horstretch>0</horstretch>
@@ -84,7 +84,7 @@ color: white;</string>
      </widget>
     </item>
     <item>
-     <widget class="QPushButton" name="StartButton">
+     <widget class="QPushButton" name="okButton">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
         <horstretch>0</horstretch>
@@ -129,12 +129,30 @@ color: white;</string>
     </item>
    </layout>
   </widget>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>50</x>
+     <y>300</y>
+     <width>351</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">
+font: 75 12pt &quot;MS Shell Dlg 2&quot;;
+color: red;</string>
+   </property>
+   <property name="text">
+    <string>TextLabel</string>
+   </property>
+  </widget>
   <widget class="QWidget" name="vWidget_2" native="true">
    <property name="geometry">
     <rect>
-     <x>80</x>
-     <y>20</y>
-     <width>311</width>
+     <x>40</x>
+     <y>40</y>
+     <width>411</width>
      <height>231</height>
     </rect>
    </property>
@@ -145,15 +163,75 @@ border: 1px solid;
    </property>
    <layout class="QVBoxLayout" name="verticalLayout_4">
     <item>
-     <widget class="QRadioButton" name="radioButton_2">
-      <property name="styleSheet">
-       <string notr="true">
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QRadioButton" name="radioButton_2">
+        <property name="styleSheet">
+         <string notr="true">
 font: 75 14pt &quot;MS Shell Dlg 2&quot;;</string>
-      </property>
-      <property name="text">
-       <string>Enable preset position</string>
-      </property>
-     </widget>
+        </property>
+        <property name="text">
+         <string>Enable position offsets</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>units</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="leftBlockUnits">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>80</width>
+          <height>35</height>
+         </size>
+        </property>
+        <item>
+         <property name="text">
+          <string>mm</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>µm</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>nm</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>cm</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+     </layout>
     </item>
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout_13">
@@ -181,7 +259,7 @@ font: 75 14pt &quot;MS Shell Dlg 2&quot;;</string>
        </spacer>
       </item>
       <item>
-       <widget class="QLineEdit" name="lineEdit_11">
+       <widget class="QLineEdit" name="presPosAxis1">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -224,7 +302,7 @@ font: 75 14pt &quot;MS Shell Dlg 2&quot;;</string>
        </spacer>
       </item>
       <item>
-       <widget class="QLineEdit" name="lineEdit_12">
+       <widget class="QLineEdit" name="presPosAxis2">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -267,7 +345,7 @@ font: 75 14pt &quot;MS Shell Dlg 2&quot;;</string>
        </spacer>
       </item>
       <item>
-       <widget class="QLineEdit" name="lineEdit_13">
+       <widget class="QLineEdit" name="presPosAxis3">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -310,7 +388,7 @@ font: 75 14pt &quot;MS Shell Dlg 2&quot;;</string>
        </spacer>
       </item>
       <item>
-       <widget class="QLineEdit" name="lineEdit_14">
+       <widget class="QLineEdit" name="presPosAxis4">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
           <horstretch>0</horstretch>

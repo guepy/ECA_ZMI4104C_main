@@ -1,6 +1,6 @@
 #include "settingsform.h"
 #include "ui_settingsform.h"
-
+#include <QDebug>
 SettingsForm::SettingsForm(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::SettingsForm)
@@ -16,6 +16,10 @@ SettingsForm::~SettingsForm()
 //-----Button cancel-------
 void SettingsForm::on_pushButton_5_clicked()
 {
-    this->destroy(true);
+    closeForm();
 }
-
+void SettingsForm::closeForm(){
+    emit closeThis();
+    qDebug()<<"Close this emitted";
+    this->deleteLater();
+}

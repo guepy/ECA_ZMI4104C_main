@@ -14,7 +14,10 @@ class SettingsForm : public QWidget
 public:
     explicit SettingsForm(QWidget *parent = nullptr);
     ~SettingsForm();
+    void closeForm();
 
+signals:
+    void closeThis();
 private slots:
     void on_pushButton_5_clicked();
 

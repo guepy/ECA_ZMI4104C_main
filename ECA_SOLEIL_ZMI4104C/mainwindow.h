@@ -14,12 +14,16 @@
 #include "graphsform.h"
 #include "../eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.h"
 #include <string>
+#include <memory>
+#include <iostream>
+#include <thread>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
-
+//using namespace std;
+typedef std::unique_ptr<graphsForm> graphsFormPtr;
 //QLibrary eca_soleil_zmi4104_lib("eca_soleil_zmi4104_lib");
 class MainWindow : public QMainWindow
 {
@@ -29,15 +33,15 @@ public:
     ~MainWindow();
     //virtual void paintEvent(QPaintEvent *event);
     /*------------Menu Bar settings----------------------------*/
-    SettingsForm *setForm;
+    SettingsForm *settingsForm;
     //-------Bouton continuous acquisition----------------------
     FlyscanForm *flyscanForm;
     // --------Bouton set position offset-----------------------
     positionOffsetForm *posOffsetForm;
     //-------------plot graphs button --------------------------
-    graphsForm* graphsform;
+    graphsForm* customplotForm;
     // --------Bouton preset position --------------------------
-    presetPositionForm *presPositionForm;
+    presetPositionForm *presPosForm;
     QAction     *a_openMenu;
     QMenu       *m_settingsMenu;
     QTimer      *gtimer;
@@ -48,9 +52,11 @@ public:
     double *APDGain;
     double *OptPwr;
     double *SSIav;
+    unsigned int ceVelMin, ceVelMax;
 private:
     int currentLeftBlockUnits;
     int currentRightBlockUnits;
+    unsigned int currentCECUnits;
     int *ledsColor, *ledsColorPrev;
     double* scaledPosition;
     double* scaledValueLeftBlock;
@@ -61,13 +67,26 @@ private:
     dataProcessing *dataProc;
     int leftBlockIndex;
     int rightBlockIndex;
+    bool cecHarwareOn;
+    CEratios* ceRatios;
+    unsigned int currentcecAxis;
 signals:
     void initComplete();
+    void closeFlyscanFormRequest();
+    void closePositionOffsetFormRequest();
+    void closePresetPositionFormRequest();
+    void closeSettingsFormRequest();
+    void closeCustomplotFormRequest();
     void initBoardsRequest();
     void scaleAxisRequest(int units);
     void resetAxisRequest(int axis);
     void changeBiasModeRequest(int index);
     void initAxisRequest();
+    void OffsetPosChanged(double* posOffPtr);
+    void PresetPosChanged(double* PresPosPtr);
+    void configureCEChardwareRequest(unsigned int axis, unsigned int ceVelMin, unsigned int ceVelMax);
+    void stopCEChardwareRequest(unsigned int axis);
+    void updateCECRatiosRequest(unsigned int axis, CEratios* ceRatios, unsigned int index);
 public slots:
     // --------------button continuous acquisition---------------------------
     void openFlyscanForm();
@@ -87,13 +106,14 @@ public slots:
     void closePositionOffsetForm();
     void reopenPositionOffsetForm();
     //--------------Pot graphs button---------------------------------
-    void openGraphsForm();
-    void closeGraphsForm();
-    void reopenGraphsForm();
+    void openCustomplotForm();
+    void closeCustomplotForm();
+    void reopenCustomplotForm();
 
     void refresh_screen();
 private slots:
-
+    void on_OffsetPos_Changed(double* OffPosPtr);
+    void on_PresetPos_Changed(double* PresPosPtr);
     void on_pushButton_11_clicked();
     void on_pushButton_13_clicked();
     void on_pushButton_12_clicked();
@@ -113,9 +133,10 @@ private slots:
     void selectLeftBlockValue(int index);
     void updateRightBlockValue();
     void selectRightBlockValue(int index);
-
+    void updateCECRatios();
     void on_pushButton_8_clicked();
-
+    void processCecAxisClickedEvent(int axis, int* axisListIndex,QCheckBox* cecAxisCheckBox);
+    void cecAxisClickedThreadEvent(int axis, int* axisListIndex, QCheckBox* cecAxisCheckBox);
     void on_resetButtonAllAxis_clicked();
 
     void on_comboBox_3_currentIndexChanged(int index);
@@ -123,6 +144,22 @@ private slots:
     void on_comboBox_4_currentIndexChanged(int index);
 
     void on_comboBox_currentIndexChanged(int index);
+
+    void on_radioButton_clicked();
+
+    void on_ceUnits_currentIndexChanged(int index);
+
+    void on_radioButton_2_clicked();
+
+    void on_cecAxis1_clicked();
+
+    void on_cecAxis2_clicked();
+
+    void on_cecAxis3_clicked();
+
+    void on_cecAxis4_clicked();
+
+    void on_ceDisplayAxis_currentIndexChanged(int index);
 
 private:
     Ui::MainWindow *ui;
@@ -136,7 +173,7 @@ static bool presPosForm_int=0;
 // --------------button preset position---------------------------
 static bool posOffForm_int=0;
 // --------------plot graphs button---------------------------
-static bool graphsForm_int=0;
+static bool customplotForm_int=0;
 //---------------LEDs-----------------
 //static QPainter* circlePainter;
 static const char* ledsColorString[3] = {

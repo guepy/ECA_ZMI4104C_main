@@ -452,9 +452,8 @@ int configureCEChardware(SIS1100_Device_Struct* dev, UCHAR axis, USHORT ceVelMin
 	SetCEMinVel(dev, axis, CE_MIN_VEL);
 	//set ce max velocity
 	SetCEMaxVel(dev, axis, CE_MAX_VEL);
-	printf("Start the motor for a displacement of at least 1s then press Enter. CEC hardware need to observe the motion at startup \
+	INFO("Start the motor for a displacement of at least 1s then press Enter. CEC hardware need to observe the motion at startup \
 in order to determine correct CE coefficients \n");
-	scanf_s("%c", sc_char, 2);
 	if (waitCEinit2Complete(dev, axis) != RET_SUCCESS) {
 		WARN("failed to initialize CE hardware\n");
 		return RET_FAILED;
@@ -2590,7 +2589,7 @@ int ReadSSICalibrationData(SIS1100_Device_Struct* dev, unsigned char axis, doubl
 int SetPositionOffset32(SIS1100_Device_Struct* dev, unsigned char axis, unsigned int offsetPos) {
 	unsigned int uint_vme_address = 0, uint_vme_data;
 
-	INFO("Setting 32 bits position offset on axis %u...\n", axis);
+	INFO("Setting position offset 32bits value to 0x%08x on axis %u....\n", offsetPos, axis);
 	uint_vme_data = offsetPos;
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zOffsetMSB);
 	if (Read_Write("A24D32", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
@@ -2624,8 +2623,10 @@ int EnableCECcompensation(SIS1100_Device_Struct* dev, unsigned char axis) {
 	printf("Enabling CE compensation success\n");
 	return RET_SUCCESS;
 }
+
+
 /// <summary>
-/// This function disable the C0 and CN compensation
+/// This function disable Cyclics errors compensation
 /// </summary>
 /// <param name="dev">device</param>
 /// <param name="axis">the axis number</param>
@@ -2637,15 +2638,16 @@ int disableCECcompensation(SIS1100_Device_Struct* dev, unsigned char axis) {
 	unsigned int uint_vme_address = 0, uint_vme_data;
 	INFO("Disabling CEC compensation on axis %u...\n", axis);
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCECCtl);
-	uint_vme_data = 0xFFFC;// C0 and CN compensation
-
+	uint_vme_data = 0x0;// disable C0 and CN compensation
 	EnableAuxRegisters(dev, 3);
 	if (readModifyWrite("A24D16", dev, uint_vme_address, uint_vme_data, 0) != RET_SUCCESS)
 	{
-		WARN("readWriteModify failed!!!!!!\n");
+		INFO("readWriteModify failed!!!!!!\n");
+		WARN("Disabling CE compensation failed\n");
 		return RET_FAILED;
 	}
 	DisableAuxRegisters(dev, 3);
+	printf("Disabling CE compensation success\n");
 	return RET_SUCCESS;
 }
 /// <summary>
@@ -2747,7 +2749,7 @@ int waitCEinit2Complete(SIS1100_Device_Struct* dev, unsigned char axis) {
 		Sleep(1);// sleep for 1ms
 		ct++;
 		if (ct > 3000) {
-			INFO("Any motion has been detected for more than 30 secs\n");
+			INFO("Any motion has not been detected for more than 30 secs\n");
 			WARN("CEC hardware initialization has failed \n");
 			return RET_FAILED;
 		}
@@ -2842,13 +2844,13 @@ int SetCEMinVel(SIS1100_Device_Struct* dev, unsigned char axis, unsigned int CEM
 	INFO("Setting cyclic error min velocity on axis %u...\n", axis);
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCEMinVel);
 	uint_vme_data = CEMinVelValue;
-	EnableAuxRegisters(dev, 3);
+	EnableAuxRegisters(dev, axis);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
 	{
 		WARN("Register %6X access Faillure !  \n", uint_vme_address);
 		return RET_FAILED;
 	}
-	DisableAuxRegisters(dev, 3);
+	DisableAuxRegisters(dev, axis);
 	return RET_SUCCESS;
 }
 /// <summary>
@@ -2915,7 +2917,8 @@ int readCalcCECoeffs(SIS1100_Device_Struct* dev, unsigned char axis, CECoeffs* C
 /// -1 else
 /// </returns>
 int readCECoeffboundaries(SIS1100_Device_Struct* dev, unsigned char axis, CECoeffBoundaries* CE0CoeffBound, CECoeffBoundaries* CENCoeffBound) {
-	unsigned int uint_vme_address = 0, uint_vme_data = 0;
+	unsigned int uint_vme_address = 0, uint_vme_data = 0
+		, uint_vme_data1 = 0;
 	USHORT tmp1 = 0, tmp2 = 0;
 	if (!CE0CoeffBound || !CENCoeffBound) {
 		WARN("None of the pointer passed as argument should be NULL\n");
@@ -2932,10 +2935,8 @@ int readCECoeffboundaries(SIS1100_Device_Struct* dev, unsigned char axis, CECoef
 			WARN("Register %6X access Faillure !  \n", uint_vme_address);
 			return RET_FAILED;
 		}
-		// CE Mag val is stored in zygo register as an unsigned short value so we should 
-		// convert it to a real number
-		convertUSFloat2Double(uint_vme_data, (i == 0 ? &(CE0CoeffBound->CEMagcoeff) : &(CENCoeffBound->CEMagcoeff)));
 
+		uint_vme_data1 = uint_vme_data;
 		// Read CE min and max coefficients
 		INFO("Reading cyclic error %s Min and Max coefficients on axis %u...\n", (i == 0 ? "0" : "N"), axis);
 		uint_vme_address = ADD(BASE_ADDRESS[axis - 1], (i == 0 ? zCE0Min : zCENMin));
@@ -2945,6 +2946,12 @@ int readCECoeffboundaries(SIS1100_Device_Struct* dev, unsigned char axis, CECoef
 			WARN("Register %6X access Faillure !  \n", uint_vme_address);
 			return RET_FAILED;
 		}
+
+		DisableAuxRegisters(dev, axis);
+		// CE Mag val is stored in zygo register as an unsigned short value so we should 
+		// convert it to a real number
+		convertUSFloat2Double(uint_vme_data1, (i == 0 ? &(CE0CoeffBound->CEMagcoeff) : &(CENCoeffBound->CEMagcoeff)));
+
 		//split data to get CE min and CE max value
 		tmp1 = uint_vme_data & 0xFFFF; // CE Min
 		tmp2 = (uint_vme_data >> 16) & 0xFFFF; //  CE max
@@ -2954,7 +2961,6 @@ int readCECoeffboundaries(SIS1100_Device_Struct* dev, unsigned char axis, CECoef
 		convertUSFloat2Double(tmp2, (i == 0 ? &(CE0CoeffBound->CEMaxcoeff) : &(CENCoeffBound->CEMaxcoeff)));
 		uint_vme_data = 0;
 	}
-	DisableAuxRegisters(dev, 3);
 	return RET_SUCCESS;
 }
 /// <summary>
@@ -3538,9 +3544,8 @@ int SetCompBRegVal37(SIS1100_Device_Struct* dev, unsigned char axis, unsigned in
 /// </returns>
 int SetPositionOffset37(SIS1100_Device_Struct* dev, unsigned char axis, unsigned int offsetPos32, unsigned int offsetPosExt) {
 	unsigned int uint_vme_address = 0, uint_vme_data;
-	INFO("Setting position offset 32bits value to 0x%08x on axis %u...\n", offsetPos32, axis);
 	SetPositionOffset32(dev, axis, offsetPos32);
-	INFO("Setting preset position ext value to 0x%02x on axis %u...\n", offsetPosExt, axis);
+	INFO("Setting offset position ext value to 0x%02x on axis %u...\n", offsetPosExt, axis);
 	uint_vme_data = offsetPosExt;
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zOffsetExt);
 	if (Read_Write("A24D8", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
@@ -3585,9 +3590,8 @@ int SetPresetPosition32(SIS1100_Device_Struct* dev, unsigned char axis, unsigned
 /// </returns>
 int SetPresetPosition37(SIS1100_Device_Struct* dev, unsigned char axis, unsigned int presetPos32, unsigned int presetPosExt) {
 	unsigned int uint_vme_address = 0, uint_vme_data;
-	INFO("Setting preset position 37 bits value to 0x%09x on axis %u...\n", presetPos32, axis);
 	SetPositionOffset32(dev, axis, presetPos32);
-	INFO("Setting preset position ext value to 0x%02x on axis %u...\n", presetPosExt, axis);
+	INFO("Setting preset position ext value to 0x%x on axis %u...\n", presetPosExt, axis);
 	uint_vme_data = presetPosExt;
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zPresPosExt);
 	if (Read_Write("A24D8", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
@@ -5193,7 +5197,7 @@ int ReadAPDGain_ForAllAxis(SIS1100_Device_Struct* dev, double* APD_Gain_Buf) {
 }
 int EnableAuxRegisters(SIS1100_Device_Struct* dev, unsigned char axis) {
 	unsigned int uint_vme_data = 0, uint_vme_address = 0;
-	INFO("Enabling auxiliary registers on all axis %u...  \n", axis);
+	INFO("Enabling auxiliary registers on axis %u...  \n", axis);
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCtrl2);//rw
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
 		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
@@ -5312,7 +5316,7 @@ int Disable32bitsOverflow(SIS1100_Device_Struct* dev, unsigned char axis) {
 int DisableAuxRegisters(SIS1100_Device_Struct* dev, unsigned char axis) {
 	unsigned int uint_vme_data = 0, uint_vme_address = 0;
 	// Disable auxiliary registers
-	INFO("Disabling auxiliary registers on axis %u", axis);
+	INFO("Disabling auxiliary registers on axis %u\n", axis);
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCtrl2);
 	uint_vme_data = 0;
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)

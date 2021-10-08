@@ -15,7 +15,10 @@ class graphsForm : public QWidget
 public:
     explicit graphsForm(QWidget *parent = nullptr);
     ~graphsForm();
-
+    double dHigh=0.0, dLow=0.0;
+    void closeForm();
+signals:
+    void closeThis();
 private:
     Ui::graphsForm *ui;
     //QCustomPlot* customPlot;

@@ -5,6 +5,7 @@
 
 
 SIS1100_Device_Struct* dataProcessing::dev = new SIS1100_Device_Struct;
+std::mutex dataProcessing::dev_mutex;
 
 int dataProcessing::currentBiasMode=0;
 
@@ -23,11 +24,11 @@ MainWindow::MainWindow(QWidget *parent)
     this->menuBar()->addMenu(m_settingsMenu);
     connect(m_settingsMenu, SIGNAL(triggered(QAction*)), this, SLOT(on_m_settingsMenu_clicked(QAction*)));
 
-    setForm=new SettingsForm;
+    settingsForm=new SettingsForm;
     flyscanForm=new FlyscanForm;
     posOffsetForm=new positionOffsetForm;
-    presPositionForm = new presetPositionForm;
-    graphsform = new graphsForm;
+    presPosForm = new presetPositionForm;
+    customplotForm=new graphsForm;
     dataProc = new dataProcessing;
     ledsColor = new int[5];
     ledsColorPrev = new int[5];
@@ -45,15 +46,23 @@ MainWindow::MainWindow(QWidget *parent)
     scaledValueRightBlock= new double[4];
     currentLeftBlockUnits =0;
     currentRightBlockUnits =0;
+    currentCECUnits = 0;
+    cecHarwareOn = false;
+    ceRatios = new CEratios;
+    ceVelMin = 96;
+    ceVelMax=31457;
+    currentcecAxis = 0;
     //currentColor.append("background-color: ");
     for(int i=0; i<5;i++){
         ledsColor[i] = 0;
         ledsColorPrev[i] = 0;
 }
-    //--------------graphsForm signals-slots --------------------------------------
-    connect(this, &MainWindow::initComplete, graphsform, &graphsForm::on_initBoardsComplete_recieved);
-    connect(this, &MainWindow::initBoardsRequest, graphsform, &graphsForm::on_initBoardsRequest_recieved);
-    connect(this, &MainWindow::scaleAxisRequest, graphsform, &graphsForm::on_scaleAxisRequest_recieved);
+
+    //*-------------CEC Hardware signals-slots---------------------------------------
+
+    //connect(this, &MainWindow::configureCEChardwareRequest, dataProc, &dataProcessing::on_configureCECHardware_recieved);
+    connect(this, &MainWindow::updateCECRatiosRequest, dataProc, &dataProcessing::updateCECRatios);
+    //connect(this, &MainWindow::stopCEChardwareRequest, dataProc, &dataProcessing::on_stopCECHardware_recieved);
 
     //--------------Data processing signals-slots --------------------------------------
     //connect(this, &MainWindow::changeBiasModeRequest, dataProc, &dataProcessing::on_changeBiasModeRequest_recieved);
@@ -72,7 +81,7 @@ MainWindow::MainWindow(QWidget *parent)
     //---------------------init system boards-----------------------------
 
     //*/
-    initBoards();
+    //initBoards();
 
 }
 
@@ -94,8 +103,8 @@ MainWindow::~MainWindow()
     if(posOffForm_int)
         closePositionOffsetForm();
     // --------------close graphs button form if open---------------------------
-    if(graphsForm_int)
-        closeGraphsForm();
+    if(customplotForm_int)
+        closeCustomplotForm();
 
     this->destroy(true,true);
     delete ui;
@@ -104,12 +113,20 @@ MainWindow::~MainWindow()
 void MainWindow::refresh_screen(){
 
 
-    qDebug()<<"timer timeout";    
-    dataProc->getLEDsColor(ledsColor);
-    refreshLEDsStatus();
-    updateLeftBlockValue();
-    updateRightBlockValue();
-    graphsform->updatePosition(scaledPosition);
+    qDebug()<<"timer timeout";
+    if((dataProcessing::dev_mutex).try_lock()){
+        refreshLEDsStatus();
+        updateLeftBlockValue();
+        updateRightBlockValue();
+        updateCECRatios();
+        customplotForm->updatePosition(scaledPosition);
+        dataProc->getLEDsColor(ledsColor);
+        (dataProcessing::dev_mutex).unlock();
+    }
+    else{
+        ui->textBrowser_2->append("Processing some data...");
+    }
+
 }
 void MainWindow::updateLeftBlockValue(){
 
@@ -190,6 +207,7 @@ void MainWindow::onBoardsInitializationComplete(){
     ui->CE_form->setEnabled(true);
     ui->SettingsForm->setEnabled(true);
     ui->horizontalWidget->setEnabled(true);
+    //ui->ceVWidget->setEnabled(true);
     //*/
 }
 
@@ -212,18 +230,25 @@ void MainWindow::initBoards()
     ui->CE_form->setEnabled(false);
     ui->SettingsForm->setEnabled(false);
     ui->horizontalWidget->setEnabled(false);
-//*/
-    QThread* initBoardsThread = new QThread;
-    dataProcessing* initWorker = new dataProcessing;
-    connect(initWorker, &dataProcessing::initAxisComplete,this, &MainWindow::on_initAxisComplete_recieved);
-    //------------------------Init system state display----------
-    ui->textBrowser->setText("DISCONNECTED");
+    ui->horizontalWidget_3->setEnabled(false);
+   // ui->ceVWidget->setEnabled(false);
     ui->textBrowser->setStyleSheet("background-color: red; "
                                     "font: 75 14pt \"MS Shell Dlg 2\";"
                                     "text-align: center;"
                                     "border: 2px solid white;"
                                     "padding: 0 8px;"
                                     "border-radius: 5px");
+//*/
+
+    ui->radioButton_2->setStyleSheet("background-color: red;"
+                                    "border: 2px solid gray;"
+                                    "border-radius: 10px;"
+                                    "padding: 0 8px;font: 13pt \"Arial\";");
+    QThread* initBoardsThread = new QThread;
+    dataProcessing* initWorker = new dataProcessing;
+    connect(initWorker, &dataProcessing::initAxisComplete,this, &MainWindow::on_initAxisComplete_recieved);
+    //------------------------Init system state display----------
+    ui->textBrowser->setText("DISCONNECTED");
     ui->textBrowser->setAlignment(Qt::AlignCenter);
     ui->textBrowser_2->append("Initializing VME system...");
     initWorker->moveToThread(initBoardsThread);
@@ -270,16 +295,23 @@ void MainWindow::on_pushButton_13_clicked()
     else reopenFlyscanForm();
 }
 void MainWindow::openFlyscanForm(){
+    flyscanForm=new FlyscanForm;
+    //--------------flyscanForm signals-slots --------------------------------------
+    connect(flyscanForm, &FlyscanForm::closeThis, this, &MainWindow::closeFlyscanForm);
+    connect(this, &MainWindow::closeFlyscanFormRequest, flyscanForm, &FlyscanForm::closeForm);
     flyscanForm->show();
     fsForm_int=1;
 }
+
 void MainWindow::closeFlyscanForm(){
     fsForm_int=0;
-    flyscanForm->close();
+    qDebug()<<"flyscanform closed";
 }
+
 void MainWindow::reopenFlyscanForm(){
-    flyscanForm->close();
-    flyscanForm->show();
+    closeFlyscanForm();
+    emit closeFlyscanFormRequest();
+    openFlyscanForm();
 }
 // --------------------fin--------------------------
 
@@ -290,15 +322,21 @@ void MainWindow::on_m_settingsMenu_clicked(QAction*)
     else reopenSettingsForm();
 }
 void MainWindow::openSettingsForm(){
-    setForm->show();
+
+    settingsForm=new SettingsForm;
+    //--------------flyscanForm signals-slots --------------------------------------
+    connect(settingsForm, &SettingsForm::closeThis, this, &MainWindow::closeSettingsForm);
+    connect(this, &MainWindow::closeSettingsFormRequest, settingsForm, &SettingsForm::closeForm);
+    settingsForm->show();
     sfForm_int=1;
 }
 void MainWindow::closeSettingsForm(){
     sfForm_int=0;
-    setForm->close();
+    qDebug()<<"Settingsform closed";
 }
 void MainWindow::reopenSettingsForm(){
     closeSettingsForm();
+    emit closeSettingsFormRequest();
     openSettingsForm();
 }
 //--------------------fin------------------------------------
@@ -310,16 +348,25 @@ void MainWindow::on_pushButton_11_clicked()
     else reopenPositionOffsetForm();
 }
 void MainWindow::openPositionOffsetForm(){
+
+    posOffsetForm=new positionOffsetForm;
+    //*-------------Offset position signals-slots---------------------------------------
+    connect(posOffsetForm, &positionOffsetForm::closeThis, this, &MainWindow::closePositionOffsetForm);
+    connect(this, &MainWindow::closePositionOffsetFormRequest, posOffsetForm, &positionOffsetForm::closeForm);
+    connect(this, &MainWindow::OffsetPosChanged, dataProc, &dataProcessing::on_OffsetPosition_Changed);
+    connect(posOffsetForm, &positionOffsetForm::OffsetPosChanged,this, &MainWindow::on_OffsetPos_Changed);
+
     posOffsetForm->show();
     posOffForm_int=1;
 }
 void MainWindow::closePositionOffsetForm(){
     posOffForm_int=0;
-    posOffsetForm->close();
+    qDebug()<<"PositionOffset form closed";
 }
 void MainWindow::reopenPositionOffsetForm(){
-    posOffsetForm->close();
-    posOffsetForm->show();
+    closePositionOffsetForm();
+    emit closePositionOffsetFormRequest();
+    openPositionOffsetForm();
 }
 //--------------------fin------------------------------------
 
@@ -328,20 +375,31 @@ void MainWindow::reopenPositionOffsetForm(){
 // --------------- Plot graphs button -----------------------
 void MainWindow::on_pushButton_8_clicked()
 {
-    if(!graphsForm_int) openGraphsForm();
-    else reopenGraphsForm();
+    if(!customplotForm_int) openCustomplotForm();
+    else reopenCustomplotForm();
 }
-void MainWindow::openGraphsForm(){
-    graphsform->show();
-    graphsForm_int=true;
+
+void MainWindow::openCustomplotForm(){
+
+    customplotForm=new graphsForm;
+    //--------------graphsForm signals-slots --------------------------------------
+    connect(customplotForm, &graphsForm::closeThis, this, &MainWindow::closeCustomplotForm);
+    connect(this, &MainWindow::closeCustomplotFormRequest, customplotForm, &graphsForm::closeForm);
+    connect(this, &MainWindow::initComplete, customplotForm, &graphsForm::on_initBoardsComplete_recieved);
+    connect(this, &MainWindow::initBoardsRequest, customplotForm, &graphsForm::on_initBoardsRequest_recieved);
+    connect(this, &MainWindow::scaleAxisRequest, customplotForm, &graphsForm::on_scaleAxisRequest_recieved);
+
+    customplotForm->show();
+    customplotForm_int=1;
 }
-void MainWindow::closeGraphsForm(){
-    graphsForm_int=0;
-    graphsform->close();
+void MainWindow::closeCustomplotForm(){
+    customplotForm_int=0;
+    qDebug()<<"Customplot form closed";
 }
-void MainWindow::reopenGraphsForm(){
-    graphsform->close();
-    graphsform->show();
+void MainWindow::reopenCustomplotForm(){
+    closeCustomplotForm();
+    emit closeCustomplotFormRequest();
+    openCustomplotForm();
 }
 //--------------------fin------------------------------------
 
@@ -352,16 +410,26 @@ void MainWindow::on_pushButton_12_clicked()
     else reopenPresetPositionForm();
 }
 void MainWindow::openPresetPositionForm(){
-    presPositionForm->show();
+
+    presPosForm=new presetPositionForm;
+
+    //*-------------Preset position signals-slots---------------------------------------
+    connect(presPosForm, &presetPositionForm::closeThis, this, &MainWindow::closePresetPositionForm);
+    connect(this, &MainWindow::closePresetPositionFormRequest, presPosForm, &presetPositionForm::closeForm);
+    connect(this, &MainWindow::PresetPosChanged, dataProc, &dataProcessing::on_PresetPosition_Changed);
+    connect(presPosForm, &presetPositionForm::PresetPosChanged,this, &MainWindow::on_PresetPos_Changed);
+
+    presPosForm->show();
     presPosForm_int=1;
 }
 void MainWindow::closePresetPositionForm(){
     presPosForm_int=0;
-    presPositionForm->close();
+    qDebug()<<"Customplot form closed";
 }
 void MainWindow::reopenPresetPositionForm(){
-    presPositionForm->close();
-    presPositionForm->show();
+    closePresetPositionForm();
+    emit closePresetPositionFormRequest();
+    openPresetPositionForm();
 }
 //--------------------fin------------------------------------
 
@@ -428,7 +496,6 @@ void MainWindow::on_leftBlockUnits_currentIndexChanged(int index)
 void MainWindow::on_comboBox_4_currentIndexChanged(int index)
 {
     leftBlockIndex = index;
-    qDebug()<<"comboBox_4_currentIndexChanged";
     switch (index) {
     case 0:
         ui->leftBlockUnits->setItemText(0,QString::fromStdString("mm"));
@@ -558,5 +625,180 @@ void MainWindow::on_rightBlockUnits_currentIndexChanged(int index)
         currentRightBlockUnits=0;
         qDebug()<<"APD gain doesn't have any units";
     }
+}
+void MainWindow::on_OffsetPos_Changed(double* OffPosPtr){
+    emit OffsetPosChanged(OffPosPtr);
+}
+
+void MainWindow::on_PresetPos_Changed(double* PresPosPtr){
+    emit PresetPosChanged(PresPosPtr);
+}
+
+void MainWindow::on_radioButton_clicked()
+{
+
+    ui->textBrowser_3->setTextColor(QColor("green"));
+    ui->textBrowser_3->append("Cyclic errors compensation activated");
+    ui->textBrowser_3->setTextColor(QColor("dark"));
+    ui->textBrowser_3->append("1-Start the motor for a displacement of at least 5s then press Enter. CEC hardware need to observe the motion at startup "
+"in order to determine correct CE coefficients \n");
+    ui->textBrowser_3->append("2- Next, check the axis to configure ce compensation on");
+    ui->textBrowser_3->append("3-Then select in the list, the axis to display cec ratios on");
+    ui->radioButton->setStyleSheet("background-color: green;"
+                                    "border: 2px solid gray;"
+                                    "border-radius: 10px;"
+                                    "padding: 0 8px;font: 13pt \"Arial\";");
+    ui->radioButton_2->setStyleSheet("background-color: rgb(236, 236, 236);"
+                                    "border: 2px solid gray;"
+                                    "border-radius: 10px;"
+                                    "padding: 0 8px;font: 13pt \"Arial\";");
+
+    cecHarwareOn=true;
+    ui->horizontalWidget_3->setEnabled(true);
+    ui->CE_form->setEnabled(true);
+}
+void MainWindow::updateCECRatios(){
+
+    if(cecHarwareOn){
+        if(currentcecAxis){
+            emit updateCECRatiosRequest(currentcecAxis, ceRatios, currentCECUnits);
+            ui->ce0Ratio->setText(QString::number(ceRatios->CE0ratio));
+            ui->ceNRatio->setText(QString::number(ceRatios->CENratio));
+            ui->measSig->setText(QString::number(ceRatios->measSignal));
+        }
+    }
+}
+
+void MainWindow::on_ceUnits_currentIndexChanged(int index)
+{
+    currentCECUnits=index;
+    updateCECRatios();
+}
+
+
+void MainWindow::on_radioButton_2_clicked()
+{
+    for(int i=1; i<5; i++){
+        emit stopCEChardwareRequest(i);
+    }
+    ui->textBrowser_3->setTextColor(QColor("red"));
+    ui->textBrowser_3->append("Halting cyclic errors compensation...");
+    ui->radioButton->setStyleSheet("background-color: rgb(236, 236, 236);border: 1px solid;"
+                                    "border: 2px solid gray;"
+                                    "border-radius: 10px;"
+                                    "padding: 0 8px;font: 13pt \"Arial\";");
+    ui->radioButton_2->setStyleSheet("background-color: red;"
+                                    "border: 2px solid gray;"
+                                    "border-radius: 10px;"
+                                    "padding: 0 8px;font: 13pt \"Arial\";");
+    cecHarwareOn=false;
+    ui->horizontalWidget_3->setEnabled(false);
+    ui->CE_form->setEnabled(false);
+    ui->ceDisplayAxis->clear();
+    ui->cecAxis1->setCheckState(Qt::Unchecked);
+    ui->cecAxis2->setCheckState(Qt::Unchecked);
+    ui->cecAxis3->setCheckState(Qt::Unchecked);
+    ui->cecAxis4->setCheckState(Qt::Unchecked);
+}
+
+
+void MainWindow::processCecAxisClickedEvent(int axis, int* axisListIndex, QCheckBox* cecAxisCheckBox)
+{
+    char str[200];
+    bool failed =false;
+    dataProcessing *worker = new dataProcessing;
+    if(cecAxisCheckBox->isChecked()){
+        //emit configureCEChardwareRequest(axis,ceVelMin,ceVelMax);
+        (dataProcessing::dev_mutex).lock();
+        if(worker->on_configureCECHardware_recieved(axis,ceVelMin,ceVelMax)!= RET_SUCCESS){
+            failed=true;
+        }
+        (dataProcessing::dev_mutex).unlock();
+        if(failed){
+            ui->textBrowser_3->setTextColor(QColor("red"));
+            sprintf(str,"CEC configuration failed on axis %d", axis);
+            ui->textBrowser_3->append(str);
+            cecAxisCheckBox->setCheckState(Qt::Unchecked);
+        }
+        else{
+            ui->textBrowser_3->setTextColor(QColor("green"));
+            sprintf(str,"CE compensation succesfully configure on axis %d...", axis);
+            ui->textBrowser_3->append(str);
+            sprintf(str,"Axis%d", axis);
+            ui->ceDisplayAxis->addItem(str);
+        }
+
+
+        *axisListIndex = ui->ceDisplayAxis->count() -1;
+    }
+    else{
+        sprintf(str,"Halting CE compensation on axis %d...", axis);
+        (dataProcessing::dev_mutex).lock();
+        if(worker->on_stopCECHardware_recieved(axis)!= RET_SUCCESS){
+            failed=true;
+        }
+        (dataProcessing::dev_mutex).unlock();
+        if(failed){
+            ui->textBrowser_3->setTextColor(QColor("red"));
+            sprintf(str,"Halting CE compensation on axis %d failed", axis);
+            ui->textBrowser_3->append(str);
+            //emit stopCEChardwareRequest(axis);
+        }
+        else{
+            ui->textBrowser_3->setTextColor(QColor("red"));
+            sprintf(str,"CE compensation halted on axis %d", axis);
+            ui->textBrowser_3->append(str);
+            //emit stopCEChardwareRequest(axis);
+            ui->ceDisplayAxis->removeItem(*axisListIndex);
+        }
+
+        }
+    qDebug()<<"exiting thread";
+}
+
+void MainWindow::cecAxisClickedThreadEvent(int axis, int* axisListIndex, QCheckBox* cecAxisCheckBox)
+{
+    qDebug()<<"Starting cec config thread";
+    std::thread cecThread(&MainWindow::processCecAxisClickedEvent,this,axis, axisListIndex, cecAxisCheckBox);
+    cecThread.detach();
+    qDebug()<<"exiting";
+}
+
+void MainWindow::on_cecAxis1_clicked()
+{
+    static int axis1ListIndex=-1;
+    cecAxisClickedThreadEvent(1, &axis1ListIndex, ui->cecAxis1);
+}
+void MainWindow::on_cecAxis2_clicked()
+{
+    static int axis2ListIndex=-1;
+    cecAxisClickedThreadEvent(2, &axis2ListIndex, ui->cecAxis2);
+
+}
+
+void MainWindow::on_cecAxis3_clicked()
+{
+    static int axis3ListIndex=-1;
+    cecAxisClickedThreadEvent(3, &axis3ListIndex, ui->cecAxis3);
+}
+
+
+void MainWindow::on_cecAxis4_clicked()
+{
+    static int axis4ListIndex=-1;
+    cecAxisClickedThreadEvent(4, &axis4ListIndex, ui->cecAxis4);
+}
+
+
+void MainWindow::on_ceDisplayAxis_currentIndexChanged(int index)
+{
+    if(!(ui->ceDisplayAxis->currentText().compare(QString::fromStdString("Axis1"))))
+            currentcecAxis=1;
+    if(!(ui->ceDisplayAxis->currentText().compare(QString::fromStdString("Axis2"))))
+            currentcecAxis=2;
+    if(!(ui->ceDisplayAxis->currentText().compare(QString::fromStdString("Axis3"))))
+           currentcecAxis=3;
+    if(!(ui->ceDisplayAxis->currentText().compare(QString::fromStdString("Axis4"))))
+          currentcecAxis=4;
 }
 
