@@ -12,18 +12,23 @@ class FlyscanForm : public QWidget
 public:
     explicit FlyscanForm(QWidget *parent = nullptr);
     ~FlyscanForm();
+    double freqValue;
+    double  timeValue;
+    double sizeValue;
+    unsigned int nbrAxis=0;
+    char extFolderName[1024];
     void openForm();
     void closeForm();
 signals:
     void openThis();
     void closeThis();
+    void ramDataFlyscanRequest(double freq, double it, double np, unsigned int na);
 private slots:
     void on_pushButton_5_clicked();
     void selectFile();
     void on_comboBox_currentIndexChanged(int index);
 
     void on_itCheckBox_clicked();
-
 
     void on_freqCheckBox_clicked();
 
@@ -37,9 +42,6 @@ private slots:
 
 private:
     Ui::FlyscanForm *ui;
-    int freqValue=0;
-    int timeValue=0;
-    int sizeValue=0;
     int scanParam=0;
 };
 

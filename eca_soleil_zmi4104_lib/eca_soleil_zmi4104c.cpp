@@ -798,13 +798,13 @@ int EnableVMEGlobalInterrupt(SIS1100_Device_Struct* dev, unsigned char axis) {
 	}
 	return RET_SUCCESS;
 }
-int processRAMData(UINT nbrAxis, PUINT base_A24D32_axis1_ptr, PUINT base_A24D32_axis3_ptr) {
+int processRAMData(UINT nbrAxis, PUINT base_A24D32_axis1_ptr, PUINT base_A24D32_axis3_ptr, char* folderName) {
 	static int a = 0;
 	GetLocalTime(&lt);
 	static FILE* fd;
 	UINT val1 = 0, val2 = 0;
 	double pos1 = 0.0, pos2 = 0.0;
-	char path[600];
+	char path[2048];
 	INFO("Processing RAM data\n");
 	if (nbrAxis >= 2) {
 		if (!base_A24D32_axis1_ptr || !base_A24D32_axis3_ptr) {
@@ -816,10 +816,12 @@ int processRAMData(UINT nbrAxis, PUINT base_A24D32_axis1_ptr, PUINT base_A24D32_
 			WARN("Based on the number of axis which is %d, both pointer arguments can not be NULL", nbrAxis); return RET_FAILED;
 		}
 	}
-	INFO("Opening file to store position values \n");
-	sprintf_s(path, sizeof(path), "%s\\Position_values.csv", POSITION_FILE_PATH);
-	if (fopen_s(&fd, path, "a") != RET_SUCCESS)
+	sprintf_s(path, sizeof(path), "%s\\Position_values.csv",folderName);
+	INFO("Opening file %s to store position values \n", path);
+	if (fopen_s(&fd, path, "a") != RET_SUCCESS) {
+		WARN("Failed to open file %s\n", path);
 		return RET_FAILED;
+	}
 	fprintf(fd, "[***********; %d/%d/%d at %d:%d] ;************\n", lt.wYear, lt.wMonth, lt.wDay, lt.wHour, lt.wMinute);
 	switch (nbrAxis)
 	{
@@ -948,10 +950,10 @@ int configureFifoFlyscan(SIS1100_Device_Struct* dev, fifoParam* param, PUINT sta
 	tablen = *sizeOfTab;
 	INFO("Configuring FIFO flyscan \n");
 	if (checkValues(tablen, 1, 4)) {
-		WARN("Checking axis tab lenght\n");
+		WARN("Checking axis tab length\n");
 		return RET_FAILED;
 	}
-	if (!(param->acqTime || param->freq) || !(param->nbrPts || param->freq) || !(param->nbrPts || param->acqTime)) {
+	if (!(param->acqTime < 1e-6 || param->freq < 1e-3) || !(param->nbrPts<1e-3 || param->freq<1e-5) || !(param->nbrPts < 1e-3 || param->acqTime < 1e-3)) {
 		WARN("At most one of the fifo parameters can be nulled\n");
 		return RET_FAILED;
 	}
@@ -984,20 +986,20 @@ int configureFifoFlyscan(SIS1100_Device_Struct* dev, fifoParam* param, PUINT sta
 			k++;
 		}
 	}
-	if (!(param->acqTime)) {
-		// this mean acquisition time has not be given so we need to infer it from the 
-		//other parameter
-		param->acqTime = (((double)(param->nbrPts)) / ((double)(param->freq))) * 1000.0; // acquisition time in ms
+	if ((param->acqTime<1e-6)) {
+		// this mean acquisition time has not be given so we need to infer it from  
+		//other parameters
+		param->acqTime = (((double)(param->nbrPts)) / ((double)(param->freq))) * 1e3; // acquisition time in ms
 	}
-	if (!(param->nbrPts)) {
+	if ((param->nbrPts<0.1)) {
 		// this mean acquisition time has not be given so we need to infer it from the 
 		//other parameter
-		param->nbrPts = (UINT)(((double)(param->acqTime)) * ((double)(param->freq)));
+		param->nbrPts = (UINT)(((double)(param->acqTime * 1e-3)) * ((double)(param->freq)));
 	}
-	if (!(param->freq)) {
+	if ((param->freq<0.1)) {
 		// this mean acquisition time has not be given so we need to infer it from the 
 		//other parameter
-		param->freq = (((double)(param->nbrPts)) / ((double)(param->acqTime)));
+		param->freq = (((double)(param->nbrPts)) / ((double)(param->acqTime * 1e-3)));
 	}
 
 	INFO("\n FIFO Flyscan configuration: Freq: %fHz \t Nbr_of_points: %u \t acquisition_time: %f ms\n", param->freq, param->nbrPts, param->acqTime);
@@ -1088,7 +1090,7 @@ bool isFifoOVFbitSet(SIS1100_Device_Struct* dev, unsigned char axis) {
 /// -1 if unsuccessful
 /// 0 else
 /// </returns>
-int configureFlyscan(SIS1100_Device_Struct* dev, unsigned char nbrAxis, double freqMHz, UCHAR trig) {
+int configureFlyscan(SIS1100_Device_Struct* dev, unsigned char nbrAxis, double freqHz, UCHAR trig) {
 	/*'
 		'4 X 8kSamples of 32 bit position values at FULL resolution of lambda/4096/8
 		' returns false if unsuccessful
@@ -1099,10 +1101,13 @@ int configureFlyscan(SIS1100_Device_Struct* dev, unsigned char nbrAxis, double f
 	UINT ctr = 0;
 	UINT uint_vme_data = 0, uint_vme_address = 0;
 	int ramAxisAddr = 0x0;
-
+	if (freqHz < 300) {
+		WARN("Frequency can not be lesser than 300Hz");
+		return RET_FAILED;
+	}
 	/* Check if RAM is busy*/
 	INFO("setting up flyscan...\n");
-	if (checkValues(nbrAxis, 0, 4)) {
+	if (checkValues(nbrAxis, 1, 4)) {
 		WARN("Bad axis value\n");
 		return RET_FAILED;
 	}
@@ -1115,7 +1120,7 @@ int configureFlyscan(SIS1100_Device_Struct* dev, unsigned char nbrAxis, double f
 		}
 	} while (isRAMbusy(dev));
 
-	enableSampling(dev, freqMHz);
+	enableSampling(dev, freqHz * 1e-6);
 	if (nbrAxis <= 2)
 		uint_vme_data = 0x8000;
 	else
@@ -1148,9 +1153,9 @@ int configureFlyscan(SIS1100_Device_Struct* dev, unsigned char nbrAxis, double f
 
 	//Option to start acquire immediately
 	if (trig) {
+		INFO("Starting acquisition...\n");
 		if (startAquisition(dev, nbrAxis) != RET_SUCCESS)
 			return RET_FAILED;
-		INFO("Starting acquisition...\n");
 	}
 	return RET_SUCCESS;
 }
@@ -1214,7 +1219,7 @@ int stopAquisition(SIS1100_Device_Struct* dev, unsigned char nbrAxis) {
 PUINT allocateMemSpace(UINT mem_size) {
 	INFO("Allocating Windows Memory space...\n");
 	if (checkValues(mem_size, 0, 1024 * 70))
-		return NULL;
+		return nullptr;
 	return (PUINT)calloc((UINT)(mem_size), sizeof(unsigned int));
 
 }

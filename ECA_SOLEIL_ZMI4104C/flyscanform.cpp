@@ -10,17 +10,18 @@ FlyscanForm::FlyscanForm(QWidget *parent) :
     ui(new Ui::FlyscanForm)
 {
     ui->setupUi(this);
-    ui->freqLineEdit->setEnabled(false);
-    ui->itLineEdit->setEnabled(false);
-    ui->spinBox->setEnabled(false);
     ui->selectAxisWidget->setEnabled(false);
-    ui->spinBox->setMaximum(1e6);
 
+    ui->spinBox->setMaximum(16384);//16384 points max
+    ui->spinBox->setMinimum(1);//1 point min
+    ui->spinBox_3->setMinimum(300);//min freq
+    ui->spinBox_3->setMaximum(10e6);//max freq
+    ui->spinBox_3->setEnabled(false);
+    ui->spinBox_2->setEnabled(false);
+    ui->spinBox->setEnabled(false);
 
-    ui->freqLineEdit->setValidator(new QRegExpValidator(QRegExp("[0-9]*[.][0-9]*"), ui->freqLineEdit));
-    ui->itLineEdit->setValidator(new QRegExpValidator(QRegExp("[0-9]*[.][0-9]*"), ui->itLineEdit));
-    ui->freqLineEdit->setText(QString::number(0));
-    ui->itLineEdit->setText(QString::number(0));
+    ui->spinBox_2->setMaximum(1.44e6);//1.44 sec max
+    ui->spinBox_2->setMinimum(3.334e3);//3.33 ms sec min
 }
 
 FlyscanForm::~FlyscanForm()
@@ -46,10 +47,17 @@ void FlyscanForm::on_comboBox_currentIndexChanged(int index)
     case 0:
         ui->selectAxisWidget->setEnabled(false);
         ui->NbrOfAxisWidget->setEnabled(true);
+        ui->spinBox->setMaximum(16384);//16384 points max
+        ui->spinBox_3->setMinimum(300);//min freq
+        ui->spinBox_3->setMaximum(10e6);//max freq
+        ui->spinBox_2->setMaximum(1.44e6);//1.44 sec max
         break;
     case 1:
         ui->NbrOfAxisWidget->setEnabled(false);
         ui->selectAxisWidget->setEnabled(true);
+        ui->spinBox_3->setMinimum(0);//min freq
+        ui->spinBox_3->setMaximum(10e6);//max freq
+        ui->spinBox->setMaximum(10e6);//1e6 points max
 
         break;
     default:
@@ -65,20 +73,21 @@ void FlyscanForm::on_itCheckBox_clicked()
             ui->display->setTextColor(QColor("red"));
             ui->display->append("Can not choose more than 2 scan parameters");
             ui->itCheckBox->setCheckState(Qt::Unchecked);
-            ui->itLineEdit->setEnabled(false);
+            ui->spinBox_2->setEnabled(false);
         }
         else{
-            ui->itLineEdit->setEnabled(true);
+            ui->spinBox_2->setEnabled(true);
             paramNbr++;
-            //scanParam+=3;
+            scanParam+=3;
 
         }
     }
     else{
-        paramNbr=0?0:(paramNbr-1);
+        paramNbr=(paramNbr-1<0)?0:(paramNbr-1);
+        ui->spinBox_2->setEnabled(false);
+        scanParam-=3;
     }
 }
-
 
 
 void FlyscanForm::on_freqCheckBox_clicked()
@@ -88,18 +97,20 @@ void FlyscanForm::on_freqCheckBox_clicked()
             ui->display->setTextColor(QColor("red"));
             ui->display->append("Can not choose more than 2 scan parameters");
             ui->freqCheckBox->setCheckState(Qt::Unchecked);
-            ui->freqLineEdit->setEnabled(false);
+            ui->spinBox_3->setEnabled(false);
         }
         else{
-            ui->freqLineEdit->setEnabled(true);
+            ui->spinBox_3->setEnabled(true);
             paramNbr++;
-            //scanParam+=1;
+            scanParam+=1;
 
 
         }
     }
     else{
-        paramNbr=0?0:(paramNbr-1);
+        paramNbr=(paramNbr-1<0)?0:(paramNbr-1);
+        ui->spinBox_3->setEnabled(false);
+        scanParam-=1;
     }
 }
 
@@ -122,7 +133,8 @@ void FlyscanForm::on_npCheckBox_clicked()
     }
     else{
         paramNbr=(paramNbr-1<0)?0:(paramNbr-1);
-        //scanParam-=5;
+        ui->spinBox->setEnabled(false);
+        scanParam-=5;
     }
 }
 
@@ -140,24 +152,18 @@ void FlyscanForm::on_pushButton_clicked()
 
 void FlyscanForm::selectFile()
 {
-    QString fileName = QFileDialog::getSaveFileName(this,
-        tr("Select File"), "",
-        tr("Excel book (*.csv);;All Files (*)"));
-    if (fileName.isEmpty())
+    QString folderName = QFileDialog::getExistingDirectory(0, ("Select Output Folder"), QDir::currentPath());
+    if (folderName.isEmpty())
             return;
         else {
             ui->saveFile->setStyleSheet("font: 75 12pt \"MS Shell Dlg 2\";");
-            ui->saveFile->setText(fileName);
+            ui->saveFile->setText(folderName);
             ui->saveFile->setDisabled(true);
-            QFile file(fileName);
-            if (!file.open(QIODevice::WriteOnly)) {
-                QMessageBox::information(this, tr("Unable to open file"),
-                    file.errorString());
-                return;
-            }
-            QDataStream out(&file);
-            out.setVersion(QDataStream::Qt_4_5);
-            //out << contacts;
+            std::string fname = folderName.toStdString();
+            //cstr = new char [fname.size()+1];
+            strcpy_s( extFolderName, fname.c_str() );
+
+            //extFolderName = folderName.toStdString().C_str();
         }
 }
 
@@ -168,7 +174,35 @@ void FlyscanForm::on_StartButton_clicked()
         ui->display->append("You should provide at least 2 scan parameters");
     }
     else{
+        bool ok=false;
+        switch (scanParam) {
+            case 4:
+                freqValue=ui->spinBox_3->text().toDouble(&ok);
+                timeValue=ui->spinBox_2->text().toDouble(&ok);
+                timeValue= timeValue*1e-6; //convert to sec
+                sizeValue= (timeValue) * freqValue;
+                qDebug()<<"param: freq: "<<freqValue<<"Hz, it: "<<timeValue<<"s, size: "<<sizeValue;
+            break;
+            case 6:
+                freqValue=ui->spinBox_3->text().toDouble(&ok);
+                sizeValue =ui->spinBox->text().toDouble(&ok);
+                timeValue= (sizeValue/ freqValue);
+                qDebug()<<"param: freq: "<<freqValue<<"Hz, it: "<<timeValue<<"s, size: "<<sizeValue;
+            break;
+            case 8:
+                sizeValue =ui->spinBox->text().toDouble(&ok);
+                timeValue=ui->spinBox_2->text().toDouble(&ok);
+                timeValue= timeValue*1e-6; //convert to sec
+                freqValue= sizeValue/(timeValue );
+                qDebug()<<"param: freq: "<<freqValue<<"Hz, it: "<<timeValue<<"s, size: "<<sizeValue;
+            break;
+            default:
 
+            break;
+        }
+        nbrAxis=ui->NbrOfAxisWidget->currentIndex()+1;
+        emit ramDataFlyscanRequest(freqValue, timeValue, sizeValue, nbrAxis);
+        qDebug()<<"Nbr of axis: "<<nbrAxis;
     }
 }
 

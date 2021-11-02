@@ -88,7 +88,7 @@ extern "C" {
 		double CEMaxcoeff;
 	}CECoeffBoundaries;
 	typedef struct _fifoParam {
-		double acqTime; // ACQUISITION TIME in seconds
+		double acqTime; // ACQUISITION TIME in ms
 		double freq;	// sample frequency in Hz
 		UINT nbrPts;	// number of points to acquire
 	}fifoParam;
@@ -265,7 +265,7 @@ extern "C" {
 	ECASOLEILZMI4104CLIB_API int AckForSis3100VME_Irq(SIS1100_Device_Struct*, uint32_t);
 	ECASOLEILZMI4104CLIB_API int getFlyscanData(SIS1100_Device_Struct*, PUINT, PUINT, PUINT);
 	ECASOLEILZMI4104CLIB_API PUINT allocateMemSpace(UINT);
-	ECASOLEILZMI4104CLIB_API int processRAMData(UINT, PUINT, PUINT);
+	ECASOLEILZMI4104CLIB_API int processRAMData(UINT, PUINT, PUINT, char* folderName);
 	ECASOLEILZMI4104CLIB_API int processFifoData(UINT nbrAxis, PUCHAR axisTab, PUINT memPtr, UINT nbrOfPts);
 	ECASOLEILZMI4104CLIB_API int configureFifoFlyscan(SIS1100_Device_Struct*, fifoParam*, PUINT, PUCHAR, PUCHAR);
 	ECASOLEILZMI4104CLIB_API int fifoFlyscan(SIS1100_Device_Struct*, fifoParam, PUINT, UCHAR, ...);

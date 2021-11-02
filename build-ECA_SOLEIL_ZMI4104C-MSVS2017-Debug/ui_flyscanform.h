@@ -34,11 +34,11 @@ public:
     QWidget *horizontalWidget_2;
     QHBoxLayout *horizontalLayout_2;
     QCheckBox *freqCheckBox;
-    QLineEdit *freqLineEdit;
+    QSpinBox *spinBox_3;
     QLabel *label_6;
     QSpacerItem *horizontalSpacer;
     QCheckBox *itCheckBox;
-    QLineEdit *itLineEdit;
+    QSpinBox *spinBox_2;
     QLabel *label_7;
     QSpacerItem *horizontalSpacer_2;
     QCheckBox *npCheckBox;
@@ -161,11 +161,16 @@ public:
 
         horizontalLayout_2->addWidget(freqCheckBox);
 
-        freqLineEdit = new QLineEdit(horizontalWidget_2);
-        freqLineEdit->setObjectName(QString::fromUtf8("freqLineEdit"));
-        freqLineEdit->setMinimumSize(QSize(0, 35));
+        spinBox_3 = new QSpinBox(horizontalWidget_2);
+        spinBox_3->setObjectName(QString::fromUtf8("spinBox_3"));
+        QSizePolicy sizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+        sizePolicy.setHorizontalStretch(0);
+        sizePolicy.setVerticalStretch(0);
+        sizePolicy.setHeightForWidth(spinBox_3->sizePolicy().hasHeightForWidth());
+        spinBox_3->setSizePolicy(sizePolicy);
+        spinBox_3->setMinimumSize(QSize(120, 35));
 
-        horizontalLayout_2->addWidget(freqLineEdit);
+        horizontalLayout_2->addWidget(spinBox_3);
 
         label_6 = new QLabel(horizontalWidget_2);
         label_6->setObjectName(QString::fromUtf8("label_6"));
@@ -182,11 +187,13 @@ public:
 
         horizontalLayout_2->addWidget(itCheckBox);
 
-        itLineEdit = new QLineEdit(horizontalWidget_2);
-        itLineEdit->setObjectName(QString::fromUtf8("itLineEdit"));
-        itLineEdit->setMinimumSize(QSize(0, 35));
+        spinBox_2 = new QSpinBox(horizontalWidget_2);
+        spinBox_2->setObjectName(QString::fromUtf8("spinBox_2"));
+        sizePolicy.setHeightForWidth(spinBox_2->sizePolicy().hasHeightForWidth());
+        spinBox_2->setSizePolicy(sizePolicy);
+        spinBox_2->setMinimumSize(QSize(120, 35));
 
-        horizontalLayout_2->addWidget(itLineEdit);
+        horizontalLayout_2->addWidget(spinBox_2);
 
         label_7 = new QLabel(horizontalWidget_2);
         label_7->setObjectName(QString::fromUtf8("label_7"));
@@ -205,9 +212,6 @@ public:
 
         spinBox = new QSpinBox(horizontalWidget_2);
         spinBox->setObjectName(QString::fromUtf8("spinBox"));
-        QSizePolicy sizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-        sizePolicy.setHorizontalStretch(0);
-        sizePolicy.setVerticalStretch(0);
         sizePolicy.setHeightForWidth(spinBox->sizePolicy().hasHeightForWidth());
         spinBox->setSizePolicy(sizePolicy);
         spinBox->setMinimumSize(QSize(120, 35));
@@ -502,7 +506,7 @@ public:
         freqCheckBox->setText(QCoreApplication::translate("FlyscanForm", "Freq", nullptr));
         label_6->setText(QCoreApplication::translate("FlyscanForm", "Hz", nullptr));
         itCheckBox->setText(QCoreApplication::translate("FlyscanForm", "Int time", nullptr));
-        label_7->setText(QCoreApplication::translate("FlyscanForm", "ms", nullptr));
+        label_7->setText(QCoreApplication::translate("FlyscanForm", "\302\265s", nullptr));
         npCheckBox->setText(QCoreApplication::translate("FlyscanForm", "Nbr_Pts", nullptr));
         label_9->setText(QCoreApplication::translate("FlyscanForm", "Method", nullptr));
         comboBox->setItemText(0, QCoreApplication::translate("FlyscanForm", "RAM DATA Flyscan", nullptr));

@@ -130,85 +130,17 @@ DESTDIR_TARGET = release\ECA_SOLEIL_ZMI4104C.exe
 
 .SUFFIXES: .c .cpp .cc .cxx
 
-{..\ECA_SOLEIL_ZMI4104C}.cpp{release\}.obj::
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -Forelease\ @<<
-	$<
-<<
+.cpp.obj:
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -Fo$@ $<
 
-{..\ECA_SOLEIL_ZMI4104C}.cc{release\}.obj::
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -Forelease\ @<<
-	$<
-<<
+.cc.obj:
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -Fo$@ $<
 
-{..\ECA_SOLEIL_ZMI4104C}.cxx{release\}.obj::
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -Forelease\ @<<
-	$<
-<<
+.cxx.obj:
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -Fo$@ $<
 
-{..\ECA_SOLEIL_ZMI4104C}.c{release\}.obj::
-	$(CC) -c $(CFLAGS) $(INCPATH) -Forelease\ @<<
-	$<
-<<
-
-{release}.cpp{release\}.obj::
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -Forelease\ @<<
-	$<
-<<
-
-{release}.cc{release\}.obj::
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -Forelease\ @<<
-	$<
-<<
-
-{release}.cxx{release\}.obj::
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -Forelease\ @<<
-	$<
-<<
-
-{release}.c{release\}.obj::
-	$(CC) -c $(CFLAGS) $(INCPATH) -Forelease\ @<<
-	$<
-<<
-
-{.}.cpp{release\}.obj::
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -Forelease\ @<<
-	$<
-<<
-
-{.}.cc{release\}.obj::
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -Forelease\ @<<
-	$<
-<<
-
-{.}.cxx{release\}.obj::
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -Forelease\ @<<
-	$<
-<<
-
-{.}.c{release\}.obj::
-	$(CC) -c $(CFLAGS) $(INCPATH) -Forelease\ @<<
-	$<
-<<
-
-{..\ECA_SOLEIL_ZMI4104C\qcustomplot}.cpp{release\}.obj::
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -Forelease\ @<<
-	$<
-<<
-
-{..\ECA_SOLEIL_ZMI4104C\qcustomplot}.cc{release\}.obj::
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -Forelease\ @<<
-	$<
-<<
-
-{..\ECA_SOLEIL_ZMI4104C\qcustomplot}.cxx{release\}.obj::
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -Forelease\ @<<
-	$<
-<<
-
-{..\ECA_SOLEIL_ZMI4104C\qcustomplot}.c{release\}.obj::
-	$(CC) -c $(CFLAGS) $(INCPATH) -Forelease\ @<<
-	$<
-<<
+.c.obj:
+	$(CC) -c $(CFLAGS) $(INCPATH) -Fo$@ $<
 
 ####### Build rules
 
@@ -494,6 +426,9 @@ release\moc_dataprocessing.cpp: ..\ECA_SOLEIL_ZMI4104C\dataprocessing.h \
 		..\eca_soleil_zmi4104_lib\sis1100_zmilib\sis3100_vme_calls.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtCore\QThread \
 		C:\Qt2\5.13.2\msvc2017\include\QtCore\qthread.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\QTimer \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qtimer.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qbasictimer.h \
 		release\moc_predefs.h \
 		C:\Qt2\5.13.2\msvc2017\bin\moc.exe
 	C:\Qt2\5.13.2\msvc2017\bin\moc.exe $(DEFINES) --compiler-flavor=msvc --include C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/build-ECA_SOLEIL_ZMI4104C-MSVS2017-Debug/release/moc_predefs.h -IC:/Qt2/5.13.2/msvc2017/mkspecs/win32-msvc -IC:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/ECA_SOLEIL_ZMI4104C -IC:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/Release -IC:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib -IC:/Qt2/5.13.2/msvc2017/include -IC:/Qt2/5.13.2/msvc2017/include/QtPrintSupport -IC:/Qt2/5.13.2/msvc2017/include/QtWidgets -IC:/Qt2/5.13.2/msvc2017/include/QtGui -IC:/Qt2/5.13.2/msvc2017/include/QtANGLE -IC:/Qt2/5.13.2/msvc2017/include/QtCore -I. -I"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.28.29910\ATLMFC\include" -I"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.28.29910\include" -I"C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8\include\um" -I"C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt" -I"C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\shared" -I"C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um" -I"C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\winrt" -I"C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\cppwinrt" ..\ECA_SOLEIL_ZMI4104C\dataprocessing.h -o release\moc_dataprocessing.cpp
@@ -2645,7 +2580,516 @@ ui_flyscanform.h: ..\ECA_SOLEIL_ZMI4104C\flyscanform.ui \
 	C:\Qt2\5.13.2\msvc2017\bin\uic.exe ..\ECA_SOLEIL_ZMI4104C\flyscanform.ui -o ui_flyscanform.h
 
 ui_graphsform.h: ..\ECA_SOLEIL_ZMI4104C\graphsform.ui \
-		C:\Qt2\5.13.2\msvc2017\bin\uic.exe
+		C:\Qt2\5.13.2\msvc2017\bin\uic.exe \
+		..\ECA_SOLEIL_ZMI4104C\qcustomplot.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qglobal.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qconfig-bootstrapped.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qconfig.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qtcore-config.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qsystemdetection.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qprocessordetection.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qcompilerdetection.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qtypeinfo.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qsysinfo.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qlogging.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qflags.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qatomic.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qbasicatomic.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qatomic_bootstrap.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qgenericatomic.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qatomic_cxx11.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qatomic_msvc.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qglobalstatic.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qmutex.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qnumeric.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qversiontagging.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\QObject \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qobject.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qobjectdefs.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qnamespace.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qobjectdefs_impl.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qstring.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qchar.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qbytearray.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qrefcount.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qarraydata.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qstringliteral.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qstringalgorithms.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qstringview.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qstringbuilder.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qlist.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qalgorithms.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qiterator.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qhashfunctions.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qpair.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qvector.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qpoint.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qbytearraylist.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qstringlist.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qregexp.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qstringmatcher.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qcoreevent.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qscopedpointer.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qmetatype.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qvarlengtharray.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qcontainerfwd.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qobject_impl.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\QPointer \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qpointer.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qsharedpointer.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qshareddata.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qhash.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qsharedpointer_impl.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\QSharedPointer \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\QTimer \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qtimer.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qbasictimer.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\QPainter \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qpainter.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qtguiglobal.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qtgui-config.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qrect.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qmargins.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qsize.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qpixmap.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qpaintdevice.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qwindowdefs.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qwindowdefs_win.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qcolor.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qrgb.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qrgba64.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qimage.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qpixelformat.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qtransform.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qmatrix.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qpolygon.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qregion.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qdatastream.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qiodevice.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qline.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qpainterpath.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qtextoption.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qpen.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qbrush.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qfontinfo.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qfont.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qfontmetrics.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\QPainterPath \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\QPaintEvent \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qevent.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qkeysequence.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qvariant.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qmap.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qdebug.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qtextstream.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qlocale.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qset.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qcontiguouscache.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qurl.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qurlquery.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qfile.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qfiledevice.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qvector2d.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qtouchdevice.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\QMouseEvent \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\QWheelEvent \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\QPixmap \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\QVector \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\QString \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\QDateTime \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qdatetime.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\QMultiMap \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\QFlags \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\QDebug \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\QStack \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qstack.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\QCache \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qcache.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\QMargins \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qmath.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\QOpenGLContext \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qopenglcontext.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\QScopedPointer \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\QSurfaceFormat \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qsurfaceformat.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qopengl.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qt_windows.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtANGLE\GLES3\gl3.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtANGLE\GLES3\gl3platform.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtANGLE\KHR\khrplatform.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtANGLE\GLES2\gl2.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtANGLE\GLES2\gl2platform.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qopengles2ext.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qopenglext.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qopenglversionfunctions.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\QOpenGLFramebufferObject \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qopenglframebufferobject.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\QOpenGLPaintDevice \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qopenglpaintdevice.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\QOffscreenSurface \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qoffscreensurface.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qsurface.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\QWindow \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qwindow.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\QEvent \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\QRect \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qicon.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qcursor.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtOpenGL\QGLPixelBuffer \
+		C:\Qt2\5.13.2\msvc2017\include\QtOpenGL\qglpixelbuffer.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtOpenGL\qgl.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qwidget.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qtwidgetsglobal.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qtwidgets-config.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qpalette.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qsizepolicy.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qpaintengine.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtOpenGL\qglcolormap.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtOpenGL\qtopenglglobal.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\QtNumeric \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\QWidget \
+		C:\Qt2\5.13.2\msvc2017\include\QtPrintSupport\QtPrintSupport \
+		C:\Qt2\5.13.2\msvc2017\include\QtPrintSupport\QtPrintSupportDepends \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\QtCore \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\QtCoreDepends \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qabstractanimation.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qabstracteventdispatcher.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qeventloop.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qabstractitemmodel.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qabstractnativeeventfilter.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qabstractproxymodel.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qabstractstate.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qabstracttransition.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qanimationgroup.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qarraydataops.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qarraydatapointer.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qbitarray.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qbuffer.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qbytearraymatcher.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qcborarray.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qcborvalue.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qcborcommon.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qregularexpression.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\quuid.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qcbormap.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qcborstream.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qfloat16.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qcollator.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qcommandlineoption.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qcommandlineparser.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qcoreapplication.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qconcatenatetablesproxymodel.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qcryptographichash.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qdeadlinetimer.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qelapsedtimer.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qdir.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qfileinfo.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qdiriterator.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qeasingcurve.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qendian.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qeventtransition.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qexception.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qfactoryinterface.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qfileselector.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\QStringList \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qfilesystemwatcher.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qfinalstate.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qfuture.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qfutureinterface.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qrunnable.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qresultstore.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qfuturesynchronizer.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qfuturewatcher.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qhistorystate.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qidentityproxymodel.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qisenum.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qitemselectionmodel.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qjsonarray.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qjsonvalue.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qjsondocument.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qjsonobject.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qlibrary.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qlibraryinfo.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qversionnumber.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qlinkedlist.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qlockfile.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qloggingcategory.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qmessageauthenticationcode.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qmetaobject.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qmimedata.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qmimedatabase.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qmimetype.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qobjectcleanuphandler.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qoperatingsystemversion.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qparallelanimationgroup.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qpauseanimation.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qplugin.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qpluginloader.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qprocess.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qpropertyanimation.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qvariantanimation.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qqueue.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qrandom.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qreadwritelock.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qresource.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qsavefile.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qscopedvaluerollback.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qscopeguard.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qsemaphore.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qsequentialanimationgroup.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qsettings.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qsharedmemory.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qsignalmapper.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qsignaltransition.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qsocketnotifier.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qsortfilterproxymodel.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qstandardpaths.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qstate.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qstatemachine.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qstorageinfo.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qstringlistmodel.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qsystemsemaphore.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qtemporarydir.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qtemporaryfile.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qtextboundaryfinder.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qtextcodec.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qthread.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qthreadpool.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qthreadstorage.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qtimeline.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qtimezone.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qtranslator.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qtransposeproxymodel.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qtypetraits.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qwaitcondition.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qwineventnotifier.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qxmlstream.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qtcoreversion.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\QtGui \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\QtGuiDepends \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qabstracttextdocumentlayout.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qtextlayout.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qtextformat.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qglyphrun.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qrawfont.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qfontdatabase.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qtextcursor.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qtextdocument.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qaccessible.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qaccessiblebridge.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qaccessibleobject.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qaccessibleplugin.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qbackingstore.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qbitmap.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qclipboard.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qdesktopservices.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qdrag.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qgenericmatrix.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qgenericplugin.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qgenericpluginfactory.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qguiapplication.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qinputmethod.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qiconengine.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qiconengineplugin.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qimageiohandler.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qimagereader.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qimagewriter.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qmatrix4x4.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qvector3d.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qvector4d.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qquaternion.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qmovie.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qopenglbuffer.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qopengldebug.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qopenglextrafunctions.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qopenglfunctions.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qopenglpixeltransferoptions.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\QSharedDataPointer \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qopenglshaderprogram.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qopengltexture.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qopengltextureblitter.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\QMatrix3x3 \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\QMatrix4x4 \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qopengltimerquery.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qopenglvertexarrayobject.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qopenglwindow.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\QPaintDeviceWindow \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qpaintdevicewindow.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\QPaintDevice \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\QImage \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qpagedpaintdevice.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qpagelayout.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qpagesize.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qpdfwriter.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qpicture.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qpictureformatplugin.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qpixmapcache.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qrasterwindow.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qscreen.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\QList \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\QSize \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\QSizeF \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\QTransform \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qsessionmanager.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qstandarditemmodel.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qstatictext.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qstylehints.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qsyntaxhighlighter.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qtextobject.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qtextdocumentfragment.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qtextdocumentwriter.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qtextlist.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qtexttable.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qvalidator.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qtguiversion.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\QtWidgets \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\QtWidgetsDepends \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qabstractbutton.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qabstractitemdelegate.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qstyleoption.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qabstractspinbox.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qslider.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qabstractslider.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qstyle.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qtabbar.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qtabwidget.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qrubberband.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qframe.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qabstractitemview.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qabstractscrollarea.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qaccessiblewidget.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qaction.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qactiongroup.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qapplication.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qdesktopwidget.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qboxlayout.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qlayout.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qlayoutitem.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qgridlayout.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qbuttongroup.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qcalendarwidget.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qcheckbox.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qcolordialog.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qdialog.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qcolormap.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qcolumnview.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qcombobox.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qcommandlinkbutton.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qpushbutton.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qcommonstyle.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qcompleter.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qdatawidgetmapper.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qdatetimeedit.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qdial.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qdialogbuttonbox.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qdirmodel.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qfileiconprovider.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qdockwidget.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qdrawutil.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qerrormessage.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qfiledialog.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qfilesystemmodel.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qfocusframe.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qfontcombobox.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qfontdialog.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qformlayout.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\QLayout \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qgesture.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qgesturerecognizer.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qgraphicsanchorlayout.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qgraphicsitem.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qgraphicslayout.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qgraphicslayoutitem.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qgraphicseffect.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qgraphicsgridlayout.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qgraphicsitemanimation.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qgraphicslinearlayout.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qgraphicsproxywidget.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qgraphicswidget.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qgraphicsscene.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qgraphicssceneevent.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qgraphicstransform.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\QVector3D \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qgraphicsview.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qscrollarea.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qgroupbox.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qheaderview.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qinputdialog.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qlineedit.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qitemdelegate.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qitemeditorfactory.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qkeyeventtransition.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qkeysequenceedit.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qlabel.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qlcdnumber.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qlistview.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qlistwidget.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qmainwindow.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qmdiarea.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qmdisubwindow.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qmenu.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qmenubar.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qmessagebox.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qmouseeventtransition.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qopenglwidget.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qplaintextedit.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qtextedit.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qprogressbar.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qprogressdialog.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qproxystyle.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\QCommonStyle \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qradiobutton.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qscrollbar.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qscroller.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\QPointF \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\QScrollerProperties \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qscrollerproperties.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\QMetaType \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\QVariant \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qshortcut.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qsizegrip.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qspinbox.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qsplashscreen.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qsplitter.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qstackedlayout.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qstackedwidget.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qstatusbar.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qstyleditemdelegate.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qstylefactory.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qstylepainter.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qstyleplugin.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qsystemtrayicon.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qtableview.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qtablewidget.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qtextbrowser.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qtoolbar.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qtoolbox.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qtoolbutton.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qtooltip.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qtreeview.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qtreewidget.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qtreewidgetitemiterator.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qundogroup.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qundostack.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qundoview.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qwhatsthis.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qwidgetaction.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qwizard.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qtwidgetsversion.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtPrintSupport\qtprintsupportglobal.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtPrintSupport\qtprintsupport-config.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtPrintSupport\qabstractprintdialog.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtPrintSupport\qpagesetupdialog.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtPrintSupport\qprintdialog.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtPrintSupport\qprintengine.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtPrintSupport\qprinter.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtPrintSupport\qprinterinfo.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\QPair \
+		C:\Qt2\5.13.2\msvc2017\include\QtPrintSupport\qprintpreviewdialog.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtPrintSupport\qprintpreviewwidget.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtPrintSupport\qtprintsupportversion.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\QElapsedTimer \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\QTimeZone
 	C:\Qt2\5.13.2\msvc2017\bin\uic.exe ..\ECA_SOLEIL_ZMI4104C\graphsform.ui -o ui_graphsform.h
 
 ui_mainwindow.h: ..\ECA_SOLEIL_ZMI4104C\mainwindow.ui \
@@ -2781,6 +3225,7 @@ release\cesettingsform.obj: ..\ECA_SOLEIL_ZMI4104C\cesettingsform.cpp ..\ECA_SOL
 		C:\Qt2\5.13.2\msvc2017\include\QtGui\qvector2d.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtGui\qtouchdevice.h \
 		ui_cesettingsform.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -Forelease\cesettingsform.obj ..\ECA_SOLEIL_ZMI4104C\cesettingsform.cpp
 
 release\dataprocessing.obj: ..\ECA_SOLEIL_ZMI4104C\dataprocessing.cpp ..\ECA_SOLEIL_ZMI4104C\dataprocessing.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtCore\QObject \
@@ -2886,7 +3331,11 @@ release\dataprocessing.obj: ..\ECA_SOLEIL_ZMI4104C\dataprocessing.cpp ..\ECA_SOL
 		..\eca_soleil_zmi4104_lib\sis1100_zmilib\sis3100.h \
 		..\eca_soleil_zmi4104_lib\sis1100_zmilib\sis3100_vme_calls.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtCore\QThread \
-		C:\Qt2\5.13.2\msvc2017\include\QtCore\qthread.h
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qthread.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\QTimer \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qtimer.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qbasictimer.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -Forelease\dataprocessing.obj ..\ECA_SOLEIL_ZMI4104C\dataprocessing.cpp
 
 release\flyscanform.obj: ..\ECA_SOLEIL_ZMI4104C\flyscanform.cpp ..\ECA_SOLEIL_ZMI4104C\flyscanform.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\QWidget \
@@ -2992,7 +3441,18 @@ release\flyscanform.obj: ..\ECA_SOLEIL_ZMI4104C\flyscanform.cpp ..\ECA_SOLEIL_ZM
 		C:\Qt2\5.13.2\msvc2017\include\QtCore\qfiledevice.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtGui\qvector2d.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtGui\qtouchdevice.h \
-		ui_flyscanform.h
+		ui_flyscanform.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\QDebug \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\QFileDialog \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qfiledialog.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qdir.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qfileinfo.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qdialog.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\QFile \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\QIODevice \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\QMessageBox \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qmessagebox.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -Forelease\flyscanform.obj ..\ECA_SOLEIL_ZMI4104C\flyscanform.cpp
 
 release\graphsform.obj: ..\ECA_SOLEIL_ZMI4104C\graphsform.cpp ..\ECA_SOLEIL_ZMI4104C\graphsform.h \
 		..\ECA_SOLEIL_ZMI4104C\qcustomplot\qcustomplot.h \
@@ -3505,6 +3965,7 @@ release\graphsform.obj: ..\ECA_SOLEIL_ZMI4104C\graphsform.cpp ..\ECA_SOLEIL_ZMI4
 		C:\Qt2\5.13.2\msvc2017\include\QtCore\QElapsedTimer \
 		C:\Qt2\5.13.2\msvc2017\include\QtCore\QTimeZone \
 		ui_graphsform.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -Forelease\graphsform.obj ..\ECA_SOLEIL_ZMI4104C\graphsform.cpp
 
 release\main.obj: ..\ECA_SOLEIL_ZMI4104C\main.cpp ..\ECA_SOLEIL_ZMI4104C\mainwindow.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\QMainWindow \
@@ -4038,6 +4499,7 @@ release\main.obj: ..\ECA_SOLEIL_ZMI4104C\main.cpp ..\ECA_SOLEIL_ZMI4104C\mainwin
 		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\QApplication \
 		C:\Qt2\5.13.2\msvc2017\include\QtCore\QLocale \
 		C:\Qt2\5.13.2\msvc2017\include\QtCore\QTranslator
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -Forelease\main.obj ..\ECA_SOLEIL_ZMI4104C\main.cpp
 
 release\mainwindow.obj: ..\ECA_SOLEIL_ZMI4104C\mainwindow.cpp ..\ECA_SOLEIL_ZMI4104C\mainwindow.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\QMainWindow \
@@ -4570,6 +5032,7 @@ release\mainwindow.obj: ..\ECA_SOLEIL_ZMI4104C\mainwindow.cpp ..\ECA_SOLEIL_ZMI4
 		C:\Qt2\5.13.2\msvc2017\include\QtCore\QTimeZone \
 		ui_mainwindow.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtCore\QPropertyAnimation
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -Forelease\mainwindow.obj ..\ECA_SOLEIL_ZMI4104C\mainwindow.cpp
 
 release\myslots.obj: ..\ECA_SOLEIL_ZMI4104C\myslots.cpp ..\ECA_SOLEIL_ZMI4104C\myslots.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtCore\QObject \
@@ -4701,6 +5164,7 @@ release\myslots.obj: ..\ECA_SOLEIL_ZMI4104C\myslots.cpp ..\ECA_SOLEIL_ZMI4104C\m
 		..\eca_soleil_zmi4104_lib\sis1100_zmilib\sis3100_vme_calls.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtCore\QThread \
 		C:\Qt2\5.13.2\msvc2017\include\QtCore\qthread.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -Forelease\myslots.obj ..\ECA_SOLEIL_ZMI4104C\myslots.cpp
 
 release\positionoffsetform.obj: ..\ECA_SOLEIL_ZMI4104C\positionoffsetform.cpp ..\ECA_SOLEIL_ZMI4104C\positionoffsetform.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\QWidget \
@@ -4811,6 +5275,7 @@ release\positionoffsetform.obj: ..\ECA_SOLEIL_ZMI4104C\positionoffsetform.cpp ..
 		C:\Qt2\5.13.2\msvc2017\include\QtCore\qregularexpression.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtCore\QDebug \
 		ui_positionoffsetform.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -Forelease\positionoffsetform.obj ..\ECA_SOLEIL_ZMI4104C\positionoffsetform.cpp
 
 release\presetpositionform.obj: ..\ECA_SOLEIL_ZMI4104C\presetpositionform.cpp ..\ECA_SOLEIL_ZMI4104C\presetpositionform.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\QWidget \
@@ -4918,6 +5383,7 @@ release\presetpositionform.obj: ..\ECA_SOLEIL_ZMI4104C\presetpositionform.cpp ..
 		C:\Qt2\5.13.2\msvc2017\include\QtGui\qtouchdevice.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtCore\QDebug \
 		ui_presetpositionform.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -Forelease\presetpositionform.obj ..\ECA_SOLEIL_ZMI4104C\presetpositionform.cpp
 
 release\qcustomplot.obj: ..\ECA_SOLEIL_ZMI4104C\qcustomplot\qcustomplot.cpp ..\ECA_SOLEIL_ZMI4104C\qcustomplot\qcustomplot.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtCore\qglobal.h \
@@ -5428,6 +5894,7 @@ release\qcustomplot.obj: ..\ECA_SOLEIL_ZMI4104C\qcustomplot\qcustomplot.cpp ..\E
 		C:\Qt2\5.13.2\msvc2017\include\QtPrintSupport\qtprintsupportversion.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtCore\QElapsedTimer \
 		C:\Qt2\5.13.2\msvc2017\include\QtCore\QTimeZone
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -Forelease\qcustomplot.obj ..\ECA_SOLEIL_ZMI4104C\qcustomplot\qcustomplot.cpp
 
 release\settingsform.obj: ..\ECA_SOLEIL_ZMI4104C\settingsform.cpp ..\ECA_SOLEIL_ZMI4104C\settingsform.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\QWidget \
@@ -5533,31 +6000,45 @@ release\settingsform.obj: ..\ECA_SOLEIL_ZMI4104C\settingsform.cpp ..\ECA_SOLEIL_
 		C:\Qt2\5.13.2\msvc2017\include\QtCore\qfiledevice.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtGui\qvector2d.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtGui\qtouchdevice.h \
-		ui_settingsform.h
+		ui_settingsform.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\QDebug
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -Forelease\settingsform.obj ..\ECA_SOLEIL_ZMI4104C\settingsform.cpp
 
 release\qrc_ressources.obj: release\qrc_ressources.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -Forelease\qrc_ressources.obj release\qrc_ressources.cpp
 
 release\qrc_qmake_qmake_qm_files.obj: release\qrc_qmake_qmake_qm_files.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -Forelease\qrc_qmake_qmake_qm_files.obj release\qrc_qmake_qmake_qm_files.cpp
 
 release\moc_cesettingsform.obj: release\moc_cesettingsform.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -Forelease\moc_cesettingsform.obj release\moc_cesettingsform.cpp
 
 release\moc_dataprocessing.obj: release\moc_dataprocessing.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -Forelease\moc_dataprocessing.obj release\moc_dataprocessing.cpp
 
 release\moc_flyscanform.obj: release\moc_flyscanform.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -Forelease\moc_flyscanform.obj release\moc_flyscanform.cpp
 
 release\moc_graphsform.obj: release\moc_graphsform.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -Forelease\moc_graphsform.obj release\moc_graphsform.cpp
 
 release\moc_mainwindow.obj: release\moc_mainwindow.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -Forelease\moc_mainwindow.obj release\moc_mainwindow.cpp
 
 release\moc_myslots.obj: release\moc_myslots.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -Forelease\moc_myslots.obj release\moc_myslots.cpp
 
 release\moc_positionoffsetform.obj: release\moc_positionoffsetform.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -Forelease\moc_positionoffsetform.obj release\moc_positionoffsetform.cpp
 
 release\moc_presetpositionform.obj: release\moc_presetpositionform.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -Forelease\moc_presetpositionform.obj release\moc_presetpositionform.cpp
 
 release\moc_qcustomplot.obj: release\moc_qcustomplot.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -Forelease\moc_qcustomplot.obj release\moc_qcustomplot.cpp
 
 release\moc_settingsform.obj: release\moc_settingsform.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -Forelease\moc_settingsform.obj release\moc_settingsform.cpp
 
 ####### Install
 

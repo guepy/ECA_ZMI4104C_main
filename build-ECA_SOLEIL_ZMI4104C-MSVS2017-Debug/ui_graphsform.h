@@ -11,6 +11,7 @@
 
 #include <QtCore/QVariant>
 #include <QtWidgets/QApplication>
+#include <QtWidgets/QCheckBox>
 #include <QtWidgets/QComboBox>
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QLabel>
@@ -26,7 +27,7 @@ class Ui_graphsForm
 {
 public:
     QCustomPlot *customPlot;
-    QWidget *horizontalLayoutWidget_3;
+    QWidget *horizontalWidget_3;
     QHBoxLayout *horizontalLayout_3;
     QHBoxLayout *horizontalLayout_2;
     QLabel *label_4;
@@ -37,6 +38,14 @@ public:
     QLabel *label_5;
     QSpacerItem *horizontalSpacer;
     QPushButton *pushButton_2;
+    QWidget *selectAxisWidget;
+    QHBoxLayout *horizontalLayout_4;
+    QLabel *label_6;
+    QSpacerItem *horizontalSpacer_3;
+    QCheckBox *checkBox;
+    QCheckBox *checkBox_3;
+    QCheckBox *checkBox_2;
+    QCheckBox *checkBox_4;
 
     void setupUi(QWidget *graphsForm)
     {
@@ -80,21 +89,20 @@ public:
 "}"));
         customPlot = new QCustomPlot(graphsForm);
         customPlot->setObjectName(QString::fromUtf8("customPlot"));
-        customPlot->setGeometry(QRect(20, 140, 831, 271));
-        horizontalLayoutWidget_3 = new QWidget(graphsForm);
-        horizontalLayoutWidget_3->setObjectName(QString::fromUtf8("horizontalLayoutWidget_3"));
-        horizontalLayoutWidget_3->setGeometry(QRect(50, 30, 654, 51));
-        horizontalLayout_3 = new QHBoxLayout(horizontalLayoutWidget_3);
+        customPlot->setGeometry(QRect(20, 190, 831, 271));
+        horizontalWidget_3 = new QWidget(graphsForm);
+        horizontalWidget_3->setObjectName(QString::fromUtf8("horizontalWidget_3"));
+        horizontalWidget_3->setGeometry(QRect(100, 30, 654, 51));
+        horizontalLayout_3 = new QHBoxLayout(horizontalWidget_3);
         horizontalLayout_3->setObjectName(QString::fromUtf8("horizontalLayout_3"));
-        horizontalLayout_3->setContentsMargins(0, 0, 0, 0);
         horizontalLayout_2 = new QHBoxLayout();
         horizontalLayout_2->setObjectName(QString::fromUtf8("horizontalLayout_2"));
-        label_4 = new QLabel(horizontalLayoutWidget_3);
+        label_4 = new QLabel(horizontalWidget_3);
         label_4->setObjectName(QString::fromUtf8("label_4"));
 
         horizontalLayout_2->addWidget(label_4);
 
-        leftBlockUnits = new QComboBox(horizontalLayoutWidget_3);
+        leftBlockUnits = new QComboBox(horizontalWidget_3);
         leftBlockUnits->addItem(QString());
         leftBlockUnits->addItem(QString());
         leftBlockUnits->addItem(QString());
@@ -114,7 +122,7 @@ public:
 
         horizontalLayout = new QHBoxLayout();
         horizontalLayout->setObjectName(QString::fromUtf8("horizontalLayout"));
-        label_3 = new QLabel(horizontalLayoutWidget_3);
+        label_3 = new QLabel(horizontalWidget_3);
         label_3->setObjectName(QString::fromUtf8("label_3"));
         QSizePolicy sizePolicy1(QSizePolicy::Preferred, QSizePolicy::Fixed);
         sizePolicy1.setHorizontalStretch(0);
@@ -125,7 +133,7 @@ public:
 
         horizontalLayout->addWidget(label_3);
 
-        textEdit_3 = new QTextEdit(horizontalLayoutWidget_3);
+        textEdit_3 = new QTextEdit(horizontalWidget_3);
         textEdit_3->setObjectName(QString::fromUtf8("textEdit_3"));
         QSizePolicy sizePolicy2(QSizePolicy::Expanding, QSizePolicy::Fixed);
         sizePolicy2.setHorizontalStretch(0);
@@ -136,7 +144,7 @@ public:
 
         horizontalLayout->addWidget(textEdit_3);
 
-        label_5 = new QLabel(horizontalLayoutWidget_3);
+        label_5 = new QLabel(horizontalWidget_3);
         label_5->setObjectName(QString::fromUtf8("label_5"));
 
         horizontalLayout->addWidget(label_5);
@@ -145,7 +153,7 @@ public:
 
         horizontalLayout->addItem(horizontalSpacer);
 
-        pushButton_2 = new QPushButton(horizontalLayoutWidget_3);
+        pushButton_2 = new QPushButton(horizontalWidget_3);
         pushButton_2->setObjectName(QString::fromUtf8("pushButton_2"));
         pushButton_2->setMinimumSize(QSize(0, 40));
 
@@ -153,6 +161,49 @@ public:
 
 
         horizontalLayout_3->addLayout(horizontalLayout);
+
+        selectAxisWidget = new QWidget(graphsForm);
+        selectAxisWidget->setObjectName(QString::fromUtf8("selectAxisWidget"));
+        selectAxisWidget->setGeometry(QRect(60, 90, 773, 41));
+        selectAxisWidget->setStyleSheet(QString::fromUtf8("font: 75 12pt \"MS Shell Dlg 2\";"));
+        horizontalLayout_4 = new QHBoxLayout(selectAxisWidget);
+        horizontalLayout_4->setObjectName(QString::fromUtf8("horizontalLayout_4"));
+        label_6 = new QLabel(selectAxisWidget);
+        label_6->setObjectName(QString::fromUtf8("label_6"));
+        QSizePolicy sizePolicy3(QSizePolicy::Fixed, QSizePolicy::Preferred);
+        sizePolicy3.setHorizontalStretch(0);
+        sizePolicy3.setVerticalStretch(0);
+        sizePolicy3.setHeightForWidth(label_6->sizePolicy().hasHeightForWidth());
+        label_6->setSizePolicy(sizePolicy3);
+        label_6->setStyleSheet(QString::fromUtf8("QLabel{\n"
+"font: 75 14pt \"MS Shell Dlg 2\";\n"
+"}"));
+
+        horizontalLayout_4->addWidget(label_6);
+
+        horizontalSpacer_3 = new QSpacerItem(40, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
+
+        horizontalLayout_4->addItem(horizontalSpacer_3);
+
+        checkBox = new QCheckBox(selectAxisWidget);
+        checkBox->setObjectName(QString::fromUtf8("checkBox"));
+
+        horizontalLayout_4->addWidget(checkBox);
+
+        checkBox_3 = new QCheckBox(selectAxisWidget);
+        checkBox_3->setObjectName(QString::fromUtf8("checkBox_3"));
+
+        horizontalLayout_4->addWidget(checkBox_3);
+
+        checkBox_2 = new QCheckBox(selectAxisWidget);
+        checkBox_2->setObjectName(QString::fromUtf8("checkBox_2"));
+
+        horizontalLayout_4->addWidget(checkBox_2);
+
+        checkBox_4 = new QCheckBox(selectAxisWidget);
+        checkBox_4->setObjectName(QString::fromUtf8("checkBox_4"));
+
+        horizontalLayout_4->addWidget(checkBox_4);
 
 
         retranslateUi(graphsForm);
@@ -172,6 +223,11 @@ public:
         label_3->setText(QCoreApplication::translate("graphsForm", "Refresh time", nullptr));
         label_5->setText(QCoreApplication::translate("graphsForm", "ms", nullptr));
         pushButton_2->setText(QCoreApplication::translate("graphsForm", "Apply", nullptr));
+        label_6->setText(QCoreApplication::translate("graphsForm", "Select Axis : ", nullptr));
+        checkBox->setText(QCoreApplication::translate("graphsForm", "Axis1", nullptr));
+        checkBox_3->setText(QCoreApplication::translate("graphsForm", "Axis2", nullptr));
+        checkBox_2->setText(QCoreApplication::translate("graphsForm", "Axis3", nullptr));
+        checkBox_4->setText(QCoreApplication::translate("graphsForm", "Axis4", nullptr));
     } // retranslateUi
 
 };

@@ -1,5 +1,4 @@
 #include "dataprocessing.h"
-
 //bool dataProcessing::accessToken=false;
 
 dataProcessing::dataProcessing(QObject *parent) : QObject(parent)
@@ -219,5 +218,60 @@ int dataProcessing::on_stopCECHardware_recieved(unsigned int axis){
     if (disableCECcompensation(dev, axis) != RET_SUCCESS)
         return RET_FAILED;
 
+    return RET_SUCCESS;
+}
+
+int dataProcessing::on_configureFlyscanRequest_recieved(){
+    //*
+    qDebug()<<"config ramdata started ";
+    QTimer *Ltimer;
+    Ltimer = new QTimer(this);
+    connect(Ltimer, &QTimer::timeout, this, QOverload<>::of(&dataProcessing::on_acquisitionTimer_timeout));
+    Ltimer->setInterval(flyscanTimeValue * 1e3);
+    Ltimer->setSingleShot(true);
+    qDebug()<<"time is "<<flyscanTimeValue * 1e3;
+    dataProcessing::dev_mutex.lock();
+    if (configureFlyscan(dev, ramDataFlyscanAxis, flyscanFreqValue, 1) != RET_SUCCESS)
+        return RET_FAILED;
+    dataProcessing::dev_mutex.unlock();
+    Ltimer->start();
+    return RET_SUCCESS;
+}
+
+int dataProcessing::on_acquisitionTimer_timeout(){
+
+    //Ltimer->stop();
+    dataProcessing::dev_mutex.lock();
+    if (stopAquisition(dev, ramDataFlyscanAxis) != RET_SUCCESS){
+        emit flyscanProcTerm();
+        return RET_FAILED;
+    }
+    qDebug()<<"here 0";
+    if (!(base_A24D32_ptr = allocateMemSpace(64 * 1024))){
+        emit flyscanProcTerm();
+        return RET_FAILED;
+    }
+    qDebug()<<"here 1";
+    if (!(base_A24D32_FR_ptr = allocateMemSpace(64 * 1024))){
+        emit flyscanProcTerm();
+        return RET_FAILED;
+    }
+    qDebug()<<"here 2";
+    unsigned int ret = 0;
+
+    INFO("Sampling data... \n");
+    if (getFlyscanData(dev, base_A24D32_FR_ptr, base_A24D32_ptr, &ret) != RET_SUCCESS)
+    {
+        emit flyscanProcTerm();
+        return RET_FAILED;
+    }
+    if (processRAMData(ret, base_A24D32_FR_ptr, base_A24D32_ptr,flyscanPath) != RET_SUCCESS)
+    {
+        emit flyscanProcTerm();
+        return RET_FAILED;
+    }
+    qDebug()<<"flyscan data processing terminated";
+    emit flyscanProcTerm();
+    dataProcessing::dev_mutex.unlock();
     return RET_SUCCESS;
 }

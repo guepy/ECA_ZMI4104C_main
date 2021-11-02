@@ -68,6 +68,13 @@ MainWindow::MainWindow(QWidget *parent)
     //connect(this, &MainWindow::changeBiasModeRequest, dataProc, &dataProcessing::on_changeBiasModeRequest_recieved);
     connect(this, &MainWindow::resetAxisRequest, dataProc, &dataProcessing::on_resetAxisRequest_recieved);
     connect(dataProc, &dataProcessing::initAxisComplete,this, &MainWindow::on_initAxisComplete_recieved);
+
+
+    connect(flyscanForm, &FlyscanForm::ramDataFlyscanRequest,this, &MainWindow::on_ramDataFlyscanRequest_recieved);
+
+
+    connect(dataProc, &dataProcessing::initAxisComplete,this, &MainWindow::on_initAxisComplete_recieved);
+
     //*
     gtimer = new QTimer(this);
     connect(gtimer, &QTimer::timeout, this, QOverload<>::of(&MainWindow::refresh_screen));
@@ -81,7 +88,7 @@ MainWindow::MainWindow(QWidget *parent)
     //---------------------init system boards-----------------------------
 
     //*/
-    //initBoards();
+    initBoards();
 
 }
 
@@ -251,7 +258,9 @@ void MainWindow::initBoards()
     ui->textBrowser->setText("DISCONNECTED");
     ui->textBrowser->setAlignment(Qt::AlignCenter);
     ui->textBrowser_2->append("Initializing VME system...");
+
     initWorker->moveToThread(initBoardsThread);
+
     connect(initBoardsThread, &QThread::started, initWorker, &dataProcessing::on_initBoardsRequest_recieved);
     connect(initWorker, &dataProcessing::initBoardsDone, initBoardsThread, &QThread::quit);
     connect(initWorker, &dataProcessing::initBoardsDone, this, &MainWindow::onBoardsInitializationComplete);
@@ -299,6 +308,7 @@ void MainWindow::openFlyscanForm(){
     //--------------flyscanForm signals-slots --------------------------------------
     connect(flyscanForm, &FlyscanForm::closeThis, this, &MainWindow::closeFlyscanForm);
     connect(this, &MainWindow::closeFlyscanFormRequest, flyscanForm, &FlyscanForm::closeForm);
+    connect(flyscanForm, &FlyscanForm::ramDataFlyscanRequest,this, &MainWindow::on_ramDataFlyscanRequest_recieved);
     flyscanForm->show();
     fsForm_int=1;
 }
@@ -802,3 +812,37 @@ void MainWindow::on_ceDisplayAxis_currentIndexChanged(int index)
           currentcecAxis=4;
 }
 
+void MainWindow::on_ramDataFlyscanRequest_recieved(double freq, double time, double size, unsigned int nbr){
+    qDebug()<<"MainWindow::on_ramDataFlyscanRequest_recieved";
+    dataProcessing* flyscanWorker = new dataProcessing;
+    QThread *flyscanAxisThread = new QThread;
+    flyscanWorker->flyscanFreqValue=freq;
+    flyscanWorker->flyscanTimeValue=time;
+    flyscanWorker->flyscanSizeValue=size;
+    flyscanWorker->ramDataFlyscanAxis=nbr;
+    strcpy_s(flyscanWorker->flyscanPath, flyscanForm->extFolderName);
+    qDebug()<<flyscanWorker->flyscanPath;
+    flyscanWorker->moveToThread(flyscanAxisThread);
+    //A slot can be connected to a given signal if the signal has at least as many arguments as the slot
+    connect(flyscanAxisThread, &QThread::started, flyscanWorker, &dataProcessing::on_configureFlyscanRequest_recieved);
+    //connect(flyscanWorker, &dataProcessing::flyscanProcTerm, this, &MainWindow::on_initAxisComplete_recieved);
+    connect(flyscanWorker, &dataProcessing::flyscanProcTerm, flyscanAxisThread, &QThread::quit);
+    connect(flyscanAxisThread, &QThread::finished, flyscanWorker,  &dataProcessing::deleteLater);
+    flyscanAxisThread->start();
+
+}
+
+void MainWindow::configureFlyscanThreadEvent(){
+    qDebug()<<"Starting ram data flyscan thread event";
+
+    qDebug()<<"exiting";
+}
+
+void MainWindow::startRamDataFlyscan(double freq, double time, double size, unsigned int nbr){
+/*
+    dataProcessing *worker = new dataProcessing;
+    //dataProcessing::dev_mutex.lock();
+    worker->on_configureFlyscanRequest_recieved(freq,time, size,nbr);
+    //dataProcessing::dev_mutex.unlock();
+    */
+}

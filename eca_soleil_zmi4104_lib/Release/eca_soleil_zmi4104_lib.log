@@ -25,217 +25,217 @@ C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zm
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(260,31): message : see previous definition of 'EnableAllVMEInterrupts'
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(784,78): warning C4273: 'EnableVMEGlobalInterrupt': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(253,31): message : see previous definition of 'EnableVMEGlobalInterrupt'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(801,92): warning C4273: 'processRAMData': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(801,110): warning C4273: 'processRAMData': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(268,31): message : see previous definition of 'processRAMData'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(888,80): warning C4273: 'processFifoData': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(819,32): warning C4129: 'P': unrecognized character escape sequence
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(890,80): warning C4273: 'processFifoData': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(269,31): message : see previous definition of 'processFifoData'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(946,125): warning C4273: 'configureFifoFlyscan': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(948,125): warning C4273: 'configureFifoFlyscan': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(270,31): message : see previous definition of 'configureFifoFlyscan'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1011,102): warning C4273: 'fifoFlyscan': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1013,102): warning C4273: 'fifoFlyscan': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(271,31): message : see previous definition of 'fifoFlyscan'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1051,70): warning C4273: 'isFifoDavbitSet': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1053,70): warning C4273: 'isFifoDavbitSet': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(272,32): message : see previous definition of 'isFifoDavbitSet'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1056,82): warning C4305: 'return': truncation from 'int' to 'bool'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1062,70): warning C4273: 'isFifoOVFbitSet': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1058,82): warning C4305: 'return': truncation from 'int' to 'bool'
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1064,70): warning C4273: 'isFifoOVFbitSet': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(273,32): message : see previous definition of 'isFifoOVFbitSet'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1067,82): warning C4305: 'return': truncation from 'int' to 'bool'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1091,101): warning C4273: 'configureFlyscan': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1069,82): warning C4305: 'return': truncation from 'int' to 'bool'
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1093,100): warning C4273: 'configureFlyscan': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(274,31): message : see previous definition of 'configureFlyscan'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1163,72): warning C4273: 'startAquisition': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1168,72): warning C4273: 'startAquisition': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(219,31): message : see previous definition of 'startAquisition'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1185,71): warning C4273: 'stopAquisition': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1190,71): warning C4273: 'stopAquisition': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(220,31): message : see previous definition of 'stopAquisition'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1214,39): warning C4273: 'allocateMemSpace': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1219,39): warning C4273: 'allocateMemSpace': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(267,33): message : see previous definition of 'allocateMemSpace'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1296,122): warning C4273: 'getFlyscanData': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1301,122): warning C4273: 'getFlyscanData': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(266,31): message : see previous definition of 'getFlyscanData'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1402,44): warning C4273: 'isRAMbusy': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1407,44): warning C4273: 'isRAMbusy': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(241,32): message : see previous definition of 'isRAMbusy'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1434,92): warning C4273: 'setVMEIntVector': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1439,92): warning C4273: 'setVMEIntVector': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(262,31): message : see previous definition of 'setVMEIntVector'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1459,59): warning C4273: 'checkValues': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1464,59): warning C4273: 'checkValues': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(238,31): message : see previous definition of 'checkValues'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1481,92): warning C4273: 'setVMEIntLevel': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1486,92): warning C4273: 'setVMEIntLevel': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(263,31): message : see previous definition of 'setVMEIntLevel'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1504,76): warning C4273: 'DisableGlobalInterrupt': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1509,76): warning C4273: 'DisableGlobalInterrupt': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(254,31): message : see previous definition of 'DisableGlobalInterrupt'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1527,102): warning C4273: 'EnableVMEInterrupt_bit': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1532,102): warning C4273: 'EnableVMEInterrupt_bit': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(251,31): message : see previous definition of 'EnableVMEInterrupt_bit'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1864,103): warning C4273: 'DisableVMEInterrupt_bit': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(1869,103): warning C4273: 'DisableVMEInterrupt_bit': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(252,31): message : see previous definition of 'DisableVMEInterrupt_bit'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(2084,63): warning C4273: 'ResetAxis': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(2089,63): warning C4273: 'ResetAxis': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(244,31): message : see previous definition of 'ResetAxis'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(2111,71): warning C4273: 'WaitResetComplete': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(2116,71): warning C4273: 'WaitResetComplete': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(245,31): message : see previous definition of 'WaitResetComplete'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(2138,47): warning C4273: 'initSISboards': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(2143,47): warning C4273: 'initSISboards': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(187,31): message : see previous definition of 'initSISboards'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(2283,47): warning C4273: 'initZMIboards': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(2288,47): warning C4273: 'initZMIboards': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(188,31): message : see previous definition of 'initZMIboards'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(2502,141): warning C4273: 'ReadSSICalibrationData': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(2507,141): warning C4273: 'ReadSSICalibrationData': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(206,31): message : see previous definition of 'ReadSSICalibrationData'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(2589,97): warning C4273: 'SetPositionOffset32': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(2594,97): warning C4273: 'SetPositionOffset32': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(247,31): message : see previous definition of 'SetPositionOffset32'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(2610,75): warning C4273: 'EnableCECcompensation': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(2615,75): warning C4273: 'EnableCECcompensation': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(248,31): message : see previous definition of 'EnableCECcompensation'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(2637,76): warning C4273: 'disableCECcompensation': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(2642,76): warning C4273: 'disableCECcompensation': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(168,31): message : see previous definition of 'disableCECcompensation'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(2737,73): warning C4273: 'waitCEinit2Complete': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(2742,73): warning C4273: 'waitCEinit2Complete': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(277,31): message : see previous definition of 'waitCEinit2Complete'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(2764,65): warning C4273: 'getLEDsStatus': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(2769,65): warning C4273: 'getLEDsStatus': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(170,31): message : see previous definition of 'getLEDsStatus'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(2815,93): warning C4273: 'SetCEMaxVel': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(2820,93): warning C4273: 'SetCEMaxVel': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(278,31): message : see previous definition of 'SetCEMaxVel'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(2842,93): warning C4273: 'SetCEMinVel': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(2847,93): warning C4273: 'SetCEMinVel': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(279,31): message : see previous definition of 'SetCEMinVel'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(2867,94): warning C4273: 'readCalcCECoeffs': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(2872,94): warning C4273: 'readCalcCECoeffs': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(280,31): message : see previous definition of 'readCalcCECoeffs'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(2919,143): warning C4273: 'readCECoeffboundaries': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(2924,143): warning C4273: 'readCECoeffboundaries': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(281,31): message : see previous definition of 'readCECoeffboundaries'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(2978,110): warning C4273: 'calculateCEratio': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(2983,110): warning C4273: 'calculateCEratio': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(177,31): message : see previous definition of 'calculateCEratio'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(3025,114): warning C4273: 'getAproximateCEratio': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(3030,114): warning C4273: 'getAproximateCEratio': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(180,31): message : see previous definition of 'getAproximateCEratio'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(3195,51): warning C4273: 'convertCInt162Complex': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(3200,51): warning C4273: 'convertCInt162Complex': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(275,31): message : see previous definition of 'convertCInt162Complex'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(3220,64): warning C4273: 'convertCFloat2Complex': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(3225,64): warning C4273: 'convertCFloat2Complex': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(276,31): message : see previous definition of 'convertCFloat2Complex'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(3261,59): warning C4273: 'convertFloat2Double': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(3266,59): warning C4273: 'convertFloat2Double': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(284,31): message : see previous definition of 'convertFloat2Double'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(3292,65): warning C4273: 'convertUSFloat2Double': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(3297,65): warning C4273: 'convertUSFloat2Double': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(176,31): message : see previous definition of 'convertUSFloat2Double'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(3344,79): warning C4273: 'Enable37bitsSignExtension': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(3349,79): warning C4273: 'Enable37bitsSignExtension': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(224,31): message : see previous definition of 'Enable37bitsSignExtension'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(3372,80): warning C4273: 'Disable37bitsSignExtension': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(3377,80): warning C4273: 'Disable37bitsSignExtension': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(210,31): message : see previous definition of 'Disable37bitsSignExtension'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(3401,107): warning C4273: 'SetKpAndKvCoeff': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(3406,107): warning C4273: 'SetKpAndKvCoeff': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(256,31): message : see previous definition of 'SetKpAndKvCoeff'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(3545,126): warning C4273: 'SetPositionOffset37': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(3550,126): warning C4273: 'SetPositionOffset37': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(249,31): message : see previous definition of 'SetPositionOffset37'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(3568,99): warning C4273: 'SetPresetPosition32': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(3573,99): warning C4273: 'SetPresetPosition32': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(246,31): message : see previous definition of 'SetPresetPosition32'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(3591,126): warning C4273: 'SetPresetPosition37': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(3596,126): warning C4273: 'SetPresetPosition37': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(250,31): message : see previous definition of 'SetPresetPosition37'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(3613,65): warning C4273: 'ReadVMEErrs': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(3618,65): warning C4273: 'ReadVMEErrs': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(185,31): message : see previous definition of 'ReadVMEErrs'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(3650,65): warning C4273: 'ReadAllErrs': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(3655,65): warning C4273: 'ReadAllErrs': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(258,31): message : see previous definition of 'ReadAllErrs'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(3688,93): warning C4273: 'BoardControlMode': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(3693,93): warning C4273: 'BoardControlMode': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(234,31): message : see previous definition of 'BoardControlMode'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(3740,88): warning C4273: 'BiasControlMode': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(3745,88): warning C4273: 'BiasControlMode': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(235,31): message : see previous definition of 'BiasControlMode'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(3769,74): warning C4273: 'StartBiasCalculation': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(3774,74): warning C4273: 'StartBiasCalculation': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(236,31): message : see previous definition of 'StartBiasCalculation'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(3804,88): warning C4273: 'SetAPDGainL2': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(3809,88): warning C4273: 'SetAPDGainL2': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(237,31): message : see previous definition of 'SetAPDGainL2'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(3827,94): warning C4273: 'SetAPDSigRMSL2': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(3832,94): warning C4273: 'SetAPDSigRMSL2': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(242,31): message : see previous definition of 'SetAPDSigRMSL2'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(3852,94): warning C4273: 'SetAPDOptPwrL2': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(3857,94): warning C4273: 'SetAPDOptPwrL2': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(243,31): message : see previous definition of 'SetAPDOptPwrL2'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(3903,108): warning C4273: 'ParseVMEErrorStatus2': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(3908,108): warning C4273: 'ParseVMEErrorStatus2': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(229,31): message : see previous definition of 'ParseVMEErrorStatus2'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(3953,97): warning C4273: 'ParseVMEPosErrs': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(3958,97): warning C4273: 'ParseVMEPosErrs': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(230,31): message : see previous definition of 'ParseVMEPosErrs'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(3979,108): warning C4273: 'ParseVMEErrorStatus1': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(3984,108): warning C4273: 'ParseVMEErrorStatus1': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(231,31): message : see previous definition of 'ParseVMEErrorStatus1'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(4000,75): warning C4273: 'getLEDsErrorStatus': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(4005,75): warning C4273: 'getLEDsErrorStatus': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(171,31): message : see previous definition of 'getLEDsErrorStatus'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(4069,108): warning C4273: 'ParseVMEErrorStatus0': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(4074,108): warning C4273: 'ParseVMEErrorStatus0': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(232,31): message : see previous definition of 'ParseVMEErrorStatus0'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(4122,95): warning C4273: 'ParseAPDErrCode': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(4127,95): warning C4273: 'ParseAPDErrCode': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(233,31): message : see previous definition of 'ParseAPDErrCode'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(4284,92): warning C4273: 'ReadSamplePosition37': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(4289,92): warning C4273: 'ReadSamplePosition37': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(189,31): message : see previous definition of 'ReadSamplePosition37'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(4365,92): warning C4273: 'ReadSamplePosition32': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(4370,92): warning C4273: 'ReadSamplePosition32': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(190,31): message : see previous definition of 'ReadSamplePosition32'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(4399,86): warning C4273: 'ReadPosition37': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(4404,86): warning C4273: 'ReadPosition37': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(193,31): message : see previous definition of 'ReadPosition37'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(4442,86): warning C4273: 'ReadPosition32': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(4447,86): warning C4273: 'ReadPosition32': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(194,31): message : see previous definition of 'ReadPosition32'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(4469,86): warning C4273: 'ReadFIFOPosition': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(4474,86): warning C4273: 'ReadFIFOPosition': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(195,31): message : see previous definition of 'ReadFIFOPosition'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(4493,86): warning C4273: 'ReadVelocity32': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(4498,86): warning C4273: 'ReadVelocity32': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(196,31): message : see previous definition of 'ReadVelocity32'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(4513,95): warning C4273: 'ReadSamplePosition32_ForAllAxis': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(4518,95): warning C4273: 'ReadSamplePosition32_ForAllAxis': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(192,31): message : see previous definition of 'ReadSamplePosition32_ForAllAxis'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(4525,95): warning C4273: 'ReadSamplePosition37_ForAllAxis': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(4530,95): warning C4273: 'ReadSamplePosition37_ForAllAxis': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(191,31): message : see previous definition of 'ReadSamplePosition37_ForAllAxis'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(4537,83): warning C4273: 'ReadPosition32_ForAllAxis': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(4542,83): warning C4273: 'ReadPosition32_ForAllAxis': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(198,31): message : see previous definition of 'ReadPosition32_ForAllAxis'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(4549,83): warning C4273: 'ReadVelocity32_ForAllAxis': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(4554,83): warning C4273: 'ReadVelocity32_ForAllAxis': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(199,31): message : see previous definition of 'ReadVelocity32_ForAllAxis'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(4561,83): warning C4273: 'ReadPosition37_ForAllAxis': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(4566,83): warning C4273: 'ReadPosition37_ForAllAxis': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(197,31): message : see previous definition of 'ReadPosition37_ForAllAxis'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(4573,72): warning C4273: 'IsVMEPos32Overflow': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(4578,72): warning C4273: 'IsVMEPos32Overflow': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(203,31): message : see previous definition of 'IsVMEPos32Overflow'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(4590,82): warning C4305: 'return': truncation from 'int' to 'bool'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(4602,82): warning C4305: 'return': truncation from 'int' to 'bool'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(4614,82): warning C4305: 'return': truncation from 'int' to 'bool'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(4626,82): warning C4305: 'return': truncation from 'int' to 'bool'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(4694,60): warning C4273: 'ClearAllVMEErrs_ForAllAxis': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(4595,82): warning C4305: 'return': truncation from 'int' to 'bool'
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(4607,82): warning C4305: 'return': truncation from 'int' to 'bool'
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(4619,82): warning C4305: 'return': truncation from 'int' to 'bool'
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(4631,82): warning C4305: 'return': truncation from 'int' to 'bool'
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(4699,60): warning C4273: 'ClearAllVMEErrs_ForAllAxis': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(239,31): message : see previous definition of 'ClearAllVMEErrs_ForAllAxis'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(4705,78): warning C4273: 'ReadTime32': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(4710,78): warning C4273: 'ReadTime32': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(200,31): message : see previous definition of 'ReadTime32'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(4722,75): warning C4273: 'ReadTime32_ForAllAxis': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(4727,75): warning C4273: 'ReadTime32_ForAllAxis': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(201,31): message : see previous definition of 'ReadTime32_ForAllAxis'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(4867,1): warning C4273: 'SetTimeDelayBetweenResAndCompleteBit': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(4872,1): warning C4273: 'SetTimeDelayBetweenResAndCompleteBit': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(259,31): message : see previous definition of 'SetTimeDelayBetweenResAndCompleteBit'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(4895,65): warning C4273: 'ReadScaledSSIav': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(4900,65): warning C4273: 'ReadScaledSSIav': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(240,31): message : see previous definition of 'ReadScaledSSIav'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(4912,59): warning C4273: 'ReadSSIav': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(4917,59): warning C4273: 'ReadSSIav': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(205,31): message : see previous definition of 'ReadSSIav'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(4931,85): warning C4273: 'ReadOpticalPowerUsingSSIav': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(4936,85): warning C4273: 'ReadOpticalPowerUsingSSIav': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(204,31): message : see previous definition of 'ReadOpticalPowerUsingSSIav'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(5165,83): warning C4273: 'ReadAPDGain': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(5170,83): warning C4273: 'ReadAPDGain': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(207,31): message : see previous definition of 'ReadAPDGain'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(5185,78): warning C4273: 'ReadAPDGain_ForAllAxis': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(5190,78): warning C4273: 'ReadAPDGain_ForAllAxis': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(227,31): message : see previous definition of 'ReadAPDGain_ForAllAxis'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(5198,72): warning C4273: 'EnableAuxRegisters': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(5203,72): warning C4273: 'EnableAuxRegisters': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(208,31): message : see previous definition of 'EnableAuxRegisters'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(5218,19): warning C4305: 'return': truncation from 'int' to 'bool'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(5223,73): warning C4273: 'ReadAPDCtrlSoftErrs': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(5223,19): warning C4305: 'return': truncation from 'int' to 'bool'
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(5228,73): warning C4273: 'ReadAPDCtrlSoftErrs': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(257,31): message : see previous definition of 'ReadAPDCtrlSoftErrs'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(5288,74): warning C4273: 'Enable32bitsOverflow': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(5293,74): warning C4273: 'Enable32bitsOverflow': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(223,31): message : see previous definition of 'Enable32bitsOverflow'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(5302,75): warning C4273: 'Disable32bitsOverflow': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(5307,75): warning C4273: 'Disable32bitsOverflow': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(222,31): message : see previous definition of 'Disable32bitsOverflow'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(5316,73): warning C4273: 'DisableAuxRegisters': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(5321,73): warning C4273: 'DisableAuxRegisters': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(209,31): message : see previous definition of 'DisableAuxRegisters'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(5330,71): warning C4273: 'SampleVMEPosition': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(5335,71): warning C4273: 'SampleVMEPosition': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(228,31): message : see previous definition of 'SampleVMEPosition'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(5349,41): warning C4273: 'Sclk_On': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(5354,41): warning C4273: 'Sclk_On': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(211,31): message : see previous definition of 'Sclk_On'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(5354,45): warning C4273: 'VMESysReset': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(5359,45): warning C4273: 'VMESysReset': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(218,31): message : see previous definition of 'VMESysReset'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(5365,42): warning C4273: 'Sclk_Off': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(5370,42): warning C4273: 'Sclk_Off': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(212,31): message : see previous definition of 'Sclk_Off'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(5386,79): warning C4273: 'SetSampTimerFreq': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(5391,79): warning C4273: 'SetSampTimerFreq': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(213,31): message : see previous definition of 'SetSampTimerFreq'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(5395,51): warning C4273: 'SetHoldSampEnable': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(5400,51): warning C4273: 'SetHoldSampEnable': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(214,31): message : see previous definition of 'SetHoldSampEnable'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(5408,53): warning C4273: 'ResetHoldSampEnable': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(5413,53): warning C4273: 'ResetHoldSampEnable': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(215,31): message : see previous definition of 'ResetHoldSampEnable'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(5430,67): warning C4273: 'enableSampling': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(5435,67): warning C4273: 'enableSampling': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(216,31): message : see previous definition of 'enableSampling'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(5457,52): warning C4273: 'DisableSampleTimer': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(5462,52): warning C4273: 'DisableSampleTimer': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(217,31): message : see previous definition of 'DisableSampleTimer'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(5462,71): warning C4273: 'GetVMEExtSampFlag': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(5467,71): warning C4273: 'GetVMEExtSampFlag': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(221,31): message : see previous definition of 'GetVMEExtSampFlag'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(5479,82): warning C4305: 'return': truncation from 'int' to 'bool'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(5488,82): warning C4305: 'return': truncation from 'int' to 'bool'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(5495,25): warning C4273: 'EEPROMread': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(5484,82): warning C4305: 'return': truncation from 'int' to 'bool'
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(5493,82): warning C4305: 'return': truncation from 'int' to 'bool'
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(5500,25): warning C4273: 'EEPROMread': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(283,31): message : see previous definition of 'EEPROMread'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(5564,29): warning C4273: 'Read_Write': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(5569,29): warning C4273: 'Read_Write': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(181,31): message : see previous definition of 'Read_Write'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(5662,32): warning C4273: 'FATAL': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(5667,32): warning C4273: 'FATAL': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(182,31): message : see previous definition of 'FATAL'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(5684,32): warning C4273: 'WARN': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(5689,32): warning C4273: 'WARN': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(183,31): message : see previous definition of 'WARN'
-C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(5706,32): warning C4273: 'INFO': inconsistent dll linkage
+C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.cpp(5711,32): warning C4273: 'INFO': inconsistent dll linkage
 C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\eca_soleil_zmi4104c.h(184,31): message : see previous definition of 'INFO'
      Creating library C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\Release\eca_soleil_zmi4104_lib.lib and object C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\Release\eca_soleil_zmi4104_lib.exp
   Generating code
-  3 of 135 functions ( 2.2%) were compiled, the rest were copied from previous compilation.
-    0 functions were new in current compilation
-    1 functions had inline decision re-evaluated but remain unchanged
+  Previous IPDB not found, fall back to full compilation.
+  All 135 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
   Finished generating code
   eca_soleil_zmi4104_lib.vcxproj -> C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\Release\eca_soleil_zmi4104_lib.dll

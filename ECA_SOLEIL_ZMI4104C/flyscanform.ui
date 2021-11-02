@@ -96,10 +96,16 @@ font: 75 12pt &quot;MS Shell Dlg 2&quot;;
         </widget>
        </item>
        <item>
-        <widget class="QLineEdit" name="freqLineEdit">
+        <widget class="QSpinBox" name="spinBox_3">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="minimumSize">
           <size>
-           <width>0</width>
+           <width>120</width>
            <height>35</height>
           </size>
          </property>
@@ -139,10 +145,16 @@ font: 75 12pt &quot;MS Shell Dlg 2&quot;;
         </widget>
        </item>
        <item>
-        <widget class="QLineEdit" name="itLineEdit">
+        <widget class="QSpinBox" name="spinBox_2">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="minimumSize">
           <size>
-           <width>0</width>
+           <width>120</width>
            <height>35</height>
           </size>
          </property>
@@ -151,11 +163,10 @@ font: 75 12pt &quot;MS Shell Dlg 2&quot;;
        <item>
         <widget class="QLabel" name="label_7">
          <property name="styleSheet">
-          <string notr="true">
-</string>
+          <string notr="true"/>
          </property>
          <property name="text">
-          <string>ms</string>
+          <string>µs</string>
          </property>
         </widget>
        </item>

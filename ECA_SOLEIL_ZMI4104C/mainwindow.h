@@ -138,7 +138,9 @@ private slots:
     void processCecAxisClickedEvent(int axis, int* axisListIndex,QCheckBox* cecAxisCheckBox);
     void cecAxisClickedThreadEvent(int axis, int* axisListIndex, QCheckBox* cecAxisCheckBox);
     void on_resetButtonAllAxis_clicked();
-
+    void on_ramDataFlyscanRequest_recieved(double freq,  double size, double time, unsigned int nbr);
+    void configureFlyscanThreadEvent();
+    VOID startRamDataFlyscan(double freq, double time, double size, unsigned int nbr);
     void on_comboBox_3_currentIndexChanged(int index);
 
     void on_comboBox_4_currentIndexChanged(int index);

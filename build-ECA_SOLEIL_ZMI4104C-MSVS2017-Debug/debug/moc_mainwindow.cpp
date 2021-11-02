@@ -22,8 +22,8 @@ QT_BEGIN_MOC_NAMESPACE
 QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 struct qt_meta_stringdata_MainWindow_t {
-    QByteArrayData data[88];
-    char stringdata0[1807];
+    QByteArrayData data[95];
+    char stringdata0[1908];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -109,17 +109,24 @@ QT_MOC_LITERAL(73, 1428, 10), // "QCheckBox*"
 QT_MOC_LITERAL(74, 1439, 15), // "cecAxisCheckBox"
 QT_MOC_LITERAL(75, 1455, 25), // "cecAxisClickedThreadEvent"
 QT_MOC_LITERAL(76, 1481, 29), // "on_resetButtonAllAxis_clicked"
-QT_MOC_LITERAL(77, 1511, 33), // "on_comboBox_3_currentIndexCha..."
-QT_MOC_LITERAL(78, 1545, 33), // "on_comboBox_4_currentIndexCha..."
-QT_MOC_LITERAL(79, 1579, 31), // "on_comboBox_currentIndexChanged"
-QT_MOC_LITERAL(80, 1611, 22), // "on_radioButton_clicked"
-QT_MOC_LITERAL(81, 1634, 30), // "on_ceUnits_currentIndexChanged"
-QT_MOC_LITERAL(82, 1665, 24), // "on_radioButton_2_clicked"
-QT_MOC_LITERAL(83, 1690, 19), // "on_cecAxis1_clicked"
-QT_MOC_LITERAL(84, 1710, 19), // "on_cecAxis2_clicked"
-QT_MOC_LITERAL(85, 1730, 19), // "on_cecAxis3_clicked"
-QT_MOC_LITERAL(86, 1750, 19), // "on_cecAxis4_clicked"
-QT_MOC_LITERAL(87, 1770, 36) // "on_ceDisplayAxis_currentIndex..."
+QT_MOC_LITERAL(77, 1511, 33), // "on_ramDataFlyscanRequest_reci..."
+QT_MOC_LITERAL(78, 1545, 4), // "freq"
+QT_MOC_LITERAL(79, 1550, 4), // "size"
+QT_MOC_LITERAL(80, 1555, 4), // "time"
+QT_MOC_LITERAL(81, 1560, 3), // "nbr"
+QT_MOC_LITERAL(82, 1564, 27), // "configureFlyscanThreadEvent"
+QT_MOC_LITERAL(83, 1592, 19), // "startRamDataFlyscan"
+QT_MOC_LITERAL(84, 1612, 33), // "on_comboBox_3_currentIndexCha..."
+QT_MOC_LITERAL(85, 1646, 33), // "on_comboBox_4_currentIndexCha..."
+QT_MOC_LITERAL(86, 1680, 31), // "on_comboBox_currentIndexChanged"
+QT_MOC_LITERAL(87, 1712, 22), // "on_radioButton_clicked"
+QT_MOC_LITERAL(88, 1735, 30), // "on_ceUnits_currentIndexChanged"
+QT_MOC_LITERAL(89, 1766, 24), // "on_radioButton_2_clicked"
+QT_MOC_LITERAL(90, 1791, 19), // "on_cecAxis1_clicked"
+QT_MOC_LITERAL(91, 1811, 19), // "on_cecAxis2_clicked"
+QT_MOC_LITERAL(92, 1831, 19), // "on_cecAxis3_clicked"
+QT_MOC_LITERAL(93, 1851, 19), // "on_cecAxis4_clicked"
+QT_MOC_LITERAL(94, 1871, 36) // "on_ceDisplayAxis_currentIndex..."
 
     },
     "MainWindow\0initComplete\0\0"
@@ -167,6 +174,9 @@ QT_MOC_LITERAL(87, 1770, 36) // "on_ceDisplayAxis_currentIndex..."
     "axisListIndex\0QCheckBox*\0cecAxisCheckBox\0"
     "cecAxisClickedThreadEvent\0"
     "on_resetButtonAllAxis_clicked\0"
+    "on_ramDataFlyscanRequest_recieved\0"
+    "freq\0size\0time\0nbr\0configureFlyscanThreadEvent\0"
+    "startRamDataFlyscan\0"
     "on_comboBox_3_currentIndexChanged\0"
     "on_comboBox_4_currentIndexChanged\0"
     "on_comboBox_currentIndexChanged\0"
@@ -185,7 +195,7 @@ static const uint qt_meta_data_MainWindow[] = {
        8,       // revision
        0,       // classname
        0,    0, // classinfo
-      70,   14, // methods
+      73,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -193,78 +203,81 @@ static const uint qt_meta_data_MainWindow[] = {
       16,       // signalCount
 
  // signals: name, argc, parameters, tag, flags
-       1,    0,  364,    2, 0x06 /* Public */,
-       3,    0,  365,    2, 0x06 /* Public */,
-       4,    0,  366,    2, 0x06 /* Public */,
-       5,    0,  367,    2, 0x06 /* Public */,
-       6,    0,  368,    2, 0x06 /* Public */,
-       7,    0,  369,    2, 0x06 /* Public */,
-       8,    0,  370,    2, 0x06 /* Public */,
-       9,    1,  371,    2, 0x06 /* Public */,
-      11,    1,  374,    2, 0x06 /* Public */,
-      13,    1,  377,    2, 0x06 /* Public */,
-      15,    0,  380,    2, 0x06 /* Public */,
-      16,    1,  381,    2, 0x06 /* Public */,
-      19,    1,  384,    2, 0x06 /* Public */,
-      21,    3,  387,    2, 0x06 /* Public */,
-      24,    1,  394,    2, 0x06 /* Public */,
-      25,    3,  397,    2, 0x06 /* Public */,
+       1,    0,  379,    2, 0x06 /* Public */,
+       3,    0,  380,    2, 0x06 /* Public */,
+       4,    0,  381,    2, 0x06 /* Public */,
+       5,    0,  382,    2, 0x06 /* Public */,
+       6,    0,  383,    2, 0x06 /* Public */,
+       7,    0,  384,    2, 0x06 /* Public */,
+       8,    0,  385,    2, 0x06 /* Public */,
+       9,    1,  386,    2, 0x06 /* Public */,
+      11,    1,  389,    2, 0x06 /* Public */,
+      13,    1,  392,    2, 0x06 /* Public */,
+      15,    0,  395,    2, 0x06 /* Public */,
+      16,    1,  396,    2, 0x06 /* Public */,
+      19,    1,  399,    2, 0x06 /* Public */,
+      21,    3,  402,    2, 0x06 /* Public */,
+      24,    1,  409,    2, 0x06 /* Public */,
+      25,    3,  412,    2, 0x06 /* Public */,
 
  // slots: name, argc, parameters, tag, flags
-      28,    0,  404,    2, 0x0a /* Public */,
-      29,    0,  405,    2, 0x0a /* Public */,
-      30,    0,  406,    2, 0x0a /* Public */,
-      31,    1,  407,    2, 0x0a /* Public */,
-      33,    0,  410,    2, 0x0a /* Public */,
-      34,    0,  411,    2, 0x0a /* Public */,
-      35,    0,  412,    2, 0x0a /* Public */,
-      36,    0,  413,    2, 0x0a /* Public */,
-      37,    0,  414,    2, 0x0a /* Public */,
-      38,    0,  415,    2, 0x0a /* Public */,
-      39,    0,  416,    2, 0x0a /* Public */,
-      40,    0,  417,    2, 0x0a /* Public */,
-      41,    0,  418,    2, 0x0a /* Public */,
-      42,    0,  419,    2, 0x0a /* Public */,
-      43,    0,  420,    2, 0x0a /* Public */,
-      44,    0,  421,    2, 0x0a /* Public */,
-      45,    0,  422,    2, 0x0a /* Public */,
-      46,    1,  423,    2, 0x08 /* Private */,
-      48,    1,  426,    2, 0x08 /* Private */,
-      49,    0,  429,    2, 0x08 /* Private */,
-      50,    0,  430,    2, 0x08 /* Private */,
-      51,    0,  431,    2, 0x08 /* Private */,
-      52,    0,  432,    2, 0x08 /* Private */,
-      53,    0,  433,    2, 0x08 /* Private */,
-      54,    0,  434,    2, 0x08 /* Private */,
-      55,    0,  435,    2, 0x08 /* Private */,
-      56,    0,  436,    2, 0x08 /* Private */,
-      57,    0,  437,    2, 0x08 /* Private */,
-      58,    0,  438,    2, 0x08 /* Private */,
-      59,    0,  439,    2, 0x08 /* Private */,
-      60,    0,  440,    2, 0x08 /* Private */,
-      61,    0,  441,    2, 0x08 /* Private */,
-      62,    1,  442,    2, 0x08 /* Private */,
-      63,    1,  445,    2, 0x08 /* Private */,
-      64,    0,  448,    2, 0x08 /* Private */,
-      65,    1,  449,    2, 0x08 /* Private */,
-      66,    0,  452,    2, 0x08 /* Private */,
-      67,    1,  453,    2, 0x08 /* Private */,
-      68,    0,  456,    2, 0x08 /* Private */,
-      69,    0,  457,    2, 0x08 /* Private */,
-      70,    3,  458,    2, 0x08 /* Private */,
-      75,    3,  465,    2, 0x08 /* Private */,
-      76,    0,  472,    2, 0x08 /* Private */,
-      77,    1,  473,    2, 0x08 /* Private */,
-      78,    1,  476,    2, 0x08 /* Private */,
-      79,    1,  479,    2, 0x08 /* Private */,
-      80,    0,  482,    2, 0x08 /* Private */,
-      81,    1,  483,    2, 0x08 /* Private */,
-      82,    0,  486,    2, 0x08 /* Private */,
-      83,    0,  487,    2, 0x08 /* Private */,
-      84,    0,  488,    2, 0x08 /* Private */,
-      85,    0,  489,    2, 0x08 /* Private */,
-      86,    0,  490,    2, 0x08 /* Private */,
-      87,    1,  491,    2, 0x08 /* Private */,
+      28,    0,  419,    2, 0x0a /* Public */,
+      29,    0,  420,    2, 0x0a /* Public */,
+      30,    0,  421,    2, 0x0a /* Public */,
+      31,    1,  422,    2, 0x0a /* Public */,
+      33,    0,  425,    2, 0x0a /* Public */,
+      34,    0,  426,    2, 0x0a /* Public */,
+      35,    0,  427,    2, 0x0a /* Public */,
+      36,    0,  428,    2, 0x0a /* Public */,
+      37,    0,  429,    2, 0x0a /* Public */,
+      38,    0,  430,    2, 0x0a /* Public */,
+      39,    0,  431,    2, 0x0a /* Public */,
+      40,    0,  432,    2, 0x0a /* Public */,
+      41,    0,  433,    2, 0x0a /* Public */,
+      42,    0,  434,    2, 0x0a /* Public */,
+      43,    0,  435,    2, 0x0a /* Public */,
+      44,    0,  436,    2, 0x0a /* Public */,
+      45,    0,  437,    2, 0x0a /* Public */,
+      46,    1,  438,    2, 0x08 /* Private */,
+      48,    1,  441,    2, 0x08 /* Private */,
+      49,    0,  444,    2, 0x08 /* Private */,
+      50,    0,  445,    2, 0x08 /* Private */,
+      51,    0,  446,    2, 0x08 /* Private */,
+      52,    0,  447,    2, 0x08 /* Private */,
+      53,    0,  448,    2, 0x08 /* Private */,
+      54,    0,  449,    2, 0x08 /* Private */,
+      55,    0,  450,    2, 0x08 /* Private */,
+      56,    0,  451,    2, 0x08 /* Private */,
+      57,    0,  452,    2, 0x08 /* Private */,
+      58,    0,  453,    2, 0x08 /* Private */,
+      59,    0,  454,    2, 0x08 /* Private */,
+      60,    0,  455,    2, 0x08 /* Private */,
+      61,    0,  456,    2, 0x08 /* Private */,
+      62,    1,  457,    2, 0x08 /* Private */,
+      63,    1,  460,    2, 0x08 /* Private */,
+      64,    0,  463,    2, 0x08 /* Private */,
+      65,    1,  464,    2, 0x08 /* Private */,
+      66,    0,  467,    2, 0x08 /* Private */,
+      67,    1,  468,    2, 0x08 /* Private */,
+      68,    0,  471,    2, 0x08 /* Private */,
+      69,    0,  472,    2, 0x08 /* Private */,
+      70,    3,  473,    2, 0x08 /* Private */,
+      75,    3,  480,    2, 0x08 /* Private */,
+      76,    0,  487,    2, 0x08 /* Private */,
+      77,    4,  488,    2, 0x08 /* Private */,
+      82,    0,  497,    2, 0x08 /* Private */,
+      83,    4,  498,    2, 0x08 /* Private */,
+      84,    1,  507,    2, 0x08 /* Private */,
+      85,    1,  510,    2, 0x08 /* Private */,
+      86,    1,  513,    2, 0x08 /* Private */,
+      87,    0,  516,    2, 0x08 /* Private */,
+      88,    1,  517,    2, 0x08 /* Private */,
+      89,    0,  520,    2, 0x08 /* Private */,
+      90,    0,  521,    2, 0x08 /* Private */,
+      91,    0,  522,    2, 0x08 /* Private */,
+      92,    0,  523,    2, 0x08 /* Private */,
+      93,    0,  524,    2, 0x08 /* Private */,
+      94,    1,  525,    2, 0x08 /* Private */,
 
  // signals: parameters
     QMetaType::Void,
@@ -328,6 +341,9 @@ static const uint qt_meta_data_MainWindow[] = {
     QMetaType::Void, QMetaType::Int, 0x80000000 | 71, 0x80000000 | 73,   12,   72,   74,
     QMetaType::Void, QMetaType::Int, 0x80000000 | 71, 0x80000000 | 73,   12,   72,   74,
     QMetaType::Void,
+    QMetaType::Void, QMetaType::Double, QMetaType::Double, QMetaType::Double, QMetaType::UInt,   78,   79,   80,   81,
+    QMetaType::Void,
+    QMetaType::Void, QMetaType::Double, QMetaType::Double, QMetaType::Double, QMetaType::UInt,   78,   80,   79,   81,
     QMetaType::Void, QMetaType::Int,   14,
     QMetaType::Void, QMetaType::Int,   14,
     QMetaType::Void, QMetaType::Int,   14,
@@ -408,17 +424,20 @@ void MainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         case 56: _t->processCecAxisClickedEvent((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< int*(*)>(_a[2])),(*reinterpret_cast< QCheckBox*(*)>(_a[3]))); break;
         case 57: _t->cecAxisClickedThreadEvent((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< int*(*)>(_a[2])),(*reinterpret_cast< QCheckBox*(*)>(_a[3]))); break;
         case 58: _t->on_resetButtonAllAxis_clicked(); break;
-        case 59: _t->on_comboBox_3_currentIndexChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 60: _t->on_comboBox_4_currentIndexChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 61: _t->on_comboBox_currentIndexChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 62: _t->on_radioButton_clicked(); break;
-        case 63: _t->on_ceUnits_currentIndexChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 64: _t->on_radioButton_2_clicked(); break;
-        case 65: _t->on_cecAxis1_clicked(); break;
-        case 66: _t->on_cecAxis2_clicked(); break;
-        case 67: _t->on_cecAxis3_clicked(); break;
-        case 68: _t->on_cecAxis4_clicked(); break;
-        case 69: _t->on_ceDisplayAxis_currentIndexChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 59: _t->on_ramDataFlyscanRequest_recieved((*reinterpret_cast< double(*)>(_a[1])),(*reinterpret_cast< double(*)>(_a[2])),(*reinterpret_cast< double(*)>(_a[3])),(*reinterpret_cast< uint(*)>(_a[4]))); break;
+        case 60: _t->configureFlyscanThreadEvent(); break;
+        case 61: _t->startRamDataFlyscan((*reinterpret_cast< double(*)>(_a[1])),(*reinterpret_cast< double(*)>(_a[2])),(*reinterpret_cast< double(*)>(_a[3])),(*reinterpret_cast< uint(*)>(_a[4]))); break;
+        case 62: _t->on_comboBox_3_currentIndexChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 63: _t->on_comboBox_4_currentIndexChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 64: _t->on_comboBox_currentIndexChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 65: _t->on_radioButton_clicked(); break;
+        case 66: _t->on_ceUnits_currentIndexChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 67: _t->on_radioButton_2_clicked(); break;
+        case 68: _t->on_cecAxis1_clicked(); break;
+        case 69: _t->on_cecAxis2_clicked(); break;
+        case 70: _t->on_cecAxis3_clicked(); break;
+        case 71: _t->on_cecAxis4_clicked(); break;
+        case 72: _t->on_ceDisplayAxis_currentIndexChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
         default: ;
         }
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
@@ -592,13 +611,13 @@ int MainWindow::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 70)
+        if (_id < 73)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 70;
+        _id -= 73;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 70)
+        if (_id < 73)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 70;
+        _id -= 73;
     }
     return _id;
 }
