@@ -87,6 +87,9 @@ signals:
     void configureCEChardwareRequest(unsigned int axis, unsigned int ceVelMin, unsigned int ceVelMax);
     void stopCEChardwareRequest(unsigned int axis);
     void updateCECRatiosRequest(unsigned int axis, CEratios* ceRatios, unsigned int index);
+    void flyscanErrorCode(int ret_code);
+    void flyscanStatValues(unsigned char* axisTab, double* mean, double* stdDev);
+    void flyscanProcTerm();
 public slots:
     // --------------button continuous acquisition---------------------------
     void openFlyscanForm();
@@ -139,10 +142,8 @@ private slots:
     void cecAxisClickedThreadEvent(int axis, int* axisListIndex, QCheckBox* cecAxisCheckBox);
     void on_resetButtonAllAxis_clicked();
     void on_ramDataFlyscanRequest_recieved(double freq,  double size, double time, unsigned int nbr);
-    void configureFlyscanThreadEvent();
-    VOID startRamDataFlyscan(double freq, double time, double size, unsigned int nbr);
+    void on_fifoFlyscanRequest_recieved(double freq,  double size, double time, unsigned int nbr);
     void on_comboBox_3_currentIndexChanged(int index);
-
     void on_comboBox_4_currentIndexChanged(int index);
 
     void on_comboBox_currentIndexChanged(int index);

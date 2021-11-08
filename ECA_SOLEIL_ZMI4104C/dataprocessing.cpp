@@ -1,6 +1,8 @@
 #include "dataprocessing.h"
 //bool dataProcessing::accessToken=false;
 
+unsigned int* dataProcessing::base_A24D32_ptr = new unsigned int;
+unsigned int* dataProcessing::base_A24D32_FR_ptr = new unsigned int;
 dataProcessing::dataProcessing(QObject *parent) : QObject(parent)
 {
     position=(double*)malloc(5*sizeof (double));
@@ -9,6 +11,7 @@ dataProcessing::dataProcessing(QObject *parent) : QObject(parent)
     ledsErrorStatus = new bool[5];
     ledsStatus = new bool[5];
     //initBoardsThread = new QThread;
+
 }
 /*
 void dataProcessing::on_initBoardsRequest_recieved(){
@@ -133,7 +136,9 @@ void dataProcessing::on_resetAxisRequest_recieved(int axis){
 }
 dataProcessing::~dataProcessing()
 {
-
+    //qDebug()<<"Freeing buf 0x%p and 0x%p\n", base_A24D32_FR_ptr, base_A24D32_ptr;
+    delete (base_A24D32_FR_ptr);
+    delete (base_A24D32_ptr);
 }
 
 void dataProcessing::on_OffsetPosition_Changed(double* offPosPtr){
@@ -209,7 +214,6 @@ int dataProcessing::on_configureCECHardware_recieved(unsigned int axis, unsigned
     if(configureCEChardware(dev, axis, ceVelMin, ceVelMax) != RET_SUCCESS)
         return RET_FAILED;
 
-
     qDebug()<<"config terminated ";
     return RET_SUCCESS;
 }
@@ -223,6 +227,7 @@ int dataProcessing::on_stopCECHardware_recieved(unsigned int axis){
 
 int dataProcessing::on_configureFlyscanRequest_recieved(){
     //*
+
     qDebug()<<"config ramdata started ";
     QTimer *Ltimer;
     Ltimer = new QTimer(this);
@@ -231,8 +236,11 @@ int dataProcessing::on_configureFlyscanRequest_recieved(){
     Ltimer->setSingleShot(true);
     qDebug()<<"time is "<<flyscanTimeValue * 1e3;
     dataProcessing::dev_mutex.lock();
-    if (configureFlyscan(dev, ramDataFlyscanAxis, flyscanFreqValue, 1) != RET_SUCCESS)
+    if (configureFlyscan(dev, axisNbr, flyscanFreqValue, 1) != RET_SUCCESS){
         return RET_FAILED;
+        emit flyscanErrorCode(RET_FAILED);
+        emit flyscanProcTerm();
+    }
     dataProcessing::dev_mutex.unlock();
     Ltimer->start();
     return RET_SUCCESS;
@@ -240,38 +248,109 @@ int dataProcessing::on_configureFlyscanRequest_recieved(){
 
 int dataProcessing::on_acquisitionTimer_timeout(){
 
-    //Ltimer->stop();
     dataProcessing::dev_mutex.lock();
-    if (stopAquisition(dev, ramDataFlyscanAxis) != RET_SUCCESS){
+    if (stopAquisition(dev, axisNbr) != RET_SUCCESS){
+        dataProcessing::dev_mutex.unlock();
+        emit flyscanProcTerm();
+        emit flyscanErrorCode(RET_FAILED);
+        return RET_FAILED;
+    }
+    if (!(dataProcessing::base_A24D32_ptr = (PUINT)calloc((UINT)( sizeof (UINT)*(flyscanSizeValue*1.5*axisNbr)), sizeof(unsigned int)))){
+        dataProcessing::dev_mutex.unlock();
+        WARN("can not allocate memory on the host machine");
+        emit flyscanErrorCode(RET_FAILED);
         emit flyscanProcTerm();
         return RET_FAILED;
     }
-    qDebug()<<"here 0";
-    if (!(base_A24D32_ptr = allocateMemSpace(64 * 1024))){
+    if (!(dataProcessing::base_A24D32_FR_ptr = (PUINT)calloc((UINT)( sizeof (UINT)*flyscanSizeValue*1.5*axisNbr), sizeof(unsigned int)))){
+        dataProcessing::dev_mutex.unlock();
+        WARN("can not allocate memory on the host machine");
+        emit flyscanErrorCode(RET_FAILED);
         emit flyscanProcTerm();
         return RET_FAILED;
     }
-    qDebug()<<"here 1";
-    if (!(base_A24D32_FR_ptr = allocateMemSpace(64 * 1024))){
-        emit flyscanProcTerm();
-        return RET_FAILED;
-    }
-    qDebug()<<"here 2";
     unsigned int ret = 0;
 
     INFO("Sampling data... \n");
     if (getFlyscanData(dev, base_A24D32_FR_ptr, base_A24D32_ptr, &ret) != RET_SUCCESS)
     {
+        dataProcessing::dev_mutex.unlock();
+        emit flyscanErrorCode(RET_FAILED);
         emit flyscanProcTerm();
         return RET_FAILED;
     }
+    dataProcessing::dev_mutex.unlock();
     if (processRAMData(ret, base_A24D32_FR_ptr, base_A24D32_ptr,flyscanPath) != RET_SUCCESS)
     {
+        emit flyscanErrorCode(RET_FAILED);
         emit flyscanProcTerm();
         return RET_FAILED;
     }
+
     qDebug()<<"flyscan data processing terminated";
     emit flyscanProcTerm();
-    dataProcessing::dev_mutex.unlock();
+    qDebug()<<"Freeing buf "<<base_A24D32_FR_ptr<<" and "<<base_A24D32_ptr;
+    delete (base_A24D32_FR_ptr);
+    delete (base_A24D32_ptr);
+    emit flyscanErrorCode(RET_SUCCESS);
+    return RET_SUCCESS;
+}
+
+int dataProcessing::on_configureFifoFlyscanRequest_recieved(){
+    //*
+    int ret_code=0;
+    qDebug()<<"config fifo flyscan started ";
+    fifoParam* flyscanFifoParam = new fifoParam;
+    flyscanFifoParam->acqTime=flyscanTimeValue;
+    flyscanFifoParam->freq=flyscanFreqValue;
+    flyscanFifoParam->nbrPts=flyscanSizeValue;
+    qDebug()<<"flyscansizeValue: "<<flyscanSizeValue;
+    qDebug()<<"axisnbr in dataprocessing: "<<axisNbr;
+    if (!(base_A24D32_ptr = (PUINT)calloc((UINT)(sizeof(UINT) * (flyscanSizeValue*1.5*axisNbr)), sizeof(unsigned int)))){
+        WARN("can not allocate memory on the host machine");
+        emit flyscanErrorCode(RET_FAILED);
+        emit flyscanProcTerm();
+        delete flyscanFifoParam;
+        return RET_FAILED;
+    }
+
+    for(int h=0;h<4;h++){
+        qDebug()<<"axistab "<<h<<" in dataprocessing: "<<(int)fifoFlyscanAxisTab[h];
+    }
+    dataProcessing::dev_mutex.lock();
+    if (configureFifoFlyscan(dev, flyscanFifoParam,base_A24D32_ptr,(PUCHAR)fifoFlyscanAxisTab, &axisNbr, &ret_code) != RET_SUCCESS){
+        dataProcessing::dev_mutex.unlock();
+        qDebug()<<"fifo config failed";
+        emit flyscanErrorCode(RET_FAILED);
+        emit flyscanProcTerm();
+        delete (base_A24D32_ptr);
+        delete flyscanFifoParam;
+        return RET_FAILED;
+    }
+    else
+    {
+        emit flyscanErrorCode(1); // currently processing
+        dataProcessing::dev_mutex.unlock();
+        if(ret_code==-100){
+            qDebug()<<"overlapping detected";
+            emit flyscanErrorCode(ret_code);
+        }
+        qDebug()<<"fifo config success";
+        qDebug()<<"processing fifo data, axis number: "<<axisNbr;
+        if (processFifoData(axisNbr, (PUCHAR)fifoFlyscanAxisTab, base_A24D32_ptr, flyscanFifoParam->nbrPts, (PUCHAR)flyscanPath,(double*)meanVal, (double*)stdDevVal) != RET_SUCCESS){
+            dataProcessing::dev_mutex.unlock();
+            emit flyscanErrorCode(RET_FAILED);
+            emit flyscanProcTerm();
+            delete (base_A24D32_ptr);
+            delete flyscanFifoParam;
+            return RET_FAILED;
+        }
+    }
+    emit flyscanStatValues((unsigned char*)fifoFlyscanAxisTab,(double*)meanVal,(double*)stdDevVal);
+    qDebug()<<"Freeing buf \n"<<  base_A24D32_ptr;
+    delete (base_A24D32_ptr);
+    delete flyscanFifoParam;
+    emit flyscanErrorCode(RET_SUCCESS);
+    emit flyscanProcTerm();
     return RET_SUCCESS;
 }

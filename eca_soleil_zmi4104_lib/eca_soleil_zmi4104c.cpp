@@ -887,54 +887,161 @@ int processRAMData(UINT nbrAxis, PUINT base_A24D32_axis1_ptr, PUINT base_A24D32_
 	fclose(fd);
 	return RET_SUCCESS;
 }
-int processFifoData(UINT nbrAxis, PUCHAR axisTab, PUINT memPtr, UINT nbrOfPts) {
-	static int a = 0;
+int processFifoData(UINT nbrAxis, PUCHAR axisTab, PUINT memPtr, UINT nbrOfPts, PUCHAR folderName, double *meanVal, double *stdDevVal) {
+
 	GetLocalTime(&lt);
 	static FILE* fd;
-	UINT val1 = 0, val2 = 0;
+	UINT val1 = 0, val2 = 0; // a = 0;
 	double pos1 = 0.0, pos2 = 0.0, pos3 = 0.0, pos4 = 0.0;
-	char path[600];
+	double mean[4] = { 0.0, 0.0, 0.0, 0.0,}, stdDev[4] = { 0.0, 0.0, 0.0, 0.0, };
+	double* localPos;
+	char path[2048];
 	INFO("Processing Fifo data\n");
 	INFO("Opening file to store position values \n");
-	sprintf_s(path, sizeof(path), "%s\\Fifo_position_values.csv", POSITION_FILE_PATH);
-	if (fopen_s(&fd,path, "a") != RET_SUCCESS)
+	sprintf_s(path, sizeof(path), "%s\\Fifo_position_values.csv", folderName);
+	if (fopen_s(&fd, path, "a") != RET_SUCCESS) {
+		WARN("Openning file %s failed\n", path);
 		return RET_FAILED;
+	}
 	fprintf(fd, "[***********; %d/%d/%d at %d:%d] ;************\n", lt.wYear, lt.wMonth, lt.wDay, lt.wHour, lt.wMinute);
+	localPos = (double*)calloc(sizeof(double), nbrAxis * 1.5 * nbrOfPts);
 	switch (nbrAxis)
 	{
 	case 1:
-		fprintf(fd, "Axis%d\n", axisTab[0]);
+		fprintf(fd, "Axis %d\n", axisTab[0]);
 		for (UINT i = 0; i < nbrOfPts; i++) {
 			pos1 = (double)((int)(memPtr[i])) * positionScale;
+			localPos[i] = pos1;
+			*mean += pos1;
 			fprintf(fd, "%lf\n", pos1);
 		}
+
+		// working out the mean
+		meanVal[axisTab[0] - 1] = (*mean) / nbrOfPts;
+
+		*mean = (*mean) / nbrOfPts;
+		//working out the standard deviation
+		for (UINT i = 0; i < nbrOfPts; i++) {
+			*stdDev += pow((*localPos++ - *mean), 2);
+		}
+		stdDevVal[axisTab[0] - 1] = sqrt((*stdDev) / (nbrOfPts));
+
+		fprintf(fd, "Mean\n");
+		fprintf(fd, "%lf\n", meanVal[axisTab[0] - 1]);
+		fprintf(fd, "Std dev\n");
+		fprintf(fd, "%lf\n", stdDevVal[axisTab[0] - 1]);
 		break;
 	case 2:
-		fprintf(fd, "Axis%d;Axis%d\n", axisTab[0], axisTab[1]);
-		for (UINT i = 0; i < nbrOfPts / 2; i++) {
+		fprintf(fd, "Axis %d;Axis %d\n", axisTab[0], axisTab[1]);
+		for (UINT i = 0; i < nbrOfPts; i++) {
 			pos1 = (double)((int)(memPtr[2 * i])) * positionScale;
 			pos2 = (double)((int)(memPtr[2 * i + 1])) * positionScale;
-			fprintf(fd, "%lf; ;%lf\n", pos1, pos2);
+			localPos[2 * i] = pos1;
+			localPos[2 * i + 1] = pos2;
+			*mean += pos1;
+			mean[1] += pos2;
+			fprintf(fd, "%lf;%lf\n", pos1, pos2);
 		}
+		// working out the mean
+		meanVal[axisTab[0] - 1] = (*mean) / nbrOfPts;
+		meanVal[axisTab[1] - 1] = (mean[1]) / nbrOfPts;
+
+		*mean = (*mean) / nbrOfPts;
+		mean[1] = (mean[1]) / nbrOfPts;
+		//working out the standard deviation
+		for (UINT i = 0; i < nbrOfPts; i++) {
+			*stdDev += pow((localPos[2 * i] - *mean), 2);
+			stdDev[1] += pow((localPos[2 * i + 1] - mean[1]), 2);
+		}
+		stdDevVal[axisTab[0] - 1] = sqrt((*stdDev) / (nbrOfPts));
+		stdDevVal[axisTab[1] - 1] = sqrt((stdDev[1]) / (nbrOfPts));
+
+		fprintf(fd, "Mean\n");
+		fprintf(fd, "%lf;%lf\n", meanVal[axisTab[0] - 1], meanVal[axisTab[1] - 1]);
+		fprintf(fd, "Std dev\n");
+		fprintf(fd, "%lf;%lf\n", stdDevVal[axisTab[0] - 1], stdDevVal[axisTab[1] - 1]);
 		break;
 	case 3:
-		fprintf(fd, "Axis%d;Axis%d;Axis%d\n", axisTab[0], axisTab[1], axisTab[2]);
-		for (UINT i = 0; i < nbrOfPts / 3; i++) {
+		fprintf(fd, "Axis %d;Axis %d;Axis %d\n", axisTab[0], axisTab[1], axisTab[2]);
+		for (UINT i = 0; i < nbrOfPts; i++) {
 			pos1 = (double)((int)(memPtr[3 * i])) * positionScale;
 			pos2 = (double)((int)(memPtr[3 * i + 1])) * positionScale;
 			pos3 = (double)((int)(memPtr[3 * i + 2])) * positionScale;
+			localPos[3 * i] = pos1;
+			localPos[3 * i + 1] = pos2;
+			localPos[3 * i + 2] = pos3;
+			*mean += pos1;
+			mean[1] += pos2;
+			mean[2] += pos3;
 			fprintf(fd, "%lf;%lf;%lf\n", pos1, pos2, pos3);
 		}
+		// working out the mean
+		meanVal[axisTab[0] - 1] = (*mean) / nbrOfPts;
+		meanVal[axisTab[1] - 1] = (mean[1]) / nbrOfPts;
+		meanVal[axisTab[2] - 1] = (mean[2]) / nbrOfPts;
+
+		*mean = (*mean) / nbrOfPts;
+		mean[1] = (mean[1]) / nbrOfPts;
+		mean[2] = (mean[2]) / nbrOfPts;
+		//working out the standard deviation
+		for (UINT i = 0; i < nbrOfPts; i++) {
+			*stdDev += pow((localPos[3 * i] - *mean), 2);
+			stdDev[1] += pow((localPos[3 * i + 1] - mean[1]), 2);
+			stdDev[2] += pow((localPos[3 * i + 2] - mean[2]), 2);
+		}
+		stdDevVal[axisTab[0] - 1] = sqrt((*stdDev) / (nbrOfPts));
+		stdDevVal[axisTab[1] - 1] = sqrt((stdDev[1]) / (nbrOfPts));
+		stdDevVal[axisTab[2] - 1] = sqrt((stdDev[2]) / (nbrOfPts));
+
+		fprintf(fd, " ;Mean\n");
+		fprintf(fd, "%lf;%lf;%lf\n", meanVal[axisTab[0] - 1], meanVal[axisTab[1] - 1], meanVal[axisTab[2] - 1]);
+		fprintf(fd, " ;Std dev\n");
+		fprintf(fd, "%lf;%lf;%lf\n", stdDevVal[axisTab[0] - 1], stdDevVal[axisTab[1] - 1], stdDevVal[axisTab[2] - 1]);
 		break;
 	case 4:
-		fprintf(fd, "Axis%d;Axis%d;Axis%d;Axis%d\n", axisTab[0], axisTab[1], axisTab[2], axisTab[3]);
-		for (UINT i = 0; i < nbrOfPts / 4; i++) {
+		fprintf(fd, "Axis %d;Axis %d;Axis %d;Axis %d\n", axisTab[0], axisTab[1], axisTab[2], axisTab[3]);
+		for (UINT i = 0; i < nbrOfPts; i++) {
 			pos1 = (double)((int)(memPtr[4 * i])) * positionScale;
 			pos2 = (double)((int)(memPtr[4 * i + 1])) * positionScale;
 			pos3 = (double)((int)(memPtr[4 * i + 2])) * positionScale;
 			pos4 = (double)((int)(memPtr[4 * i + 3])) * positionScale;
+			localPos[4 * i] = pos1;
+			localPos[4 * i + 1] = pos2;
+			localPos[4 * i + 2] = pos3;
+			localPos[4 * i + 3] = pos4;
+			*mean += pos1;
+			mean[1] += pos2;
+			mean[2] += pos3;
+			mean[3] += pos4;
 			fprintf(fd, "%lf;%lf;%lf;%lf\n", pos1, pos2, pos3, pos4);
 		}
+		// working out the mean
+		meanVal[axisTab[0] - 1] = (*mean) / nbrOfPts;
+		meanVal[axisTab[1] - 1] = (mean[1]) / nbrOfPts;
+		meanVal[axisTab[2] - 1] = (mean[2]) / nbrOfPts;
+		meanVal[axisTab[3] - 1] = (mean[3]) / nbrOfPts;
+
+
+		*mean = (*mean) / nbrOfPts;
+		mean[1] = (mean[1]) / nbrOfPts;
+		mean[2] = (mean[2]) / nbrOfPts;
+		mean[3] = (mean[3]) / nbrOfPts;
+		//working out the standard deviation
+		for (UINT i = 0; i < nbrOfPts; i++) {
+			*stdDev += pow((localPos[4 * i] - *mean), 2);
+			stdDev[1] += pow((localPos[4 * i + 1] - mean[1]), 2);
+			stdDev[2] += pow((localPos[4 * i + 2] - mean[2]), 2);
+			stdDev[3] += pow((localPos[4 * i + 3] - mean[3]), 2);
+		}
+		stdDevVal[axisTab[0] - 1] = sqrt((*stdDev) / (nbrOfPts));
+		stdDevVal[axisTab[1] - 1] = sqrt((stdDev[1]) / (nbrOfPts));
+		stdDevVal[axisTab[2] - 1] = sqrt((stdDev[2]) / (nbrOfPts));
+		stdDevVal[axisTab[3] - 1] = sqrt((stdDev[3]) / (nbrOfPts));
+
+		fprintf(fd, " ;Mean\n");
+		fprintf(fd, "%lf;%lf;%lf;%lf\n", meanVal[axisTab[0] - 1], meanVal[axisTab[1] - 1], meanVal[axisTab[2] - 1], meanVal[axisTab[3] - 1]);
+		fprintf(fd, "; Std dev\n");
+		fprintf(fd, "%lf;%lf;%lf;%lf\n", stdDevVal[axisTab[0] - 1], stdDevVal[axisTab[1] - 1], stdDevVal[axisTab[2] - 1], stdDevVal[axisTab[3] - 1]);
 		break;
 	default:
 		printf("Bad number of axis, exiting\n");
@@ -945,46 +1052,46 @@ int processFifoData(UINT nbrAxis, PUCHAR axisTab, PUINT memPtr, UINT nbrOfPts) {
 	fclose(fd);
 	return RET_SUCCESS;
 }
-int configureFifoFlyscan(SIS1100_Device_Struct* dev, fifoParam* param, PUINT startAdress, PUCHAR axisTab, PUCHAR sizeOfTab) {
-	CHAR nAxis = 0, ctr = 0, tab[4] = { -5,-6,-7,-8 }, ftab[4] = { 0,0,0,0 }, tablen = 0, k = 0;
-	tablen = *sizeOfTab;
-	INFO("Configuring FIFO flyscan \n");
-	if (checkValues(tablen, 1, 4)) {
-		WARN("Checking axis tab length\n");
-		return RET_FAILED;
-	}
-	if (!(param->acqTime < 1e-6 || param->freq < 1e-3) || !(param->nbrPts<1e-3 || param->freq<1e-5) || !(param->nbrPts < 1e-3 || param->acqTime < 1e-3)) {
-		WARN("At most one of the fifo parameters can be nulled\n");
-		return RET_FAILED;
-	}
+int configureFifoFlyscan(SIS1100_Device_Struct* dev, fifoParam* param, PUINT startAdress, PUCHAR axisTab, PUINT sizeOfTab, PINT ret_code) {
+	CHAR nAxis = 0, ctr = 0, tab[4] = { -1,-2,-3,-4 }, ftab[4] = { 0,0,0,0 }, tablen = 4, k = 0;
+
 	for (int i = 0; i < tablen; i++) {
+		INFO("Checking if axis value %u in the tab is corrrect\n", i);
 		if (!checkValues((UINT)axisTab[i], 1, 4)) {
-			INFO("Checking axis value %u\n", i);
 			tab[ctr] = axisTab[i];
 			ctr++;
+			for (char j = 0; j < i; j++)
+			{
+				if (tab[j] == tab[i]) {
+					INFO("2 identical axis. Deleting one\n");
+					ctr--;
+					tab[i] = -i;
+				}
+			}
 		}
 		else
 		{
 			INFO("%d is not a correct axis value. Skiping this axis\n", axisTab[i]);
 		}
-		for (char j = 0; j < i; j++)
-		{
-			if (tab[j] == tab[i]) {
-				INFO("2 identical axis. Deleting one\n");
-				if (tab[i] > 0) ctr--;
-				tab[i] = -i;
-			}
-		}
 	}
 	*sizeOfTab = ctr;
-	INFO("Fifo flyscan is configured on %d axis: ", ctr);
+	INFO("Fifo flyscan is configured on %d axis(es). They are: \n", ctr);
+	axisTab[0] = 0;
+	axisTab[1] = 0;
+	axisTab[2] = 0;
+	axisTab[3] = 0;
 	for (char j = 0; j < tablen; j++) {
 		if (tab[j] > 0) {
-			INFO("axis %d, ", tab[j]);
+			INFO("axis %d, \n", tab[j]);
 			ftab[k] = tab[j];
 			axisTab[k] = tab[j];
 			k++;
 		}
+	}
+	if (k == 0) {
+		WARN("No axis has been given to fifo flyscan config\n");
+		*ret_code= RET_FAILED;
+		return RET_FAILED;
 	}
 	if ((param->acqTime<1e-6)) {
 		// this mean acquisition time has not be given so we need to infer it from  
@@ -1004,33 +1111,39 @@ int configureFifoFlyscan(SIS1100_Device_Struct* dev, fifoParam* param, PUINT sta
 
 	INFO("\n FIFO Flyscan configuration: Freq: %fHz \t Nbr_of_points: %u \t acquisition_time: %f ms\n", param->freq, param->nbrPts, param->acqTime);
 	INFO("%u,%u,%u,%u is sent to fifo flyscan\n ", ftab[0], ftab[1], ftab[2], ftab[3]);
-	if (fifoFlyscan(dev, *param, startAdress, ctr, ftab[0], ftab[1], ftab[2], ftab[3]) != RET_SUCCESS) {
+	if (fifoFlyscan(dev, *param, startAdress, ctr, ret_code, ftab[0], ftab[1], ftab[2], ftab[3]) != RET_SUCCESS) {
 		WARN("FIFO flyscan configuration failed\n");
 		return RET_FAILED;
 	}
+
 	return RET_SUCCESS;
 }
-int fifoFlyscan(SIS1100_Device_Struct* dev, fifoParam param, PUINT startAddress, UCHAR nbrAxis, ...) {
+int fifoFlyscan(SIS1100_Device_Struct* dev, fifoParam param, PUINT startAddress, UCHAR nbrAxis, PINT ret_code, ...) {
 	UINT uint_vme_data = 0, uint_vme_address = 0, pos = 0;
 	PUCHAR axisPtr;
 	va_list argPtr;
 	axisPtr = (PUCHAR)calloc(nbrAxis, sizeof(UCHAR));
 	INFO("setting up FIFO flyscan...\n");
-	va_start(argPtr, nbrAxis);
+	va_start(argPtr, ret_code);
 	for (int i = 0; i < nbrAxis; i++) {
 		axisPtr[i] = va_arg(argPtr, UCHAR);
 	}
 	//1- Disable SCLK Timer
-	DisableSampleTimer(dev);
+	if (DisableSampleTimer(dev) != RET_SUCCESS) {
+		*ret_code = RET_FAILED;
+		return  RET_FAILED;
+	}
 	//2- Reset all axis and wait for reset to complete
 	for (UCHAR i = 0; i < nbrAxis; i++) {
 		if (ResetAxis(dev, axisPtr[i])) {
+			*ret_code = RET_FAILED;
 			return RET_FAILED;
 		}
 	}
 	// 3- enable sampling timer
 	enableSampling(dev, (param.freq) * 1e-6);//convert to MHz
 	// 4- check if new data is avalaible and Read FIFO position from all axes
+	INFO("SIZE IS: %u axis number is %u\n", param.nbrPts, nbrAxis);
 	for (UINT i = 0; i < (param.nbrPts); i++) {
 		while (!(isFifoDavbitSet(dev, AXIS3)));
 		for (UCHAR j = 0; j < nbrAxis; j++) {
@@ -1044,8 +1157,11 @@ int fifoFlyscan(SIS1100_Device_Struct* dev, fifoParam param, PUINT startAddress,
 	for (UINT i = 0; i < nbrAxis; i++) {
 		if (isFifoOVFbitSet(dev, axisPtr[i])) {
 			WARN("some data samples could have been missed on axis %d. The frequency must be decreased\n", axisPtr[i]);
-			return RET_FAILED;
+			//return RET_FAILED;
+			*ret_code = FIFO_OVERLAP_ERR_CODE;
 		}
+		else
+			*ret_code = RET_SUCCESS;
 	}
 	free(axisPtr);
 	return RET_SUCCESS;
@@ -1055,7 +1171,7 @@ bool isFifoDavbitSet(SIS1100_Device_Struct* dev, unsigned char axis) {
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zStat1);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
 	{
-		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
+		WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;
 	}
 	if ((uint_vme_data & 0x400))
 		return true;
@@ -2088,8 +2204,10 @@ int DisableVMEInterrupt_bit(SIS1100_Device_Struct* dev, unsigned char axis, unsi
 /// </returns>
 int ResetAxis(SIS1100_Device_Struct* dev, unsigned char axis) {
 	unsigned int uint_vme_address = 0, uint_vme_data = 0;
-	if(checkValues(axis, 1, 4)!=RET_SUCCESS)
+	if (checkValues(axis, 1, 4) != RET_SUCCESS) {
 		INFO("BAD AXIS VALUE\n");
+		return RET_FAILED;
+	}
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCmd);
 	uint_vme_data = 0x20;
 	INFO("Reseting axis %u...\n", axis);
@@ -5369,7 +5487,6 @@ int VMESysReset(SIS1100_Device_Struct* dev) {
 }
 int Sclk_Off(SIS1100_Device_Struct* dev) {
 	unsigned int uint_vme_data = 0, uint_vme_address = 0;
-	INFO("Disabling sampling timer...\n");
 	uint_vme_address = ADD(BASE_ADDRESS[2], zCtrl16);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
 		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
@@ -5442,10 +5559,10 @@ int enableSampling(SIS1100_Device_Struct* dev, double sampleFreq) {
 	}
 	if (sampleFreq <= SAMP_FREQ_MIN)
 	{
-
 		sclkVal = 0xFFFF;
 		sampleFreq = 1 / (0.05 * 0xFFFF);
-		INFO("ZMI sample rate minimum is %f Hz.\n Setting to min...\n", (sampleFreq * 1e6));
+		INFO("ZMI sample rate minimum is %f Hz.\n", (sampleFreq * 1e6));
+		INFO("Setting to min...\n");
 	}
 	else
 		sclkVal = (unsigned short)(1 / (sampleFreq * 0.05) - 1);

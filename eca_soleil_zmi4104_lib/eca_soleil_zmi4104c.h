@@ -66,7 +66,9 @@ extern "C" {
 #define DESCRIPTOR_4_TEST
 #define DESCRIPTOR_5_TEST
 
-#define ERRSTRMAX 512
+
+#define FIFO_OVERLAP_ERR_CODE				-100
+#define ERRSTRMAX							512
 
 #define CE_MIN_VEL								50 // min vel is 0.5mm/s
 #define CE_MAX_VEL								31457 // max vel is 0.38 m/s
@@ -266,9 +268,9 @@ extern "C" {
 	ECASOLEILZMI4104CLIB_API int getFlyscanData(SIS1100_Device_Struct*, PUINT, PUINT, PUINT);
 	ECASOLEILZMI4104CLIB_API PUINT allocateMemSpace(UINT);
 	ECASOLEILZMI4104CLIB_API int processRAMData(UINT, PUINT, PUINT, char* folderName);
-	ECASOLEILZMI4104CLIB_API int processFifoData(UINT nbrAxis, PUCHAR axisTab, PUINT memPtr, UINT nbrOfPts);
-	ECASOLEILZMI4104CLIB_API int configureFifoFlyscan(SIS1100_Device_Struct*, fifoParam*, PUINT, PUCHAR, PUCHAR);
-	ECASOLEILZMI4104CLIB_API int fifoFlyscan(SIS1100_Device_Struct*, fifoParam, PUINT, UCHAR, ...);
+	ECASOLEILZMI4104CLIB_API int processFifoData(UINT nbrAxis, PUCHAR axisTab, PUINT memPtr, UINT nbrOfPts, PUCHAR folderName, double* meanVal, double* stdDevVal);
+	ECASOLEILZMI4104CLIB_API int configureFifoFlyscan(SIS1100_Device_Struct*, fifoParam* fifoparameters, PUINT startAdress, PUCHAR axisTab, PUINT sizeOfTab, PINT ret_code);
+	ECASOLEILZMI4104CLIB_API int fifoFlyscan(SIS1100_Device_Struct*, fifoParam, PUINT, UCHAR, PINT ret_code, ...);
 	ECASOLEILZMI4104CLIB_API bool isFifoDavbitSet(SIS1100_Device_Struct*, unsigned char);
 	ECASOLEILZMI4104CLIB_API bool isFifoOVFbitSet(SIS1100_Device_Struct*, unsigned char);
 	ECASOLEILZMI4104CLIB_API int configureFlyscan(SIS1100_Device_Struct*, unsigned char, double, UCHAR);

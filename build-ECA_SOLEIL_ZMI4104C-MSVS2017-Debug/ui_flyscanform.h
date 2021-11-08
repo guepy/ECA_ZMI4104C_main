@@ -58,10 +58,10 @@ public:
     QHBoxLayout *horizontalLayout_3;
     QLabel *label_5;
     QSpacerItem *horizontalSpacer_3;
-    QCheckBox *checkBox;
-    QCheckBox *checkBox_3;
-    QCheckBox *checkBox_2;
-    QCheckBox *checkBox_4;
+    QCheckBox *fifoAxis1;
+    QCheckBox *fifoAxis2;
+    QCheckBox *fifoAxis3;
+    QCheckBox *fifoAxis4;
     QWidget *horizontalWidget_4;
     QHBoxLayout *horizontalLayout_4;
     QLabel *label_8;
@@ -75,23 +75,42 @@ public:
     QPushButton *pushButton_5;
     QWidget *statForm;
     QHBoxLayout *horizontalLayout_7;
-    QSpacerItem *horizontalSpacer_12;
-    QLabel *label_10;
     QSpacerItem *horizontalSpacer_9;
-    QLineEdit *lineEdit_5;
-    QSpacerItem *horizontalSpacer_8;
-    QLabel *label_12;
+    QLabel *label_10;
     QSpacerItem *horizontalSpacer_10;
-    QLineEdit *lineEdit_6;
+    QLabel *label_12;
     QSpacerItem *horizontalSpacer_11;
     QPushButton *pushButton_7;
     QTextBrowser *display;
+    QWidget *horizontalWidget;
+    QHBoxLayout *horizontalLayout;
+    QSpacerItem *horizontalSpacer_16;
+    QVBoxLayout *verticalLayout_4;
+    QLabel *label;
+    QLabel *label_4;
+    QLabel *label_14;
+    QLabel *label_13;
+    QSpacerItem *horizontalSpacer_8;
+    QWidget *verticalWidget;
+    QVBoxLayout *verticalLayout_2;
+    QTextBrowser *meanAxis1;
+    QTextBrowser *meanAxis2;
+    QTextBrowser *meanAxis3;
+    QTextBrowser *meanAxis4;
+    QSpacerItem *horizontalSpacer_15;
+    QWidget *verticalWidget_2;
+    QVBoxLayout *verticalLayout_3;
+    QTextBrowser *stdDevAxis1;
+    QTextBrowser *stdDevAxis2;
+    QTextBrowser *stdDevAxis3;
+    QTextBrowser *stdDevAxis4;
+    QSpacerItem *horizontalSpacer_12;
 
     void setupUi(QWidget *FlyscanForm)
     {
         if (FlyscanForm->objectName().isEmpty())
             FlyscanForm->setObjectName(QString::fromUtf8("FlyscanForm"));
-        FlyscanForm->resize(834, 730);
+        FlyscanForm->resize(834, 850);
         QIcon icon;
         icon.addFile(QString::fromUtf8(":/images/flyscan.png"), QSize(), QIcon::Normal, QIcon::Off);
         FlyscanForm->setWindowIcon(icon);
@@ -134,7 +153,7 @@ public:
 "}"));
         SettingsForm = new QWidget(FlyscanForm);
         SettingsForm->setObjectName(QString::fromUtf8("SettingsForm"));
-        SettingsForm->setGeometry(QRect(20, 290, 791, 251));
+        SettingsForm->setGeometry(QRect(20, 260, 791, 251));
         SettingsForm->setStyleSheet(QString::fromUtf8("#SettingsForm{\n"
 "border: 5px solid;\n"
 "border-color: white;\n"
@@ -313,25 +332,25 @@ public:
 
         horizontalLayout_3->addItem(horizontalSpacer_3);
 
-        checkBox = new QCheckBox(selectAxisWidget);
-        checkBox->setObjectName(QString::fromUtf8("checkBox"));
+        fifoAxis1 = new QCheckBox(selectAxisWidget);
+        fifoAxis1->setObjectName(QString::fromUtf8("fifoAxis1"));
 
-        horizontalLayout_3->addWidget(checkBox);
+        horizontalLayout_3->addWidget(fifoAxis1);
 
-        checkBox_3 = new QCheckBox(selectAxisWidget);
-        checkBox_3->setObjectName(QString::fromUtf8("checkBox_3"));
+        fifoAxis2 = new QCheckBox(selectAxisWidget);
+        fifoAxis2->setObjectName(QString::fromUtf8("fifoAxis2"));
 
-        horizontalLayout_3->addWidget(checkBox_3);
+        horizontalLayout_3->addWidget(fifoAxis2);
 
-        checkBox_2 = new QCheckBox(selectAxisWidget);
-        checkBox_2->setObjectName(QString::fromUtf8("checkBox_2"));
+        fifoAxis3 = new QCheckBox(selectAxisWidget);
+        fifoAxis3->setObjectName(QString::fromUtf8("fifoAxis3"));
 
-        horizontalLayout_3->addWidget(checkBox_2);
+        horizontalLayout_3->addWidget(fifoAxis3);
 
-        checkBox_4 = new QCheckBox(selectAxisWidget);
-        checkBox_4->setObjectName(QString::fromUtf8("checkBox_4"));
+        fifoAxis4 = new QCheckBox(selectAxisWidget);
+        fifoAxis4->setObjectName(QString::fromUtf8("fifoAxis4"));
 
-        horizontalLayout_3->addWidget(checkBox_4);
+        horizontalLayout_3->addWidget(fifoAxis4);
 
 
         verticalLayout->addWidget(selectAxisWidget);
@@ -376,7 +395,7 @@ public:
 
         ButtonForm = new QWidget(FlyscanForm);
         ButtonForm->setObjectName(QString::fromUtf8("ButtonForm"));
-        ButtonForm->setGeometry(QRect(20, 670, 801, 51));
+        ButtonForm->setGeometry(QRect(20, 790, 801, 51));
         ButtonForm->setStyleSheet(QString::fromUtf8("font: 75 12pt \"MS Shell Dlg 2\";"));
         horizontalLayout_5 = new QHBoxLayout(ButtonForm);
         horizontalLayout_5->setObjectName(QString::fromUtf8("horizontalLayout_5"));
@@ -421,7 +440,7 @@ public:
 
         statForm = new QWidget(FlyscanForm);
         statForm->setObjectName(QString::fromUtf8("statForm"));
-        statForm->setGeometry(QRect(20, 560, 791, 51));
+        statForm->setGeometry(QRect(20, 520, 791, 51));
         statForm->setStyleSheet(QString::fromUtf8("#statForm{\n"
 "border: 2px solid;\n"
 "	background-color:rgb(255, 246, 202);\n"
@@ -431,9 +450,9 @@ public:
 "}"));
         horizontalLayout_7 = new QHBoxLayout(statForm);
         horizontalLayout_7->setObjectName(QString::fromUtf8("horizontalLayout_7"));
-        horizontalSpacer_12 = new QSpacerItem(40, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
+        horizontalSpacer_9 = new QSpacerItem(200, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
 
-        horizontalLayout_7->addItem(horizontalSpacer_12);
+        horizontalLayout_7->addItem(horizontalSpacer_9);
 
         label_10 = new QLabel(statForm);
         label_10->setObjectName(QString::fromUtf8("label_10"));
@@ -442,21 +461,9 @@ public:
 
         horizontalLayout_7->addWidget(label_10);
 
-        horizontalSpacer_9 = new QSpacerItem(40, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
+        horizontalSpacer_10 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
 
-        horizontalLayout_7->addItem(horizontalSpacer_9);
-
-        lineEdit_5 = new QLineEdit(statForm);
-        lineEdit_5->setObjectName(QString::fromUtf8("lineEdit_5"));
-        sizePolicy.setHeightForWidth(lineEdit_5->sizePolicy().hasHeightForWidth());
-        lineEdit_5->setSizePolicy(sizePolicy);
-        lineEdit_5->setMinimumSize(QSize(80, 35));
-
-        horizontalLayout_7->addWidget(lineEdit_5);
-
-        horizontalSpacer_8 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
-
-        horizontalLayout_7->addItem(horizontalSpacer_8);
+        horizontalLayout_7->addItem(horizontalSpacer_10);
 
         label_12 = new QLabel(statForm);
         label_12->setObjectName(QString::fromUtf8("label_12"));
@@ -465,19 +472,7 @@ public:
 
         horizontalLayout_7->addWidget(label_12);
 
-        horizontalSpacer_10 = new QSpacerItem(40, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
-
-        horizontalLayout_7->addItem(horizontalSpacer_10);
-
-        lineEdit_6 = new QLineEdit(statForm);
-        lineEdit_6->setObjectName(QString::fromUtf8("lineEdit_6"));
-        sizePolicy.setHeightForWidth(lineEdit_6->sizePolicy().hasHeightForWidth());
-        lineEdit_6->setSizePolicy(sizePolicy);
-        lineEdit_6->setMinimumSize(QSize(80, 35));
-
-        horizontalLayout_7->addWidget(lineEdit_6);
-
-        horizontalSpacer_11 = new QSpacerItem(40, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
+        horizontalSpacer_11 = new QSpacerItem(70, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
 
         horizontalLayout_7->addItem(horizontalSpacer_11);
 
@@ -493,7 +488,152 @@ public:
 "text-align: cente"));
         display = new QTextBrowser(FlyscanForm);
         display->setObjectName(QString::fromUtf8("display"));
-        display->setGeometry(QRect(20, 110, 791, 161));
+        display->setGeometry(QRect(20, 90, 791, 161));
+        horizontalWidget = new QWidget(FlyscanForm);
+        horizontalWidget->setObjectName(QString::fromUtf8("horizontalWidget"));
+        horizontalWidget->setGeometry(QRect(20, 580, 791, 181));
+        horizontalWidget->setStyleSheet(QString::fromUtf8("#horizontalWidget{\n"
+"background-color: rgb(215, 222, 255);\n"
+"border: 2px solid;\n"
+"    border: 2px solid gray;\n"
+"    border-radius: 10px;\n"
+"    padding: 0 8px;\n"
+"}"));
+        horizontalLayout = new QHBoxLayout(horizontalWidget);
+        horizontalLayout->setObjectName(QString::fromUtf8("horizontalLayout"));
+        horizontalSpacer_16 = new QSpacerItem(20, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
+
+        horizontalLayout->addItem(horizontalSpacer_16);
+
+        verticalLayout_4 = new QVBoxLayout();
+        verticalLayout_4->setObjectName(QString::fromUtf8("verticalLayout_4"));
+        label = new QLabel(horizontalWidget);
+        label->setObjectName(QString::fromUtf8("label"));
+        sizePolicy2.setHeightForWidth(label->sizePolicy().hasHeightForWidth());
+        label->setSizePolicy(sizePolicy2);
+        label->setMinimumSize(QSize(80, 0));
+        QFont font1;
+        font1.setFamily(QString::fromUtf8("MS Shell Dlg 2"));
+        font1.setPointSize(14);
+        font1.setBold(false);
+        font1.setItalic(false);
+        font1.setWeight(9);
+        label->setFont(font1);
+        label->setStyleSheet(QString::fromUtf8("QLabel{\n"
+"font: 75 14pt \"MS Shell Dlg 2\";\n"
+"}"));
+
+        verticalLayout_4->addWidget(label);
+
+        label_4 = new QLabel(horizontalWidget);
+        label_4->setObjectName(QString::fromUtf8("label_4"));
+        sizePolicy2.setHeightForWidth(label_4->sizePolicy().hasHeightForWidth());
+        label_4->setSizePolicy(sizePolicy2);
+        label_4->setMinimumSize(QSize(80, 0));
+        label_4->setFont(font1);
+        label_4->setStyleSheet(QString::fromUtf8("QLabel{\n"
+"font: 75 14pt \"MS Shell Dlg 2\";\n"
+"}"));
+
+        verticalLayout_4->addWidget(label_4);
+
+        label_14 = new QLabel(horizontalWidget);
+        label_14->setObjectName(QString::fromUtf8("label_14"));
+        sizePolicy2.setHeightForWidth(label_14->sizePolicy().hasHeightForWidth());
+        label_14->setSizePolicy(sizePolicy2);
+        label_14->setMinimumSize(QSize(80, 0));
+        label_14->setFont(font1);
+        label_14->setStyleSheet(QString::fromUtf8("QLabel{\n"
+"font: 75 14pt \"MS Shell Dlg 2\";\n"
+"}"));
+
+        verticalLayout_4->addWidget(label_14);
+
+        label_13 = new QLabel(horizontalWidget);
+        label_13->setObjectName(QString::fromUtf8("label_13"));
+        sizePolicy2.setHeightForWidth(label_13->sizePolicy().hasHeightForWidth());
+        label_13->setSizePolicy(sizePolicy2);
+        label_13->setMinimumSize(QSize(80, 0));
+        label_13->setFont(font1);
+        label_13->setStyleSheet(QString::fromUtf8("QLabel{\n"
+"font: 75 14pt \"MS Shell Dlg 2\";\n"
+"}"));
+
+        verticalLayout_4->addWidget(label_13);
+
+
+        horizontalLayout->addLayout(verticalLayout_4);
+
+        horizontalSpacer_8 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+
+        horizontalLayout->addItem(horizontalSpacer_8);
+
+        verticalWidget = new QWidget(horizontalWidget);
+        verticalWidget->setObjectName(QString::fromUtf8("verticalWidget"));
+        verticalWidget->setStyleSheet(QString::fromUtf8("\n"
+"font: 75 12pt \"MS Shell Dlg 2\";"));
+        verticalLayout_2 = new QVBoxLayout(verticalWidget);
+        verticalLayout_2->setObjectName(QString::fromUtf8("verticalLayout_2"));
+        meanAxis1 = new QTextBrowser(verticalWidget);
+        meanAxis1->setObjectName(QString::fromUtf8("meanAxis1"));
+
+        verticalLayout_2->addWidget(meanAxis1);
+
+        meanAxis2 = new QTextBrowser(verticalWidget);
+        meanAxis2->setObjectName(QString::fromUtf8("meanAxis2"));
+
+        verticalLayout_2->addWidget(meanAxis2);
+
+        meanAxis3 = new QTextBrowser(verticalWidget);
+        meanAxis3->setObjectName(QString::fromUtf8("meanAxis3"));
+
+        verticalLayout_2->addWidget(meanAxis3);
+
+        meanAxis4 = new QTextBrowser(verticalWidget);
+        meanAxis4->setObjectName(QString::fromUtf8("meanAxis4"));
+
+        verticalLayout_2->addWidget(meanAxis4);
+
+
+        horizontalLayout->addWidget(verticalWidget);
+
+        horizontalSpacer_15 = new QSpacerItem(150, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
+
+        horizontalLayout->addItem(horizontalSpacer_15);
+
+        verticalWidget_2 = new QWidget(horizontalWidget);
+        verticalWidget_2->setObjectName(QString::fromUtf8("verticalWidget_2"));
+        verticalWidget_2->setStyleSheet(QString::fromUtf8("\n"
+"font: 75 12pt \"MS Shell Dlg 2\";"));
+        verticalLayout_3 = new QVBoxLayout(verticalWidget_2);
+        verticalLayout_3->setObjectName(QString::fromUtf8("verticalLayout_3"));
+        stdDevAxis1 = new QTextBrowser(verticalWidget_2);
+        stdDevAxis1->setObjectName(QString::fromUtf8("stdDevAxis1"));
+
+        verticalLayout_3->addWidget(stdDevAxis1);
+
+        stdDevAxis2 = new QTextBrowser(verticalWidget_2);
+        stdDevAxis2->setObjectName(QString::fromUtf8("stdDevAxis2"));
+
+        verticalLayout_3->addWidget(stdDevAxis2);
+
+        stdDevAxis3 = new QTextBrowser(verticalWidget_2);
+        stdDevAxis3->setObjectName(QString::fromUtf8("stdDevAxis3"));
+
+        verticalLayout_3->addWidget(stdDevAxis3);
+
+        stdDevAxis4 = new QTextBrowser(verticalWidget_2);
+        stdDevAxis4->setObjectName(QString::fromUtf8("stdDevAxis4"));
+
+        verticalLayout_3->addWidget(stdDevAxis4);
+
+
+        horizontalLayout->addWidget(verticalWidget_2);
+
+        horizontalSpacer_12 = new QSpacerItem(40, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
+
+        horizontalLayout->addItem(horizontalSpacer_12);
+
 
         retranslateUi(FlyscanForm);
 
@@ -519,10 +659,10 @@ public:
         NbrOfAxisWidget->setItemText(3, QCoreApplication::translate("FlyscanForm", "4", nullptr));
 
         label_5->setText(QCoreApplication::translate("FlyscanForm", "Select Axis : ", nullptr));
-        checkBox->setText(QCoreApplication::translate("FlyscanForm", "Axis1", nullptr));
-        checkBox_3->setText(QCoreApplication::translate("FlyscanForm", "Axis2", nullptr));
-        checkBox_2->setText(QCoreApplication::translate("FlyscanForm", "Axis3", nullptr));
-        checkBox_4->setText(QCoreApplication::translate("FlyscanForm", "Axis4", nullptr));
+        fifoAxis1->setText(QCoreApplication::translate("FlyscanForm", "Axis1", nullptr));
+        fifoAxis2->setText(QCoreApplication::translate("FlyscanForm", "Axis2", nullptr));
+        fifoAxis3->setText(QCoreApplication::translate("FlyscanForm", "Axis3", nullptr));
+        fifoAxis4->setText(QCoreApplication::translate("FlyscanForm", "Axis4", nullptr));
         label_8->setText(QCoreApplication::translate("FlyscanForm", "Save folder", nullptr));
         pushButton->setText(QCoreApplication::translate("FlyscanForm", "Browse", nullptr));
         StartButton->setText(QCoreApplication::translate("FlyscanForm", "Start scan", nullptr));
@@ -531,6 +671,10 @@ public:
         label_10->setText(QCoreApplication::translate("FlyscanForm", "Mean", nullptr));
         label_12->setText(QCoreApplication::translate("FlyscanForm", "Standard deviation", nullptr));
         pushButton_7->setText(QCoreApplication::translate("FlyscanForm", "Continuous scan", nullptr));
+        label->setText(QCoreApplication::translate("FlyscanForm", "Axis1", nullptr));
+        label_4->setText(QCoreApplication::translate("FlyscanForm", "Axis2", nullptr));
+        label_14->setText(QCoreApplication::translate("FlyscanForm", "Axis3", nullptr));
+        label_13->setText(QCoreApplication::translate("FlyscanForm", "Axis4", nullptr));
     } // retranslateUi
 
 };

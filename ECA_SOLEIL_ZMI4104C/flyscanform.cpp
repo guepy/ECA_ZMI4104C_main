@@ -4,6 +4,7 @@
 #include <QFileDialog>
 #include <QFile>
 #include <QIODevice>
+#include <string.h>
 #include <QMessageBox>
 FlyscanForm::FlyscanForm(QWidget *parent) :
     QWidget(parent),
@@ -11,22 +12,34 @@ FlyscanForm::FlyscanForm(QWidget *parent) :
 {
     ui->setupUi(this);
     ui->selectAxisWidget->setEnabled(false);
-
+    char txt[1024]="";
     ui->spinBox->setMaximum(16384);//16384 points max
     ui->spinBox->setMinimum(1);//1 point min
-    ui->spinBox_3->setMinimum(300);//min freq
-    ui->spinBox_3->setMaximum(10e6);//max freq
+    ui->spinBox_3->setMinimum(3e2);//min freq
+    ui->spinBox_3->setMaximum(1e6);//max freq
     ui->spinBox_3->setEnabled(false);
     ui->spinBox_2->setEnabled(false);
     ui->spinBox->setEnabled(false);
 
     ui->spinBox_2->setMaximum(1.44e6);//1.44 sec max
     ui->spinBox_2->setMinimum(3.334e3);//3.33 ms sec min
+    strcpy_s(extFolderName,(QDir::currentPath()).toStdString().c_str());
+    ui->saveFile->setStyleSheet("font: 75 12pt \"MS Shell Dlg 2\";");
+    ui->saveFile->setText(extFolderName);
+    ui->saveFile->setDisabled(true);
+    ui->display->append("Choose flyscan parameter ");
+    sprintf(txt,"default save folder %s ", extFolderName);
+    ui->display->append(txt);
+    double val[4]={0.0,0.0,0.0,0.0};
+    for(int i=0;i<4;i++)
+        axisTab[i]=i+1;
+    on_flyscanStatValues_received((unsigned char *)axisTab, val,val);
+    for(int i=0;i<4;i++)
+        axisTab[i]=0;
 }
 
 FlyscanForm::~FlyscanForm()
 {
-
     delete ui;
 }
 
@@ -44,20 +57,24 @@ void FlyscanForm::closeForm(){
 void FlyscanForm::on_comboBox_currentIndexChanged(int index)
 {
     switch (index) {
-    case 0:
+    case 0: //RAM DATA FLYSCAN MODE
+        ui->display->append("RAM DATA FLYSCAN MODE activated ");
         ui->selectAxisWidget->setEnabled(false);
         ui->NbrOfAxisWidget->setEnabled(true);
         ui->spinBox->setMaximum(16384);//16384 points max
         ui->spinBox_3->setMinimum(300);//min freq
         ui->spinBox_3->setMaximum(10e6);//max freq
         ui->spinBox_2->setMaximum(1.44e6);//1.44 sec max
+        flyscanModeIndex=0;
         break;
-    case 1:
+    case 1: // FIFO FLYSCAN MODE
+        ui->display->append("FIFO FLYSCAN MODE activated ");
         ui->NbrOfAxisWidget->setEnabled(false);
         ui->selectAxisWidget->setEnabled(true);
         ui->spinBox_3->setMinimum(0);//min freq
         ui->spinBox_3->setMaximum(10e6);//max freq
         ui->spinBox->setMaximum(10e6);//1e6 points max
+        flyscanModeIndex=1;
 
         break;
     default:
@@ -72,6 +89,7 @@ void FlyscanForm::on_itCheckBox_clicked()
         if(paramNbr>1){
             ui->display->setTextColor(QColor("red"));
             ui->display->append("Can not choose more than 2 scan parameters");
+            ui->display->setTextColor(QColor("dark"));
             ui->itCheckBox->setCheckState(Qt::Unchecked);
             ui->spinBox_2->setEnabled(false);
         }
@@ -96,6 +114,7 @@ void FlyscanForm::on_freqCheckBox_clicked()
         if(paramNbr>1){
             ui->display->setTextColor(QColor("red"));
             ui->display->append("Can not choose more than 2 scan parameters");
+            ui->display->setTextColor("dark");
             ui->freqCheckBox->setCheckState(Qt::Unchecked);
             ui->spinBox_3->setEnabled(false);
         }
@@ -121,6 +140,7 @@ void FlyscanForm::on_npCheckBox_clicked()
         if(paramNbr>1){
             ui->display->setTextColor(QColor("red"));
             ui->display->append("Can not choose more than 2 scan parameters");
+            ui->display->setTextColor("dark");
             ui->npCheckBox->setCheckState(Qt::Unchecked);
             ui->spinBox->setEnabled(false);
         }
@@ -152,28 +172,36 @@ void FlyscanForm::on_pushButton_clicked()
 
 void FlyscanForm::selectFile()
 {
+    char txt[1024];
     QString folderName = QFileDialog::getExistingDirectory(0, ("Select Output Folder"), QDir::currentPath());
     if (folderName.isEmpty())
             return;
-        else {
+        else
+    {
             ui->saveFile->setStyleSheet("font: 75 12pt \"MS Shell Dlg 2\";");
             ui->saveFile->setText(folderName);
             ui->saveFile->setDisabled(true);
             std::string fname = folderName.toStdString();
             //cstr = new char [fname.size()+1];
             strcpy_s( extFolderName, fname.c_str() );
+            sprintf(txt,"save folder changed to %s \n", extFolderName);
+            ui->display->append(txt);
 
-            //extFolderName = folderName.toStdString().C_str();
-        }
+    }
 }
 
 void FlyscanForm::on_StartButton_clicked()
 {
+
+    ui->ButtonForm->setEnabled(false);// don't press start twice in succession
     if(paramNbr<2){
         ui->display->setTextColor("red");
         ui->display->append("You should provide at least 2 scan parameters");
+        ui->display->setTextColor("dark");
+        ui->ButtonForm->setEnabled(true);
     }
     else{
+
         bool ok=false;
         switch (scanParam) {
             case 4:
@@ -181,12 +209,14 @@ void FlyscanForm::on_StartButton_clicked()
                 timeValue=ui->spinBox_2->text().toDouble(&ok);
                 timeValue= timeValue*1e-6; //convert to sec
                 sizeValue= (timeValue) * freqValue;
+                ui->spinBox->setValue(sizeValue);
                 qDebug()<<"param: freq: "<<freqValue<<"Hz, it: "<<timeValue<<"s, size: "<<sizeValue;
             break;
             case 6:
                 freqValue=ui->spinBox_3->text().toDouble(&ok);
                 sizeValue =ui->spinBox->text().toDouble(&ok);
                 timeValue= (sizeValue/ freqValue);
+                ui->spinBox_2->setValue(timeValue*1e6);
                 qDebug()<<"param: freq: "<<freqValue<<"Hz, it: "<<timeValue<<"s, size: "<<sizeValue;
             break;
             case 8:
@@ -194,15 +224,150 @@ void FlyscanForm::on_StartButton_clicked()
                 timeValue=ui->spinBox_2->text().toDouble(&ok);
                 timeValue= timeValue*1e-6; //convert to sec
                 freqValue= sizeValue/(timeValue );
+                ui->spinBox_3->setValue(freqValue);
                 qDebug()<<"param: freq: "<<freqValue<<"Hz, it: "<<timeValue<<"s, size: "<<sizeValue;
             break;
             default:
 
             break;
         }
-        nbrAxis=ui->NbrOfAxisWidget->currentIndex()+1;
-        emit ramDataFlyscanRequest(freqValue, timeValue, sizeValue, nbrAxis);
-        qDebug()<<"Nbr of axis: "<<nbrAxis;
+        if(!flyscanModeIndex){
+            nbrAxis=ui->NbrOfAxisWidget->currentIndex()+1;
+            ui->display->append("Setting up RAMDATA FLYSCAN...");
+            emit ramDataFlyscanRequest(freqValue, timeValue, sizeValue, nbrAxis);
+        }
+        else{
+            if(!nbrAxis){
+                ui->display->setTextColor(QColor("red"));
+                ui->display->append("Select axis on which to perform continuous scan");
+                ui->display->setTextColor(QColor("dark"));
+            }
+            else{
+                emit fifoFlyscanRequest(freqValue, timeValue, sizeValue, nbrAxis);
+                ui->display->append("Setting up FIFO FLYSCAN...");
+                qDebug()<<"emit fifoFlyscanRequest signal";
+            }
+        }
+    }
+
+}
+
+
+void FlyscanForm::on_flyscanProcTerm_received(){
+    ui->ButtonForm->setEnabled(true);
+}
+void FlyscanForm::on_fifoAxis1_clicked()
+{
+    if(ui->fifoAxis1->isChecked()){
+        axisTab[0]=1;
+        nbrAxis++;
+    }
+    else{
+        axisTab[0]=0;
+        nbrAxis--;
+    }
+}
+void FlyscanForm::on_fifoAxis2_clicked()
+{
+    if(ui->fifoAxis2->isChecked()){
+        axisTab[1]=2;
+        nbrAxis++;
+    }
+    else{
+        axisTab[1]=0;
+        nbrAxis--;
     }
 }
 
+void FlyscanForm::on_fifoAxis3_clicked()
+{
+    if(ui->fifoAxis3->isChecked()){
+        axisTab[2]=3;
+        nbrAxis++;
+    }
+    else{
+        axisTab[2]=0;
+        nbrAxis--;
+    }
+}
+void FlyscanForm::on_fifoAxis4_clicked()
+{
+    if(ui->fifoAxis4->isChecked()){
+        axisTab[3]=4;
+        nbrAxis++;
+    }
+    else{
+        axisTab[3]=0;
+        nbrAxis--;
+    }
+}
+
+void FlyscanForm::on_flyscanErrorCode_recieved(int err_code){
+    switch (err_code) {
+    case 0:
+        ui->display->setTextColor(QColor("green"));
+        ui->display->append("flyscan operation successful");
+        ui->display->setTextColor(QColor("dark"));
+        break;
+    case 1:
+        ui->display->setTextColor(QColor("green"));
+        ui->display->append("flyscan configuration successful");
+        ui->display->setTextColor(QColor("dark"));
+        break;
+    case 2:
+        ui->display->setTextColor(QColor("green"));
+        ui->display->append("data have been successfully saved to the save folder");
+        ui->display->setTextColor(QColor("dark"));
+        break;
+    case -1:
+        ui->display->setTextColor(QColor("red"));
+        ui->display->append("Flyscan operation failed");
+        ui->display->setTextColor(QColor("dark"));
+        break;
+    case -100:
+        ui->display->setTextColor(QColor("red"));
+        ui->display->append("Overlapping detected, somme data may have been corrupted ");
+        ui->display->append("Try to adjust scan parameter ");
+        ui->display->setTextColor(QColor("dark"));
+        break;
+    default:
+        break;
+    }
+}
+
+
+void FlyscanForm::on_flyscanStatValues_received(unsigned char* axisTab, double* mean, double* stdDev){
+    qDebug()<<"flyscan stat val";
+
+    for(int i=0; i<4;i++){
+        switch ((unsigned int)axisTab[i]) {
+        case 1:
+            ui->meanAxis1->setText(QString::number(mean[0]));
+            ui->meanAxis1->setAlignment(Qt::AlignCenter);
+            ui->stdDevAxis1->setText(QString::number(stdDev[0]));
+            ui->stdDevAxis1->setAlignment(Qt::AlignCenter);
+        break;
+        case 2:
+            ui->meanAxis2->setText(QString::number(mean[1]));
+            ui->meanAxis2->setAlignment(Qt::AlignCenter);
+            ui->stdDevAxis2->setText(QString::number(stdDev[1]));
+            ui->stdDevAxis2->setAlignment(Qt::AlignCenter);
+        break;
+        case 3:
+            ui->meanAxis3->setText(QString::number(mean[2]));
+            ui->meanAxis3->setAlignment(Qt::AlignCenter);
+            ui->stdDevAxis3->setText(QString::number(stdDev[2]));
+            ui->stdDevAxis3->setAlignment(Qt::AlignCenter);
+        break;
+        case 4:
+            ui->meanAxis4->setText(QString::number(mean[3]));
+            ui->meanAxis4->setAlignment(Qt::AlignCenter);
+            ui->stdDevAxis4->setText(QString::number(stdDev[3]));
+            ui->stdDevAxis4->setAlignment(Qt::AlignCenter);
+        break;
+        default:
+        break;
+        }
+    }
+
+}

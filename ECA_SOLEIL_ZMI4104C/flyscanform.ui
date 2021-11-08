@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>834</width>
-    <height>730</height>
+    <height>850</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -60,7 +60,7 @@ border:  2px solid white;
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>290</y>
+     <y>260</y>
      <width>791</width>
      <height>251</height>
     </rect>
@@ -439,28 +439,28 @@ font: 75 14pt &quot;MS Shell Dlg 2&quot;;
         </spacer>
        </item>
        <item>
-        <widget class="QCheckBox" name="checkBox">
+        <widget class="QCheckBox" name="fifoAxis1">
          <property name="text">
           <string>Axis1</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QCheckBox" name="checkBox_3">
+        <widget class="QCheckBox" name="fifoAxis2">
          <property name="text">
           <string>Axis2</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QCheckBox" name="checkBox_2">
+        <widget class="QCheckBox" name="fifoAxis3">
          <property name="text">
           <string>Axis3</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QCheckBox" name="checkBox_4">
+        <widget class="QCheckBox" name="fifoAxis4">
          <property name="text">
           <string>Axis4</string>
          </property>
@@ -543,7 +543,7 @@ font: 75 14pt &quot;MS Shell Dlg 2&quot;;
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>670</y>
+     <y>790</y>
      <width>801</width>
      <height>51</height>
     </rect>
@@ -635,7 +635,7 @@ color: white;</string>
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>560</y>
+     <y>520</y>
      <width>791</width>
      <height>51</height>
     </rect>
@@ -651,7 +651,7 @@ border: 2px solid;
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout_7">
     <item>
-     <spacer name="horizontalSpacer_12">
+     <spacer name="horizontalSpacer_9">
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
@@ -660,7 +660,7 @@ border: 2px solid;
       </property>
       <property name="sizeHint" stdset="0">
        <size>
-        <width>40</width>
+        <width>200</width>
         <height>20</height>
        </size>
       </property>
@@ -678,39 +678,7 @@ color: blue;</string>
      </widget>
     </item>
     <item>
-     <spacer name="horizontalSpacer_9">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-      <property name="sizeType">
-       <enum>QSizePolicy::Fixed</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>40</width>
-        <height>20</height>
-       </size>
-      </property>
-     </spacer>
-    </item>
-    <item>
-     <widget class="QLineEdit" name="lineEdit_5">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="minimumSize">
-       <size>
-        <width>80</width>
-        <height>35</height>
-       </size>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <spacer name="horizontalSpacer_8">
+     <spacer name="horizontalSpacer_10">
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
@@ -737,38 +705,6 @@ color: blue;</string>
      </widget>
     </item>
     <item>
-     <spacer name="horizontalSpacer_10">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-      <property name="sizeType">
-       <enum>QSizePolicy::Fixed</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>40</width>
-        <height>20</height>
-       </size>
-      </property>
-     </spacer>
-    </item>
-    <item>
-     <widget class="QLineEdit" name="lineEdit_6">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="minimumSize">
-       <size>
-        <width>80</width>
-        <height>35</height>
-       </size>
-      </property>
-     </widget>
-    </item>
-    <item>
      <spacer name="horizontalSpacer_11">
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
@@ -778,7 +714,7 @@ color: blue;</string>
       </property>
       <property name="sizeHint" stdset="0">
        <size>
-        <width>40</width>
+        <width>70</width>
         <height>20</height>
        </size>
       </property>
@@ -812,11 +748,273 @@ text-align: cente</string>
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>110</y>
+     <y>90</y>
      <width>791</width>
      <height>161</height>
     </rect>
    </property>
+  </widget>
+  <widget class="QWidget" name="horizontalWidget" native="true">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>580</y>
+     <width>791</width>
+     <height>181</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">#horizontalWidget{
+background-color: rgb(215, 222, 255);
+border: 2px solid;
+    border: 2px solid gray;
+    border-radius: 10px;
+    padding: 0 8px;
+}</string>
+   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <item>
+     <spacer name="horizontalSpacer_16">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeType">
+       <enum>QSizePolicy::Fixed</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item>
+     <layout class="QVBoxLayout" name="verticalLayout_4">
+      <item>
+       <widget class="QLabel" name="label">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>80</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <family>MS Shell Dlg 2</family>
+          <pointsize>14</pointsize>
+          <weight>9</weight>
+          <italic>false</italic>
+          <bold>false</bold>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QLabel{
+font: 75 14pt &quot;MS Shell Dlg 2&quot;;
+}</string>
+        </property>
+        <property name="text">
+         <string>Axis1</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_4">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>80</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <family>MS Shell Dlg 2</family>
+          <pointsize>14</pointsize>
+          <weight>9</weight>
+          <italic>false</italic>
+          <bold>false</bold>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QLabel{
+font: 75 14pt &quot;MS Shell Dlg 2&quot;;
+}</string>
+        </property>
+        <property name="text">
+         <string>Axis2</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_14">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>80</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <family>MS Shell Dlg 2</family>
+          <pointsize>14</pointsize>
+          <weight>9</weight>
+          <italic>false</italic>
+          <bold>false</bold>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QLabel{
+font: 75 14pt &quot;MS Shell Dlg 2&quot;;
+}</string>
+        </property>
+        <property name="text">
+         <string>Axis3</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_13">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>80</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <family>MS Shell Dlg 2</family>
+          <pointsize>14</pointsize>
+          <weight>9</weight>
+          <italic>false</italic>
+          <bold>false</bold>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QLabel{
+font: 75 14pt &quot;MS Shell Dlg 2&quot;;
+}</string>
+        </property>
+        <property name="text">
+         <string>Axis4</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <spacer name="horizontalSpacer_8">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>40</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item>
+     <widget class="QWidget" name="verticalWidget" native="true">
+      <property name="styleSheet">
+       <string notr="true">
+font: 75 12pt &quot;MS Shell Dlg 2&quot;;</string>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <widget class="QTextBrowser" name="meanAxis1"/>
+       </item>
+       <item>
+        <widget class="QTextBrowser" name="meanAxis2"/>
+       </item>
+       <item>
+        <widget class="QTextBrowser" name="meanAxis3"/>
+       </item>
+       <item>
+        <widget class="QTextBrowser" name="meanAxis4"/>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <spacer name="horizontalSpacer_15">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeType">
+       <enum>QSizePolicy::Fixed</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>150</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item>
+     <widget class="QWidget" name="verticalWidget_2" native="true">
+      <property name="styleSheet">
+       <string notr="true">
+font: 75 12pt &quot;MS Shell Dlg 2&quot;;</string>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_3">
+       <item>
+        <widget class="QTextBrowser" name="stdDevAxis1"/>
+       </item>
+       <item>
+        <widget class="QTextBrowser" name="stdDevAxis2"/>
+       </item>
+       <item>
+        <widget class="QTextBrowser" name="stdDevAxis3"/>
+       </item>
+       <item>
+        <widget class="QTextBrowser" name="stdDevAxis4"/>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <spacer name="horizontalSpacer_12">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeType">
+       <enum>QSizePolicy::Fixed</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>40</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+   </layout>
   </widget>
  </widget>
  <resources>

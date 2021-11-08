@@ -6,7 +6,6 @@
 
 SIS1100_Device_Struct* dataProcessing::dev = new SIS1100_Device_Struct;
 std::mutex dataProcessing::dev_mutex;
-
 int dataProcessing::currentBiasMode=0;
 
 MainWindow::MainWindow(QWidget *parent)
@@ -58,6 +57,8 @@ MainWindow::MainWindow(QWidget *parent)
         ledsColorPrev[i] = 0;
 }
 
+    qDebug()<<"Windows_address 1"<<dataProcessing::base_A24D32_ptr;
+    qDebug()<<"Windows_address 2"<<dataProcessing::base_A24D32_FR_ptr;
     //*-------------CEC Hardware signals-slots---------------------------------------
 
     //connect(this, &MainWindow::configureCEChardwareRequest, dataProc, &dataProcessing::on_configureCECHardware_recieved);
@@ -70,24 +71,16 @@ MainWindow::MainWindow(QWidget *parent)
     connect(dataProc, &dataProcessing::initAxisComplete,this, &MainWindow::on_initAxisComplete_recieved);
 
 
-    connect(flyscanForm, &FlyscanForm::ramDataFlyscanRequest,this, &MainWindow::on_ramDataFlyscanRequest_recieved);
-
+    //connect(flyscanForm, &FlyscanForm::ramDataFlyscanRequest,this, &MainWindow::on_ramDataFlyscanRequest_recieved);
 
     connect(dataProc, &dataProcessing::initAxisComplete,this, &MainWindow::on_initAxisComplete_recieved);
-
     //*
     gtimer = new QTimer(this);
     connect(gtimer, &QTimer::timeout, this, QOverload<>::of(&MainWindow::refresh_screen));
     //timer->setSingleShot(true);
     gtimer->setInterval(100);
     startApp =0;
-//*/
 
-    //-----------------------LED's color on Axis--------------------------
-    //dataProc->refreshLEDsStatus(ledsColor);
-    //---------------------init system boards-----------------------------
-
-    //*/
     initBoards();
 
 }
@@ -119,7 +112,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::refresh_screen(){
 
-
+/*
     qDebug()<<"timer timeout";
     if((dataProcessing::dev_mutex).try_lock()){
         refreshLEDsStatus();
@@ -133,7 +126,7 @@ void MainWindow::refresh_screen(){
     else{
         ui->textBrowser_2->append("Processing some data...");
     }
-
+*/
 }
 void MainWindow::updateLeftBlockValue(){
 
@@ -292,7 +285,6 @@ void MainWindow::on_resetButtonAxis3_clicked()
 
 void MainWindow::on_resetButtonAxis4_clicked()
 {
-
     ui->textBrowser_2->append("Reseting axis 4...");
     scaledPosition[3]=0.0;
     emit resetAxisRequest(4);
@@ -306,9 +298,14 @@ void MainWindow::on_pushButton_13_clicked()
 void MainWindow::openFlyscanForm(){
     flyscanForm=new FlyscanForm;
     //--------------flyscanForm signals-slots --------------------------------------
+
+    connect(this, &MainWindow::flyscanErrorCode, flyscanForm, &FlyscanForm::on_flyscanErrorCode_recieved);
+    connect(this, &MainWindow::flyscanStatValues, flyscanForm, &FlyscanForm::on_flyscanStatValues_received);
+    connect(this, &MainWindow::flyscanProcTerm, flyscanForm, &FlyscanForm::on_flyscanProcTerm_received);
     connect(flyscanForm, &FlyscanForm::closeThis, this, &MainWindow::closeFlyscanForm);
     connect(this, &MainWindow::closeFlyscanFormRequest, flyscanForm, &FlyscanForm::closeForm);
     connect(flyscanForm, &FlyscanForm::ramDataFlyscanRequest,this, &MainWindow::on_ramDataFlyscanRequest_recieved);
+    connect(flyscanForm, &FlyscanForm::fifoFlyscanRequest,this, &MainWindow::on_fifoFlyscanRequest_recieved);
     flyscanForm->show();
     fsForm_int=1;
 }
@@ -815,13 +812,16 @@ void MainWindow::on_ceDisplayAxis_currentIndexChanged(int index)
 void MainWindow::on_ramDataFlyscanRequest_recieved(double freq, double time, double size, unsigned int nbr){
     qDebug()<<"MainWindow::on_ramDataFlyscanRequest_recieved";
     dataProcessing* flyscanWorker = new dataProcessing;
+    connect(flyscanWorker, &dataProcessing::flyscanErrorCode, this, &MainWindow::flyscanErrorCode);
+    connect(flyscanWorker, &dataProcessing::flyscanStatValues, this, &MainWindow::flyscanStatValues);
+    connect(flyscanWorker, &dataProcessing::flyscanProcTerm, this, &MainWindow::flyscanProcTerm);
     QThread *flyscanAxisThread = new QThread;
     flyscanWorker->flyscanFreqValue=freq;
     flyscanWorker->flyscanTimeValue=time;
     flyscanWorker->flyscanSizeValue=size;
-    flyscanWorker->ramDataFlyscanAxis=nbr;
+    flyscanWorker->axisNbr=nbr;
     strcpy_s(flyscanWorker->flyscanPath, flyscanForm->extFolderName);
-    qDebug()<<flyscanWorker->flyscanPath;
+    qDebug()<<"save values to: "<<flyscanWorker->flyscanPath;
     flyscanWorker->moveToThread(flyscanAxisThread);
     //A slot can be connected to a given signal if the signal has at least as many arguments as the slot
     connect(flyscanAxisThread, &QThread::started, flyscanWorker, &dataProcessing::on_configureFlyscanRequest_recieved);
@@ -832,17 +832,30 @@ void MainWindow::on_ramDataFlyscanRequest_recieved(double freq, double time, dou
 
 }
 
-void MainWindow::configureFlyscanThreadEvent(){
-    qDebug()<<"Starting ram data flyscan thread event";
 
-    qDebug()<<"exiting";
-}
+void MainWindow::on_fifoFlyscanRequest_recieved(double freq, double time, double size, unsigned int nbr){
+    qDebug()<<"MainWindow::on_fifoFlyscanRequest_recieved";
+    dataProcessing* flyscanWorker = new dataProcessing;
+    connect(flyscanWorker, &dataProcessing::flyscanErrorCode, this, &MainWindow::flyscanErrorCode);
+    connect(flyscanWorker, &dataProcessing::flyscanStatValues, this, &MainWindow::flyscanStatValues);
+    connect(flyscanWorker, &dataProcessing::flyscanProcTerm, this, &MainWindow::flyscanProcTerm);
+    QThread *flyscanAxisThread = new QThread;
+    flyscanWorker->flyscanFreqValue=freq;
+    flyscanWorker->flyscanTimeValue=time;
+    flyscanWorker->flyscanSizeValue=size;
+    flyscanWorker->axisNbr=nbr;
+    qDebug()<<"axisnbr in mainwindow: "<<nbr;
+    for(int h=0;h<4;h++){
+        flyscanWorker->fifoFlyscanAxisTab[h]= flyscanForm->axisTab[h];
+    }
+    strcpy_s(flyscanWorker->flyscanPath, flyscanForm->extFolderName);
+    qDebug()<<flyscanWorker->flyscanPath;
+    flyscanWorker->moveToThread(flyscanAxisThread);
+    //A slot can be connected to a given signal if the signal has at least as many arguments as the slot
+    connect(flyscanAxisThread, &QThread::started, flyscanWorker, &dataProcessing::on_configureFifoFlyscanRequest_recieved);
+    //connect(flyscanWorker, &dataProcessing::flyscanProcTerm, this, &MainWindow::on_initAxisComplete_recieved);
+    connect(flyscanWorker, &dataProcessing::flyscanProcTerm, flyscanAxisThread, &QThread::terminate); //causing the bug
+    connect(flyscanAxisThread, &QThread::finished, flyscanWorker,  &dataProcessing::deleteLater);
+    flyscanAxisThread->start();
 
-void MainWindow::startRamDataFlyscan(double freq, double time, double size, unsigned int nbr){
-/*
-    dataProcessing *worker = new dataProcessing;
-    //dataProcessing::dev_mutex.lock();
-    worker->on_configureFlyscanRequest_recieved(freq,time, size,nbr);
-    //dataProcessing::dev_mutex.unlock();
-    */
 }

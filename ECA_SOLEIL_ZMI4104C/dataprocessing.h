@@ -25,18 +25,23 @@ public:
     double flyscanFreqValue=0.0;
     double  flyscanTimeValue=0.0;
     double flyscanSizeValue=0.0;
-    unsigned int ramDataFlyscanAxis=0;
-    char flyscanPath[1024];
+    char fifoFlyscanAxisTab[4]={0,0,0,0};
+    unsigned int axisNbr=0;
+    char flyscanPath[1026];
+    static unsigned int * base_A24D32_ptr;
+    static unsigned int * base_A24D32_FR_ptr;
+    double meanVal[4]={0.0,0.0,0.0,0.0,};
+    double stdDevVal[4]={0.0,0.0,0.0,0.0,};
 private:
     static SIS1100_Device_Struct* dev;
-    unsigned int * base_A24D32_ptr=nullptr;
-    unsigned int * base_A24D32_FR_ptr=nullptr;
     //static bool accessToken;
 signals:
     void initBoardsDone();
     void initAxisComplete();
     void cecConfigComplete();
     void flyscanProcTerm();
+    void flyscanErrorCode(int err_code);
+    void flyscanStatValues(unsigned char* axisTab, double* mean, double* stdDev);
 public slots:
     int getLEDsColor(int*);
     void updatePVT(int index, double* val);
@@ -50,6 +55,7 @@ public slots:
     int  on_stopCECHardware_recieved(unsigned int axis);
     void on_changeBiasModeRequest_recieved();
     int  on_configureFlyscanRequest_recieved();
+    int  on_configureFifoFlyscanRequest_recieved();
     void on_OffsetPosition_Changed(double* offPosPtr);
     void on_PresetPosition_Changed(double* presPosPtr);
 };

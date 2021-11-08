@@ -22,8 +22,8 @@ QT_BEGIN_MOC_NAMESPACE
 QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 struct qt_meta_stringdata_MainWindow_t {
-    QByteArrayData data[95];
-    char stringdata0[1908];
+    QByteArrayData data[102];
+    char stringdata0[1986];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -60,73 +60,80 @@ QT_MOC_LITERAL(24, 379, 22), // "stopCEChardwareRequest"
 QT_MOC_LITERAL(25, 402, 22), // "updateCECRatiosRequest"
 QT_MOC_LITERAL(26, 425, 9), // "CEratios*"
 QT_MOC_LITERAL(27, 435, 8), // "ceRatios"
-QT_MOC_LITERAL(28, 444, 15), // "openFlyscanForm"
-QT_MOC_LITERAL(29, 460, 16), // "closeFlyscanForm"
-QT_MOC_LITERAL(30, 477, 17), // "reopenFlyscanForm"
-QT_MOC_LITERAL(31, 495, 25), // "on_m_settingsMenu_clicked"
-QT_MOC_LITERAL(32, 521, 8), // "QAction*"
-QT_MOC_LITERAL(33, 530, 18), // "reopenSettingsForm"
-QT_MOC_LITERAL(34, 549, 16), // "openSettingsForm"
-QT_MOC_LITERAL(35, 566, 17), // "closeSettingsForm"
-QT_MOC_LITERAL(36, 584, 22), // "openPresetPositionForm"
-QT_MOC_LITERAL(37, 607, 23), // "closePresetPositionForm"
-QT_MOC_LITERAL(38, 631, 24), // "reopenPresetPositionForm"
-QT_MOC_LITERAL(39, 656, 22), // "openPositionOffsetForm"
-QT_MOC_LITERAL(40, 679, 23), // "closePositionOffsetForm"
-QT_MOC_LITERAL(41, 703, 24), // "reopenPositionOffsetForm"
-QT_MOC_LITERAL(42, 728, 18), // "openCustomplotForm"
-QT_MOC_LITERAL(43, 747, 19), // "closeCustomplotForm"
-QT_MOC_LITERAL(44, 767, 20), // "reopenCustomplotForm"
-QT_MOC_LITERAL(45, 788, 14), // "refresh_screen"
-QT_MOC_LITERAL(46, 803, 20), // "on_OffsetPos_Changed"
-QT_MOC_LITERAL(47, 824, 9), // "OffPosPtr"
-QT_MOC_LITERAL(48, 834, 20), // "on_PresetPos_Changed"
-QT_MOC_LITERAL(49, 855, 24), // "on_pushButton_11_clicked"
-QT_MOC_LITERAL(50, 880, 24), // "on_pushButton_13_clicked"
-QT_MOC_LITERAL(51, 905, 24), // "on_pushButton_12_clicked"
-QT_MOC_LITERAL(52, 930, 23), // "on_toolButton_2_clicked"
-QT_MOC_LITERAL(53, 954, 28), // "on_initAxisComplete_recieved"
-QT_MOC_LITERAL(54, 983, 23), // "on_pushButton_7_clicked"
-QT_MOC_LITERAL(55, 1007, 27), // "on_resetButtonAxis1_clicked"
-QT_MOC_LITERAL(56, 1035, 27), // "on_resetButtonAxis2_clicked"
-QT_MOC_LITERAL(57, 1063, 27), // "on_resetButtonAxis3_clicked"
-QT_MOC_LITERAL(58, 1091, 27), // "on_resetButtonAxis4_clicked"
-QT_MOC_LITERAL(59, 1119, 30), // "onBoardsInitializationComplete"
-QT_MOC_LITERAL(60, 1150, 17), // "refreshLEDsStatus"
-QT_MOC_LITERAL(61, 1168, 10), // "initBoards"
-QT_MOC_LITERAL(62, 1179, 37), // "on_leftBlockUnits_currentInde..."
-QT_MOC_LITERAL(63, 1217, 38), // "on_rightBlockUnits_currentInd..."
-QT_MOC_LITERAL(64, 1256, 20), // "updateLeftBlockValue"
-QT_MOC_LITERAL(65, 1277, 20), // "selectLeftBlockValue"
-QT_MOC_LITERAL(66, 1298, 21), // "updateRightBlockValue"
-QT_MOC_LITERAL(67, 1320, 21), // "selectRightBlockValue"
-QT_MOC_LITERAL(68, 1342, 15), // "updateCECRatios"
-QT_MOC_LITERAL(69, 1358, 23), // "on_pushButton_8_clicked"
-QT_MOC_LITERAL(70, 1382, 26), // "processCecAxisClickedEvent"
-QT_MOC_LITERAL(71, 1409, 4), // "int*"
-QT_MOC_LITERAL(72, 1414, 13), // "axisListIndex"
-QT_MOC_LITERAL(73, 1428, 10), // "QCheckBox*"
-QT_MOC_LITERAL(74, 1439, 15), // "cecAxisCheckBox"
-QT_MOC_LITERAL(75, 1455, 25), // "cecAxisClickedThreadEvent"
-QT_MOC_LITERAL(76, 1481, 29), // "on_resetButtonAllAxis_clicked"
-QT_MOC_LITERAL(77, 1511, 33), // "on_ramDataFlyscanRequest_reci..."
-QT_MOC_LITERAL(78, 1545, 4), // "freq"
-QT_MOC_LITERAL(79, 1550, 4), // "size"
-QT_MOC_LITERAL(80, 1555, 4), // "time"
-QT_MOC_LITERAL(81, 1560, 3), // "nbr"
-QT_MOC_LITERAL(82, 1564, 27), // "configureFlyscanThreadEvent"
-QT_MOC_LITERAL(83, 1592, 19), // "startRamDataFlyscan"
-QT_MOC_LITERAL(84, 1612, 33), // "on_comboBox_3_currentIndexCha..."
-QT_MOC_LITERAL(85, 1646, 33), // "on_comboBox_4_currentIndexCha..."
-QT_MOC_LITERAL(86, 1680, 31), // "on_comboBox_currentIndexChanged"
-QT_MOC_LITERAL(87, 1712, 22), // "on_radioButton_clicked"
-QT_MOC_LITERAL(88, 1735, 30), // "on_ceUnits_currentIndexChanged"
-QT_MOC_LITERAL(89, 1766, 24), // "on_radioButton_2_clicked"
-QT_MOC_LITERAL(90, 1791, 19), // "on_cecAxis1_clicked"
-QT_MOC_LITERAL(91, 1811, 19), // "on_cecAxis2_clicked"
-QT_MOC_LITERAL(92, 1831, 19), // "on_cecAxis3_clicked"
-QT_MOC_LITERAL(93, 1851, 19), // "on_cecAxis4_clicked"
-QT_MOC_LITERAL(94, 1871, 36) // "on_ceDisplayAxis_currentIndex..."
+QT_MOC_LITERAL(28, 444, 16), // "flyscanErrorCode"
+QT_MOC_LITERAL(29, 461, 8), // "ret_code"
+QT_MOC_LITERAL(30, 470, 17), // "flyscanStatValues"
+QT_MOC_LITERAL(31, 488, 14), // "unsigned char*"
+QT_MOC_LITERAL(32, 503, 7), // "axisTab"
+QT_MOC_LITERAL(33, 511, 4), // "mean"
+QT_MOC_LITERAL(34, 516, 6), // "stdDev"
+QT_MOC_LITERAL(35, 523, 15), // "flyscanProcTerm"
+QT_MOC_LITERAL(36, 539, 15), // "openFlyscanForm"
+QT_MOC_LITERAL(37, 555, 16), // "closeFlyscanForm"
+QT_MOC_LITERAL(38, 572, 17), // "reopenFlyscanForm"
+QT_MOC_LITERAL(39, 590, 25), // "on_m_settingsMenu_clicked"
+QT_MOC_LITERAL(40, 616, 8), // "QAction*"
+QT_MOC_LITERAL(41, 625, 18), // "reopenSettingsForm"
+QT_MOC_LITERAL(42, 644, 16), // "openSettingsForm"
+QT_MOC_LITERAL(43, 661, 17), // "closeSettingsForm"
+QT_MOC_LITERAL(44, 679, 22), // "openPresetPositionForm"
+QT_MOC_LITERAL(45, 702, 23), // "closePresetPositionForm"
+QT_MOC_LITERAL(46, 726, 24), // "reopenPresetPositionForm"
+QT_MOC_LITERAL(47, 751, 22), // "openPositionOffsetForm"
+QT_MOC_LITERAL(48, 774, 23), // "closePositionOffsetForm"
+QT_MOC_LITERAL(49, 798, 24), // "reopenPositionOffsetForm"
+QT_MOC_LITERAL(50, 823, 18), // "openCustomplotForm"
+QT_MOC_LITERAL(51, 842, 19), // "closeCustomplotForm"
+QT_MOC_LITERAL(52, 862, 20), // "reopenCustomplotForm"
+QT_MOC_LITERAL(53, 883, 14), // "refresh_screen"
+QT_MOC_LITERAL(54, 898, 20), // "on_OffsetPos_Changed"
+QT_MOC_LITERAL(55, 919, 9), // "OffPosPtr"
+QT_MOC_LITERAL(56, 929, 20), // "on_PresetPos_Changed"
+QT_MOC_LITERAL(57, 950, 24), // "on_pushButton_11_clicked"
+QT_MOC_LITERAL(58, 975, 24), // "on_pushButton_13_clicked"
+QT_MOC_LITERAL(59, 1000, 24), // "on_pushButton_12_clicked"
+QT_MOC_LITERAL(60, 1025, 23), // "on_toolButton_2_clicked"
+QT_MOC_LITERAL(61, 1049, 28), // "on_initAxisComplete_recieved"
+QT_MOC_LITERAL(62, 1078, 23), // "on_pushButton_7_clicked"
+QT_MOC_LITERAL(63, 1102, 27), // "on_resetButtonAxis1_clicked"
+QT_MOC_LITERAL(64, 1130, 27), // "on_resetButtonAxis2_clicked"
+QT_MOC_LITERAL(65, 1158, 27), // "on_resetButtonAxis3_clicked"
+QT_MOC_LITERAL(66, 1186, 27), // "on_resetButtonAxis4_clicked"
+QT_MOC_LITERAL(67, 1214, 30), // "onBoardsInitializationComplete"
+QT_MOC_LITERAL(68, 1245, 17), // "refreshLEDsStatus"
+QT_MOC_LITERAL(69, 1263, 10), // "initBoards"
+QT_MOC_LITERAL(70, 1274, 37), // "on_leftBlockUnits_currentInde..."
+QT_MOC_LITERAL(71, 1312, 38), // "on_rightBlockUnits_currentInd..."
+QT_MOC_LITERAL(72, 1351, 20), // "updateLeftBlockValue"
+QT_MOC_LITERAL(73, 1372, 20), // "selectLeftBlockValue"
+QT_MOC_LITERAL(74, 1393, 21), // "updateRightBlockValue"
+QT_MOC_LITERAL(75, 1415, 21), // "selectRightBlockValue"
+QT_MOC_LITERAL(76, 1437, 15), // "updateCECRatios"
+QT_MOC_LITERAL(77, 1453, 23), // "on_pushButton_8_clicked"
+QT_MOC_LITERAL(78, 1477, 26), // "processCecAxisClickedEvent"
+QT_MOC_LITERAL(79, 1504, 4), // "int*"
+QT_MOC_LITERAL(80, 1509, 13), // "axisListIndex"
+QT_MOC_LITERAL(81, 1523, 10), // "QCheckBox*"
+QT_MOC_LITERAL(82, 1534, 15), // "cecAxisCheckBox"
+QT_MOC_LITERAL(83, 1550, 25), // "cecAxisClickedThreadEvent"
+QT_MOC_LITERAL(84, 1576, 29), // "on_resetButtonAllAxis_clicked"
+QT_MOC_LITERAL(85, 1606, 33), // "on_ramDataFlyscanRequest_reci..."
+QT_MOC_LITERAL(86, 1640, 4), // "freq"
+QT_MOC_LITERAL(87, 1645, 4), // "size"
+QT_MOC_LITERAL(88, 1650, 4), // "time"
+QT_MOC_LITERAL(89, 1655, 3), // "nbr"
+QT_MOC_LITERAL(90, 1659, 30), // "on_fifoFlyscanRequest_recieved"
+QT_MOC_LITERAL(91, 1690, 33), // "on_comboBox_3_currentIndexCha..."
+QT_MOC_LITERAL(92, 1724, 33), // "on_comboBox_4_currentIndexCha..."
+QT_MOC_LITERAL(93, 1758, 31), // "on_comboBox_currentIndexChanged"
+QT_MOC_LITERAL(94, 1790, 22), // "on_radioButton_clicked"
+QT_MOC_LITERAL(95, 1813, 30), // "on_ceUnits_currentIndexChanged"
+QT_MOC_LITERAL(96, 1844, 24), // "on_radioButton_2_clicked"
+QT_MOC_LITERAL(97, 1869, 19), // "on_cecAxis1_clicked"
+QT_MOC_LITERAL(98, 1889, 19), // "on_cecAxis2_clicked"
+QT_MOC_LITERAL(99, 1909, 19), // "on_cecAxis3_clicked"
+QT_MOC_LITERAL(100, 1929, 19), // "on_cecAxis4_clicked"
+QT_MOC_LITERAL(101, 1949, 36) // "on_ceDisplayAxis_currentIndex..."
 
     },
     "MainWindow\0initComplete\0\0"
@@ -142,7 +149,10 @@ QT_MOC_LITERAL(94, 1871, 36) // "on_ceDisplayAxis_currentIndex..."
     "PresPosPtr\0configureCEChardwareRequest\0"
     "ceVelMin\0ceVelMax\0stopCEChardwareRequest\0"
     "updateCECRatiosRequest\0CEratios*\0"
-    "ceRatios\0openFlyscanForm\0closeFlyscanForm\0"
+    "ceRatios\0flyscanErrorCode\0ret_code\0"
+    "flyscanStatValues\0unsigned char*\0"
+    "axisTab\0mean\0stdDev\0flyscanProcTerm\0"
+    "openFlyscanForm\0closeFlyscanForm\0"
     "reopenFlyscanForm\0on_m_settingsMenu_clicked\0"
     "QAction*\0reopenSettingsForm\0"
     "openSettingsForm\0closeSettingsForm\0"
@@ -175,8 +185,7 @@ QT_MOC_LITERAL(94, 1871, 36) // "on_ceDisplayAxis_currentIndex..."
     "cecAxisClickedThreadEvent\0"
     "on_resetButtonAllAxis_clicked\0"
     "on_ramDataFlyscanRequest_recieved\0"
-    "freq\0size\0time\0nbr\0configureFlyscanThreadEvent\0"
-    "startRamDataFlyscan\0"
+    "freq\0size\0time\0nbr\0on_fifoFlyscanRequest_recieved\0"
     "on_comboBox_3_currentIndexChanged\0"
     "on_comboBox_4_currentIndexChanged\0"
     "on_comboBox_currentIndexChanged\0"
@@ -195,89 +204,91 @@ static const uint qt_meta_data_MainWindow[] = {
        8,       // revision
        0,       // classname
        0,    0, // classinfo
-      73,   14, // methods
+      75,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
        0,       // flags
-      16,       // signalCount
+      19,       // signalCount
 
  // signals: name, argc, parameters, tag, flags
-       1,    0,  379,    2, 0x06 /* Public */,
-       3,    0,  380,    2, 0x06 /* Public */,
-       4,    0,  381,    2, 0x06 /* Public */,
-       5,    0,  382,    2, 0x06 /* Public */,
-       6,    0,  383,    2, 0x06 /* Public */,
-       7,    0,  384,    2, 0x06 /* Public */,
-       8,    0,  385,    2, 0x06 /* Public */,
-       9,    1,  386,    2, 0x06 /* Public */,
-      11,    1,  389,    2, 0x06 /* Public */,
-      13,    1,  392,    2, 0x06 /* Public */,
-      15,    0,  395,    2, 0x06 /* Public */,
-      16,    1,  396,    2, 0x06 /* Public */,
-      19,    1,  399,    2, 0x06 /* Public */,
-      21,    3,  402,    2, 0x06 /* Public */,
-      24,    1,  409,    2, 0x06 /* Public */,
-      25,    3,  412,    2, 0x06 /* Public */,
+       1,    0,  389,    2, 0x06 /* Public */,
+       3,    0,  390,    2, 0x06 /* Public */,
+       4,    0,  391,    2, 0x06 /* Public */,
+       5,    0,  392,    2, 0x06 /* Public */,
+       6,    0,  393,    2, 0x06 /* Public */,
+       7,    0,  394,    2, 0x06 /* Public */,
+       8,    0,  395,    2, 0x06 /* Public */,
+       9,    1,  396,    2, 0x06 /* Public */,
+      11,    1,  399,    2, 0x06 /* Public */,
+      13,    1,  402,    2, 0x06 /* Public */,
+      15,    0,  405,    2, 0x06 /* Public */,
+      16,    1,  406,    2, 0x06 /* Public */,
+      19,    1,  409,    2, 0x06 /* Public */,
+      21,    3,  412,    2, 0x06 /* Public */,
+      24,    1,  419,    2, 0x06 /* Public */,
+      25,    3,  422,    2, 0x06 /* Public */,
+      28,    1,  429,    2, 0x06 /* Public */,
+      30,    3,  432,    2, 0x06 /* Public */,
+      35,    0,  439,    2, 0x06 /* Public */,
 
  // slots: name, argc, parameters, tag, flags
-      28,    0,  419,    2, 0x0a /* Public */,
-      29,    0,  420,    2, 0x0a /* Public */,
-      30,    0,  421,    2, 0x0a /* Public */,
-      31,    1,  422,    2, 0x0a /* Public */,
-      33,    0,  425,    2, 0x0a /* Public */,
-      34,    0,  426,    2, 0x0a /* Public */,
-      35,    0,  427,    2, 0x0a /* Public */,
-      36,    0,  428,    2, 0x0a /* Public */,
-      37,    0,  429,    2, 0x0a /* Public */,
-      38,    0,  430,    2, 0x0a /* Public */,
-      39,    0,  431,    2, 0x0a /* Public */,
-      40,    0,  432,    2, 0x0a /* Public */,
-      41,    0,  433,    2, 0x0a /* Public */,
-      42,    0,  434,    2, 0x0a /* Public */,
-      43,    0,  435,    2, 0x0a /* Public */,
-      44,    0,  436,    2, 0x0a /* Public */,
-      45,    0,  437,    2, 0x0a /* Public */,
-      46,    1,  438,    2, 0x08 /* Private */,
-      48,    1,  441,    2, 0x08 /* Private */,
-      49,    0,  444,    2, 0x08 /* Private */,
-      50,    0,  445,    2, 0x08 /* Private */,
-      51,    0,  446,    2, 0x08 /* Private */,
-      52,    0,  447,    2, 0x08 /* Private */,
-      53,    0,  448,    2, 0x08 /* Private */,
-      54,    0,  449,    2, 0x08 /* Private */,
-      55,    0,  450,    2, 0x08 /* Private */,
-      56,    0,  451,    2, 0x08 /* Private */,
-      57,    0,  452,    2, 0x08 /* Private */,
-      58,    0,  453,    2, 0x08 /* Private */,
-      59,    0,  454,    2, 0x08 /* Private */,
-      60,    0,  455,    2, 0x08 /* Private */,
-      61,    0,  456,    2, 0x08 /* Private */,
-      62,    1,  457,    2, 0x08 /* Private */,
-      63,    1,  460,    2, 0x08 /* Private */,
-      64,    0,  463,    2, 0x08 /* Private */,
-      65,    1,  464,    2, 0x08 /* Private */,
-      66,    0,  467,    2, 0x08 /* Private */,
-      67,    1,  468,    2, 0x08 /* Private */,
-      68,    0,  471,    2, 0x08 /* Private */,
-      69,    0,  472,    2, 0x08 /* Private */,
-      70,    3,  473,    2, 0x08 /* Private */,
-      75,    3,  480,    2, 0x08 /* Private */,
-      76,    0,  487,    2, 0x08 /* Private */,
-      77,    4,  488,    2, 0x08 /* Private */,
-      82,    0,  497,    2, 0x08 /* Private */,
-      83,    4,  498,    2, 0x08 /* Private */,
-      84,    1,  507,    2, 0x08 /* Private */,
-      85,    1,  510,    2, 0x08 /* Private */,
-      86,    1,  513,    2, 0x08 /* Private */,
-      87,    0,  516,    2, 0x08 /* Private */,
-      88,    1,  517,    2, 0x08 /* Private */,
-      89,    0,  520,    2, 0x08 /* Private */,
-      90,    0,  521,    2, 0x08 /* Private */,
-      91,    0,  522,    2, 0x08 /* Private */,
-      92,    0,  523,    2, 0x08 /* Private */,
-      93,    0,  524,    2, 0x08 /* Private */,
-      94,    1,  525,    2, 0x08 /* Private */,
+      36,    0,  440,    2, 0x0a /* Public */,
+      37,    0,  441,    2, 0x0a /* Public */,
+      38,    0,  442,    2, 0x0a /* Public */,
+      39,    1,  443,    2, 0x0a /* Public */,
+      41,    0,  446,    2, 0x0a /* Public */,
+      42,    0,  447,    2, 0x0a /* Public */,
+      43,    0,  448,    2, 0x0a /* Public */,
+      44,    0,  449,    2, 0x0a /* Public */,
+      45,    0,  450,    2, 0x0a /* Public */,
+      46,    0,  451,    2, 0x0a /* Public */,
+      47,    0,  452,    2, 0x0a /* Public */,
+      48,    0,  453,    2, 0x0a /* Public */,
+      49,    0,  454,    2, 0x0a /* Public */,
+      50,    0,  455,    2, 0x0a /* Public */,
+      51,    0,  456,    2, 0x0a /* Public */,
+      52,    0,  457,    2, 0x0a /* Public */,
+      53,    0,  458,    2, 0x0a /* Public */,
+      54,    1,  459,    2, 0x08 /* Private */,
+      56,    1,  462,    2, 0x08 /* Private */,
+      57,    0,  465,    2, 0x08 /* Private */,
+      58,    0,  466,    2, 0x08 /* Private */,
+      59,    0,  467,    2, 0x08 /* Private */,
+      60,    0,  468,    2, 0x08 /* Private */,
+      61,    0,  469,    2, 0x08 /* Private */,
+      62,    0,  470,    2, 0x08 /* Private */,
+      63,    0,  471,    2, 0x08 /* Private */,
+      64,    0,  472,    2, 0x08 /* Private */,
+      65,    0,  473,    2, 0x08 /* Private */,
+      66,    0,  474,    2, 0x08 /* Private */,
+      67,    0,  475,    2, 0x08 /* Private */,
+      68,    0,  476,    2, 0x08 /* Private */,
+      69,    0,  477,    2, 0x08 /* Private */,
+      70,    1,  478,    2, 0x08 /* Private */,
+      71,    1,  481,    2, 0x08 /* Private */,
+      72,    0,  484,    2, 0x08 /* Private */,
+      73,    1,  485,    2, 0x08 /* Private */,
+      74,    0,  488,    2, 0x08 /* Private */,
+      75,    1,  489,    2, 0x08 /* Private */,
+      76,    0,  492,    2, 0x08 /* Private */,
+      77,    0,  493,    2, 0x08 /* Private */,
+      78,    3,  494,    2, 0x08 /* Private */,
+      83,    3,  501,    2, 0x08 /* Private */,
+      84,    0,  508,    2, 0x08 /* Private */,
+      85,    4,  509,    2, 0x08 /* Private */,
+      90,    4,  518,    2, 0x08 /* Private */,
+      91,    1,  527,    2, 0x08 /* Private */,
+      92,    1,  530,    2, 0x08 /* Private */,
+      93,    1,  533,    2, 0x08 /* Private */,
+      94,    0,  536,    2, 0x08 /* Private */,
+      95,    1,  537,    2, 0x08 /* Private */,
+      96,    0,  540,    2, 0x08 /* Private */,
+      97,    0,  541,    2, 0x08 /* Private */,
+      98,    0,  542,    2, 0x08 /* Private */,
+      99,    0,  543,    2, 0x08 /* Private */,
+     100,    0,  544,    2, 0x08 /* Private */,
+     101,    1,  545,    2, 0x08 /* Private */,
 
  // signals: parameters
     QMetaType::Void,
@@ -296,12 +307,15 @@ static const uint qt_meta_data_MainWindow[] = {
     QMetaType::Void, QMetaType::UInt, QMetaType::UInt, QMetaType::UInt,   12,   22,   23,
     QMetaType::Void, QMetaType::UInt,   12,
     QMetaType::Void, QMetaType::UInt, 0x80000000 | 26, QMetaType::UInt,   12,   27,   14,
+    QMetaType::Void, QMetaType::Int,   29,
+    QMetaType::Void, 0x80000000 | 31, 0x80000000 | 17, 0x80000000 | 17,   32,   33,   34,
+    QMetaType::Void,
 
  // slots: parameters
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
-    QMetaType::Void, 0x80000000 | 32,    2,
+    QMetaType::Void, 0x80000000 | 40,    2,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
@@ -315,7 +329,7 @@ static const uint qt_meta_data_MainWindow[] = {
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
-    QMetaType::Void, 0x80000000 | 17,   47,
+    QMetaType::Void, 0x80000000 | 17,   55,
     QMetaType::Void, 0x80000000 | 17,   20,
     QMetaType::Void,
     QMetaType::Void,
@@ -338,12 +352,11 @@ static const uint qt_meta_data_MainWindow[] = {
     QMetaType::Void, QMetaType::Int,   14,
     QMetaType::Void,
     QMetaType::Void,
-    QMetaType::Void, QMetaType::Int, 0x80000000 | 71, 0x80000000 | 73,   12,   72,   74,
-    QMetaType::Void, QMetaType::Int, 0x80000000 | 71, 0x80000000 | 73,   12,   72,   74,
+    QMetaType::Void, QMetaType::Int, 0x80000000 | 79, 0x80000000 | 81,   12,   80,   82,
+    QMetaType::Void, QMetaType::Int, 0x80000000 | 79, 0x80000000 | 81,   12,   80,   82,
     QMetaType::Void,
-    QMetaType::Void, QMetaType::Double, QMetaType::Double, QMetaType::Double, QMetaType::UInt,   78,   79,   80,   81,
-    QMetaType::Void,
-    QMetaType::Void, QMetaType::Double, QMetaType::Double, QMetaType::Double, QMetaType::UInt,   78,   80,   79,   81,
+    QMetaType::Void, QMetaType::Double, QMetaType::Double, QMetaType::Double, QMetaType::UInt,   86,   87,   88,   89,
+    QMetaType::Void, QMetaType::Double, QMetaType::Double, QMetaType::Double, QMetaType::UInt,   86,   87,   88,   89,
     QMetaType::Void, QMetaType::Int,   14,
     QMetaType::Void, QMetaType::Int,   14,
     QMetaType::Void, QMetaType::Int,   14,
@@ -381,83 +394,85 @@ void MainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         case 13: _t->configureCEChardwareRequest((*reinterpret_cast< uint(*)>(_a[1])),(*reinterpret_cast< uint(*)>(_a[2])),(*reinterpret_cast< uint(*)>(_a[3]))); break;
         case 14: _t->stopCEChardwareRequest((*reinterpret_cast< uint(*)>(_a[1]))); break;
         case 15: _t->updateCECRatiosRequest((*reinterpret_cast< uint(*)>(_a[1])),(*reinterpret_cast< CEratios*(*)>(_a[2])),(*reinterpret_cast< uint(*)>(_a[3]))); break;
-        case 16: _t->openFlyscanForm(); break;
-        case 17: _t->closeFlyscanForm(); break;
-        case 18: _t->reopenFlyscanForm(); break;
-        case 19: _t->on_m_settingsMenu_clicked((*reinterpret_cast< QAction*(*)>(_a[1]))); break;
-        case 20: _t->reopenSettingsForm(); break;
-        case 21: _t->openSettingsForm(); break;
-        case 22: _t->closeSettingsForm(); break;
-        case 23: _t->openPresetPositionForm(); break;
-        case 24: _t->closePresetPositionForm(); break;
-        case 25: _t->reopenPresetPositionForm(); break;
-        case 26: _t->openPositionOffsetForm(); break;
-        case 27: _t->closePositionOffsetForm(); break;
-        case 28: _t->reopenPositionOffsetForm(); break;
-        case 29: _t->openCustomplotForm(); break;
-        case 30: _t->closeCustomplotForm(); break;
-        case 31: _t->reopenCustomplotForm(); break;
-        case 32: _t->refresh_screen(); break;
-        case 33: _t->on_OffsetPos_Changed((*reinterpret_cast< double*(*)>(_a[1]))); break;
-        case 34: _t->on_PresetPos_Changed((*reinterpret_cast< double*(*)>(_a[1]))); break;
-        case 35: _t->on_pushButton_11_clicked(); break;
-        case 36: _t->on_pushButton_13_clicked(); break;
-        case 37: _t->on_pushButton_12_clicked(); break;
-        case 38: _t->on_toolButton_2_clicked(); break;
-        case 39: _t->on_initAxisComplete_recieved(); break;
-        case 40: _t->on_pushButton_7_clicked(); break;
-        case 41: _t->on_resetButtonAxis1_clicked(); break;
-        case 42: _t->on_resetButtonAxis2_clicked(); break;
-        case 43: _t->on_resetButtonAxis3_clicked(); break;
-        case 44: _t->on_resetButtonAxis4_clicked(); break;
-        case 45: _t->onBoardsInitializationComplete(); break;
-        case 46: _t->refreshLEDsStatus(); break;
-        case 47: _t->initBoards(); break;
-        case 48: _t->on_leftBlockUnits_currentIndexChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 49: _t->on_rightBlockUnits_currentIndexChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 50: _t->updateLeftBlockValue(); break;
-        case 51: _t->selectLeftBlockValue((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 52: _t->updateRightBlockValue(); break;
-        case 53: _t->selectRightBlockValue((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 54: _t->updateCECRatios(); break;
-        case 55: _t->on_pushButton_8_clicked(); break;
-        case 56: _t->processCecAxisClickedEvent((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< int*(*)>(_a[2])),(*reinterpret_cast< QCheckBox*(*)>(_a[3]))); break;
-        case 57: _t->cecAxisClickedThreadEvent((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< int*(*)>(_a[2])),(*reinterpret_cast< QCheckBox*(*)>(_a[3]))); break;
-        case 58: _t->on_resetButtonAllAxis_clicked(); break;
-        case 59: _t->on_ramDataFlyscanRequest_recieved((*reinterpret_cast< double(*)>(_a[1])),(*reinterpret_cast< double(*)>(_a[2])),(*reinterpret_cast< double(*)>(_a[3])),(*reinterpret_cast< uint(*)>(_a[4]))); break;
-        case 60: _t->configureFlyscanThreadEvent(); break;
-        case 61: _t->startRamDataFlyscan((*reinterpret_cast< double(*)>(_a[1])),(*reinterpret_cast< double(*)>(_a[2])),(*reinterpret_cast< double(*)>(_a[3])),(*reinterpret_cast< uint(*)>(_a[4]))); break;
-        case 62: _t->on_comboBox_3_currentIndexChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 63: _t->on_comboBox_4_currentIndexChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 64: _t->on_comboBox_currentIndexChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 65: _t->on_radioButton_clicked(); break;
-        case 66: _t->on_ceUnits_currentIndexChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 67: _t->on_radioButton_2_clicked(); break;
-        case 68: _t->on_cecAxis1_clicked(); break;
-        case 69: _t->on_cecAxis2_clicked(); break;
-        case 70: _t->on_cecAxis3_clicked(); break;
-        case 71: _t->on_cecAxis4_clicked(); break;
-        case 72: _t->on_ceDisplayAxis_currentIndexChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 16: _t->flyscanErrorCode((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 17: _t->flyscanStatValues((*reinterpret_cast< unsigned char*(*)>(_a[1])),(*reinterpret_cast< double*(*)>(_a[2])),(*reinterpret_cast< double*(*)>(_a[3]))); break;
+        case 18: _t->flyscanProcTerm(); break;
+        case 19: _t->openFlyscanForm(); break;
+        case 20: _t->closeFlyscanForm(); break;
+        case 21: _t->reopenFlyscanForm(); break;
+        case 22: _t->on_m_settingsMenu_clicked((*reinterpret_cast< QAction*(*)>(_a[1]))); break;
+        case 23: _t->reopenSettingsForm(); break;
+        case 24: _t->openSettingsForm(); break;
+        case 25: _t->closeSettingsForm(); break;
+        case 26: _t->openPresetPositionForm(); break;
+        case 27: _t->closePresetPositionForm(); break;
+        case 28: _t->reopenPresetPositionForm(); break;
+        case 29: _t->openPositionOffsetForm(); break;
+        case 30: _t->closePositionOffsetForm(); break;
+        case 31: _t->reopenPositionOffsetForm(); break;
+        case 32: _t->openCustomplotForm(); break;
+        case 33: _t->closeCustomplotForm(); break;
+        case 34: _t->reopenCustomplotForm(); break;
+        case 35: _t->refresh_screen(); break;
+        case 36: _t->on_OffsetPos_Changed((*reinterpret_cast< double*(*)>(_a[1]))); break;
+        case 37: _t->on_PresetPos_Changed((*reinterpret_cast< double*(*)>(_a[1]))); break;
+        case 38: _t->on_pushButton_11_clicked(); break;
+        case 39: _t->on_pushButton_13_clicked(); break;
+        case 40: _t->on_pushButton_12_clicked(); break;
+        case 41: _t->on_toolButton_2_clicked(); break;
+        case 42: _t->on_initAxisComplete_recieved(); break;
+        case 43: _t->on_pushButton_7_clicked(); break;
+        case 44: _t->on_resetButtonAxis1_clicked(); break;
+        case 45: _t->on_resetButtonAxis2_clicked(); break;
+        case 46: _t->on_resetButtonAxis3_clicked(); break;
+        case 47: _t->on_resetButtonAxis4_clicked(); break;
+        case 48: _t->onBoardsInitializationComplete(); break;
+        case 49: _t->refreshLEDsStatus(); break;
+        case 50: _t->initBoards(); break;
+        case 51: _t->on_leftBlockUnits_currentIndexChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 52: _t->on_rightBlockUnits_currentIndexChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 53: _t->updateLeftBlockValue(); break;
+        case 54: _t->selectLeftBlockValue((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 55: _t->updateRightBlockValue(); break;
+        case 56: _t->selectRightBlockValue((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 57: _t->updateCECRatios(); break;
+        case 58: _t->on_pushButton_8_clicked(); break;
+        case 59: _t->processCecAxisClickedEvent((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< int*(*)>(_a[2])),(*reinterpret_cast< QCheckBox*(*)>(_a[3]))); break;
+        case 60: _t->cecAxisClickedThreadEvent((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< int*(*)>(_a[2])),(*reinterpret_cast< QCheckBox*(*)>(_a[3]))); break;
+        case 61: _t->on_resetButtonAllAxis_clicked(); break;
+        case 62: _t->on_ramDataFlyscanRequest_recieved((*reinterpret_cast< double(*)>(_a[1])),(*reinterpret_cast< double(*)>(_a[2])),(*reinterpret_cast< double(*)>(_a[3])),(*reinterpret_cast< uint(*)>(_a[4]))); break;
+        case 63: _t->on_fifoFlyscanRequest_recieved((*reinterpret_cast< double(*)>(_a[1])),(*reinterpret_cast< double(*)>(_a[2])),(*reinterpret_cast< double(*)>(_a[3])),(*reinterpret_cast< uint(*)>(_a[4]))); break;
+        case 64: _t->on_comboBox_3_currentIndexChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 65: _t->on_comboBox_4_currentIndexChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 66: _t->on_comboBox_currentIndexChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 67: _t->on_radioButton_clicked(); break;
+        case 68: _t->on_ceUnits_currentIndexChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 69: _t->on_radioButton_2_clicked(); break;
+        case 70: _t->on_cecAxis1_clicked(); break;
+        case 71: _t->on_cecAxis2_clicked(); break;
+        case 72: _t->on_cecAxis3_clicked(); break;
+        case 73: _t->on_cecAxis4_clicked(); break;
+        case 74: _t->on_ceDisplayAxis_currentIndexChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
         default: ;
         }
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
         switch (_id) {
         default: *reinterpret_cast<int*>(_a[0]) = -1; break;
-        case 19:
+        case 22:
             switch (*reinterpret_cast<int*>(_a[1])) {
             default: *reinterpret_cast<int*>(_a[0]) = -1; break;
             case 0:
                 *reinterpret_cast<int*>(_a[0]) = qRegisterMetaType< QAction* >(); break;
             }
             break;
-        case 56:
+        case 59:
             switch (*reinterpret_cast<int*>(_a[1])) {
             default: *reinterpret_cast<int*>(_a[0]) = -1; break;
             case 2:
                 *reinterpret_cast<int*>(_a[0]) = qRegisterMetaType< QCheckBox* >(); break;
             }
             break;
-        case 57:
+        case 60:
             switch (*reinterpret_cast<int*>(_a[1])) {
             default: *reinterpret_cast<int*>(_a[0]) = -1; break;
             case 2:
@@ -579,6 +594,27 @@ void MainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
                 return;
             }
         }
+        {
+            using _t = void (MainWindow::*)(int );
+            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&MainWindow::flyscanErrorCode)) {
+                *result = 16;
+                return;
+            }
+        }
+        {
+            using _t = void (MainWindow::*)(unsigned char * , double * , double * );
+            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&MainWindow::flyscanStatValues)) {
+                *result = 17;
+                return;
+            }
+        }
+        {
+            using _t = void (MainWindow::*)();
+            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&MainWindow::flyscanProcTerm)) {
+                *result = 18;
+                return;
+            }
+        }
     }
 }
 
@@ -611,13 +647,13 @@ int MainWindow::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 73)
+        if (_id < 75)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 73;
+        _id -= 75;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 73)
+        if (_id < 75)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 73;
+        _id -= 75;
     }
     return _id;
 }
@@ -724,6 +760,26 @@ void MainWindow::updateCECRatiosRequest(unsigned int _t1, CEratios * _t2, unsign
 {
     void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t1))), const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t2))), const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t3))) };
     QMetaObject::activate(this, &staticMetaObject, 15, _a);
+}
+
+// SIGNAL 16
+void MainWindow::flyscanErrorCode(int _t1)
+{
+    void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t1))) };
+    QMetaObject::activate(this, &staticMetaObject, 16, _a);
+}
+
+// SIGNAL 17
+void MainWindow::flyscanStatValues(unsigned char * _t1, double * _t2, double * _t3)
+{
+    void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t1))), const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t2))), const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t3))) };
+    QMetaObject::activate(this, &staticMetaObject, 17, _a);
+}
+
+// SIGNAL 18
+void MainWindow::flyscanProcTerm()
+{
+    QMetaObject::activate(this, &staticMetaObject, 18, nullptr);
 }
 QT_WARNING_POP
 QT_END_MOC_NAMESPACE
