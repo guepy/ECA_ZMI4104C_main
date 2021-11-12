@@ -13,7 +13,7 @@ FlyscanForm::FlyscanForm(QWidget *parent) :
     ui->setupUi(this);
     ui->selectAxisWidget->setEnabled(false);
     char txt[1024]="";
-    ui->spinBox->setMaximum(16384);//16384 points max
+    ui->spinBox->setMaximum(30000);//16384 points max
     ui->spinBox->setMinimum(1);//1 point min
     ui->spinBox_3->setMinimum(3e2);//min freq
     ui->spinBox_3->setMaximum(1e6);//max freq
@@ -328,6 +328,25 @@ void FlyscanForm::on_flyscanErrorCode_recieved(int err_code){
         ui->display->setTextColor(QColor("red"));
         ui->display->append("Overlapping detected, somme data may have been corrupted ");
         ui->display->append("Try to adjust scan parameter ");
+        ui->display->setTextColor(QColor("dark"));
+        break;
+    case -101:
+        ui->display->setTextColor(QColor(QColor::fromRgb(255, 170, 0)));
+        ui->display->append("In the current method, min size is 256 ");
+        ui->spinBox->setValue(256);
+        ui->display->append("size has been set to 256 ");
+        ui->display->setTextColor(QColor("dark"));
+        break;
+    case -102:
+        ui->display->setTextColor(QColor(QColor::fromRgb(255, 170, 0)));
+        ui->display->append("With the current parameters, max size is 16384");
+        ui->spinBox->setValue(16384);
+        ui->display->append("size has been set to 16384");
+        ui->display->setTextColor(QColor("dark"));
+        break;
+    case -103:
+        ui->display->setTextColor(QColor(QColor::fromRgb(255, 170, 0)));
+        ui->display->append("With the current parameters, only 8192 per axis has been saved");
         ui->display->setTextColor(QColor("dark"));
         break;
     default:

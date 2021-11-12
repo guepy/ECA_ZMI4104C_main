@@ -73,6 +73,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     //connect(flyscanForm, &FlyscanForm::ramDataFlyscanRequest,this, &MainWindow::on_ramDataFlyscanRequest_recieved);
 
+    connect(this, &MainWindow::updateSettingsRequest,dataProc, &dataProcessing::on_updateSettingsRequest_recieved);
     connect(dataProc, &dataProcessing::initAxisComplete,this, &MainWindow::on_initAxisComplete_recieved);
     //*
     gtimer = new QTimer(this);
@@ -112,7 +113,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::refresh_screen(){
 
-/*
+///*
     qDebug()<<"timer timeout";
     if((dataProcessing::dev_mutex).try_lock()){
         refreshLEDsStatus();
@@ -126,7 +127,7 @@ void MainWindow::refresh_screen(){
     else{
         ui->textBrowser_2->append("Processing some data...");
     }
-*/
+//*/
 }
 void MainWindow::updateLeftBlockValue(){
 
@@ -200,7 +201,7 @@ void MainWindow::onBoardsInitializationComplete(){
     for(int i=0; i<5;i++){
         ledsColor[i] = 0;
         //ledsColorPrev[i] = 0;
-}
+    }
     refreshLEDsStatus();
     //*
     //ui->MeasForm->setEnabled(true);
@@ -334,6 +335,7 @@ void MainWindow::openSettingsForm(){
     //--------------flyscanForm signals-slots --------------------------------------
     connect(settingsForm, &SettingsForm::closeThis, this, &MainWindow::closeSettingsForm);
     connect(this, &MainWindow::closeSettingsFormRequest, settingsForm, &SettingsForm::closeForm);
+    connect(settingsForm, &SettingsForm::updateSettingsRequest,this, &MainWindow::updateSettingsRequest);
     settingsForm->show();
     sfForm_int=1;
 }
@@ -826,7 +828,7 @@ void MainWindow::on_ramDataFlyscanRequest_recieved(double freq, double time, dou
     //A slot can be connected to a given signal if the signal has at least as many arguments as the slot
     connect(flyscanAxisThread, &QThread::started, flyscanWorker, &dataProcessing::on_configureFlyscanRequest_recieved);
     //connect(flyscanWorker, &dataProcessing::flyscanProcTerm, this, &MainWindow::on_initAxisComplete_recieved);
-    connect(flyscanWorker, &dataProcessing::flyscanProcTerm, flyscanAxisThread, &QThread::quit);
+    connect(flyscanWorker, &dataProcessing::flyscanProcTerm, flyscanAxisThread, &QThread::terminate);
     connect(flyscanAxisThread, &QThread::finished, flyscanWorker,  &dataProcessing::deleteLater);
     flyscanAxisThread->start();
 

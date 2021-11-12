@@ -32,7 +32,6 @@ public:
     QPushButton *applyButton;
     QPushButton *okButton;
     QPushButton *pushButton_5;
-    QLabel *label;
     QWidget *vWidget_2;
     QVBoxLayout *verticalLayout_4;
     QHBoxLayout *horizontalLayout;
@@ -132,12 +131,6 @@ public:
 
         horizontalLayout_11->addWidget(pushButton_5);
 
-        label = new QLabel(presetPositionForm);
-        label->setObjectName(QString::fromUtf8("label"));
-        label->setGeometry(QRect(50, 300, 351, 31));
-        label->setStyleSheet(QString::fromUtf8("\n"
-"font: 75 12pt \"MS Shell Dlg 2\";\n"
-"color: red;"));
         vWidget_2 = new QWidget(presetPositionForm);
         vWidget_2->setObjectName(QString::fromUtf8("vWidget_2"));
         vWidget_2->setGeometry(QRect(40, 40, 411, 231));
@@ -285,7 +278,6 @@ public:
         applyButton->setText(QCoreApplication::translate("presetPositionForm", "Apply", nullptr));
         okButton->setText(QCoreApplication::translate("presetPositionForm", "OK", nullptr));
         pushButton_5->setText(QCoreApplication::translate("presetPositionForm", "Cancel", nullptr));
-        label->setText(QCoreApplication::translate("presetPositionForm", "TextLabel", nullptr));
         radioButton_2->setText(QCoreApplication::translate("presetPositionForm", "Enable position offsets", nullptr));
         label_2->setText(QCoreApplication::translate("presetPositionForm", "units", nullptr));
         leftBlockUnits->setItemText(0, QCoreApplication::translate("presetPositionForm", "mm", nullptr));

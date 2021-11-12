@@ -72,6 +72,7 @@ private:
     unsigned int currentcecAxis;
 signals:
     void initComplete();
+    void updateSettingsRequest(int a, int b, int val);
     void closeFlyscanFormRequest();
     void closePositionOffsetFormRequest();
     void closePresetPositionFormRequest();

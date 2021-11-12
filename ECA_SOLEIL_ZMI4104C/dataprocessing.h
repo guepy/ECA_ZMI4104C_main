@@ -32,6 +32,7 @@ public:
     static unsigned int * base_A24D32_FR_ptr;
     double meanVal[4]={0.0,0.0,0.0,0.0,};
     double stdDevVal[4]={0.0,0.0,0.0,0.0,};
+    static bool precision37;
 private:
     static SIS1100_Device_Struct* dev;
     //static bool accessToken;
@@ -43,6 +44,7 @@ signals:
     void flyscanErrorCode(int err_code);
     void flyscanStatValues(unsigned char* axisTab, double* mean, double* stdDev);
 public slots:
+    void on_updateSettingsRequest_recieved(int a, int b, int val);
     int getLEDsColor(int*);
     void updatePVT(int index, double* val);
     void updateOAS(int index, double* val);

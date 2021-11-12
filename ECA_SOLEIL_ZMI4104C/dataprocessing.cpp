@@ -3,6 +3,7 @@
 
 unsigned int* dataProcessing::base_A24D32_ptr = new unsigned int;
 unsigned int* dataProcessing::base_A24D32_FR_ptr = new unsigned int;
+bool dataProcessing::precision37 = false;
 dataProcessing::dataProcessing(QObject *parent) : QObject(parent)
 {
     position=(double*)malloc(5*sizeof (double));
@@ -249,6 +250,21 @@ int dataProcessing::on_configureFlyscanRequest_recieved(){
 int dataProcessing::on_acquisitionTimer_timeout(){
 
     dataProcessing::dev_mutex.lock();
+    if(flyscanSizeValue<256){
+        flyscanSizeValue=256;
+        qDebug()<<"setting size to the min: 256";
+        emit flyscanErrorCode(-101);
+    }
+    if(flyscanSizeValue>NBR_RAM_PAGES*256){
+        flyscanSizeValue=NBR_RAM_PAGES*256;
+        qDebug()<<"setting size to the max: "<< NBR_RAM_PAGES*256;
+        emit flyscanErrorCode(-102);
+    }
+    if(flyscanSizeValue>NBR_RAM_PAGES*128 && axisNbr>2){
+        flyscanSizeValue=NBR_RAM_PAGES*256;
+        qDebug()<<"setting size to the max: "<< NBR_RAM_PAGES*128;
+        emit flyscanErrorCode(-103);
+    }
     if (stopAquisition(dev, axisNbr) != RET_SUCCESS){
         dataProcessing::dev_mutex.unlock();
         emit flyscanProcTerm();
@@ -269,10 +285,13 @@ int dataProcessing::on_acquisitionTimer_timeout(){
         emit flyscanProcTerm();
         return RET_FAILED;
     }
-    unsigned int ret = 0;
+    unsigned int ramDataSize = flyscanSizeValue/256;
+    if(axisNbr>2){
+        ramDataSize = (flyscanSizeValue*2>16384)?flyscanSizeValue*2:16384;
+    }
 
     INFO("Sampling data... \n");
-    if (getFlyscanData(dev, base_A24D32_FR_ptr, base_A24D32_ptr, &ret) != RET_SUCCESS)
+    if (getFlyscanData(dev, base_A24D32_FR_ptr, base_A24D32_ptr, &axisNbr, ramDataSize) != RET_SUCCESS)
     {
         dataProcessing::dev_mutex.unlock();
         emit flyscanErrorCode(RET_FAILED);
@@ -280,7 +299,7 @@ int dataProcessing::on_acquisitionTimer_timeout(){
         return RET_FAILED;
     }
     dataProcessing::dev_mutex.unlock();
-    if (processRAMData(ret, base_A24D32_FR_ptr, base_A24D32_ptr,flyscanPath) != RET_SUCCESS)
+    if (processRAMData(axisNbr, base_A24D32_FR_ptr, base_A24D32_ptr, ramDataSize, flyscanPath,(double*)meanVal, (double*)stdDevVal) != RET_SUCCESS)
     {
         emit flyscanErrorCode(RET_FAILED);
         emit flyscanProcTerm();
@@ -289,6 +308,7 @@ int dataProcessing::on_acquisitionTimer_timeout(){
 
     qDebug()<<"flyscan data processing terminated";
     emit flyscanProcTerm();
+    emit flyscanStatValues((unsigned char*)fifoFlyscanAxisTab,(double*)meanVal,(double*)stdDevVal);
     qDebug()<<"Freeing buf "<<base_A24D32_FR_ptr<<" and "<<base_A24D32_ptr;
     delete (base_A24D32_FR_ptr);
     delete (base_A24D32_ptr);
@@ -353,4 +373,35 @@ int dataProcessing::on_configureFifoFlyscanRequest_recieved(){
     emit flyscanErrorCode(RET_SUCCESS);
     emit flyscanProcTerm();
     return RET_SUCCESS;
+}
+
+void dataProcessing::on_updateSettingsRequest_recieved(int a, int b, int val){
+    dataProcessing::dev_mutex.lock();
+    switch (a) {
+        case 1:
+        switch (b) {
+        case 2:
+            if(val)
+                EnableDoublePassInterferometer();
+            else
+                EnableSinglePassInterferometer();
+            break;
+        case 3:
+
+            if(val)
+                dataProcessing::precision37 = true;
+            else
+                dataProcessing::precision37 = false;
+            break;
+        case 4:
+
+            if(val)
+                EnableResetFindsVelocity_ForAllAxis(dev);
+            else
+                DisableResetFindsVelocity_ForAllAxis(dev);
+            break;
+        }
+        break;
+    }
+    dataProcessing::dev_mutex.unlock();
 }

@@ -798,13 +798,19 @@ int EnableVMEGlobalInterrupt(SIS1100_Device_Struct* dev, unsigned char axis) {
 	}
 	return RET_SUCCESS;
 }
-int processRAMData(UINT nbrAxis, PUINT base_A24D32_axis1_ptr, PUINT base_A24D32_axis3_ptr, char* folderName) {
+int processRAMData(UINT nbrAxis, PUINT base_A24D32_axis1_ptr, PUINT base_A24D32_axis3_ptr, UINT size, char* folderName, double* meanVal, double* stdDevVal) {
 	static int a = 0;
 	GetLocalTime(&lt);
 	static FILE* fd;
 	UINT val1 = 0, val2 = 0;
 	double pos1 = 0.0, pos2 = 0.0;
-	char path[2048];
+	double mean[4] = { 0.0, 0.0, 0.0, 0.0, }, stdDev[4] = { 0.0, 0.0, 0.0, 0.0, };
+	double* localPos;
+	char path[2048];	
+	if (checkValues(size, 1, NBR_RAM_PAGES)) {
+		WARN("size is not in the requested range \n");
+		return RET_FAILED;
+	}
 	INFO("Processing RAM data\n");
 	if (nbrAxis >= 2) {
 		if (!base_A24D32_axis1_ptr || !base_A24D32_axis3_ptr) {
@@ -823,26 +829,44 @@ int processRAMData(UINT nbrAxis, PUINT base_A24D32_axis1_ptr, PUINT base_A24D32_
 		return RET_FAILED;
 	}
 	fprintf(fd, "[***********; %d/%d/%d at %d:%d] ;************\n", lt.wYear, lt.wMonth, lt.wDay, lt.wHour, lt.wMinute);
+	UINT nbrOfPts = (size * NBR_SAMP_PER_PAGE);
+	localPos = (double*)calloc(nbrOfPts * 1.5, sizeof(double));
 	switch (nbrAxis)
 	{
 	case 1:
 		fprintf(fd, "Axis3\n");
-		for (int i = 0; i < 64; i++) {
+		for (int i = 0; i < size; i++) {
 			// Shift to the next page
-			for (int j = 0; j < 256; j++) {
+			for (int j = 0; j < NBR_SAMP_PER_PAGE; j++) {
 				val1 = (unsigned int)(base_A24D32_axis3_ptr[i * 256 + j]);
 				pos1 = (double)(((int)val1) * positionScale);
 				pos1 /= 8.0;
 				fprintf(fd, "%lf; 0x%x \n", pos1, val1);
 				val1 = 0;
+				localPos[i] = pos1;
+				*mean += pos1;
 			}
+
 		}
+		// working out the mean
+		meanVal[2] = (*mean) / nbrOfPts;
+
+		//working out the standard deviation
+		for (UINT i = 0; i < nbrOfPts; i++) {
+			*stdDev += pow((*localPos++ - *meanVal), 2);
+		}
+		stdDevVal[2] = sqrt((*stdDev) / nbrOfPts);
+
+		fprintf(fd, "Mean\n");
+		fprintf(fd, "%lf\n", meanVal[2]);
+		fprintf(fd, "Std dev\n");
+		fprintf(fd, "%lf\n", stdDevVal[2]);
 		break;
 	case 2:
 		fprintf(fd, "Axis1; ; Axis3\n");
-		for (int i = 0; i < 64; i++) {
+		for (int i = 0; i < size; i++) {
 			// Shift to the next page
-			for (int j = 0; j < 256; j++) {
+			for (int j = 0; j < NBR_SAMP_PER_PAGE; j++) {
 				val1 = (unsigned int)(base_A24D32_axis1_ptr[i * 256 + j]);
 				pos1 = (double)(((int)val1) * positionScale) / 8.0;
 				val2 = (unsigned int)(base_A24D32_axis3_ptr[i * 256 + j]);
@@ -850,8 +874,29 @@ int processRAMData(UINT nbrAxis, PUINT base_A24D32_axis1_ptr, PUINT base_A24D32_
 				fprintf(fd, "%lf; 0x%x; %lf; 0x%x \n", pos1, val1, pos2, val2);
 				val1 = 0;
 				val2 = 0;
+				localPos[2 * i] = pos1;
+				localPos[2 * i + 1] = pos2;
+				*mean += pos1;
+				mean[1] += pos2;
 			}
 		}
+
+		// working out the mean
+		meanVal[0] = (*mean) / nbrOfPts;
+		meanVal[2] = (mean[1]) / nbrOfPts;
+		//working out the standard deviation
+		for (UINT i = 0; i < nbrOfPts; i++) {
+			*stdDev += pow((localPos[2 * i] - *meanVal), 2);
+			stdDev[1] += pow((localPos[2 * i + 1] - meanVal[1]), 2);
+		}
+		stdDevVal[0] = sqrt((*stdDev) / (nbrOfPts));
+		stdDevVal[2] = sqrt((stdDev[1]) / (nbrOfPts));
+
+		fprintf(fd, "Mean\n");
+		fprintf(fd, "%lf;%lf\n", meanVal[0], stdDevVal[0]);
+		fprintf(fd, "Std dev\n");
+		fprintf(fd, "%lf;%lf\n", stdDevVal[2], stdDevVal[2]);
+
 		break;
 	default:
 		fprintf(fd, "Axis1; ; Axis2; ; Axis3; ; Axis4\n");
@@ -859,9 +904,9 @@ int processRAMData(UINT nbrAxis, PUINT base_A24D32_axis1_ptr, PUINT base_A24D32_
 		double pos11 = 0.0;
 		UINT val21 = 0;
 		double pos21 = 0.0;
-		for (int i = 0; i < 64; i++) {
+		for (int i = 0; i < size; i++) {
 			// Shift to the next page
-			for (int j = 0; j < 256 / 2; j++) {
+			for (int j = 0; j < NBR_SAMP_PER_PAGE/2; j++) {
 				val1 = (unsigned int)(base_A24D32_axis1_ptr[i * 256 + j * 2]);
 				val11 = (unsigned int)(base_A24D32_axis1_ptr[i * 256 + j * 2 + 1]);
 				pos1 = (double)(((int)val1) * positionScale) / 8.0;
@@ -876,11 +921,36 @@ int processRAMData(UINT nbrAxis, PUINT base_A24D32_axis1_ptr, PUINT base_A24D32_
 				val11 = 0;
 				val2 = 0;
 				val21 = 0;
+				localPos[4 * i] = pos1;
+				localPos[4 * i + 1] = pos11;
+				localPos[4 * i + 2] = pos2;
+				localPos[4 * i + 3] = pos21;
+				*mean += pos1;
+				mean[1] += pos11;
+				mean[2] += pos2;
+				mean[3] += pos21;
 				//don't miss the overflow case
 			}
-			//fprintf(fd, "-----------------------Page %u: End address 0x%p ------------------------ \n", i + 1, base_A24D32_axis1_ptr - 1);
 
 		}
+
+		// working out the mean
+		for(int i=0;i<4;i++)
+			meanVal[i] = (mean[i]) / nbrOfPts;
+		//working out the standard deviation
+		for (UINT i = 0; i < nbrOfPts; i++) {
+			*stdDev += pow((localPos[4 * i] - *meanVal), 2);
+			stdDev[1] += pow((localPos[4 * i + 1] - meanVal[1]), 2);
+			stdDev[2] += pow((localPos[4 * i + 2] - meanVal[2]), 2);
+			stdDev[3] += pow((localPos[4 * i + 3] - meanVal[3]), 2);
+		}
+		for (int i = 0; i < 4; i++)
+			stdDevVal[i] = sqrt((stdDev[i]) / nbrOfPts);
+
+		fprintf(fd, " ;Mean\n");
+		fprintf(fd, "%lf;%lf;%lf;%lf\n", meanVal[0], meanVal[1], meanVal[2], meanVal[3]);
+		fprintf(fd, "; Std dev\n");
+		fprintf(fd, "%lf;%lf;%lf;%lf\n", stdDevVal[0], stdDevVal[1], stdDevVal[2], stdDevVal[3]);
 		break;
 	}
 
@@ -1414,9 +1484,8 @@ int readModifyWrite(const char* accessMode, SIS1100_Device_Struct* dev, unsigned
 /// 0 if success
 /// -1 if failed
 /// </returns>
-int getFlyscanData(SIS1100_Device_Struct* dev, PUINT startAddress_axis1, PUINT startAddress_axis3, PUINT nbrFlyscanAxis) {
-#define NBR_RAM_PAGES			64
-#define NBR_SAMP_PER_PAGE		512
+int getFlyscanData(SIS1100_Device_Struct* dev, PUINT startAddress_axis1, PUINT startAddress_axis3, PUINT nbrFlyscanAxis, UINT size) {
+
 	INFO("Getting Flyscan data...\n");
 	UINT uint_vme_address = 0, nbr_of_read = 0, ctr1[2] = { 0,0 }, ctr = 0, nbrAxis = 0;
 	UINT ramPageAddr = 0;
@@ -1425,6 +1494,10 @@ int getFlyscanData(SIS1100_Device_Struct* dev, PUINT startAddress_axis1, PUINT s
 	// Here we need only to know whether the user is going to make measurement on 
 	// more than 2 axis or not, so 2 is our threshold
 	uint_vme_address = ADD(zDiagFFTCtrl, BASE_ADDRESS[AXIS3 - 1]);
+	if (checkValues(size, 1, NBR_RAM_PAGES)) {
+		WARN("size is not in the requested range \n");
+		return RET_FAILED;
+	}
 	for (int k = 0; k < 2; k++) {
 		if (Read_Write("A24D16", dev, uint_vme_address, &ramPageAddr, 0) != RET_SUCCESS)
 		{
@@ -1486,9 +1559,9 @@ int getFlyscanData(SIS1100_Device_Struct* dev, PUINT startAddress_axis1, PUINT s
 	startAddress = startAddress_axis3;
 	ctr = ctr1[0];
 	for (UINT k = 0; k < nbrAxis; k++) {
-		for (int i = 0; i < 64; i++) {
+		for (int i = 0; i < size; i++) {
 			INFO("-----------------------Page %u: Start address 0x%p ------------------------ \n", i + 1, startAddress);
-			if (vme_A24DMA_D32_read(dev, uint_vme_address, startAddress, NBR_SAMP_PER_PAGE / 2, &nbr_of_read) != RET_SUCCESS)
+			if (vme_A24DMA_D32_read(dev, uint_vme_address, startAddress, NBR_SAMP_PER_PAGE , &nbr_of_read) != RET_SUCCESS)
 			{
 				{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
 			}
@@ -4951,6 +5024,28 @@ int EnableResetFindsVelocity(SIS1100_Device_Struct* dev, unsigned char axis)
 	return RET_SUCCESS;
 
 }
+int EnableResetFindsVelocity_ForAllAxis(SIS1100_Device_Struct* dev)
+{
+	unsigned int uint_vme_data = 0,
+		uint_vme_address = 0;
+	for (int i = 0; i < 4; i++) {
+
+		uint_vme_address = ADD(BASE_ADDRESS[i], zCtrl3);
+		INFO("Enabling reset finds velocity  on Axis %d... \n",i+1);
+		if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
+		{
+			WARN("Register %6X access Faillure !  \n", uint_vme_address); return RET_FAILED;
+		}
+		uint_vme_data |= (1 << 11);
+		if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
+		{
+			WARN("Register %6X access Faillure !  \n", uint_vme_address); return RET_FAILED;
+		}
+	}
+	return RET_SUCCESS;
+
+}
+
 int DisableResetFindsVelocity(SIS1100_Device_Struct* dev, unsigned char axis)
 {
 	unsigned int uint_vme_data = 0,
@@ -4962,6 +5057,29 @@ int DisableResetFindsVelocity(SIS1100_Device_Struct* dev, unsigned char axis)
 	uint_vme_data &= ~(1 << 11);
 	if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
 		{WARN("Register %6X access Faillure !  \n", uint_vme_address);return RET_FAILED;}
+	return RET_SUCCESS;
+
+}
+
+int DisableResetFindsVelocity_ForAllAxis(SIS1100_Device_Struct* dev)
+{
+	unsigned int uint_vme_data = 0,
+		uint_vme_address = 0;
+
+	for (int i = 0; i < 4; i++) {
+
+		INFO("Disabling reset finds velocity  on Axis %d... \n", i + 1);
+		uint_vme_address = ADD(BASE_ADDRESS[i], zCtrl3);
+		if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 0) != RET_SUCCESS)
+		{
+			WARN("Register %6X access Faillure !  \n", uint_vme_address); return RET_FAILED;
+		}
+		uint_vme_data &= ~(1 << 11);
+		if (Read_Write("A24D16", dev, uint_vme_address, &uint_vme_data, 1) != RET_SUCCESS)
+		{
+			WARN("Register %6X access Faillure !  \n", uint_vme_address); return RET_FAILED;
+		}
+	}
 	return RET_SUCCESS;
 
 }

@@ -69,7 +69,8 @@ extern "C" {
 
 #define FIFO_OVERLAP_ERR_CODE				-100
 #define ERRSTRMAX							512
-
+#define NBR_RAM_PAGES			64
+#define NBR_SAMP_PER_PAGE		256
 #define CE_MIN_VEL								50 // min vel is 0.5mm/s
 #define CE_MAX_VEL								31457 // max vel is 0.38 m/s
 #define ACTIVATE_CEC							0
@@ -215,6 +216,10 @@ extern "C" {
 	ECASOLEILZMI4104CLIB_API int SetSampTimerFreq(SIS1100_Device_Struct*, unsigned short);
 	ECASOLEILZMI4104CLIB_API int SetHoldSampEnable(SIS1100_Device_Struct*);
 	ECASOLEILZMI4104CLIB_API int ResetHoldSampEnable(SIS1100_Device_Struct*);
+	ECASOLEILZMI4104CLIB_API int EnableResetFindsVelocity(SIS1100_Device_Struct* dev, unsigned char axis);
+	ECASOLEILZMI4104CLIB_API int EnableResetFindsVelocity_ForAllAxis(SIS1100_Device_Struct* dev);
+	ECASOLEILZMI4104CLIB_API int DisableResetFindsVelocity(SIS1100_Device_Struct* dev, unsigned char axis);
+	ECASOLEILZMI4104CLIB_API int DisableResetFindsVelocity_ForAllAxis(SIS1100_Device_Struct* dev);
 	ECASOLEILZMI4104CLIB_API int enableSampling(SIS1100_Device_Struct*, double);
 	ECASOLEILZMI4104CLIB_API int DisableSampleTimer(SIS1100_Device_Struct*);
 	ECASOLEILZMI4104CLIB_API int VMESysReset(SIS1100_Device_Struct*);
@@ -265,9 +270,9 @@ extern "C" {
 	ECASOLEILZMI4104CLIB_API int setVMEIntLevel(SIS1100_Device_Struct*, unsigned char, unsigned char);
 	ECASOLEILZMI4104CLIB_API int sis3301w_Init(SIS1100_Device_Struct*, uint32_t, uint32_t, uint32_t);
 	ECASOLEILZMI4104CLIB_API int AckForSis3100VME_Irq(SIS1100_Device_Struct*, uint32_t);
-	ECASOLEILZMI4104CLIB_API int getFlyscanData(SIS1100_Device_Struct*, PUINT, PUINT, PUINT);
+	ECASOLEILZMI4104CLIB_API int getFlyscanData(SIS1100_Device_Struct*, PUINT, PUINT, PUINT, UINT size);
 	ECASOLEILZMI4104CLIB_API PUINT allocateMemSpace(UINT);
-	ECASOLEILZMI4104CLIB_API int processRAMData(UINT, PUINT, PUINT, char* folderName);
+	ECASOLEILZMI4104CLIB_API int processRAMData(UINT, PUINT, PUINT, UINT size, char* folderName, double* meanVal, double* stdDevVal);
 	ECASOLEILZMI4104CLIB_API int processFifoData(UINT nbrAxis, PUCHAR axisTab, PUINT memPtr, UINT nbrOfPts, PUCHAR folderName, double* meanVal, double* stdDevVal);
 	ECASOLEILZMI4104CLIB_API int configureFifoFlyscan(SIS1100_Device_Struct*, fifoParam* fifoparameters, PUINT startAdress, PUCHAR axisTab, PUINT sizeOfTab, PINT ret_code);
 	ECASOLEILZMI4104CLIB_API int fifoFlyscan(SIS1100_Device_Struct*, fifoParam, PUINT, UCHAR, PINT ret_code, ...);
