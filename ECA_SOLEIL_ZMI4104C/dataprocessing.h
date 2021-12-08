@@ -7,7 +7,7 @@
 #include "../eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.h"
 #include <QThread>
 #include <QTimer>
-
+#include <cmath>
 static bool *ledsErrorStatus,*ledsStatus;
 
 class dataProcessing : public QObject
@@ -33,6 +33,7 @@ public:
     double meanVal[4]={0.0,0.0,0.0,0.0,};
     double stdDevVal[4]={0.0,0.0,0.0,0.0,};
     static bool precision37;
+    double gseData[16];
 private:
     static SIS1100_Device_Struct* dev;
     //static bool accessToken;
@@ -43,9 +44,16 @@ signals:
     void flyscanProcTerm();
     void flyscanErrorCode(int err_code);
     void flyscanStatValues(unsigned char* axisTab, double* mean, double* stdDev);
+    void ssiDataAvailable(unsigned int axis,double *ssiVals, double *optPwrVals);
+    void readGSEDataComplete(double * gseData);
+    void updateSettingsRequest_completed(uint8_t a, uint8_t b, double* val);
+    void ssiSquelchValues(uint8_t axis, double* val);
+    void KpKvValues(uint8_t axis, uint16_t* coeff);
+    void apdValues(uint8_t axis, uint32_t* coeff);
 public slots:
-    void on_updateSettingsRequest_recieved(int a, int b, int val);
-    int getLEDsColor(int*);
+    void on_updateSettingsRequest_recieved(uint8_t a, uint8_t b, double* val);
+    void on_initSettingsFormRequest_received();
+    int  getLEDsColor(int*);
     void updatePVT(int index, double* val);
     void updateOAS(int index, double* val);
     int updateCECRatios(unsigned int axis,CEratios* val, unsigned int index);
@@ -60,6 +68,7 @@ public slots:
     int  on_configureFifoFlyscanRequest_recieved();
     void on_OffsetPosition_Changed(double* offPosPtr);
     void on_PresetPosition_Changed(double* presPosPtr);
+
 };
 
 #endif // DATAPROCESSING_H

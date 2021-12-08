@@ -434,10 +434,11 @@ release\moc_dataprocessing.cpp: ..\ECA_SOLEIL_ZMI4104C\dataprocessing.h \
 	C:\Qt2\5.13.2\msvc2017\bin\moc.exe $(DEFINES) --compiler-flavor=msvc --include C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/build-ECA_SOLEIL_ZMI4104C-MSVS2017-Debug/release/moc_predefs.h -IC:/Qt2/5.13.2/msvc2017/mkspecs/win32-msvc -IC:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/ECA_SOLEIL_ZMI4104C -IC:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/Release -IC:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib -IC:/Qt2/5.13.2/msvc2017/include -IC:/Qt2/5.13.2/msvc2017/include/QtPrintSupport -IC:/Qt2/5.13.2/msvc2017/include/QtWidgets -IC:/Qt2/5.13.2/msvc2017/include/QtGui -IC:/Qt2/5.13.2/msvc2017/include/QtANGLE -IC:/Qt2/5.13.2/msvc2017/include/QtCore -I. -I"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.28.29910\ATLMFC\include" -I"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.28.29910\include" -I"C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8\include\um" -I"C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt" -I"C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\shared" -I"C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um" -I"C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\winrt" -I"C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\cppwinrt" ..\ECA_SOLEIL_ZMI4104C\dataprocessing.h -o release\moc_dataprocessing.cpp
 
 release\moc_flyscanform.cpp: ..\ECA_SOLEIL_ZMI4104C\flyscanform.h \
-		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\QWidget \
-		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qwidget.h \
-		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qtwidgetsglobal.h \
-		C:\Qt2\5.13.2\msvc2017\include\QtGui\qtguiglobal.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\QThread \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qthread.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qobject.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qobjectdefs.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qnamespace.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtCore\qglobal.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtCore\qconfig-bootstrapped.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtCore\qconfig.h \
@@ -459,14 +460,7 @@ release\moc_flyscanform.cpp: ..\ECA_SOLEIL_ZMI4104C\flyscanform.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtCore\qmutex.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtCore\qnumeric.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtCore\qversiontagging.h \
-		C:\Qt2\5.13.2\msvc2017\include\QtGui\qtgui-config.h \
-		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qtwidgets-config.h \
-		C:\Qt2\5.13.2\msvc2017\include\QtGui\qwindowdefs.h \
-		C:\Qt2\5.13.2\msvc2017\include\QtCore\qobjectdefs.h \
-		C:\Qt2\5.13.2\msvc2017\include\QtCore\qnamespace.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtCore\qobjectdefs_impl.h \
-		C:\Qt2\5.13.2\msvc2017\include\QtGui\qwindowdefs_win.h \
-		C:\Qt2\5.13.2\msvc2017\include\QtCore\qobject.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtCore\qstring.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtCore\qchar.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtCore\qbytearray.h \
@@ -493,6 +487,14 @@ release\moc_flyscanform.cpp: ..\ECA_SOLEIL_ZMI4104C\flyscanform.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtCore\qvarlengtharray.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtCore\qcontainerfwd.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtCore\qobject_impl.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\QWidget \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qwidget.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qtwidgetsglobal.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qtguiglobal.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qtgui-config.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qtwidgets-config.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qwindowdefs.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qwindowdefs_win.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtCore\qmargins.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtGui\qpaintdevice.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtCore\qrect.h \
@@ -1173,6 +1175,8 @@ release\moc_mainwindow.cpp: ..\ECA_SOLEIL_ZMI4104C\mainwindow.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtCore\qbasictimer.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtCore\QDebug \
 		..\ECA_SOLEIL_ZMI4104C\flyscanform.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\QThread \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qthread.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\QWidget \
 		..\ECA_SOLEIL_ZMI4104C\settingsform.h \
 		..\ECA_SOLEIL_ZMI4104C\positionoffsetform.h \
@@ -1191,8 +1195,6 @@ release\moc_mainwindow.cpp: ..\ECA_SOLEIL_ZMI4104C\mainwindow.h \
 		..\eca_soleil_zmi4104_lib\sis1100_zmilib\sis3302.h \
 		..\eca_soleil_zmi4104_lib\sis1100_zmilib\sis3100.h \
 		..\eca_soleil_zmi4104_lib\sis1100_zmilib\sis3100_vme_calls.h \
-		C:\Qt2\5.13.2\msvc2017\include\QtCore\QThread \
-		C:\Qt2\5.13.2\msvc2017\include\QtCore\qthread.h \
 		..\ECA_SOLEIL_ZMI4104C\graphsform.h \
 		..\ECA_SOLEIL_ZMI4104C\qcustomplot\qcustomplot.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtCore\QPointer \
@@ -1700,8 +1702,13 @@ release\moc_myslots.cpp: ..\ECA_SOLEIL_ZMI4104C\myslots.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qmessagebox.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qdialog.h \
 		..\ECA_SOLEIL_ZMI4104C\flyscanform.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\QThread \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qthread.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\QWidget \
 		..\ECA_SOLEIL_ZMI4104C\settingsform.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\QTimer \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qtimer.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qbasictimer.h \
 		..\ECA_SOLEIL_ZMI4104C\positionoffsetform.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtGui\QRegExpValidator \
 		C:\Qt2\5.13.2\msvc2017\include\QtGui\qvalidator.h \
@@ -1716,8 +1723,6 @@ release\moc_myslots.cpp: ..\ECA_SOLEIL_ZMI4104C\myslots.h \
 		..\eca_soleil_zmi4104_lib\sis1100_zmilib\sis3302.h \
 		..\eca_soleil_zmi4104_lib\sis1100_zmilib\sis3100.h \
 		..\eca_soleil_zmi4104_lib\sis1100_zmilib\sis3100_vme_calls.h \
-		C:\Qt2\5.13.2\msvc2017\include\QtCore\QThread \
-		C:\Qt2\5.13.2\msvc2017\include\QtCore\qthread.h \
 		release\moc_predefs.h \
 		C:\Qt2\5.13.2\msvc2017\bin\moc.exe
 	C:\Qt2\5.13.2\msvc2017\bin\moc.exe $(DEFINES) --compiler-flavor=msvc --include C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/build-ECA_SOLEIL_ZMI4104C-MSVS2017-Debug/release/moc_predefs.h -IC:/Qt2/5.13.2/msvc2017/mkspecs/win32-msvc -IC:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/ECA_SOLEIL_ZMI4104C -IC:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/Release -IC:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib -IC:/Qt2/5.13.2/msvc2017/include -IC:/Qt2/5.13.2/msvc2017/include/QtPrintSupport -IC:/Qt2/5.13.2/msvc2017/include/QtWidgets -IC:/Qt2/5.13.2/msvc2017/include/QtGui -IC:/Qt2/5.13.2/msvc2017/include/QtANGLE -IC:/Qt2/5.13.2/msvc2017/include/QtCore -I. -I"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.28.29910\ATLMFC\include" -I"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.28.29910\include" -I"C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8\include\um" -I"C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt" -I"C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\shared" -I"C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um" -I"C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\winrt" -I"C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\cppwinrt" ..\ECA_SOLEIL_ZMI4104C\myslots.h -o release\moc_myslots.cpp
@@ -2560,6 +2565,9 @@ release\moc_settingsform.cpp: ..\ECA_SOLEIL_ZMI4104C\settingsform.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtCore\qfiledevice.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtGui\qvector2d.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtGui\qtouchdevice.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\QTimer \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qtimer.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qbasictimer.h \
 		release\moc_predefs.h \
 		C:\Qt2\5.13.2\msvc2017\bin\moc.exe
 	C:\Qt2\5.13.2\msvc2017\bin\moc.exe $(DEFINES) --compiler-flavor=msvc --include C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/build-ECA_SOLEIL_ZMI4104C-MSVS2017-Debug/release/moc_predefs.h -IC:/Qt2/5.13.2/msvc2017/mkspecs/win32-msvc -IC:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/ECA_SOLEIL_ZMI4104C -IC:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/Release -IC:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib -IC:/Qt2/5.13.2/msvc2017/include -IC:/Qt2/5.13.2/msvc2017/include/QtPrintSupport -IC:/Qt2/5.13.2/msvc2017/include/QtWidgets -IC:/Qt2/5.13.2/msvc2017/include/QtGui -IC:/Qt2/5.13.2/msvc2017/include/QtANGLE -IC:/Qt2/5.13.2/msvc2017/include/QtCore -I. -I"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.28.29910\ATLMFC\include" -I"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.28.29910\include" -I"C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8\include\um" -I"C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt" -I"C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\shared" -I"C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um" -I"C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\winrt" -I"C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\cppwinrt" ..\ECA_SOLEIL_ZMI4104C\settingsform.h -o release\moc_settingsform.cpp
@@ -3338,10 +3346,11 @@ release\dataprocessing.obj: ..\ECA_SOLEIL_ZMI4104C\dataprocessing.cpp ..\ECA_SOL
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -Forelease\dataprocessing.obj ..\ECA_SOLEIL_ZMI4104C\dataprocessing.cpp
 
 release\flyscanform.obj: ..\ECA_SOLEIL_ZMI4104C\flyscanform.cpp ..\ECA_SOLEIL_ZMI4104C\flyscanform.h \
-		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\QWidget \
-		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qwidget.h \
-		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qtwidgetsglobal.h \
-		C:\Qt2\5.13.2\msvc2017\include\QtGui\qtguiglobal.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\QThread \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qthread.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qobject.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qobjectdefs.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qnamespace.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtCore\qglobal.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtCore\qconfig-bootstrapped.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtCore\qconfig.h \
@@ -3363,14 +3372,7 @@ release\flyscanform.obj: ..\ECA_SOLEIL_ZMI4104C\flyscanform.cpp ..\ECA_SOLEIL_ZM
 		C:\Qt2\5.13.2\msvc2017\include\QtCore\qmutex.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtCore\qnumeric.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtCore\qversiontagging.h \
-		C:\Qt2\5.13.2\msvc2017\include\QtGui\qtgui-config.h \
-		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qtwidgets-config.h \
-		C:\Qt2\5.13.2\msvc2017\include\QtGui\qwindowdefs.h \
-		C:\Qt2\5.13.2\msvc2017\include\QtCore\qobjectdefs.h \
-		C:\Qt2\5.13.2\msvc2017\include\QtCore\qnamespace.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtCore\qobjectdefs_impl.h \
-		C:\Qt2\5.13.2\msvc2017\include\QtGui\qwindowdefs_win.h \
-		C:\Qt2\5.13.2\msvc2017\include\QtCore\qobject.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtCore\qstring.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtCore\qchar.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtCore\qbytearray.h \
@@ -3397,6 +3399,14 @@ release\flyscanform.obj: ..\ECA_SOLEIL_ZMI4104C\flyscanform.cpp ..\ECA_SOLEIL_ZM
 		C:\Qt2\5.13.2\msvc2017\include\QtCore\qvarlengtharray.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtCore\qcontainerfwd.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtCore\qobject_impl.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\QWidget \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qwidget.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qtwidgetsglobal.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qtguiglobal.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qtgui-config.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qtwidgets-config.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qwindowdefs.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qwindowdefs_win.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtCore\qmargins.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtGui\qpaintdevice.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtCore\qrect.h \
@@ -4085,6 +4095,8 @@ release\main.obj: ..\ECA_SOLEIL_ZMI4104C\main.cpp ..\ECA_SOLEIL_ZMI4104C\mainwin
 		C:\Qt2\5.13.2\msvc2017\include\QtCore\qbasictimer.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtCore\QDebug \
 		..\ECA_SOLEIL_ZMI4104C\flyscanform.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\QThread \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qthread.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\QWidget \
 		..\ECA_SOLEIL_ZMI4104C\settingsform.h \
 		..\ECA_SOLEIL_ZMI4104C\positionoffsetform.h \
@@ -4103,8 +4115,6 @@ release\main.obj: ..\ECA_SOLEIL_ZMI4104C\main.cpp ..\ECA_SOLEIL_ZMI4104C\mainwin
 		..\eca_soleil_zmi4104_lib\sis1100_zmilib\sis3302.h \
 		..\eca_soleil_zmi4104_lib\sis1100_zmilib\sis3100.h \
 		..\eca_soleil_zmi4104_lib\sis1100_zmilib\sis3100_vme_calls.h \
-		C:\Qt2\5.13.2\msvc2017\include\QtCore\QThread \
-		C:\Qt2\5.13.2\msvc2017\include\QtCore\qthread.h \
 		..\ECA_SOLEIL_ZMI4104C\graphsform.h \
 		..\ECA_SOLEIL_ZMI4104C\qcustomplot\qcustomplot.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtCore\QPointer \
@@ -4619,6 +4629,8 @@ release\mainwindow.obj: ..\ECA_SOLEIL_ZMI4104C\mainwindow.cpp ..\ECA_SOLEIL_ZMI4
 		C:\Qt2\5.13.2\msvc2017\include\QtCore\qbasictimer.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtCore\QDebug \
 		..\ECA_SOLEIL_ZMI4104C\flyscanform.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\QThread \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qthread.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\QWidget \
 		..\ECA_SOLEIL_ZMI4104C\settingsform.h \
 		..\ECA_SOLEIL_ZMI4104C\positionoffsetform.h \
@@ -4637,8 +4649,6 @@ release\mainwindow.obj: ..\ECA_SOLEIL_ZMI4104C\mainwindow.cpp ..\ECA_SOLEIL_ZMI4
 		..\eca_soleil_zmi4104_lib\sis1100_zmilib\sis3302.h \
 		..\eca_soleil_zmi4104_lib\sis1100_zmilib\sis3100.h \
 		..\eca_soleil_zmi4104_lib\sis1100_zmilib\sis3100_vme_calls.h \
-		C:\Qt2\5.13.2\msvc2017\include\QtCore\QThread \
-		C:\Qt2\5.13.2\msvc2017\include\QtCore\qthread.h \
 		..\ECA_SOLEIL_ZMI4104C\graphsform.h \
 		..\ECA_SOLEIL_ZMI4104C\qcustomplot\qcustomplot.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtCore\QPointer \
@@ -5146,8 +5156,13 @@ release\myslots.obj: ..\ECA_SOLEIL_ZMI4104C\myslots.cpp ..\ECA_SOLEIL_ZMI4104C\m
 		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qmessagebox.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qdialog.h \
 		..\ECA_SOLEIL_ZMI4104C\flyscanform.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\QThread \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qthread.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\QWidget \
 		..\ECA_SOLEIL_ZMI4104C\settingsform.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\QTimer \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qtimer.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qbasictimer.h \
 		..\ECA_SOLEIL_ZMI4104C\positionoffsetform.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtGui\QRegExpValidator \
 		C:\Qt2\5.13.2\msvc2017\include\QtGui\qvalidator.h \
@@ -5161,9 +5176,7 @@ release\myslots.obj: ..\ECA_SOLEIL_ZMI4104C\myslots.cpp ..\ECA_SOLEIL_ZMI4104C\m
 		..\ECA_SOLEIL_ZMI4104C\zVME_const.h \
 		..\eca_soleil_zmi4104_lib\sis1100_zmilib\sis3302.h \
 		..\eca_soleil_zmi4104_lib\sis1100_zmilib\sis3100.h \
-		..\eca_soleil_zmi4104_lib\sis1100_zmilib\sis3100_vme_calls.h \
-		C:\Qt2\5.13.2\msvc2017\include\QtCore\QThread \
-		C:\Qt2\5.13.2\msvc2017\include\QtCore\qthread.h
+		..\eca_soleil_zmi4104_lib\sis1100_zmilib\sis3100_vme_calls.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -Forelease\myslots.obj ..\ECA_SOLEIL_ZMI4104C\myslots.cpp
 
 release\positionoffsetform.obj: ..\ECA_SOLEIL_ZMI4104C\positionoffsetform.cpp ..\ECA_SOLEIL_ZMI4104C\positionoffsetform.h \
@@ -6000,6 +6013,9 @@ release\settingsform.obj: ..\ECA_SOLEIL_ZMI4104C\settingsform.cpp ..\ECA_SOLEIL_
 		C:\Qt2\5.13.2\msvc2017\include\QtCore\qfiledevice.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtGui\qvector2d.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtGui\qtouchdevice.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\QTimer \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qtimer.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qbasictimer.h \
 		ui_settingsform.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtCore\QDebug
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -Forelease\settingsform.obj ..\ECA_SOLEIL_ZMI4104C\settingsform.cpp

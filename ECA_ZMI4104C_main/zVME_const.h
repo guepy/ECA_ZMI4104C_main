@@ -124,3 +124,8 @@
 #define SIS3100IntReg		0x104
 #define zDiagFFTCtrl		0xB4
 #define zDiagFFTRamData		0x400
+#define zGSETargetGain		0x1BC
+#define zGSEActualGain		0x1BE
+#define zGSESigRMSGain		0x1C0
+#define zGSEMeasDCLow		0x1C2
+#define zGSEMeasDCHigh		0x1C4

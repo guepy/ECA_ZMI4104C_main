@@ -72,7 +72,7 @@ private:
     unsigned int currentcecAxis;
 signals:
     void initComplete();
-    void updateSettingsRequest(int a, int b, int val);
+    void updateSettingsRequest(int a, int b, double* val);
     void closeFlyscanFormRequest();
     void closePositionOffsetFormRequest();
     void closePresetPositionFormRequest();
@@ -91,6 +91,12 @@ signals:
     void flyscanErrorCode(int ret_code);
     void flyscanStatValues(unsigned char* axisTab, double* mean, double* stdDev);
     void flyscanProcTerm();
+    void ssiDataAvailable(unsigned int axis,double *ssiVals, double *optPwrVals);
+    void ssiSquelchValues(uint8_t axis, double* val);
+    void KpKvValues(uint8_t axis, uint16_t* coeff);
+    void readGSEDataComplete(double * gseData);
+    void initSettingsFormRequest();
+    void apdValues(uint8_t axis, uint32_t* coeff);
 public slots:
     // --------------button continuous acquisition---------------------------
     void openFlyscanForm();

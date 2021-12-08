@@ -70,11 +70,17 @@ MainWindow::MainWindow(QWidget *parent)
     connect(this, &MainWindow::resetAxisRequest, dataProc, &dataProcessing::on_resetAxisRequest_recieved);
     connect(dataProc, &dataProcessing::initAxisComplete,this, &MainWindow::on_initAxisComplete_recieved);
 
-
     //connect(flyscanForm, &FlyscanForm::ramDataFlyscanRequest,this, &MainWindow::on_ramDataFlyscanRequest_recieved);
 
     connect(this, &MainWindow::updateSettingsRequest,dataProc, &dataProcessing::on_updateSettingsRequest_recieved);
+    connect(dataProc,&dataProcessing::ssiDataAvailable, this, &MainWindow::ssiDataAvailable);
     connect(dataProc, &dataProcessing::initAxisComplete,this, &MainWindow::on_initAxisComplete_recieved);
+    connect(dataProc, &dataProcessing::ssiSquelchValues,this, &MainWindow::ssiSquelchValues);
+    connect(dataProc, &dataProcessing::KpKvValues,this, &MainWindow::KpKvValues);
+    connect(dataProc, &dataProcessing::apdValues,this, &MainWindow::apdValues);
+    connect(dataProc, &dataProcessing::readGSEDataComplete,this, &MainWindow::readGSEDataComplete);
+
+    connect(this, &MainWindow::initSettingsFormRequest, dataProc, &dataProcessing::on_initSettingsFormRequest_received);
     //*
     gtimer = new QTimer(this);
     connect(gtimer, &QTimer::timeout, this, QOverload<>::of(&MainWindow::refresh_screen));
@@ -336,6 +342,12 @@ void MainWindow::openSettingsForm(){
     connect(settingsForm, &SettingsForm::closeThis, this, &MainWindow::closeSettingsForm);
     connect(this, &MainWindow::closeSettingsFormRequest, settingsForm, &SettingsForm::closeForm);
     connect(settingsForm, &SettingsForm::updateSettingsRequest,this, &MainWindow::updateSettingsRequest);
+    connect(settingsForm, &SettingsForm::initSettingsFormRequest,this, &MainWindow::initSettingsFormRequest);
+    connect(this, &MainWindow::ssiDataAvailable, settingsForm, &SettingsForm::on_ssiDataAvailable_received);
+    connect(this, &MainWindow::ssiSquelchValues,settingsForm, &SettingsForm::on_ssiSquelchValues_received);
+    connect(this, &MainWindow::KpKvValues, settingsForm, &SettingsForm::on_KpKvValues_received);
+    connect(this, &MainWindow::apdValues, settingsForm, &SettingsForm::on_apdValues_received);
+    connect(this, &MainWindow::readGSEDataComplete, settingsForm, &SettingsForm::on_readGSEDataComplete_received);
     settingsForm->show();
     sfForm_int=1;
 }
