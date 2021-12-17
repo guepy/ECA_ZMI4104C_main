@@ -53,13 +53,19 @@ public:
     QComboBox *resetFindVel;
     QWidget *clockForm;
     QVBoxLayout *verticalLayout_6;
+    QSpacerItem *verticalSpacer_7;
     QHBoxLayout *horizontalLayout_12;
     QLabel *label_21;
-    QComboBox *comboBox;
+    QComboBox *sampleSCLK;
+    QSpacerItem *verticalSpacer_5;
+    QHBoxLayout *horizontalLayout_44;
+    QLabel *label_22;
+    QComboBox *resetSCLK;
+    QSpacerItem *verticalSpacer_6;
     QHBoxLayout *horizontalLayout_10;
     QLabel *label_18;
     QSpacerItem *horizontalSpacer_10;
-    QSpinBox *spinBox_4;
+    QSpinBox *sampFreq;
     QSpacerItem *horizontalSpacer_6;
     QLabel *label_20;
     QHBoxLayout *horizontalLayout_33;
@@ -85,39 +91,39 @@ public:
     QHBoxLayout *horizontalLayout_17;
     QLabel *label_14;
     QSpacerItem *horizontalSpacer_16;
-    QComboBox *comboBox_9;
+    QComboBox *gainMinControl;
     QSpacerItem *horizontalSpacer_22;
     QHBoxLayout *horizontalLayout_16;
-    QComboBox *comboBox_10;
+    QComboBox *gainMinControl_2;
     QSpacerItem *horizontalSpacer_15;
-    QComboBox *comboBox_4;
+    QComboBox *gainMinControl_3;
     QHBoxLayout *horizontalLayout_18;
     QSpacerItem *horizontalSpacer_17;
-    QComboBox *comboBox_7;
+    QComboBox *gainMinControl_4;
     QHBoxLayout *horizontalLayout_24;
     QLabel *label_60;
     QSpacerItem *horizontalSpacer_61;
-    QComboBox *comboBox_11;
+    QComboBox *gainMaxControl;
     QSpacerItem *horizontalSpacer_62;
     QHBoxLayout *horizontalLayout_38;
-    QComboBox *comboBox_12;
+    QComboBox *gainMaxControl_2;
     QSpacerItem *horizontalSpacer_63;
-    QComboBox *comboBox_5;
+    QComboBox *gainMaxControl_3;
     QHBoxLayout *horizontalLayout_39;
     QSpacerItem *horizontalSpacer_64;
-    QComboBox *comboBox_8;
+    QComboBox *gainMaxControl_4;
     QHBoxLayout *horizontalLayout_40;
     QLabel *label_26;
     QSpacerItem *horizontalSpacer_65;
-    QComboBox *comboBox_13;
+    QComboBox *agcControl;
     QSpacerItem *horizontalSpacer_66;
     QHBoxLayout *horizontalLayout_41;
-    QComboBox *comboBox_14;
+    QComboBox *agcControl_2;
     QSpacerItem *horizontalSpacer_67;
-    QComboBox *comboBox_6;
+    QComboBox *agcControl_3;
     QHBoxLayout *horizontalLayout_42;
     QSpacerItem *horizontalSpacer_68;
-    QComboBox *comboBox_15;
+    QComboBox *agcControl_4;
     QFrame *line_10;
     QLabel *label_61;
     QFrame *line_11;
@@ -167,7 +173,7 @@ public:
     QHBoxLayout *horizontalLayout_32;
     QSpacerItem *horizontalSpacer_33;
     QPushButton *pushButton_6;
-    QWidget *widget4;
+    QWidget *layoutWidget;
     QHBoxLayout *horizontalLayout_36;
     QSpacerItem *horizontalSpacer_51;
     QLabel *label_52;
@@ -387,6 +393,16 @@ public:
 "}\n"
 "QTabWidget{\n"
 "color: red;\n"
+"}\n"
+"\n"
+"QPushButton:hover{\n"
+"border:  2px solid white;\n"
+"border-radius: 5px;\n"
+"}\n"
+"\n"
+"QPushButton:pressed{\n"
+"border:  2px solid white;\n"
+"border-radius: 10px;\n"
 "}"));
         settingsTab = new QTabWidget(SettingsForm);
         settingsTab->setObjectName(QString::fromUtf8("settingsTab"));
@@ -552,7 +568,7 @@ public:
 
         clockForm = new QWidget(tab);
         clockForm->setObjectName(QString::fromUtf8("clockForm"));
-        clockForm->setGeometry(QRect(370, 70, 341, 151));
+        clockForm->setGeometry(QRect(370, 70, 341, 211));
         clockForm->setStyleSheet(QString::fromUtf8("#clockForm{border: 1px solid;\n"
 "    border: 2px solid gray;\n"
 "    border-radius: 10px;\n"
@@ -560,6 +576,10 @@ public:
 "}"));
         verticalLayout_6 = new QVBoxLayout(clockForm);
         verticalLayout_6->setObjectName(QString::fromUtf8("verticalLayout_6"));
+        verticalSpacer_7 = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+
+        verticalLayout_6->addItem(verticalSpacer_7);
+
         horizontalLayout_12 = new QHBoxLayout();
         horizontalLayout_12->setObjectName(QString::fromUtf8("horizontalLayout_12"));
         label_21 = new QLabel(clockForm);
@@ -567,15 +587,40 @@ public:
 
         horizontalLayout_12->addWidget(label_21);
 
-        comboBox = new QComboBox(clockForm);
-        comboBox->addItem(QString());
-        comboBox->addItem(QString());
-        comboBox->setObjectName(QString::fromUtf8("comboBox"));
+        sampleSCLK = new QComboBox(clockForm);
+        sampleSCLK->addItem(QString());
+        sampleSCLK->addItem(QString());
+        sampleSCLK->setObjectName(QString::fromUtf8("sampleSCLK"));
 
-        horizontalLayout_12->addWidget(comboBox);
+        horizontalLayout_12->addWidget(sampleSCLK);
 
 
         verticalLayout_6->addLayout(horizontalLayout_12);
+
+        verticalSpacer_5 = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+
+        verticalLayout_6->addItem(verticalSpacer_5);
+
+        horizontalLayout_44 = new QHBoxLayout();
+        horizontalLayout_44->setObjectName(QString::fromUtf8("horizontalLayout_44"));
+        label_22 = new QLabel(clockForm);
+        label_22->setObjectName(QString::fromUtf8("label_22"));
+
+        horizontalLayout_44->addWidget(label_22);
+
+        resetSCLK = new QComboBox(clockForm);
+        resetSCLK->addItem(QString());
+        resetSCLK->addItem(QString());
+        resetSCLK->setObjectName(QString::fromUtf8("resetSCLK"));
+
+        horizontalLayout_44->addWidget(resetSCLK);
+
+
+        verticalLayout_6->addLayout(horizontalLayout_44);
+
+        verticalSpacer_6 = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+
+        verticalLayout_6->addItem(verticalSpacer_6);
 
         horizontalLayout_10 = new QHBoxLayout();
         horizontalLayout_10->setObjectName(QString::fromUtf8("horizontalLayout_10"));
@@ -584,17 +629,17 @@ public:
 
         horizontalLayout_10->addWidget(label_18);
 
-        horizontalSpacer_10 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+        horizontalSpacer_10 = new QSpacerItem(40, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
 
         horizontalLayout_10->addItem(horizontalSpacer_10);
 
-        spinBox_4 = new QSpinBox(clockForm);
-        spinBox_4->setObjectName(QString::fromUtf8("spinBox_4"));
-        sizePolicy2.setHeightForWidth(spinBox_4->sizePolicy().hasHeightForWidth());
-        spinBox_4->setSizePolicy(sizePolicy2);
-        spinBox_4->setMinimumSize(QSize(120, 35));
+        sampFreq = new QSpinBox(clockForm);
+        sampFreq->setObjectName(QString::fromUtf8("sampFreq"));
+        sizePolicy2.setHeightForWidth(sampFreq->sizePolicy().hasHeightForWidth());
+        sampFreq->setSizePolicy(sizePolicy2);
+        sampFreq->setMinimumSize(QSize(120, 35));
 
-        horizontalLayout_10->addWidget(spinBox_4);
+        horizontalLayout_10->addWidget(sampFreq);
 
         horizontalSpacer_6 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
 
@@ -617,11 +662,8 @@ public:
 
         pushButton_12 = new QPushButton(clockForm);
         pushButton_12->setObjectName(QString::fromUtf8("pushButton_12"));
-        QSizePolicy sizePolicy3(QSizePolicy::Expanding, QSizePolicy::Preferred);
-        sizePolicy3.setHorizontalStretch(0);
-        sizePolicy3.setVerticalStretch(0);
-        sizePolicy3.setHeightForWidth(pushButton_12->sizePolicy().hasHeightForWidth());
-        pushButton_12->setSizePolicy(sizePolicy3);
+        sizePolicy2.setHeightForWidth(pushButton_12->sizePolicy().hasHeightForWidth());
+        pushButton_12->setSizePolicy(sizePolicy2);
         pushButton_12->setMinimumSize(QSize(45, 35));
 
         horizontalLayout_33->addWidget(pushButton_12);
@@ -673,11 +715,11 @@ public:
 
         label_56 = new QLabel(verticalWidget1);
         label_56->setObjectName(QString::fromUtf8("label_56"));
-        QSizePolicy sizePolicy4(QSizePolicy::Fixed, QSizePolicy::Preferred);
-        sizePolicy4.setHorizontalStretch(0);
-        sizePolicy4.setVerticalStretch(0);
-        sizePolicy4.setHeightForWidth(label_56->sizePolicy().hasHeightForWidth());
-        label_56->setSizePolicy(sizePolicy4);
+        QSizePolicy sizePolicy3(QSizePolicy::Fixed, QSizePolicy::Preferred);
+        sizePolicy3.setHorizontalStretch(0);
+        sizePolicy3.setVerticalStretch(0);
+        sizePolicy3.setHeightForWidth(label_56->sizePolicy().hasHeightForWidth());
+        label_56->setSizePolicy(sizePolicy3);
 
         horizontalLayout_37->addWidget(label_56);
 
@@ -687,8 +729,8 @@ public:
 
         label_57 = new QLabel(verticalWidget1);
         label_57->setObjectName(QString::fromUtf8("label_57"));
-        sizePolicy4.setHeightForWidth(label_57->sizePolicy().hasHeightForWidth());
-        label_57->setSizePolicy(sizePolicy4);
+        sizePolicy3.setHeightForWidth(label_57->sizePolicy().hasHeightForWidth());
+        label_57->setSizePolicy(sizePolicy3);
 
         horizontalLayout_37->addWidget(label_57);
 
@@ -698,8 +740,8 @@ public:
 
         label_58 = new QLabel(verticalWidget1);
         label_58->setObjectName(QString::fromUtf8("label_58"));
-        sizePolicy4.setHeightForWidth(label_58->sizePolicy().hasHeightForWidth());
-        label_58->setSizePolicy(sizePolicy4);
+        sizePolicy3.setHeightForWidth(label_58->sizePolicy().hasHeightForWidth());
+        label_58->setSizePolicy(sizePolicy3);
 
         horizontalLayout_37->addWidget(label_58);
 
@@ -709,8 +751,8 @@ public:
 
         label_59 = new QLabel(verticalWidget1);
         label_59->setObjectName(QString::fromUtf8("label_59"));
-        sizePolicy4.setHeightForWidth(label_59->sizePolicy().hasHeightForWidth());
-        label_59->setSizePolicy(sizePolicy4);
+        sizePolicy3.setHeightForWidth(label_59->sizePolicy().hasHeightForWidth());
+        label_59->setSizePolicy(sizePolicy3);
 
         horizontalLayout_37->addWidget(label_59);
 
@@ -725,8 +767,8 @@ public:
         horizontalLayout_17->setObjectName(QString::fromUtf8("horizontalLayout_17"));
         label_14 = new QLabel(verticalWidget1);
         label_14->setObjectName(QString::fromUtf8("label_14"));
-        sizePolicy4.setHeightForWidth(label_14->sizePolicy().hasHeightForWidth());
-        label_14->setSizePolicy(sizePolicy4);
+        sizePolicy3.setHeightForWidth(label_14->sizePolicy().hasHeightForWidth());
+        label_14->setSizePolicy(sizePolicy3);
 
         horizontalLayout_17->addWidget(label_14);
 
@@ -734,15 +776,15 @@ public:
 
         horizontalLayout_17->addItem(horizontalSpacer_16);
 
-        comboBox_9 = new QComboBox(verticalWidget1);
-        comboBox_9->addItem(QString());
-        comboBox_9->addItem(QString());
-        comboBox_9->setObjectName(QString::fromUtf8("comboBox_9"));
-        sizePolicy2.setHeightForWidth(comboBox_9->sizePolicy().hasHeightForWidth());
-        comboBox_9->setSizePolicy(sizePolicy2);
-        comboBox_9->setMinimumSize(QSize(70, 35));
+        gainMinControl = new QComboBox(verticalWidget1);
+        gainMinControl->addItem(QString());
+        gainMinControl->addItem(QString());
+        gainMinControl->setObjectName(QString::fromUtf8("gainMinControl"));
+        sizePolicy2.setHeightForWidth(gainMinControl->sizePolicy().hasHeightForWidth());
+        gainMinControl->setSizePolicy(sizePolicy2);
+        gainMinControl->setMinimumSize(QSize(70, 35));
 
-        horizontalLayout_17->addWidget(comboBox_9);
+        horizontalLayout_17->addWidget(gainMinControl);
 
         horizontalSpacer_22 = new QSpacerItem(40, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
 
@@ -750,29 +792,29 @@ public:
 
         horizontalLayout_16 = new QHBoxLayout();
         horizontalLayout_16->setObjectName(QString::fromUtf8("horizontalLayout_16"));
-        comboBox_10 = new QComboBox(verticalWidget1);
-        comboBox_10->addItem(QString());
-        comboBox_10->addItem(QString());
-        comboBox_10->setObjectName(QString::fromUtf8("comboBox_10"));
-        sizePolicy2.setHeightForWidth(comboBox_10->sizePolicy().hasHeightForWidth());
-        comboBox_10->setSizePolicy(sizePolicy2);
-        comboBox_10->setMinimumSize(QSize(70, 35));
+        gainMinControl_2 = new QComboBox(verticalWidget1);
+        gainMinControl_2->addItem(QString());
+        gainMinControl_2->addItem(QString());
+        gainMinControl_2->setObjectName(QString::fromUtf8("gainMinControl_2"));
+        sizePolicy2.setHeightForWidth(gainMinControl_2->sizePolicy().hasHeightForWidth());
+        gainMinControl_2->setSizePolicy(sizePolicy2);
+        gainMinControl_2->setMinimumSize(QSize(70, 35));
 
-        horizontalLayout_16->addWidget(comboBox_10);
+        horizontalLayout_16->addWidget(gainMinControl_2);
 
         horizontalSpacer_15 = new QSpacerItem(40, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
 
         horizontalLayout_16->addItem(horizontalSpacer_15);
 
-        comboBox_4 = new QComboBox(verticalWidget1);
-        comboBox_4->addItem(QString());
-        comboBox_4->addItem(QString());
-        comboBox_4->setObjectName(QString::fromUtf8("comboBox_4"));
-        sizePolicy2.setHeightForWidth(comboBox_4->sizePolicy().hasHeightForWidth());
-        comboBox_4->setSizePolicy(sizePolicy2);
-        comboBox_4->setMinimumSize(QSize(70, 35));
+        gainMinControl_3 = new QComboBox(verticalWidget1);
+        gainMinControl_3->addItem(QString());
+        gainMinControl_3->addItem(QString());
+        gainMinControl_3->setObjectName(QString::fromUtf8("gainMinControl_3"));
+        sizePolicy2.setHeightForWidth(gainMinControl_3->sizePolicy().hasHeightForWidth());
+        gainMinControl_3->setSizePolicy(sizePolicy2);
+        gainMinControl_3->setMinimumSize(QSize(70, 35));
 
-        horizontalLayout_16->addWidget(comboBox_4);
+        horizontalLayout_16->addWidget(gainMinControl_3);
 
 
         horizontalLayout_17->addLayout(horizontalLayout_16);
@@ -783,15 +825,15 @@ public:
 
         horizontalLayout_18->addItem(horizontalSpacer_17);
 
-        comboBox_7 = new QComboBox(verticalWidget1);
-        comboBox_7->addItem(QString());
-        comboBox_7->addItem(QString());
-        comboBox_7->setObjectName(QString::fromUtf8("comboBox_7"));
-        sizePolicy2.setHeightForWidth(comboBox_7->sizePolicy().hasHeightForWidth());
-        comboBox_7->setSizePolicy(sizePolicy2);
-        comboBox_7->setMinimumSize(QSize(70, 35));
+        gainMinControl_4 = new QComboBox(verticalWidget1);
+        gainMinControl_4->addItem(QString());
+        gainMinControl_4->addItem(QString());
+        gainMinControl_4->setObjectName(QString::fromUtf8("gainMinControl_4"));
+        sizePolicy2.setHeightForWidth(gainMinControl_4->sizePolicy().hasHeightForWidth());
+        gainMinControl_4->setSizePolicy(sizePolicy2);
+        gainMinControl_4->setMinimumSize(QSize(70, 35));
 
-        horizontalLayout_18->addWidget(comboBox_7);
+        horizontalLayout_18->addWidget(gainMinControl_4);
 
 
         horizontalLayout_17->addLayout(horizontalLayout_18);
@@ -803,8 +845,8 @@ public:
         horizontalLayout_24->setObjectName(QString::fromUtf8("horizontalLayout_24"));
         label_60 = new QLabel(verticalWidget1);
         label_60->setObjectName(QString::fromUtf8("label_60"));
-        sizePolicy4.setHeightForWidth(label_60->sizePolicy().hasHeightForWidth());
-        label_60->setSizePolicy(sizePolicy4);
+        sizePolicy3.setHeightForWidth(label_60->sizePolicy().hasHeightForWidth());
+        label_60->setSizePolicy(sizePolicy3);
 
         horizontalLayout_24->addWidget(label_60);
 
@@ -812,15 +854,15 @@ public:
 
         horizontalLayout_24->addItem(horizontalSpacer_61);
 
-        comboBox_11 = new QComboBox(verticalWidget1);
-        comboBox_11->addItem(QString());
-        comboBox_11->addItem(QString());
-        comboBox_11->setObjectName(QString::fromUtf8("comboBox_11"));
-        sizePolicy2.setHeightForWidth(comboBox_11->sizePolicy().hasHeightForWidth());
-        comboBox_11->setSizePolicy(sizePolicy2);
-        comboBox_11->setMinimumSize(QSize(70, 35));
+        gainMaxControl = new QComboBox(verticalWidget1);
+        gainMaxControl->addItem(QString());
+        gainMaxControl->addItem(QString());
+        gainMaxControl->setObjectName(QString::fromUtf8("gainMaxControl"));
+        sizePolicy2.setHeightForWidth(gainMaxControl->sizePolicy().hasHeightForWidth());
+        gainMaxControl->setSizePolicy(sizePolicy2);
+        gainMaxControl->setMinimumSize(QSize(70, 35));
 
-        horizontalLayout_24->addWidget(comboBox_11);
+        horizontalLayout_24->addWidget(gainMaxControl);
 
         horizontalSpacer_62 = new QSpacerItem(40, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
 
@@ -828,29 +870,29 @@ public:
 
         horizontalLayout_38 = new QHBoxLayout();
         horizontalLayout_38->setObjectName(QString::fromUtf8("horizontalLayout_38"));
-        comboBox_12 = new QComboBox(verticalWidget1);
-        comboBox_12->addItem(QString());
-        comboBox_12->addItem(QString());
-        comboBox_12->setObjectName(QString::fromUtf8("comboBox_12"));
-        sizePolicy2.setHeightForWidth(comboBox_12->sizePolicy().hasHeightForWidth());
-        comboBox_12->setSizePolicy(sizePolicy2);
-        comboBox_12->setMinimumSize(QSize(70, 35));
+        gainMaxControl_2 = new QComboBox(verticalWidget1);
+        gainMaxControl_2->addItem(QString());
+        gainMaxControl_2->addItem(QString());
+        gainMaxControl_2->setObjectName(QString::fromUtf8("gainMaxControl_2"));
+        sizePolicy2.setHeightForWidth(gainMaxControl_2->sizePolicy().hasHeightForWidth());
+        gainMaxControl_2->setSizePolicy(sizePolicy2);
+        gainMaxControl_2->setMinimumSize(QSize(70, 35));
 
-        horizontalLayout_38->addWidget(comboBox_12);
+        horizontalLayout_38->addWidget(gainMaxControl_2);
 
         horizontalSpacer_63 = new QSpacerItem(40, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
 
         horizontalLayout_38->addItem(horizontalSpacer_63);
 
-        comboBox_5 = new QComboBox(verticalWidget1);
-        comboBox_5->addItem(QString());
-        comboBox_5->addItem(QString());
-        comboBox_5->setObjectName(QString::fromUtf8("comboBox_5"));
-        sizePolicy2.setHeightForWidth(comboBox_5->sizePolicy().hasHeightForWidth());
-        comboBox_5->setSizePolicy(sizePolicy2);
-        comboBox_5->setMinimumSize(QSize(70, 35));
+        gainMaxControl_3 = new QComboBox(verticalWidget1);
+        gainMaxControl_3->addItem(QString());
+        gainMaxControl_3->addItem(QString());
+        gainMaxControl_3->setObjectName(QString::fromUtf8("gainMaxControl_3"));
+        sizePolicy2.setHeightForWidth(gainMaxControl_3->sizePolicy().hasHeightForWidth());
+        gainMaxControl_3->setSizePolicy(sizePolicy2);
+        gainMaxControl_3->setMinimumSize(QSize(70, 35));
 
-        horizontalLayout_38->addWidget(comboBox_5);
+        horizontalLayout_38->addWidget(gainMaxControl_3);
 
 
         horizontalLayout_24->addLayout(horizontalLayout_38);
@@ -861,15 +903,15 @@ public:
 
         horizontalLayout_39->addItem(horizontalSpacer_64);
 
-        comboBox_8 = new QComboBox(verticalWidget1);
-        comboBox_8->addItem(QString());
-        comboBox_8->addItem(QString());
-        comboBox_8->setObjectName(QString::fromUtf8("comboBox_8"));
-        sizePolicy2.setHeightForWidth(comboBox_8->sizePolicy().hasHeightForWidth());
-        comboBox_8->setSizePolicy(sizePolicy2);
-        comboBox_8->setMinimumSize(QSize(70, 35));
+        gainMaxControl_4 = new QComboBox(verticalWidget1);
+        gainMaxControl_4->addItem(QString());
+        gainMaxControl_4->addItem(QString());
+        gainMaxControl_4->setObjectName(QString::fromUtf8("gainMaxControl_4"));
+        sizePolicy2.setHeightForWidth(gainMaxControl_4->sizePolicy().hasHeightForWidth());
+        gainMaxControl_4->setSizePolicy(sizePolicy2);
+        gainMaxControl_4->setMinimumSize(QSize(70, 35));
 
-        horizontalLayout_39->addWidget(comboBox_8);
+        horizontalLayout_39->addWidget(gainMaxControl_4);
 
 
         horizontalLayout_24->addLayout(horizontalLayout_39);
@@ -881,8 +923,8 @@ public:
         horizontalLayout_40->setObjectName(QString::fromUtf8("horizontalLayout_40"));
         label_26 = new QLabel(verticalWidget1);
         label_26->setObjectName(QString::fromUtf8("label_26"));
-        sizePolicy4.setHeightForWidth(label_26->sizePolicy().hasHeightForWidth());
-        label_26->setSizePolicy(sizePolicy4);
+        sizePolicy3.setHeightForWidth(label_26->sizePolicy().hasHeightForWidth());
+        label_26->setSizePolicy(sizePolicy3);
 
         horizontalLayout_40->addWidget(label_26);
 
@@ -890,15 +932,15 @@ public:
 
         horizontalLayout_40->addItem(horizontalSpacer_65);
 
-        comboBox_13 = new QComboBox(verticalWidget1);
-        comboBox_13->addItem(QString());
-        comboBox_13->addItem(QString());
-        comboBox_13->setObjectName(QString::fromUtf8("comboBox_13"));
-        sizePolicy2.setHeightForWidth(comboBox_13->sizePolicy().hasHeightForWidth());
-        comboBox_13->setSizePolicy(sizePolicy2);
-        comboBox_13->setMinimumSize(QSize(70, 35));
+        agcControl = new QComboBox(verticalWidget1);
+        agcControl->addItem(QString());
+        agcControl->addItem(QString());
+        agcControl->setObjectName(QString::fromUtf8("agcControl"));
+        sizePolicy2.setHeightForWidth(agcControl->sizePolicy().hasHeightForWidth());
+        agcControl->setSizePolicy(sizePolicy2);
+        agcControl->setMinimumSize(QSize(70, 35));
 
-        horizontalLayout_40->addWidget(comboBox_13);
+        horizontalLayout_40->addWidget(agcControl);
 
         horizontalSpacer_66 = new QSpacerItem(40, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
 
@@ -906,29 +948,29 @@ public:
 
         horizontalLayout_41 = new QHBoxLayout();
         horizontalLayout_41->setObjectName(QString::fromUtf8("horizontalLayout_41"));
-        comboBox_14 = new QComboBox(verticalWidget1);
-        comboBox_14->addItem(QString());
-        comboBox_14->addItem(QString());
-        comboBox_14->setObjectName(QString::fromUtf8("comboBox_14"));
-        sizePolicy2.setHeightForWidth(comboBox_14->sizePolicy().hasHeightForWidth());
-        comboBox_14->setSizePolicy(sizePolicy2);
-        comboBox_14->setMinimumSize(QSize(70, 35));
+        agcControl_2 = new QComboBox(verticalWidget1);
+        agcControl_2->addItem(QString());
+        agcControl_2->addItem(QString());
+        agcControl_2->setObjectName(QString::fromUtf8("agcControl_2"));
+        sizePolicy2.setHeightForWidth(agcControl_2->sizePolicy().hasHeightForWidth());
+        agcControl_2->setSizePolicy(sizePolicy2);
+        agcControl_2->setMinimumSize(QSize(70, 35));
 
-        horizontalLayout_41->addWidget(comboBox_14);
+        horizontalLayout_41->addWidget(agcControl_2);
 
         horizontalSpacer_67 = new QSpacerItem(40, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
 
         horizontalLayout_41->addItem(horizontalSpacer_67);
 
-        comboBox_6 = new QComboBox(verticalWidget1);
-        comboBox_6->addItem(QString());
-        comboBox_6->addItem(QString());
-        comboBox_6->setObjectName(QString::fromUtf8("comboBox_6"));
-        sizePolicy2.setHeightForWidth(comboBox_6->sizePolicy().hasHeightForWidth());
-        comboBox_6->setSizePolicy(sizePolicy2);
-        comboBox_6->setMinimumSize(QSize(70, 35));
+        agcControl_3 = new QComboBox(verticalWidget1);
+        agcControl_3->addItem(QString());
+        agcControl_3->addItem(QString());
+        agcControl_3->setObjectName(QString::fromUtf8("agcControl_3"));
+        sizePolicy2.setHeightForWidth(agcControl_3->sizePolicy().hasHeightForWidth());
+        agcControl_3->setSizePolicy(sizePolicy2);
+        agcControl_3->setMinimumSize(QSize(70, 35));
 
-        horizontalLayout_41->addWidget(comboBox_6);
+        horizontalLayout_41->addWidget(agcControl_3);
 
 
         horizontalLayout_40->addLayout(horizontalLayout_41);
@@ -939,15 +981,15 @@ public:
 
         horizontalLayout_42->addItem(horizontalSpacer_68);
 
-        comboBox_15 = new QComboBox(verticalWidget1);
-        comboBox_15->addItem(QString());
-        comboBox_15->addItem(QString());
-        comboBox_15->setObjectName(QString::fromUtf8("comboBox_15"));
-        sizePolicy2.setHeightForWidth(comboBox_15->sizePolicy().hasHeightForWidth());
-        comboBox_15->setSizePolicy(sizePolicy2);
-        comboBox_15->setMinimumSize(QSize(70, 35));
+        agcControl_4 = new QComboBox(verticalWidget1);
+        agcControl_4->addItem(QString());
+        agcControl_4->addItem(QString());
+        agcControl_4->setObjectName(QString::fromUtf8("agcControl_4"));
+        sizePolicy2.setHeightForWidth(agcControl_4->sizePolicy().hasHeightForWidth());
+        agcControl_4->setSizePolicy(sizePolicy2);
+        agcControl_4->setMinimumSize(QSize(70, 35));
 
-        horizontalLayout_42->addWidget(comboBox_15);
+        horizontalLayout_42->addWidget(agcControl_4);
 
 
         horizontalLayout_40->addLayout(horizontalLayout_42);
@@ -985,11 +1027,11 @@ public:
         verticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
         widget = new QWidget(vWidget);
         widget->setObjectName(QString::fromUtf8("widget"));
-        QSizePolicy sizePolicy5(QSizePolicy::Expanding, QSizePolicy::Fixed);
-        sizePolicy5.setHorizontalStretch(0);
-        sizePolicy5.setVerticalStretch(0);
-        sizePolicy5.setHeightForWidth(widget->sizePolicy().hasHeightForWidth());
-        widget->setSizePolicy(sizePolicy5);
+        QSizePolicy sizePolicy4(QSizePolicy::Expanding, QSizePolicy::Fixed);
+        sizePolicy4.setHorizontalStretch(0);
+        sizePolicy4.setVerticalStretch(0);
+        sizePolicy4.setHeightForWidth(widget->sizePolicy().hasHeightForWidth());
+        widget->setSizePolicy(sizePolicy4);
         horizontalLayout = new QHBoxLayout(widget);
         horizontalLayout->setObjectName(QString::fromUtf8("horizontalLayout"));
         label_3 = new QLabel(widget);
@@ -1038,11 +1080,11 @@ public:
 
         label_5 = new QLabel(vWidget);
         label_5->setObjectName(QString::fromUtf8("label_5"));
-        QSizePolicy sizePolicy6(QSizePolicy::Preferred, QSizePolicy::Fixed);
-        sizePolicy6.setHorizontalStretch(0);
-        sizePolicy6.setVerticalStretch(0);
-        sizePolicy6.setHeightForWidth(label_5->sizePolicy().hasHeightForWidth());
-        label_5->setSizePolicy(sizePolicy6);
+        QSizePolicy sizePolicy5(QSizePolicy::Preferred, QSizePolicy::Fixed);
+        sizePolicy5.setHorizontalStretch(0);
+        sizePolicy5.setVerticalStretch(0);
+        sizePolicy5.setHeightForWidth(label_5->sizePolicy().hasHeightForWidth());
+        label_5->setSizePolicy(sizePolicy5);
         label_5->setStyleSheet(QString::fromUtf8("font: 10pt \"MS Shell Dlg 2\";\n"
 "color:rgb(0, 0, 255);"));
 
@@ -1102,8 +1144,8 @@ public:
 
         label_34 = new QLabel(vWidget);
         label_34->setObjectName(QString::fromUtf8("label_34"));
-        sizePolicy6.setHeightForWidth(label_34->sizePolicy().hasHeightForWidth());
-        label_34->setSizePolicy(sizePolicy6);
+        sizePolicy5.setHeightForWidth(label_34->sizePolicy().hasHeightForWidth());
+        label_34->setSizePolicy(sizePolicy5);
         label_34->setStyleSheet(QString::fromUtf8("font: 10pt \"MS Shell Dlg 2\";\n"
 "color:rgb(0, 0, 255);"));
 
@@ -1246,11 +1288,11 @@ public:
 
         pushButton_6 = new QPushButton(vWidget);
         pushButton_6->setObjectName(QString::fromUtf8("pushButton_6"));
-        QSizePolicy sizePolicy7(QSizePolicy::Minimum, QSizePolicy::Fixed);
-        sizePolicy7.setHorizontalStretch(0);
-        sizePolicy7.setVerticalStretch(0);
-        sizePolicy7.setHeightForWidth(pushButton_6->sizePolicy().hasHeightForWidth());
-        pushButton_6->setSizePolicy(sizePolicy7);
+        QSizePolicy sizePolicy6(QSizePolicy::Minimum, QSizePolicy::Fixed);
+        sizePolicy6.setHorizontalStretch(0);
+        sizePolicy6.setVerticalStretch(0);
+        sizePolicy6.setHeightForWidth(pushButton_6->sizePolicy().hasHeightForWidth());
+        pushButton_6->setSizePolicy(sizePolicy6);
         pushButton_6->setMinimumSize(QSize(100, 40));
 
         horizontalLayout_32->addWidget(pushButton_6);
@@ -1258,20 +1300,20 @@ public:
 
         verticalLayout->addLayout(horizontalLayout_32);
 
-        widget4 = new QWidget(tab_2);
-        widget4->setObjectName(QString::fromUtf8("widget4"));
-        widget4->setGeometry(QRect(-10, 40, 716, 22));
-        horizontalLayout_36 = new QHBoxLayout(widget4);
+        layoutWidget = new QWidget(tab_2);
+        layoutWidget->setObjectName(QString::fromUtf8("layoutWidget"));
+        layoutWidget->setGeometry(QRect(-10, 40, 716, 22));
+        horizontalLayout_36 = new QHBoxLayout(layoutWidget);
         horizontalLayout_36->setObjectName(QString::fromUtf8("horizontalLayout_36"));
         horizontalLayout_36->setContentsMargins(0, 0, 0, 0);
         horizontalSpacer_51 = new QSpacerItem(250, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
 
         horizontalLayout_36->addItem(horizontalSpacer_51);
 
-        label_52 = new QLabel(widget4);
+        label_52 = new QLabel(layoutWidget);
         label_52->setObjectName(QString::fromUtf8("label_52"));
-        sizePolicy4.setHeightForWidth(label_52->sizePolicy().hasHeightForWidth());
-        label_52->setSizePolicy(sizePolicy4);
+        sizePolicy3.setHeightForWidth(label_52->sizePolicy().hasHeightForWidth());
+        label_52->setSizePolicy(sizePolicy3);
 
         horizontalLayout_36->addWidget(label_52);
 
@@ -1279,10 +1321,10 @@ public:
 
         horizontalLayout_36->addItem(horizontalSpacer_52);
 
-        label_53 = new QLabel(widget4);
+        label_53 = new QLabel(layoutWidget);
         label_53->setObjectName(QString::fromUtf8("label_53"));
-        sizePolicy4.setHeightForWidth(label_53->sizePolicy().hasHeightForWidth());
-        label_53->setSizePolicy(sizePolicy4);
+        sizePolicy3.setHeightForWidth(label_53->sizePolicy().hasHeightForWidth());
+        label_53->setSizePolicy(sizePolicy3);
 
         horizontalLayout_36->addWidget(label_53);
 
@@ -1290,10 +1332,10 @@ public:
 
         horizontalLayout_36->addItem(horizontalSpacer_53);
 
-        label_54 = new QLabel(widget4);
+        label_54 = new QLabel(layoutWidget);
         label_54->setObjectName(QString::fromUtf8("label_54"));
-        sizePolicy4.setHeightForWidth(label_54->sizePolicy().hasHeightForWidth());
-        label_54->setSizePolicy(sizePolicy4);
+        sizePolicy3.setHeightForWidth(label_54->sizePolicy().hasHeightForWidth());
+        label_54->setSizePolicy(sizePolicy3);
 
         horizontalLayout_36->addWidget(label_54);
 
@@ -1301,10 +1343,10 @@ public:
 
         horizontalLayout_36->addItem(horizontalSpacer_54);
 
-        label_55 = new QLabel(widget4);
+        label_55 = new QLabel(layoutWidget);
         label_55->setObjectName(QString::fromUtf8("label_55"));
-        sizePolicy4.setHeightForWidth(label_55->sizePolicy().hasHeightForWidth());
-        label_55->setSizePolicy(sizePolicy4);
+        sizePolicy3.setHeightForWidth(label_55->sizePolicy().hasHeightForWidth());
+        label_55->setSizePolicy(sizePolicy3);
 
         horizontalLayout_36->addWidget(label_55);
 
@@ -1334,8 +1376,8 @@ public:
 
         label_40 = new QLabel(verticalWidget_5);
         label_40->setObjectName(QString::fromUtf8("label_40"));
-        sizePolicy4.setHeightForWidth(label_40->sizePolicy().hasHeightForWidth());
-        label_40->setSizePolicy(sizePolicy4);
+        sizePolicy3.setHeightForWidth(label_40->sizePolicy().hasHeightForWidth());
+        label_40->setSizePolicy(sizePolicy3);
 
         horizontalLayout_34->addWidget(label_40);
 
@@ -1345,8 +1387,8 @@ public:
 
         label_41 = new QLabel(verticalWidget_5);
         label_41->setObjectName(QString::fromUtf8("label_41"));
-        sizePolicy4.setHeightForWidth(label_41->sizePolicy().hasHeightForWidth());
-        label_41->setSizePolicy(sizePolicy4);
+        sizePolicy3.setHeightForWidth(label_41->sizePolicy().hasHeightForWidth());
+        label_41->setSizePolicy(sizePolicy3);
 
         horizontalLayout_34->addWidget(label_41);
 
@@ -1356,8 +1398,8 @@ public:
 
         label_42 = new QLabel(verticalWidget_5);
         label_42->setObjectName(QString::fromUtf8("label_42"));
-        sizePolicy4.setHeightForWidth(label_42->sizePolicy().hasHeightForWidth());
-        label_42->setSizePolicy(sizePolicy4);
+        sizePolicy3.setHeightForWidth(label_42->sizePolicy().hasHeightForWidth());
+        label_42->setSizePolicy(sizePolicy3);
 
         horizontalLayout_34->addWidget(label_42);
 
@@ -1367,8 +1409,8 @@ public:
 
         label_43 = new QLabel(verticalWidget_5);
         label_43->setObjectName(QString::fromUtf8("label_43"));
-        sizePolicy4.setHeightForWidth(label_43->sizePolicy().hasHeightForWidth());
-        label_43->setSizePolicy(sizePolicy4);
+        sizePolicy3.setHeightForWidth(label_43->sizePolicy().hasHeightForWidth());
+        label_43->setSizePolicy(sizePolicy3);
 
         horizontalLayout_34->addWidget(label_43);
 
@@ -1395,8 +1437,8 @@ public:
 
         ssiSquelch_1 = new QSpinBox(ssisq);
         ssiSquelch_1->setObjectName(QString::fromUtf8("ssiSquelch_1"));
-        sizePolicy6.setHeightForWidth(ssiSquelch_1->sizePolicy().hasHeightForWidth());
-        ssiSquelch_1->setSizePolicy(sizePolicy6);
+        sizePolicy5.setHeightForWidth(ssiSquelch_1->sizePolicy().hasHeightForWidth());
+        ssiSquelch_1->setSizePolicy(sizePolicy5);
         ssiSquelch_1->setMinimumSize(QSize(110, 35));
 
         horizontalLayout_7->addWidget(ssiSquelch_1);
@@ -1419,8 +1461,8 @@ public:
 
         ssiSquelch_3 = new QSpinBox(ssisq);
         ssiSquelch_3->setObjectName(QString::fromUtf8("ssiSquelch_3"));
-        sizePolicy6.setHeightForWidth(ssiSquelch_3->sizePolicy().hasHeightForWidth());
-        ssiSquelch_3->setSizePolicy(sizePolicy6);
+        sizePolicy5.setHeightForWidth(ssiSquelch_3->sizePolicy().hasHeightForWidth());
+        ssiSquelch_3->setSizePolicy(sizePolicy5);
         ssiSquelch_3->setMinimumSize(QSize(110, 35));
 
         horizontalLayout_7->addWidget(ssiSquelch_3);
@@ -1753,8 +1795,8 @@ public:
 
         label_62 = new QLabel(verticalWidget_2);
         label_62->setObjectName(QString::fromUtf8("label_62"));
-        sizePolicy4.setHeightForWidth(label_62->sizePolicy().hasHeightForWidth());
-        label_62->setSizePolicy(sizePolicy4);
+        sizePolicy3.setHeightForWidth(label_62->sizePolicy().hasHeightForWidth());
+        label_62->setSizePolicy(sizePolicy3);
 
         horizontalLayout_43->addWidget(label_62);
 
@@ -1764,8 +1806,8 @@ public:
 
         label_63 = new QLabel(verticalWidget_2);
         label_63->setObjectName(QString::fromUtf8("label_63"));
-        sizePolicy4.setHeightForWidth(label_63->sizePolicy().hasHeightForWidth());
-        label_63->setSizePolicy(sizePolicy4);
+        sizePolicy3.setHeightForWidth(label_63->sizePolicy().hasHeightForWidth());
+        label_63->setSizePolicy(sizePolicy3);
 
         horizontalLayout_43->addWidget(label_63);
 
@@ -1775,8 +1817,8 @@ public:
 
         label_64 = new QLabel(verticalWidget_2);
         label_64->setObjectName(QString::fromUtf8("label_64"));
-        sizePolicy4.setHeightForWidth(label_64->sizePolicy().hasHeightForWidth());
-        label_64->setSizePolicy(sizePolicy4);
+        sizePolicy3.setHeightForWidth(label_64->sizePolicy().hasHeightForWidth());
+        label_64->setSizePolicy(sizePolicy3);
 
         horizontalLayout_43->addWidget(label_64);
 
@@ -1786,8 +1828,8 @@ public:
 
         label_65 = new QLabel(verticalWidget_2);
         label_65->setObjectName(QString::fromUtf8("label_65"));
-        sizePolicy4.setHeightForWidth(label_65->sizePolicy().hasHeightForWidth());
-        label_65->setSizePolicy(sizePolicy4);
+        sizePolicy3.setHeightForWidth(label_65->sizePolicy().hasHeightForWidth());
+        label_65->setSizePolicy(sizePolicy3);
 
         horizontalLayout_43->addWidget(label_65);
 
@@ -1864,8 +1906,8 @@ public:
         horizontalLayout_6->setObjectName(QString::fromUtf8("horizontalLayout_6"));
         label_10 = new QLabel(verticalWidget_2);
         label_10->setObjectName(QString::fromUtf8("label_10"));
-        sizePolicy4.setHeightForWidth(label_10->sizePolicy().hasHeightForWidth());
-        label_10->setSizePolicy(sizePolicy4);
+        sizePolicy3.setHeightForWidth(label_10->sizePolicy().hasHeightForWidth());
+        label_10->setSizePolicy(sizePolicy3);
 
         horizontalLayout_6->addWidget(label_10);
 
@@ -2016,6 +2058,14 @@ public:
 "    border: 2px solid gray;\n"
 "    border-radius: 10px;\n"
 "    padding: 0 8px;\n"
+"}\n"
+"QTextBrowser{\n"
+"font: 75 12pt \"MS Shell Dlg 2\";\n"
+"border: 2px solid white;\n"
+"padding: 0 8px;\n"
+"border-radius:8px;\n"
+"text-align: center;\n"
+"background-color: white;\n"
 "}"));
         verticalLayout_4 = new QVBoxLayout(vWidget_2);
         verticalLayout_4->setObjectName(QString::fromUtf8("verticalLayout_4"));
@@ -2172,8 +2222,8 @@ public:
 
         label_44 = new QLabel(layoutWidget_4);
         label_44->setObjectName(QString::fromUtf8("label_44"));
-        sizePolicy4.setHeightForWidth(label_44->sizePolicy().hasHeightForWidth());
-        label_44->setSizePolicy(sizePolicy4);
+        sizePolicy3.setHeightForWidth(label_44->sizePolicy().hasHeightForWidth());
+        label_44->setSizePolicy(sizePolicy3);
 
         horizontalLayout_35->addWidget(label_44);
 
@@ -2183,8 +2233,8 @@ public:
 
         label_45 = new QLabel(layoutWidget_4);
         label_45->setObjectName(QString::fromUtf8("label_45"));
-        sizePolicy4.setHeightForWidth(label_45->sizePolicy().hasHeightForWidth());
-        label_45->setSizePolicy(sizePolicy4);
+        sizePolicy3.setHeightForWidth(label_45->sizePolicy().hasHeightForWidth());
+        label_45->setSizePolicy(sizePolicy3);
 
         horizontalLayout_35->addWidget(label_45);
 
@@ -2194,8 +2244,8 @@ public:
 
         label_46 = new QLabel(layoutWidget_4);
         label_46->setObjectName(QString::fromUtf8("label_46"));
-        sizePolicy4.setHeightForWidth(label_46->sizePolicy().hasHeightForWidth());
-        label_46->setSizePolicy(sizePolicy4);
+        sizePolicy3.setHeightForWidth(label_46->sizePolicy().hasHeightForWidth());
+        label_46->setSizePolicy(sizePolicy3);
 
         horizontalLayout_35->addWidget(label_46);
 
@@ -2205,8 +2255,8 @@ public:
 
         label_47 = new QLabel(layoutWidget_4);
         label_47->setObjectName(QString::fromUtf8("label_47"));
-        sizePolicy4.setHeightForWidth(label_47->sizePolicy().hasHeightForWidth());
-        label_47->setSizePolicy(sizePolicy4);
+        sizePolicy3.setHeightForWidth(label_47->sizePolicy().hasHeightForWidth());
+        label_47->setSizePolicy(sizePolicy3);
 
         horizontalLayout_35->addWidget(label_47);
 
@@ -2245,11 +2295,11 @@ public:
 
         StartButton = new QPushButton(ButtonForm);
         StartButton->setObjectName(QString::fromUtf8("StartButton"));
-        QSizePolicy sizePolicy8(QSizePolicy::Expanding, QSizePolicy::Expanding);
-        sizePolicy8.setHorizontalStretch(0);
-        sizePolicy8.setVerticalStretch(0);
-        sizePolicy8.setHeightForWidth(StartButton->sizePolicy().hasHeightForWidth());
-        StartButton->setSizePolicy(sizePolicy8);
+        QSizePolicy sizePolicy7(QSizePolicy::Expanding, QSizePolicy::Expanding);
+        sizePolicy7.setHorizontalStretch(0);
+        sizePolicy7.setVerticalStretch(0);
+        sizePolicy7.setHeightForWidth(StartButton->sizePolicy().hasHeightForWidth());
+        StartButton->setSizePolicy(sizePolicy7);
         QFont font2;
         font2.setFamily(QString::fromUtf8("MS Shell Dlg 2"));
         font2.setPointSize(12);
@@ -2265,8 +2315,8 @@ public:
 
         pushButton_5 = new QPushButton(ButtonForm);
         pushButton_5->setObjectName(QString::fromUtf8("pushButton_5"));
-        sizePolicy8.setHeightForWidth(pushButton_5->sizePolicy().hasHeightForWidth());
-        pushButton_5->setSizePolicy(sizePolicy8);
+        sizePolicy7.setHeightForWidth(pushButton_5->sizePolicy().hasHeightForWidth());
+        pushButton_5->setSizePolicy(sizePolicy7);
         pushButton_5->setStyleSheet(QString::fromUtf8("background:red;\n"
 "color: white;"));
 
@@ -2275,7 +2325,7 @@ public:
 
         retranslateUi(SettingsForm);
 
-        settingsTab->setCurrentIndex(0);
+        settingsTab->setCurrentIndex(1);
 
 
         QMetaObject::connectSlotsByName(SettingsForm);
@@ -2298,11 +2348,15 @@ public:
         resetFindVel->setItemText(0, QCoreApplication::translate("SettingsForm", "OFF", nullptr));
         resetFindVel->setItemText(1, QCoreApplication::translate("SettingsForm", "ON", nullptr));
 
-        label_21->setText(QCoreApplication::translate("SettingsForm", "Type", nullptr));
-        comboBox->setItemText(0, QCoreApplication::translate("SettingsForm", "SCLK  1", nullptr));
-        comboBox->setItemText(1, QCoreApplication::translate("SettingsForm", "SCLK  2", nullptr));
+        label_21->setText(QCoreApplication::translate("SettingsForm", "Sample source clock", nullptr));
+        sampleSCLK->setItemText(0, QCoreApplication::translate("SettingsForm", "SCLK  0", nullptr));
+        sampleSCLK->setItemText(1, QCoreApplication::translate("SettingsForm", "SCLK  1", nullptr));
 
-        label_18->setText(QCoreApplication::translate("SettingsForm", "Frequency", nullptr));
+        label_22->setText(QCoreApplication::translate("SettingsForm", "Reset source clock", nullptr));
+        resetSCLK->setItemText(0, QCoreApplication::translate("SettingsForm", "SCLK  0", nullptr));
+        resetSCLK->setItemText(1, QCoreApplication::translate("SettingsForm", "SCLK  1", nullptr));
+
+        label_18->setText(QCoreApplication::translate("SettingsForm", "Sample Frequency", nullptr));
         label_20->setText(QCoreApplication::translate("SettingsForm", "Hz", nullptr));
         pushButton_12->setText(QCoreApplication::translate("SettingsForm", "Default", nullptr));
         label_50->setText(QCoreApplication::translate("SettingsForm", "Clock settings", nullptr));
@@ -2312,44 +2366,44 @@ public:
         label_58->setText(QCoreApplication::translate("SettingsForm", "Axis 3", nullptr));
         label_59->setText(QCoreApplication::translate("SettingsForm", "Axis 4", nullptr));
         label_14->setText(QCoreApplication::translate("SettingsForm", "Gain min control", nullptr));
-        comboBox_9->setItemText(0, QCoreApplication::translate("SettingsForm", "OFF", nullptr));
-        comboBox_9->setItemText(1, QCoreApplication::translate("SettingsForm", "ON", nullptr));
+        gainMinControl->setItemText(0, QCoreApplication::translate("SettingsForm", "OFF", nullptr));
+        gainMinControl->setItemText(1, QCoreApplication::translate("SettingsForm", "ON", nullptr));
 
-        comboBox_10->setItemText(0, QCoreApplication::translate("SettingsForm", "OFF", nullptr));
-        comboBox_10->setItemText(1, QCoreApplication::translate("SettingsForm", "ON", nullptr));
+        gainMinControl_2->setItemText(0, QCoreApplication::translate("SettingsForm", "OFF", nullptr));
+        gainMinControl_2->setItemText(1, QCoreApplication::translate("SettingsForm", "ON", nullptr));
 
-        comboBox_4->setItemText(0, QCoreApplication::translate("SettingsForm", "OFF", nullptr));
-        comboBox_4->setItemText(1, QCoreApplication::translate("SettingsForm", "ON", nullptr));
+        gainMinControl_3->setItemText(0, QCoreApplication::translate("SettingsForm", "OFF", nullptr));
+        gainMinControl_3->setItemText(1, QCoreApplication::translate("SettingsForm", "ON", nullptr));
 
-        comboBox_7->setItemText(0, QCoreApplication::translate("SettingsForm", "OFF", nullptr));
-        comboBox_7->setItemText(1, QCoreApplication::translate("SettingsForm", "ON", nullptr));
+        gainMinControl_4->setItemText(0, QCoreApplication::translate("SettingsForm", "OFF", nullptr));
+        gainMinControl_4->setItemText(1, QCoreApplication::translate("SettingsForm", "ON", nullptr));
 
         label_60->setText(QCoreApplication::translate("SettingsForm", "Gain max control", nullptr));
-        comboBox_11->setItemText(0, QCoreApplication::translate("SettingsForm", "OFF", nullptr));
-        comboBox_11->setItemText(1, QCoreApplication::translate("SettingsForm", "ON", nullptr));
+        gainMaxControl->setItemText(0, QCoreApplication::translate("SettingsForm", "OFF", nullptr));
+        gainMaxControl->setItemText(1, QCoreApplication::translate("SettingsForm", "ON", nullptr));
 
-        comboBox_12->setItemText(0, QCoreApplication::translate("SettingsForm", "OFF", nullptr));
-        comboBox_12->setItemText(1, QCoreApplication::translate("SettingsForm", "ON", nullptr));
+        gainMaxControl_2->setItemText(0, QCoreApplication::translate("SettingsForm", "OFF", nullptr));
+        gainMaxControl_2->setItemText(1, QCoreApplication::translate("SettingsForm", "ON", nullptr));
 
-        comboBox_5->setItemText(0, QCoreApplication::translate("SettingsForm", "OFF", nullptr));
-        comboBox_5->setItemText(1, QCoreApplication::translate("SettingsForm", "ON", nullptr));
+        gainMaxControl_3->setItemText(0, QCoreApplication::translate("SettingsForm", "OFF", nullptr));
+        gainMaxControl_3->setItemText(1, QCoreApplication::translate("SettingsForm", "ON", nullptr));
 
-        comboBox_8->setItemText(0, QCoreApplication::translate("SettingsForm", "OFF", nullptr));
-        comboBox_8->setItemText(1, QCoreApplication::translate("SettingsForm", "ON", nullptr));
+        gainMaxControl_4->setItemText(0, QCoreApplication::translate("SettingsForm", "OFF", nullptr));
+        gainMaxControl_4->setItemText(1, QCoreApplication::translate("SettingsForm", "ON", nullptr));
 
         label_26->setText(QCoreApplication::translate("SettingsForm", "Auto Gain adjust  \n"
 "mode", nullptr));
-        comboBox_13->setItemText(0, QCoreApplication::translate("SettingsForm", "OFF", nullptr));
-        comboBox_13->setItemText(1, QCoreApplication::translate("SettingsForm", "ON", nullptr));
+        agcControl->setItemText(0, QCoreApplication::translate("SettingsForm", "OFF", nullptr));
+        agcControl->setItemText(1, QCoreApplication::translate("SettingsForm", "ON", nullptr));
 
-        comboBox_14->setItemText(0, QCoreApplication::translate("SettingsForm", "OFF", nullptr));
-        comboBox_14->setItemText(1, QCoreApplication::translate("SettingsForm", "ON", nullptr));
+        agcControl_2->setItemText(0, QCoreApplication::translate("SettingsForm", "OFF", nullptr));
+        agcControl_2->setItemText(1, QCoreApplication::translate("SettingsForm", "ON", nullptr));
 
-        comboBox_6->setItemText(0, QCoreApplication::translate("SettingsForm", "OFF", nullptr));
-        comboBox_6->setItemText(1, QCoreApplication::translate("SettingsForm", "ON", nullptr));
+        agcControl_3->setItemText(0, QCoreApplication::translate("SettingsForm", "OFF", nullptr));
+        agcControl_3->setItemText(1, QCoreApplication::translate("SettingsForm", "ON", nullptr));
 
-        comboBox_15->setItemText(0, QCoreApplication::translate("SettingsForm", "OFF", nullptr));
-        comboBox_15->setItemText(1, QCoreApplication::translate("SettingsForm", "ON", nullptr));
+        agcControl_4->setItemText(0, QCoreApplication::translate("SettingsForm", "OFF", nullptr));
+        agcControl_4->setItemText(1, QCoreApplication::translate("SettingsForm", "ON", nullptr));
 
         label_61->setText(QCoreApplication::translate("SettingsForm", "Gain control settings", nullptr));
         settingsTab->setTabText(settingsTab->indexOf(tab), QCoreApplication::translate("SettingsForm", "General ", nullptr));

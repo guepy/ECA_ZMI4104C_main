@@ -8,9 +8,9 @@ dataProcessing::dataProcessing(QObject *parent) : QObject(parent)
 {
     position=(double*)malloc(5*sizeof (double));
     bias_mode = BIAS_CONSTANT_VOLT_MODE;
-    modifyBaseAddress(0x16000);
     ledsErrorStatus = new bool[5];
     ledsStatus = new bool[5];
+    modifyBaseAddress(0x16000);
     //initBoardsThread = new QThread;
 
 }
@@ -23,18 +23,34 @@ void dataProcessing::on_initBoardsRequest_recieved(){
 void dataProcessing::on_initBoardsRequest_recieved(){
 
     qDebug()<<"initializing boards";
-    INFO("Qt app just started!!!\n");
+
+    //SIS1100W_STATUS stat = sis1100w_Get_Handle_And_Open(0 , dev); //
+    //*/
+    if(initSISboards( )!= RET_SUCCESS) {
+        FATAL("Failed to initialize SIS boards\n");
+    }
+    //*/
+    //vmeSystemReset();
+    /*if (stat != Stat1100Success) {
+        qDebug()<<"Getting Sis handle failed";
+        INFO("Getting Sis handle failed\n");
+        WARN("Reinitializing VME System \n");
+        vmeSystemReset();
+    }*/
+    emit initAxisComplete();
+    qDebug()<<"initialization complete";
+    emit initBoardsDone();
+}
+void dataProcessing::vmeSystemReset(){
+    INFO("VME SYSTEM RESET!!!\n");
     if(initSISboards( )!= RET_SUCCESS) FATAL("Failed to initialize SIS boards\n");
     //Sleep(10);
     if(initZMIboards( ) != RET_SUCCESS) FATAL("Failed to initialize ZMI board\n");
     //ui->pushButton_11->setEnabled(false);
     if(initAxis(  bias_mode) != RET_SUCCESS) FATAL("Failed to initialize axis\n");
-    emit initAxisComplete();
     EnableDoublePassInterferometer();
-    qDebug()<<"initialization complete";
-    emit initBoardsDone();
-}
 
+}
 int dataProcessing::getLEDsColor(int* ledsColor){
     qDebug()<<"running refreshLEDsStatus()";
 
@@ -144,6 +160,8 @@ dataProcessing::~dataProcessing()
     //qDebug()<<"Freeing buf 0x%p and 0x%p\n", base_A24D32_FR_ptr, base_A24D32_ptr;
     delete (base_A24D32_FR_ptr);
     delete (base_A24D32_ptr);
+    dataProcessing::dev_mutex.lock();
+    dataProcessing::dev_mutex.unlock();
 }
 
 void dataProcessing::on_OffsetPosition_Changed(double* offPosPtr){
@@ -382,109 +400,120 @@ int dataProcessing::on_configureFifoFlyscanRequest_recieved(){
     emit flyscanProcTerm();
     return RET_SUCCESS;
 }
-
-void dataProcessing::on_updateSettingsRequest_recieved(uint8_t a, uint8_t b, double* val){
-    uint8_t r=0, q=0;
+void dataProcessing::on_updateSettingsRequest_received( unsigned int a,  unsigned int b, int* val){
+    std::thread updateSettingsRequestThread(&dataProcessing::updateSettingsRequest,this,a,b,val);
+    updateSettingsRequestThread.detach();
+}
+void dataProcessing::updateSettingsRequest( unsigned int a,  unsigned int b, int* val){
+    qDebug()<<"dataProcessing::updateSettingsRequest";
+    qDebug()<<"a = "<< a<<"; b= "<< b<<endl;
+     unsigned int r=0, q=0;
     dataProcessing::dev_mutex.lock();
-    switch (a) {
+    switch ( a) {
+    case 1:
+        switch ( b) {
         case 1:
-            switch (b) {
-            case 2:
-                if(*val)
-                    EnableDoublePassInterferometer();
-                else
-                    EnableSinglePassInterferometer();
-                break;
-            case 3:
-
-                if(*val)
-                    dataProcessing::precision37 = true;
-                else
-                    dataProcessing::precision37 = false;
-                break;
-            case 4:
-
-                if(*val)
-                    EnableResetFindsVelocity_ForAllAxis( );
-                else
-                    DisableResetFindsVelocity_ForAllAxis( );
-                break;
-            case 5:
-                SCLKSelectOnAxisReset(  3, (unsigned int)val);
-                break;
-            case 6:
-                enableSampling((double)val[0]*1e-6);
-            break;
-            default:
-                r=(b-7)%3;
-                q=(b-7)/3;
-                switch (r) {
-                case 0:
-                    if(*val < 1)
-                        resetGainMinControl(q+1);
-                    else
-                        setGainMinControl(q+1);
-                    break;
-                case 1:
-                    if(*val < 1)
-                        resetGainControlAGC(q+1);
-                    else
-                        setGainControlAGC(q+1);
-                    break;
-                case 2:
-                    if(*val < 1)
-                        resetGainMaxControl(q+1);
-                    else
-                        setGainMaxControl(q+1);
-                    break;
-                }
-            break;
-            }
-        break;
-    case 2:
-        r=b%4;
-        q=b/4;
-        switch (r) {
-        case 0:
-            SetAPDGainL2(q+1, *val);
-        case 1:
-            SetAPDBiasDAC(q+1, *val);
+            setResetSourceClock(  3, (unsigned int*) val);
             break;
         case 2:
-            SetAPDSigRMSL2(q+1, *val);
+            if(* val)
+                EnableDoublePassInterferometer();
+            else
+                EnableSinglePassInterferometer();
             break;
         case 3:
-            SetAPDOptPwrL2(q+1, *val);
+
+            if(* val < 1)
+                dataProcessing::precision37 = true;
+            else
+                dataProcessing::precision37 = false;
+            break;
+        case 4:
+
+            if(* val > 0)
+                EnableResetFindsVelocity_ForAllAxis( );
+            else
+                DisableResetFindsVelocity_ForAllAxis( );
+            break;
+        case 5:
+            setSampleSourceClock(  3, (unsigned int*) val);
+            break;
+        case 6:
+            //setSamplingFrequency((unsigned int)(* val));
+        break;
+        default:
+            r=( b-7)%3;
+            q=( b-7)/3;
+            switch (r) {
+            case 0:
+                if(* val < 1)
+                    resetGainMinControl(q+1);
+                else
+                    setGainMinControl(q+1);
+                break;
+            case 1:
+                if(* val < 1)
+                    resetGainControlAGC(q+1);
+                else
+                    setGainControlAGC(q+1);
+                break;
+            case 2:
+                if(* val < 1)
+                    resetGainMaxControl(q+1);
+                else
+                    setGainMaxControl(q+1);
+                break;
+            }
+        break;
+        }
+    break;
+    case 2:
+        r= b%4;
+        q= b/4;
+        switch (r) {
+        case 0:
+            SetAPDGainL2(q+1, * val);
+        case 1:
+            SetAPDBiasDAC(q+1, * val);
+            break;
+        case 2:
+            SetAPDSigRMSL2(q+1, * val);
+            break;
+        case 3:
+            SetAPDOptPwrL2(q+1, * val);
             break;
         }
         break;
     case 3:
-        if (b>=4) {
-            setSSISquelch(b-3,*val);
+        if ( b>=4) {
+            setSSISquelch( b-3,* val);
         }
         else{
-            SetKpAndKvCoeff(  b+1, (short)val[0], (short)val[1] );
+            SetKpAndKvCoeff(   b+1, (short) val[0], (short) val[1] );
         }
         break;
     case 4:
-        switch (b) {
+        switch ( b) {
         case 1:
             /*for(int axis=1;axis<5;axis++)
                 EnableGlitchFilter(  axis, *val);
                 */
             break;
         case 5:
-            double ssiVals[3],optPwrVals[3];
+            qDebug()<<"updateSettingsRequest(4,5) received";
             for(int axis=1;axis<5;axis++){
-                ReadSSICalibrationData(  axis, ssiVals, optPwrVals);
-                emit ssiDataAvailable(axis, ssiVals, optPwrVals);
+                ReadSSICalibrationData(  axis, (double*)ssiVals, (double*)optPwrVals);
+                emit ssiDataAvailable(axis, (double*)ssiVals, (double*)optPwrVals);
             }
             break;
         case 4:
-            setSSISquelch((int)(val[0]), val[1]);
+            setSSISquelch((int)( val[0]),  val[1]);
             /*for(int axis=1;axis<5;axis++)
                 EnableGlitchFilter(  axis, *val);
                 */
+            break;
+        default:
+            qDebug()<<"Unknow value of b: "<< b;
             break;
         }
         break;
@@ -492,22 +521,46 @@ void dataProcessing::on_updateSettingsRequest_recieved(uint8_t a, uint8_t b, dou
         readGSEData_ForAllAxis(gseData, gseData+4, gseData+8,gseData+12);
         emit readGSEDataComplete(gseData);
     break;
+}
     dataProcessing::dev_mutex.unlock();
 }
-}
 void dataProcessing::on_initSettingsFormRequest_received(){
-    double ssiSq[4];
-    uint16_t coeff[2];
-    uint32_t gain[4];
+   std::thread initSettingsFormRequestThread(&dataProcessing::initSettingsFormRequest,this);
+   initSettingsFormRequestThread.detach();
+}
+
+void dataProcessing::initSettingsFormRequest(){
+    qDebug()<<"initSettingsFormRequestThread started";
+
+    dataProcessing::dev_mutex.lock();
+    prop[0] = getCurrentInterType()-1;
+    prop[1] = getSampleSCLK();
+    prop[2] = getResetSCLK();
     for(int axis=1; axis<5; axis++){
-        getSSISquelch(axis,&ssiSq[axis-1]);
+        qDebug()<<"axis "<<axis;
+        getSSISquelch(axis,ssiSq);
         emit ssiSquelchValues(axis, ssiSq);
-        getKpAndKvCoeff(axis, coeff);
-        emit KpKvValues(axis, coeff);
+        qDebug()<<"ssisq= "<<ssiSq[0];
+        getKpAndKvCoeff(axis, kpKvcoeff);
+        emit KpKvValues(axis, kpKvcoeff);
         getAPDGainL2(axis, gain);
         getAPDBiasDAC(axis, gain+1);
         getAPDSigRMSL2(axis, gain+2);
         getAPDOptPwrL2(axis, gain+3);
         emit apdValues(axis, gain);
+        getGainMinControl(axis,gainControls);
+        getGainMaxControl(axis,gainControls+1);
+        getGainControlAGC(axis,gainControls+2);
+        emit gainControlsValues(axis,gainControls);
+        qDebug()<<"Gain min state on axis "<<axis<<" is "<<*gainControls;
+        qDebug()<<"Gain max state on axis "<<axis<<" is "<<gainControls[1];
     }
+    dataProcessing::dev_mutex.unlock();
+    emit currentIntBoardProperties(prop, getSampFreq());
+    qDebug()<<"dataProcessing::apdval0"<<getCurrentInterType()<<"apdval1"<<prop[0]<<"apdval2"<<prop[2]<<"apdval3"<<getSampFreq();
+    qDebug()<<"initSettingsFormRequestThread done";
+}
+void dataProcessing::on_modifyBaseAddressRequest_received(unsigned int add){
+    qDebug()<<"on_modifyBaseAddressRequest_received";
+    modifyBaseAddress(add);
 }

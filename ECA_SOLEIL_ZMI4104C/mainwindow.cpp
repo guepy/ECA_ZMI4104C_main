@@ -23,7 +23,7 @@ MainWindow::MainWindow(QWidget *parent)
     this->menuBar()->addMenu(m_settingsMenu);
     connect(m_settingsMenu, SIGNAL(triggered(QAction*)), this, SLOT(on_m_settingsMenu_clicked(QAction*)));
 
-    settingsForm=new SettingsForm;
+    //settingsForm=new SettingsForm;
     flyscanForm=new FlyscanForm;
     posOffsetForm=new positionOffsetForm;
     presPosForm = new presetPositionForm;
@@ -72,15 +72,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     //connect(flyscanForm, &FlyscanForm::ramDataFlyscanRequest,this, &MainWindow::on_ramDataFlyscanRequest_recieved);
 
-    connect(this, &MainWindow::updateSettingsRequest,dataProc, &dataProcessing::on_updateSettingsRequest_recieved);
-    connect(dataProc,&dataProcessing::ssiDataAvailable, this, &MainWindow::ssiDataAvailable);
+    //connect(this, &MainWindow::updateSettingsRequest,dataProc, &dataProcessing::on_updateSettingsRequest_received);
     connect(dataProc, &dataProcessing::initAxisComplete,this, &MainWindow::on_initAxisComplete_recieved);
-    connect(dataProc, &dataProcessing::ssiSquelchValues,this, &MainWindow::ssiSquelchValues);
-    connect(dataProc, &dataProcessing::KpKvValues,this, &MainWindow::KpKvValues);
-    connect(dataProc, &dataProcessing::apdValues,this, &MainWindow::apdValues);
-    connect(dataProc, &dataProcessing::readGSEDataComplete,this, &MainWindow::readGSEDataComplete);
-
-    connect(this, &MainWindow::initSettingsFormRequest, dataProc, &dataProcessing::on_initSettingsFormRequest_received);
+    //connect(this, &MainWindow::initSettingsFormRequest, dataProc, &dataProcessing::on_initSettingsFormRequest_received);
     //*
     gtimer = new QTimer(this);
     connect(gtimer, &QTimer::timeout, this, QOverload<>::of(&MainWindow::refresh_screen));
@@ -121,10 +115,11 @@ void MainWindow::refresh_screen(){
 
 ///*
     qDebug()<<"timer timeout";
+
     if((dataProcessing::dev_mutex).try_lock()){
         refreshLEDsStatus();
         updateLeftBlockValue();
-        updateRightBlockValue();
+        //updateRightBlockValue();
         updateCECRatios();
         customplotForm->updatePosition(scaledPosition);
         dataProc->getLEDsColor(ledsColor);
@@ -336,19 +331,26 @@ void MainWindow::on_m_settingsMenu_clicked(QAction*)
     else reopenSettingsForm();
 }
 void MainWindow::openSettingsForm(){
-
     settingsForm=new SettingsForm;
+    dataProcessing* settingsFormWorker = new dataProcessing;
     //--------------flyscanForm signals-slots --------------------------------------
     connect(settingsForm, &SettingsForm::closeThis, this, &MainWindow::closeSettingsForm);
     connect(this, &MainWindow::closeSettingsFormRequest, settingsForm, &SettingsForm::closeForm);
-    connect(settingsForm, &SettingsForm::updateSettingsRequest,this, &MainWindow::updateSettingsRequest);
-    connect(settingsForm, &SettingsForm::initSettingsFormRequest,this, &MainWindow::initSettingsFormRequest);
-    connect(this, &MainWindow::ssiDataAvailable, settingsForm, &SettingsForm::on_ssiDataAvailable_received);
-    connect(this, &MainWindow::ssiSquelchValues,settingsForm, &SettingsForm::on_ssiSquelchValues_received);
-    connect(this, &MainWindow::KpKvValues, settingsForm, &SettingsForm::on_KpKvValues_received);
-    connect(this, &MainWindow::apdValues, settingsForm, &SettingsForm::on_apdValues_received);
-    connect(this, &MainWindow::readGSEDataComplete, settingsForm, &SettingsForm::on_readGSEDataComplete_received);
+    connect(settingsForm, &SettingsForm::updateSettingsRequest,settingsFormWorker, &dataProcessing::on_updateSettingsRequest_received);
+    connect(settingsForm, &SettingsForm::initSettingsFormRequest,settingsFormWorker, &dataProcessing::on_initSettingsFormRequest_received);
+    connect(settingsForm, &SettingsForm::modifyBaseAddressRequest,settingsFormWorker, &dataProcessing::on_modifyBaseAddressRequest_received);
+    connect(settingsFormWorker, &dataProcessing::ssiDataAvailable, settingsForm, &SettingsForm::on_ssiDataAvailable_received);
+    connect(settingsFormWorker, &dataProcessing::ssiSquelchValues,settingsForm, &SettingsForm::on_ssiSquelchValues_received);
+    connect(settingsFormWorker, &dataProcessing::KpKvValues, settingsForm, &SettingsForm::on_KpKvValues_received);
+    connect(settingsFormWorker, &dataProcessing::currentIntBoardProperties, settingsForm, &SettingsForm::on_currentIntBoardProperties_received);
+    connect(settingsFormWorker, &dataProcessing::apdValues, settingsForm, &SettingsForm::on_apdValues_received);
+    connect(settingsFormWorker, &dataProcessing::gainControlsValues, settingsForm, &SettingsForm::on_gainControlsValues_received);
+    connect(settingsFormWorker, &dataProcessing::readGSEDataComplete, settingsForm, &SettingsForm::on_readGSEDataComplete_received);
+    connect(settingsForm, &SettingsForm::modifyBaseAddressRequest,this, &MainWindow::on_modifyBaseAddressRequest_received);
+    connect(this, &MainWindow::settingsFormRun, settingsForm, &SettingsForm::on_settingsFormRun_received);
+
     settingsForm->show();
+    emit settingsFormRun();
     sfForm_int=1;
 }
 void MainWindow::closeSettingsForm(){
@@ -872,4 +874,10 @@ void MainWindow::on_fifoFlyscanRequest_recieved(double freq, double time, double
     connect(flyscanAxisThread, &QThread::finished, flyscanWorker,  &dataProcessing::deleteLater);
     flyscanAxisThread->start();
 
+}
+
+void MainWindow::on_modifyBaseAddressRequest_received(unsigned int add){
+    char str[200];
+    sprintf(str,"modifying base address...\n New BASE ADDRESS: 0x%07X",add);
+    ui->textBrowser_2->append(str);
 }

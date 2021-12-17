@@ -51,6 +51,16 @@ font: 75 10pt &quot;MS Shell Dlg 2&quot;;
 }
 QTabWidget{
 color: red;
+}
+
+QPushButton:hover{
+border:  2px solid white;
+border-radius: 5px;
+}
+
+QPushButton:pressed{
+border:  2px solid white;
+border-radius: 10px;
 }</string>
   </property>
   <widget class="QTabWidget" name="settingsTab">
@@ -109,7 +119,7 @@ border:  2px solid white;
 </string>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>1</number>
    </property>
    <property name="iconSize">
     <size>
@@ -347,7 +357,7 @@ border: 1px solid;border: 1px solid;
        <x>370</x>
        <y>70</y>
        <width>341</width>
-       <height>151</height>
+       <height>211</height>
       </rect>
      </property>
      <property name="styleSheet">
@@ -359,24 +369,37 @@ border: 1px solid;border: 1px solid;
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_6">
       <item>
+       <spacer name="verticalSpacer_7">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
        <layout class="QHBoxLayout" name="horizontalLayout_12">
         <item>
          <widget class="QLabel" name="label_21">
           <property name="text">
-           <string>Type</string>
+           <string>Sample source clock</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QComboBox" name="comboBox">
+         <widget class="QComboBox" name="sampleSCLK">
           <item>
            <property name="text">
-            <string>SCLK  1</string>
+            <string>SCLK  0</string>
            </property>
           </item>
           <item>
            <property name="text">
-            <string>SCLK  2</string>
+            <string>SCLK  1</string>
            </property>
           </item>
          </widget>
@@ -384,11 +407,62 @@ border: 1px solid;border: 1px solid;
        </layout>
       </item>
       <item>
+       <spacer name="verticalSpacer_5">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_44">
+        <item>
+         <widget class="QLabel" name="label_22">
+          <property name="text">
+           <string>Reset source clock</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="resetSCLK">
+          <item>
+           <property name="text">
+            <string>SCLK  0</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>SCLK  1</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <spacer name="verticalSpacer_6">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
        <layout class="QHBoxLayout" name="horizontalLayout_10">
         <item>
          <widget class="QLabel" name="label_18">
           <property name="text">
-           <string>Frequency</string>
+           <string>Sample Frequency</string>
           </property>
          </widget>
         </item>
@@ -396,6 +470,9 @@ border: 1px solid;border: 1px solid;
          <spacer name="horizontalSpacer_10">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Fixed</enum>
           </property>
           <property name="sizeHint" stdset="0">
            <size>
@@ -406,7 +483,7 @@ border: 1px solid;border: 1px solid;
          </spacer>
         </item>
         <item>
-         <widget class="QSpinBox" name="spinBox_4">
+         <widget class="QSpinBox" name="sampFreq">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -464,7 +541,7 @@ border: 1px solid;border: 1px solid;
         <item>
          <widget class="QPushButton" name="pushButton_12">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
@@ -743,7 +820,7 @@ border: 1px solid;
          </spacer>
         </item>
         <item>
-         <widget class="QComboBox" name="comboBox_9">
+         <widget class="QComboBox" name="gainMinControl">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -787,7 +864,7 @@ border: 1px solid;
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_16">
           <item>
-           <widget class="QComboBox" name="comboBox_10">
+           <widget class="QComboBox" name="gainMinControl_2">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
               <horstretch>0</horstretch>
@@ -829,7 +906,7 @@ border: 1px solid;
            </spacer>
           </item>
           <item>
-           <widget class="QComboBox" name="comboBox_4">
+           <widget class="QComboBox" name="gainMinControl_3">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
               <horstretch>0</horstretch>
@@ -875,7 +952,7 @@ border: 1px solid;
            </spacer>
           </item>
           <item>
-           <widget class="QComboBox" name="comboBox_7">
+           <widget class="QComboBox" name="gainMinControl_4">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
               <horstretch>0</horstretch>
@@ -936,7 +1013,7 @@ border: 1px solid;
          </spacer>
         </item>
         <item>
-         <widget class="QComboBox" name="comboBox_11">
+         <widget class="QComboBox" name="gainMaxControl">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -980,7 +1057,7 @@ border: 1px solid;
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_38">
           <item>
-           <widget class="QComboBox" name="comboBox_12">
+           <widget class="QComboBox" name="gainMaxControl_2">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
               <horstretch>0</horstretch>
@@ -1022,7 +1099,7 @@ border: 1px solid;
            </spacer>
           </item>
           <item>
-           <widget class="QComboBox" name="comboBox_5">
+           <widget class="QComboBox" name="gainMaxControl_3">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
               <horstretch>0</horstretch>
@@ -1068,7 +1145,7 @@ border: 1px solid;
            </spacer>
           </item>
           <item>
-           <widget class="QComboBox" name="comboBox_8">
+           <widget class="QComboBox" name="gainMaxControl_4">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
               <horstretch>0</horstretch>
@@ -1130,7 +1207,7 @@ mode</string>
          </spacer>
         </item>
         <item>
-         <widget class="QComboBox" name="comboBox_13">
+         <widget class="QComboBox" name="agcControl">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -1174,7 +1251,7 @@ mode</string>
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_41">
           <item>
-           <widget class="QComboBox" name="comboBox_14">
+           <widget class="QComboBox" name="agcControl_2">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
               <horstretch>0</horstretch>
@@ -1216,7 +1293,7 @@ mode</string>
            </spacer>
           </item>
           <item>
-           <widget class="QComboBox" name="comboBox_6">
+           <widget class="QComboBox" name="agcControl_3">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
               <horstretch>0</horstretch>
@@ -1262,7 +1339,7 @@ mode</string>
            </spacer>
           </item>
           <item>
-           <widget class="QComboBox" name="comboBox_15">
+           <widget class="QComboBox" name="agcControl_4">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
               <horstretch>0</horstretch>
@@ -1900,7 +1977,7 @@ color:rgb(0, 0, 255);</string>
       </item>
      </layout>
     </widget>
-    <widget class="QWidget" name="">
+    <widget class="QWidget" name="layoutWidget">
      <property name="geometry">
       <rect>
        <x>-10</x>
@@ -3581,6 +3658,14 @@ text-decoration: underline;</string>
     border: 2px solid gray;
     border-radius: 10px;
     padding: 0 8px;
+}
+QTextBrowser{
+font: 75 12pt &quot;MS Shell Dlg 2&quot;;
+border: 2px solid white;
+padding: 0 8px;
+border-radius:8px;
+text-align: center;
+background-color: white;
 }</string>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_4">

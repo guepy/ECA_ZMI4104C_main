@@ -83,6 +83,7 @@ signals:
     void resetAxisRequest(int axis);
     void changeBiasModeRequest(int index);
     void initAxisRequest();
+    void settingsFormRun();
     void OffsetPosChanged(double* posOffPtr);
     void PresetPosChanged(double* PresPosPtr);
     void configureCEChardwareRequest(unsigned int axis, unsigned int ceVelMin, unsigned int ceVelMax);
@@ -92,11 +93,12 @@ signals:
     void flyscanStatValues(unsigned char* axisTab, double* mean, double* stdDev);
     void flyscanProcTerm();
     void ssiDataAvailable(unsigned int axis,double *ssiVals, double *optPwrVals);
-    void ssiSquelchValues(uint8_t axis, double* val);
-    void KpKvValues(uint8_t axis, uint16_t* coeff);
+    void ssiSquelchValues(unsigned int axis, unsigned int* val);
+    void KpKvValues(unsigned int axis, int* coeff);
     void readGSEDataComplete(double * gseData);
     void initSettingsFormRequest();
-    void apdValues(uint8_t axis, uint32_t* coeff);
+    void apdValues(unsigned int axis, uint32_t* coeff);
+    void gainControlsValues( unsigned int axis, bool* val);
 public slots:
     // --------------button continuous acquisition---------------------------
     void openFlyscanForm();
@@ -152,7 +154,7 @@ private slots:
     void on_fifoFlyscanRequest_recieved(double freq,  double size, double time, unsigned int nbr);
     void on_comboBox_3_currentIndexChanged(int index);
     void on_comboBox_4_currentIndexChanged(int index);
-
+    void on_modifyBaseAddressRequest_received(unsigned int add);
     void on_comboBox_currentIndexChanged(int index);
 
     void on_radioButton_clicked();

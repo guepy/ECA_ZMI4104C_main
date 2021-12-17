@@ -4,6 +4,9 @@
 #include <QWidget>
 
 #include <QTimer>
+#include <thread>
+
+#define TIMEOUT_VAL 10000//10s
 namespace Ui {
 class SettingsForm;
 }
@@ -21,22 +24,22 @@ class SettingsForm : public QWidget
     bool updateAv=false;
     int* updateTable;
 
-    double prevApdBiasDac[4] = {0,0,0,0};
-    double curApdBiasDac[4] = {0,0,0,0};
-    double curApdGainL2Set[4] = {0,0,0,0};
-    double prevApdGainL2Set[4] = {0,0,0,0};
-    double curApdOptPwrL2Set[4] = {0,0,0,0};
-    double prevApdOptPwrL2Set[4] = {0,0,0,0};
-    double prevApdSigRmsL2Set[4] = {0,0,0,0};
-    double curApdSigRmsL2Set[4] = {0,0,0,0};
+    int prevApdBiasDac[4] = {0,0,0,0};
+    int curApdBiasDac[4] = {0,0,0,0};
+    int curApdGainL2Set[4] = {0,0,0,0};
+    int prevApdGainL2Set[4] = {0,0,0,0};
+    int curApdOptPwrL2Set[4] = {0,0,0,0};
+    int prevApdOptPwrL2Set[4] = {0,0,0,0};
+    int prevApdSigRmsL2Set[4] = {0,0,0,0};
+    int curApdSigRmsL2Set[4] = {0,0,0,0};
 
-    double curKpFilterCoeff[4] = {0,0,0,0};
-    double prevKpFilterCoeff[4] = {0,0,0,0};
-    double curKvFilterCoeff[4] = {0,0,0,0};
-    double prevKvFilterCoeff[4] = {0,0,0,0};
+    int curKpFilterCoeff[4] = {0,0,0,0};
+    int prevKpFilterCoeff[4] = {0,0,0,0};
+    int curKvFilterCoeff[4] = {0,0,0,0};
+    int prevKvFilterCoeff[4] = {0,0,0,0};
 
-    double curSSIsquelch[4] = {0,0,0,0};
-    double prevSSIsquelch[4] = {0,0,0,0};
+    unsigned int curSSIsquelch[4] = {0,0,0,0};
+    unsigned int prevSSIsquelch[4] = {0,0,0,0};
 
     int curGainMinControl[4] = {0,0,0,0};
     int prevGainMinControl [4] = {0,0,0,0};
@@ -44,40 +47,49 @@ class SettingsForm : public QWidget
     int prevGainMaxControl [4] = {0,0,0,0};
     int curAutoAdjustGainMode [4] = {0,0,0,0};
     int prevAutoAdjustGainMode [4] = {0,0,0,0};
-    double val[10];
+    int val[10];
 
-    double prevInterferoType = 0;
-    double prevPrecision = 0;
-    double prevResetFindVelocity = 0;
-    double prevClockType = 0;
-    double prevFreq = 0;
-    double curInterferoType = 0;
-    double curPrecision = 0;
-    double curResetFindVelocity = 0;
-    double curClockType = 0;
-    double curFreq = 0;
+    bool prevInterferoType = 0;
+    bool prevPrecision = 0;
+    bool prevResetFindVelocity = 0;
+    bool curInterferoType = 0;
+    std::string basAd;
+    bool curPrecision = 0;
+    bool curResetFindVelocity = 0;
+    bool curSampleSCLK = 0;
+    bool prevSampleSCLK = 0;
+    bool curResetSCLK = 0;
+    bool prevResetSCLK = 0;
+    unsigned int curSampleFreq = 0;
+    unsigned int prevSampleFreq = 0;
 public:
     explicit SettingsForm(QWidget *parent = nullptr);
     ~SettingsForm();
     void closeForm();
     void refreshSettings();
     void on_ssiDataAvailable_received(unsigned int axis,double *ssiVals, double *optPwrVals);
-    void on_ssiSquelchValues_received(uint8_t axis, double* val);
-    void on_KpKvValues_received(uint8_t axis, uint16_t* val);
-    void on_apdValues_received(uint8_t axis, uint32_t* val);
+    void on_ssiSquelchValues_received(unsigned int axis, unsigned int* val);
+    void on_KpKvValues_received(unsigned int axis, int* val);
+    void on_apdValues_received(unsigned int axis, uint32_t* val);
     void on_readGSEDataComplete_received(double* gseData);
+    void on_gainControlsValues_received( unsigned int axis, bool* val);
+    void on_currentIntBoardProperties_received(bool* val, long unsigned int sampFreq);// bool*=[intType, sampleSclk, resetSclk]
+    void on_settingsFormRun_received();
 signals:
     void closeThis();
-    void modifyBaseAddressRequest(unsigned int);
-    void updateSettingsRequest(int a, int b, double* val);
+    void modifyBaseAddressRequest(unsigned int add);
+    void updateSettingsRequest(int a, int b, int* val);
     void initSettingsFormRequest();
 private slots:
     void on_pushButton_5_clicked();
+    void setBaseAddress();
     void updateApdSettings();
+    unsigned int convertHex2Uint(std::string hex);
     //void on_comboBox_currentIndexChanged(int index);
     void updateGeneralSettings();
     void on_interType_currentIndexChanged(int index);
     void on_precisionVal_currentIndexChanged(int index);
+    void gainControlsValuesFunc( unsigned int axis, bool* val);
 
     void on_resetFindVel_currentIndexChanged(int index);
 
@@ -85,32 +97,31 @@ private slots:
 
     void on_pushButton_17_clicked();
 
-    void on_comboBox_9_currentIndexChanged(int index);
-    void on_comboBox_10_currentIndexChanged(int index);
-    void on_comboBox_4_currentIndexChanged(int index);
-    void on_comboBox_7_currentIndexChanged(int index);
+    void on_agcControl_currentIndexChanged(int index);
+    void on_agcControl_2_currentIndexChanged(int index);
+    void on_agcControl_4_currentIndexChanged(int index);
+    void on_agcControl_3_currentIndexChanged(int index);
 
-    void on_comboBox_11_currentIndexChanged(int index);
-    void on_comboBox_12_currentIndexChanged(int index);
-    void on_comboBox_5_currentIndexChanged(int index);
-    void on_comboBox_8_currentIndexChanged(int index);
+    void on_gainMinControl_currentIndexChanged(int index);
+    void on_gainMinControl_2_currentIndexChanged(int index);
+    void on_gainMinControl_3_currentIndexChanged(int index);
+    void on_gainMinControl_4_currentIndexChanged(int index);
 
-    void on_comboBox_13_currentIndexChanged(int index);
-    void on_comboBox_14_currentIndexChanged(int index);
-    void on_comboBox_6_currentIndexChanged(int index);
-    void on_comboBox_15_currentIndexChanged(int index);
+    void on_gainMaxControl_currentIndexChanged(int index);
+    void on_gainMaxControl_2_currentIndexChanged(int index);
+    void on_gainMaxControl_3_currentIndexChanged(int index);
+    void on_gainMaxControl_4_currentIndexChanged(int index);
 
+    void ssiDataAvailableFunc(unsigned int axis,double *ssiVals, double *optPwrVals);
     void on_StartButton_clicked();
-    void on_spinBox_6_valueChanged(int arg1);
-    void on_spinBox_5_valueChanged(int arg1);
-    void on_spinBox_3_valueChanged(int arg1);
-    void on_spinBox_7_valueChanged(int arg1);
+    void on_ssiSquelch_1_valueChanged(int arg1);
+    void on_ssiSquelch_2_valueChanged(int arg1);
+    void on_ssiSquelch_3_valueChanged(int arg1);
+    void on_ssiSquelch_4_valueChanged(int arg1);
     void updateDiagnosticsData();
     void updateEEPROMData();
     void updateCalibrationData();
-    void on_comboBox_currentIndexChanged(int index);
-
-    void on_spinBox_4_valueChanged(int arg1);
+    void on_sampleSCLK_currentIndexChanged(int index);
 
 
     //void on_enableGlitchFilterButton_clicked();
@@ -144,6 +155,12 @@ private slots:
     void on_apdGainL2SetVal_4_valueChanged(int arg1);
     void on_apdSigRmsL2Set_4_valueChanged(int arg1);
     void on_apdOptPwrL2Set_4_valueChanged(int arg1);
+
+    void on_baseAdressInput_textChanged(const QString &arg1);
+
+    void on_resetSCLK_currentIndexChanged(int index);
+
+    void on_sampFreq_valueChanged(int arg1);
 
 private:
     Ui::SettingsForm *ui;
