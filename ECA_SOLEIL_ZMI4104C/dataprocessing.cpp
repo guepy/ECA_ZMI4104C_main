@@ -26,11 +26,11 @@ void dataProcessing::on_initBoardsRequest_recieved(){
 
     //SIS1100W_STATUS stat = sis1100w_Get_Handle_And_Open(0 , dev); //
     //*/
-    if(initSISboards( )!= RET_SUCCESS) {
+    /*if(initSISboards( )!= RET_SUCCESS) {
         FATAL("Failed to initialize SIS boards\n");
-    }
+    }*/
     //*/
-    //vmeSystemReset();
+    vmeSystemReset();
     /*if (stat != Stat1100Success) {
         qDebug()<<"Getting Sis handle failed";
         INFO("Getting Sis handle failed\n");
@@ -406,7 +406,8 @@ void dataProcessing::on_updateSettingsRequest_received( unsigned int a,  unsigne
 }
 void dataProcessing::updateSettingsRequest( unsigned int a,  unsigned int b, int* val){
     qDebug()<<"dataProcessing::updateSettingsRequest";
-    qDebug()<<"a = "<< a<<"; b= "<< b<<endl;
+    if(val!=nullptr)
+    qDebug()<<"a = "<< a<<"; b= "<< b<<"; val= "<<(val[0])<<endl;
      unsigned int r=0, q=0;
     dataProcessing::dev_mutex.lock();
     switch ( a) {
@@ -439,7 +440,7 @@ void dataProcessing::updateSettingsRequest( unsigned int a,  unsigned int b, int
             setSampleSourceClock(  3, (unsigned int*) val);
             break;
         case 6:
-            //setSamplingFrequency((unsigned int)(* val));
+            setSamplingFrequency((unsigned int)(* val));
         break;
         default:
             r=( b-7)%3;
@@ -489,7 +490,7 @@ void dataProcessing::updateSettingsRequest( unsigned int a,  unsigned int b, int
             setSSISquelch( b-3,* val);
         }
         else{
-            SetKpAndKvCoeff(   b+1, (short) val[0], (short) val[1] );
+            SetKpAndKvCoeff(   b+1, val[0], val[1] );
         }
         break;
     case 4:

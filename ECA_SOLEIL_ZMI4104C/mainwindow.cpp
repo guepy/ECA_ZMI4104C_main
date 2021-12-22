@@ -119,7 +119,7 @@ void MainWindow::refresh_screen(){
     if((dataProcessing::dev_mutex).try_lock()){
         refreshLEDsStatus();
         updateLeftBlockValue();
-        //updateRightBlockValue();
+        updateRightBlockValue();
         updateCECRatios();
         customplotForm->updatePosition(scaledPosition);
         dataProc->getLEDsColor(ledsColor);

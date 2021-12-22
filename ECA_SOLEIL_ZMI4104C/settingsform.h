@@ -38,8 +38,8 @@ class SettingsForm : public QWidget
     int curKvFilterCoeff[4] = {0,0,0,0};
     int prevKvFilterCoeff[4] = {0,0,0,0};
 
-    unsigned int curSSIsquelch[4] = {0,0,0,0};
-    unsigned int prevSSIsquelch[4] = {0,0,0,0};
+    int curSSIsquelch[4] = {0,0,0,0};
+    int prevSSIsquelch[4] = {0,0,0,0};
 
     int curGainMinControl[4] = {0,0,0,0};
     int prevGainMinControl [4] = {0,0,0,0};
@@ -73,7 +73,7 @@ public:
     void on_apdValues_received(unsigned int axis, uint32_t* val);
     void on_readGSEDataComplete_received(double* gseData);
     void on_gainControlsValues_received( unsigned int axis, bool* val);
-    void on_currentIntBoardProperties_received(bool* val, long unsigned int sampFreq);// bool*=[intType, sampleSclk, resetSclk]
+    void on_currentIntBoardProperties_received(bool* val,unsigned int sampFreq);// bool*=[intType, sampleSclk, resetSclk]
     void on_settingsFormRun_received();
 signals:
     void closeThis();

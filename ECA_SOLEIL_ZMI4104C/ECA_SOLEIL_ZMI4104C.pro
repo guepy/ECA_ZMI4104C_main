@@ -15,7 +15,6 @@ SOURCES += \
     graphsform.cpp \
     main.cpp \
     mainwindow.cpp \
-    myslots.cpp \
     positionoffsetform.cpp \
     presetpositionform.cpp \
     qcustomplot/qcustomplot.cpp \
@@ -28,7 +27,6 @@ HEADERS += \
     flyscanform.h \
     graphsform.h \
     mainwindow.h \
-    myslots.h \
     positionoffsetform.h \
     presetpositionform.h \
     qcustomplot/qcustomplot.h \

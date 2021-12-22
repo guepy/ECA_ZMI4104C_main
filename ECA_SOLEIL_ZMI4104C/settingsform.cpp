@@ -153,7 +153,7 @@ void SettingsForm::on_StartButton_clicked()
     //*/
 }
 
-void SettingsForm::on_currentIntBoardProperties_received(bool* val, long unsigned int sampFreq){// bool*=[intType, sampleSclk, resetSclk]
+void SettingsForm::on_currentIntBoardProperties_received(bool* val, unsigned int sampFreq){// bool*=[intType, sampleSclk, resetSclk]
     curInterferoType = val[0];
     prevInterferoType = val[0];
     ui->interType->setCurrentIndex(curInterferoType);
@@ -171,42 +171,52 @@ void SettingsForm::on_currentIntBoardProperties_received(bool* val, long unsigne
     ui->sampFreq->setValue(sampFreq);
 }
 void SettingsForm::updateGeneralSettings(){
+
     if(curInterferoType != prevInterferoType){
-        emit updateSettingsRequest(1,2,(int*)&curInterferoType );
+        val[0]=(curInterferoType)?1:0;
+        emit updateSettingsRequest(1,2,val);
         prevInterferoType= curInterferoType;
     }
     if(curPrecision != prevPrecision){
-        emit updateSettingsRequest(1,3,(int*)&curPrecision );
+        val[0]=(curPrecision)?1:0;
+        emit updateSettingsRequest(1,3,val );
         prevPrecision= curPrecision;
     }
     if(curResetFindVelocity != prevResetFindVelocity){
-        emit updateSettingsRequest(1,4,(int*)&curResetFindVelocity );
+        val[0]=(curResetFindVelocity)?1:0;
+        emit updateSettingsRequest(1,4,val );
         prevResetFindVelocity= curResetFindVelocity;
     }
     if(curSampleSCLK != prevSampleSCLK){
-        emit updateSettingsRequest(1,5, (int*)&curSampleSCLK);
+        val[0]=(curSampleSCLK)?1:0;
+        emit updateSettingsRequest(1,5, val);
         prevSampleSCLK = curSampleSCLK;
     }
     if(curResetSCLK != prevResetSCLK){
-        emit updateSettingsRequest(1,1, (int*)&curResetSCLK);
+        val[0]=(curResetSCLK)?1:0;
+        emit updateSettingsRequest(1,1,val);
         prevResetSCLK = curResetSCLK;
     }
     if(curSampleFreq != prevSampleFreq){
-        emit updateSettingsRequest(1,6, (int*)&curSampleFreq);
+        val[0]=curSampleFreq;
+        emit updateSettingsRequest(1,6, val);
         prevSampleFreq = curSampleFreq;
     }
 
     for(int i=0; i<4; i++){
         if(curGainMinControl[i] != prevGainMinControl[i]){
-            emit updateSettingsRequest(1,7+3*i,(int*)&curGainMinControl[i]);
+            val[0]=(curGainMinControl[i])?1:0;
+            emit updateSettingsRequest(1,7+3*i,val);
             prevGainMinControl[i] = curGainMinControl[i];
         }
         if(curAutoAdjustGainMode[i] != prevAutoAdjustGainMode[i]){
-            emit updateSettingsRequest(1,7+3*i+1,(int*)&curAutoAdjustGainMode[i]);
+            val[0]=(curAutoAdjustGainMode[i])?1:0;
+            emit updateSettingsRequest(1,7+3*i+1,val);
             prevAutoAdjustGainMode[i] = curAutoAdjustGainMode[i];
         }
         if(curGainMaxControl[i] != prevGainMaxControl[i]){
-            emit updateSettingsRequest(1,7+3*i+2,(int*)&curGainMaxControl[i]);
+            val[0]=(curGainMaxControl[i])?1:0;
+            emit updateSettingsRequest(1,7+3*i+2,val);
             prevGainMaxControl[i] = curGainMaxControl[i];
         }
     }
@@ -557,7 +567,6 @@ qDebug()<<"settingForm::apdval0"<<val[0]<<"apdval1"<<val[1]<<"apdval2"<<val[2]<<
         curApdSigRmsL2Set[0] = val[2];
         curApdOptPwrL2Set[0] = val[3];
         prevApdOptPwrL2Set[0] = val[3];
-
         ui->apdGainL2SetVal->setValue(val[0]);
         ui->apdBiasDac->setValue(val[1]);
         ui->apdSigRmsL2Set->setValue(val[2]);
@@ -572,7 +581,6 @@ qDebug()<<"settingForm::apdval0"<<val[0]<<"apdval1"<<val[1]<<"apdval2"<<val[2]<<
         curApdSigRmsL2Set[1] = val[2];
         curApdOptPwrL2Set[1] = val[3];
         prevApdOptPwrL2Set[1] = val[3];
-
         ui->apdGainL2SetVal_2->setValue(val[0]);
         ui->apdBiasDac_2->setValue(val[1]);
         ui->apdSigRmsL2Set_2->setValue(val[2]);
@@ -702,15 +710,14 @@ void SettingsForm::updateCalibrationData()
 
     for(i=0;i<4;i++){
         if((curKpFilterCoeff[i] != prevKpFilterCoeff[i]) || (curKvFilterCoeff[i] != prevKvFilterCoeff[i])){
-            int coeff[2];
-            coeff[0]=curKpFilterCoeff[i];
-            coeff[1]=curKvFilterCoeff[i];
-            emit updateSettingsRequest(3,i, coeff);
+            val[0]=curKpFilterCoeff[i];
+            val[1]=curKvFilterCoeff[i];
+            emit updateSettingsRequest(3,i, val);
             prevKpFilterCoeff[i] = curKpFilterCoeff[i];
             prevKvFilterCoeff[i] = curKvFilterCoeff[i];
         }
         if(prevSSIsquelch[i] != curSSIsquelch[i]){
-            emit updateSettingsRequest(3,4+i,(int*)&curSSIsquelch[i]);
+            emit updateSettingsRequest(3,4+i,&curSSIsquelch[i]);
             prevSSIsquelch[i] = curSSIsquelch[i];
         }
     }

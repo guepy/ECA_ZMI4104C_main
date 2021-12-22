@@ -12,7 +12,7 @@
 #include "cesettingsform.h"
 #include "dataprocessing.h"
 #include "graphsform.h"
-#include "../eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.h"
+//#include "../eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.h"
 #include <string>
 #include <memory>
 #include <iostream>
