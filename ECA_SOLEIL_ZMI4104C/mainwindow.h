@@ -39,7 +39,7 @@ public:
     // --------Bouton set position offset-----------------------
     positionOffsetForm *posOffsetForm;
     //-------------plot graphs button --------------------------
-    graphsForm* customplotForm;
+    //graphsForm* customplotForm;
     // --------Bouton preset position --------------------------
     presetPositionForm *presPosForm;
     QAction     *a_openMenu;
@@ -71,7 +71,7 @@ private:
     CEratios* ceRatios;
     unsigned int currentcecAxis;
 signals:
-    void initComplete();
+    void startGraph();
     void updateSettingsRequest(int a, int b, double* val);
     void closeFlyscanFormRequest();
     void closePositionOffsetFormRequest();
@@ -99,6 +99,7 @@ signals:
     void initSettingsFormRequest();
     void apdValues(unsigned int axis, uint32_t* coeff);
     void gainControlsValues( unsigned int axis, bool* val);
+    void updatePositionOnGraphs(double * position);
 public slots:
     // --------------button continuous acquisition---------------------------
     void openFlyscanForm();

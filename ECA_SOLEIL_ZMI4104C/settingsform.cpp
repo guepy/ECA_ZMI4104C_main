@@ -8,8 +8,8 @@ SettingsForm::SettingsForm(QWidget *parent) :
     ui->setupUi(this);
 
     updateTable = (int*)calloc(10, sizeof(int));
-    ui->baseAdressInput->setValidator(new QRegExpValidator(QRegExp("^[1-9A-F]{1,7}$", Qt::CaseSensitive), ui->baseAdressInput));
-    ui->baseAdressInput->setText(QString::number(14000));
+    ui->baseAdressInput->setValidator(new QRegExpValidator(QRegExp("^[0-9A-F]{1,7}$", Qt::CaseInsensitive), ui->baseAdressInput));
+    ui->baseAdressInput->setText(QString::number(16000));
 
     ui->apdGainL2SetVal->setMinimum(0);//min freq
     ui->apdGainL2SetVal->setMaximum(5120);//max freq
@@ -127,11 +127,11 @@ unsigned int SettingsForm::convertHex2Uint(std::string hex) {
     // check if hex < 16
     s=hex.size();
     if(s==0) return 0;
-    if(s<2) return (unsigned int)hex[0];
+    if(s<2) return ((unsigned int)hex[0] - (int)'0');
     for (i = 1; i < (int)(s); i++) {
         if (hex[i] != '0') break;
     }
-    if (i == s) return (unsigned int)hex[0];
+    //if (i == s) return (unsigned int)hex[0];
     for (i = s-1; i>=0; i--) {
         if (hex[i] == '0') continue;
         if (hex[i] > '9') {
@@ -150,12 +150,14 @@ void SettingsForm::on_StartButton_clicked()
     updateGeneralSettings();
     updateApdSettings();
     updateCalibrationData();
+    updateBaseAddress();
     //*/
 }
 
 void SettingsForm::on_currentIntBoardProperties_received(bool* val, unsigned int sampFreq){// bool*=[intType, sampleSclk, resetSclk]
     curInterferoType = val[0];
     prevInterferoType = val[0];
+    qDebug()<<"curInterferoType is "<<curInterferoType;
     ui->interType->setCurrentIndex(curInterferoType);
 
     curSampleSCLK = val[1];
@@ -838,15 +840,17 @@ void SettingsForm::on_apdOptPwrL2Set_4_valueChanged(int arg1)
 
 void SettingsForm::on_baseAdressInput_textChanged(const QString &arg1)
 {
-    basAd=arg1.toStdString();
-    setBaseAddress();
+    basAd=ui->baseAdressInput->text().toStdString();
+    baseAdChange =true;
 }
 
-void SettingsForm::setBaseAddress(){
+void SettingsForm::updateBaseAddress(){
     unsigned int add=0;
+    if(baseAdChange){
     add=convertHex2Uint(basAd);
-    qDebug()<<"dec: "<< add;
+    baseAdChange = false;
     emit modifyBaseAddressRequest(add);
+    }
 }
 
 void SettingsForm::on_resetSCLK_currentIndexChanged(int index)

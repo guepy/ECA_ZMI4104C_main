@@ -1,17 +1,23 @@
 #include "graphsform.h"
 #include "ui_graphsform.h"
 
-
 graphsForm::graphsForm(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::graphsForm)
 {
     ui->setupUi(this);
+    this->setAttribute(Qt::WA_DeleteOnClose);
     position=new double[5];
     initComplete=false;
     axisRange = new double[2];
-    axisRange[0] = -1e-9;
+    axisRange[0] = -1e-10;
     axisRange[1] = 1e-9;
+    ui->spinBox->setMinimum(1);
+    ui->spinBox->setMaximum(5000);
+    timerTimeout=10;
+    graphNbr=0;
+    for(int i=0;i<4;i++)
+        isThereAgraph[i]=0;
     setupRealtimeDataDemo(ui->customPlot);
 }
 
@@ -19,73 +25,72 @@ void graphsForm::setupRealtimeDataDemo(QCustomPlot *customPlot)
     {
     //---------------Setup function--------------------------------------------
 
-    customPlot->addGraph(); // blue line
-    customPlot->graph(0)->setPen(QPen(QColor(40, 110, 255)));
-    customPlot->addGraph(); // red line
-    customPlot->graph(1)->setPen(QPen(QColor(255, 110, 40)));
+    ui->spinBox->setValue(timerTimeout);
+    QPen pen(Qt::darkBlue, 3, Qt::DotLine, Qt::RoundCap, Qt::RoundJoin);
+
+    for(int axisNbr=0;axisNbr<4;axisNbr++){
+        switch(axisNbr){
+        case 1:
+            pen.setColor(Qt::red);
+            pen.setStyle(Qt::DashLine);
+            break;
+        case 2:
+            pen.setColor(Qt::green);
+            pen.setStyle(Qt::SolidLine);
+            break;
+        case 3:
+            pen.setColor(Qt::gray);
+            pen.setStyle(Qt::DashDotDotLine);
+            break;
+        }
+
+        customPlot->addGraph(); // blue line
+        customPlot->graph(axisNbr)->setPen(pen);
+        qDebug()<<"graph "<<axisNbr;
+    }
 
     QSharedPointer<QCPAxisTickerTime> timeTicker(new QCPAxisTickerTime);
     timeTicker->setTimeFormat("%h:%m:%s");
     customPlot->xAxis->setTicker(timeTicker);
     customPlot->axisRect()->setupFullAxesBox();
-    //customPlot->yAxis->setRange(axisRange[0], axisRange[1]);
-    // make left and bottom axes transfer their ranges to right and top axes:
-    connect(customPlot->xAxis,SIGNAL(rangeChanged(QCPRange)), customPlot->xAxis2, SLOT(setRange(QCPRange)));
-    connect(customPlot->yAxis, SIGNAL(rangeChanged(QCPRange)), customPlot->yAxis2, SLOT(setRange(QCPRange)));
 
     // setup a timer that repeatedly calls graphsForm::refreshGraphs:
     graphTimer = new QTimer(this);
     connect(graphTimer, &QTimer::timeout, this, QOverload<>::of(&graphsForm::refreshGraphs));
-    //graphTimer->setInterval(100);
-    graphTimer->start(100); // Interval 0 means to refresh as fast as possible
 
 }
 void graphsForm::refreshGraphs(){
     static QTime time(QTime::currentTime());
-    //ui->customPlot->yAxis->rescale(true);
-    // calculate two new data points:
-    double key = time.elapsed()/1000.0; // time elapsed since start of demo, in seconds
+    // calculate new data point:
+    key = time.elapsed()/1000.0; // time elapsed since start of demo, in seconds
     static double lastPointKey = 0;
+    // make key axis range scroll with the data (at a constant range size of 20):
+    ui->customPlot->xAxis->setRange(key, 20, Qt::AlignRight);
 
-        ;//wait for boards initialization to complete
-    if(initComplete){
-        if (key-lastPointKey > 0.1) // at most add point every 100 ms
-        {
-
-          // add data to lines:
-            qDebug()<<"position is "<<*(position+2);
-            lastPointKey = key;
-          ui->customPlot->graph(0)->addData(key, *(position+2));//qSin(key)+qrand()/(double)RAND_MAX*1*qSin(key/0.3843));
-          //ui->customPlot->graph(1)->addData(key, qCos(key)+qrand()/(double)RAND_MAX*0.5*qSin(key/0.4364));
-          // rescale value (vertical) axis to fit the current data:
-          //dHigh=ui->customPlot->yAxis2->range().upper;
-          //dLow=ui->customPlot->yAxis2->range().lower;
-          //ui->customPlot->graph(0)->setAdaptiveSampling(true);
-        }
-        // make key axis range scroll with the data (at a constant range size of 8):
-        ui->customPlot->xAxis->setRange(key, 8, Qt::AlignRight);
-        ui->customPlot->graph(0)->rescaleValueAxis(true);
-        //ui->customPlot->yAxis->setRange(dLow,dHigh);
+    if (key-lastPointKey>timerTimeout/1000) // at most add point every 100 ms
+    {
+        for(int i=0;i<4;i++){
+            // add data to lines:
+            if(isThereAgraph[i]){
+                qDebug()<<"axis "<<i+1;
+                ui->customPlot->graph(i)->setVisible(true);
+                ui->customPlot->graph(i)->addData(key, *(position+i));
+            }
+            else{
+                //ui->customPlot->graph(i)->addData(key, 0);
+                ui->customPlot->graph(i)->setVisible(false);
+            }
+          }
+        lastPointKey = key;
+        ui->customPlot->yAxis->rescale(true);
         ui->customPlot->replot();
 
-        // calculate frames per second:
-        static double lastFpsKey;
-        static int frameCount;
-        ++frameCount;
-        if (key-lastFpsKey > 2) // average fps over 2 seconds
-        {
-          /*ui->statusBar->showMessage(
-                QString("%1 FPS, Total Data points: %2")
-                .arg(frameCount/(key-lastFpsKey), 0, 'f', 0)
-                .arg(ui->customPlot->graph(0)->data()->size()+ui->customPlot->graph(1)->data()->size())
-                , 0);*/
-          lastFpsKey = key;
-          frameCount = 0;
-        }
-    }
+}
+
 }
 
 void graphsForm::on_scaleAxisRequest_recieved(int units){
+    /*
     switch (units) {
         case 0:
         ui->customPlot->yAxis->setRange(-axisRange[0], axisRange[1]);//mm
@@ -103,17 +108,20 @@ void graphsForm::on_scaleAxisRequest_recieved(int units){
         break;
 
     }
+    /*/
 }
 /*
 void graphsForm:: setAxisRange(double* range){
     axisRange[0]=range[]
 }*/
 void graphsForm::on_initBoardsComplete_recieved(){
-    qDebug()<<"waitInitComplete\n";
+    qDebug()<<"waitInitComplete";
+    graphTimer->start(0); // Interval 0 means to refresh as fast as possible
     initComplete=true;
 }
 void graphsForm::on_initBoardsRequest_recieved(){
     initComplete=false;
+    graphTimer->stop(); // Interval 0 means to refresh as fast as possible
 }
 void graphsForm::updatePosition(double* pos){
     /*for(int i=0; i<5; i++)
@@ -123,7 +131,9 @@ void graphsForm::updatePosition(double* pos){
 graphsForm::~graphsForm()
 {
     graphTimer->stop();
-    this->destroy(true,true);
+    emit closeThis();
+    qDebug()<<"Close this emitted";
+    this->deleteLater();
     delete ui;
 }
 
@@ -132,3 +142,79 @@ emit closeThis();
 qDebug()<<"Close this emitted";
 this->deleteLater();
 }
+
+
+void graphsForm::on_checkBox_clicked(bool checked)
+{
+
+    if(checked){
+        isThereAgraph[0] = 1;
+
+    }
+    else{
+        isThereAgraph[0] = 0;
+    }
+}
+
+
+void graphsForm::on_checkBox_2_clicked(bool checked)
+{
+
+
+    if(checked){
+        isThereAgraph[1] = 1;
+    }
+    else{
+        isThereAgraph[1] = 0;
+    }
+}
+
+
+void graphsForm::on_checkBox_3_clicked(bool checked)
+{
+    if(checked){
+        isThereAgraph[2] = 1;
+    }
+    else{
+        isThereAgraph[2] = 0;
+    }
+}
+
+void graphsForm::updateGraphOnAxis(unsigned int graphNbr, unsigned int axisNbr){
+
+}
+void graphsForm::graphsForm::on_checkBox_4_clicked(bool checked)
+{
+
+    if(checked){
+        isThereAgraph[3] = 1;
+
+    }
+    else{
+        isThereAgraph[3] = 0;
+    }
+}
+
+
+void graphsForm::on_spinBox_valueChanged(int arg1)
+{
+    spinboxVal=arg1;
+}
+
+
+void graphsForm::on_graphsForm_destroyed()
+{
+    graphTimer->stop();
+    this->destroy();
+    emit closeThis();
+    this->deleteLater();
+    delete ui;
+}
+
+
+void graphsForm::on_pushButton_2_clicked()
+{
+    timerTimeout =spinboxVal;
+}
+
+

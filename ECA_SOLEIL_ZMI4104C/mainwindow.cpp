@@ -27,7 +27,6 @@ MainWindow::MainWindow(QWidget *parent)
     flyscanForm=new FlyscanForm;
     posOffsetForm=new positionOffsetForm;
     presPosForm = new presetPositionForm;
-    customplotForm=new graphsForm;
     dataProc = new dataProcessing;
     ledsColor = new int[5];
     ledsColorPrev = new int[5];
@@ -55,8 +54,7 @@ MainWindow::MainWindow(QWidget *parent)
     for(int i=0; i<5;i++){
         ledsColor[i] = 0;
         ledsColorPrev[i] = 0;
-}
-
+    }
     qDebug()<<"Windows_address 1"<<dataProcessing::base_A24D32_ptr;
     qDebug()<<"Windows_address 2"<<dataProcessing::base_A24D32_FR_ptr;
     //*-------------CEC Hardware signals-slots---------------------------------------
@@ -119,14 +117,23 @@ void MainWindow::refresh_screen(){
     if((dataProcessing::dev_mutex).try_lock()){
         refreshLEDsStatus();
         updateLeftBlockValue();
-        updateRightBlockValue();
+        //updateRightBlockValue();
         updateCECRatios();
-        customplotForm->updatePosition(scaledPosition);
+        emit updatePositionOnGraphs(scaledPosition);
         dataProc->getLEDsColor(ledsColor);
         (dataProcessing::dev_mutex).unlock();
+        startApp=0;
     }
     else{
-        ui->textBrowser_2->append("Processing some data...");
+        if(startApp==0){
+            strcpy_s(str,"Processing some data.");
+            ui->textBrowser_2->append(str);
+            startApp=1;
+        }
+        else{
+            strcat_s(str,".");
+            ui->textBrowser_2->append(str);
+        }
     }
 //*/
 }
@@ -219,6 +226,8 @@ void MainWindow::on_pushButton_7_clicked()
     for(int i=0; i<5;i++)
         ledsColor[i] = 0;
     refreshLEDsStatus();
+    ui->textBrowser->clear();
+    ui->textBrowser_2->clear();
     initBoards();
     //*/
 
@@ -404,16 +413,19 @@ void MainWindow::on_pushButton_8_clicked()
 
 void MainWindow::openCustomplotForm(){
 
-    customplotForm=new graphsForm;
+    graphsForm* customplotForm=new graphsForm;
     //--------------graphsForm signals-slots --------------------------------------
     connect(customplotForm, &graphsForm::closeThis, this, &MainWindow::closeCustomplotForm);
     connect(this, &MainWindow::closeCustomplotFormRequest, customplotForm, &graphsForm::closeForm);
-    connect(this, &MainWindow::initComplete, customplotForm, &graphsForm::on_initBoardsComplete_recieved);
+    connect(this, &MainWindow::updatePositionOnGraphs, customplotForm, &graphsForm::updatePosition);
+    connect(this, &MainWindow::startGraph, customplotForm, &graphsForm::on_initBoardsComplete_recieved);
     connect(this, &MainWindow::initBoardsRequest, customplotForm, &graphsForm::on_initBoardsRequest_recieved);
     connect(this, &MainWindow::scaleAxisRequest, customplotForm, &graphsForm::on_scaleAxisRequest_recieved);
 
     customplotForm->show();
     customplotForm_int=1;
+
+    emit startGraph();
 }
 void MainWindow::closeCustomplotForm(){
     customplotForm_int=0;
@@ -479,7 +491,6 @@ void MainWindow::on_initAxisComplete_recieved()
     sprintf(str,"Bias mode has been switched to %s", biasMode[dataProcessing::currentBiasMode]);
     ui->textBrowser_2->append(str);
     ui->MeasForm->setEnabled(true);
-    emit initComplete();
 }
 
 //----------------BIAS MODE SELECTION---------------------------

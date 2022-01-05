@@ -324,6 +324,12 @@ void FlyscanForm::on_flyscanErrorCode_recieved(int err_code){
         ui->display->append("Flyscan operation failed");
         ui->display->setTextColor(QColor("dark"));
         break;
+    case -99:
+        ui->display->setTextColor(QColor("red"));
+        ui->display->append("Flyscan configuration failed ");
+        ui->display->append("Try to reset the system ");
+        ui->display->setTextColor(QColor("dark"));
+        break;
     case -100:
         ui->display->setTextColor(QColor("red"));
         ui->display->append("Overlapping detected, somme data may have been corrupted ");
@@ -347,6 +353,30 @@ void FlyscanForm::on_flyscanErrorCode_recieved(int err_code){
     case -103:
         ui->display->setTextColor(QColor(QColor::fromRgb(255, 170, 0)));
         ui->display->append("With the current parameters, only 8192 per axis has been saved");
+        ui->display->setTextColor(QColor("dark"));
+        break;
+    case -104:
+        ui->display->setTextColor(QColor("red"));
+        ui->display->append("failed to stop continuous acquisition");
+        ui->display->append("Try to adjust scan parameter ");
+        ui->display->setTextColor(QColor("dark"));
+        break;
+    case -105:
+        ui->display->setTextColor(QColor("red"));
+        ui->display->append("null pointer has been passed to store data in");
+        ui->display->append("Try to restart the application ");
+        ui->display->setTextColor(QColor("dark"));
+        break;
+    case -106:
+        ui->display->setTextColor(QColor("red"));
+        ui->display->append("error while retreiving flyscan data");
+        ui->display->append("Try to reset the system");
+        ui->display->setTextColor(QColor("dark"));
+        break;
+    case -107:
+        ui->display->setTextColor(QColor("red"));
+        ui->display->append("Faillure while processing flyscan data");
+        ui->display->append("Try to reset the system ");
         ui->display->setTextColor(QColor("dark"));
         break;
     default:

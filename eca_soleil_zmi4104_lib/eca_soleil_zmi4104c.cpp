@@ -1643,7 +1643,7 @@ int getFlyscanData(  uint32_t* startAddress_axis1, uint32_t* startAddress_axis3,
 	do {
 		ctr++;
 		Sleep(1);
-		if (ctr > 15000)
+		if (ctr > 1500)
 		{
 			WARN("RAM has been busy for more than %ds stamps time \n exiting... \n", ctr);
 			return RET_FAILED;
@@ -5993,7 +5993,7 @@ int ReadAPDCtrlSoftErrs(  unsigned char axis) {
 int Enable32bitsOverflow(  unsigned char axis) {
 	unsigned int uint_vme_data = 0, uint_vme_address = 0;
 	// Enable auxiliary registers
-	INFO("Enabling 32bits overflow on axis %u", axis);
+	INFO("Enabling 32bits overflow on axis %u\n", axis);
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCtrl2);
 	uint_vme_data = 0x800;
 	if ((return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_OR_OP_CODE)) != RET_SUCCESS)
@@ -6005,7 +6005,7 @@ int Enable32bitsOverflow(  unsigned char axis) {
 int Disable32bitsOverflow(  unsigned char axis) {
 	unsigned int uint_vme_data = 0, uint_vme_address = 0;
 	// Enable auxiliary registers
-	INFO("Disabling 32bits overflow on axis %u", axis);
+	INFO("Disabling 32bits overflow on axis %u\n", axis);
 	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCtrl2);
 	uint_vme_data = 0xF7FF;
 	if ((return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_AND_OP_CODE)) != RET_SUCCESS)
@@ -6093,7 +6093,7 @@ int VMESysReset() {
 /// </returns>
 int SetSampTimerFreq(  unsigned short sampTimerVal) {
 	unsigned int uint_vme_data = 0, uint_vme_address = 0;
-	INFO("Setting the sampling timer frequency to %d ...\n", sampTimerVal);
+	INFO("Setting the sampling timer frequency to %u ...\n", sampTimerVal);
 	uint_vme_address = ADD(BASE_ADDRESS[2], zSampleTimer);
 	uint_vme_data = sampTimerVal;
 	if ((return_code=Read_Write("A24D16",   uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
@@ -6138,8 +6138,9 @@ int getSamplingFrequency(double* sampFreq) {
 	{
 		WARN("getSamplingFrequency failed !  \n"); return return_code;
 	}
-	*sampFreq = 1e6 / ((uint_vme_data + 1) * 0.05);
-	currentSamplingFrequency = *sampFreq;
+	currentSamplingFrequency = 1e6 / ((uint_vme_data + 1) * 0.05);
+	if(sampFreq!=nullptr)
+		*sampFreq = currentSamplingFrequency;
 	return RET_SUCCESS;
 }
 int SetHoldSampEnable( ) {
@@ -6219,8 +6220,8 @@ int setSamplingFrequency(unsigned int sampleFreq) {
 	//turn off sclk (turn off 7 and 9) and turn off divider (turn off 6)
 	if ((return_code = Sclk_Off()) != RET_SUCCESS)
 	{
-	WARN("Sclk_Off failed!  \n");
-	return return_code;
+		WARN("Sclk_Off failed!  \n");
+		return return_code;
 	}
 	//set sclk rate(only master axis needed)
 	if ((return_code = SetSampTimerFreq(sclkVal)) != RET_SUCCESS)
@@ -6228,7 +6229,7 @@ int setSamplingFrequency(unsigned int sampleFreq) {
 		WARN("SetSampTimerFreq failed\n");
 		return RET_FAILED;
 	}
-	currentSamplingFrequency = sampleFreq * 1e6;
+	currentSamplingFrequency = sampleFreq;
 	return RET_SUCCESS;
 }
 
@@ -6317,7 +6318,6 @@ int EEPROMread(  unsigned short offset, unsigned int* uint_vme_data,
 			{WARN("Register %6X access Faillure !  \n", uint_vme_address);return return_code;}
 
 	} // Wait while EEPROM busy 
-
 
 	//Read the EEprom
 	switch (nBytes)

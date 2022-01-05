@@ -26,11 +26,11 @@ void dataProcessing::on_initBoardsRequest_recieved(){
 
     //SIS1100W_STATUS stat = sis1100w_Get_Handle_And_Open(0 , dev); //
     //*/
-    /*if(initSISboards( )!= RET_SUCCESS) {
+    if(initSISboards( )!= RET_SUCCESS) {
         FATAL("Failed to initialize SIS boards\n");
-    }*/
+    }
     //*/
-    vmeSystemReset();
+    //vmeSystemReset();
     /*if (stat != Stat1100Success) {
         qDebug()<<"Getting Sis handle failed";
         INFO("Getting Sis handle failed\n");
@@ -158,8 +158,8 @@ void dataProcessing::on_resetAxisRequest_recieved(int axis){
 dataProcessing::~dataProcessing()
 {
     //qDebug()<<"Freeing buf 0x%p and 0x%p\n", base_A24D32_FR_ptr, base_A24D32_ptr;
-    delete (base_A24D32_FR_ptr);
-    delete (base_A24D32_ptr);
+    //delete (base_A24D32_FR_ptr);
+    //delete (base_A24D32_ptr);
     dataProcessing::dev_mutex.lock();
     dataProcessing::dev_mutex.unlock();
 }
@@ -256,7 +256,6 @@ int dataProcessing::on_configureFlyscanRequest_recieved(){
     //*
 
     qDebug()<<"config ramdata started ";
-    QTimer *Ltimer;
     Ltimer = new QTimer(this);
     connect(Ltimer, &QTimer::timeout, this, QOverload<>::of(&dataProcessing::on_acquisitionTimer_timeout));
     Ltimer->setInterval(flyscanTimeValue * 1e3);
@@ -264,9 +263,10 @@ int dataProcessing::on_configureFlyscanRequest_recieved(){
     qDebug()<<"time is "<<flyscanTimeValue * 1e3;
     dataProcessing::dev_mutex.lock();
     if (configureFlyscan(  axisNbr, flyscanFreqValue, 1) != RET_SUCCESS){
-        return RET_FAILED;
-        emit flyscanErrorCode(RET_FAILED);
+        dataProcessing::dev_mutex.unlock();
+        emit flyscanErrorCode(-99);
         emit flyscanProcTerm();
+        return RET_FAILED;
     }
     dataProcessing::dev_mutex.unlock();
     Ltimer->start();
@@ -291,23 +291,26 @@ int dataProcessing::on_acquisitionTimer_timeout(){
         qDebug()<<"setting size to the max: "<< NBR_RAM_PAGES*128;
         emit flyscanErrorCode(-103);
     }
-    if (stopAquisition(  axisNbr) != RET_SUCCESS){
+    if (stopAquisition( axisNbr) != RET_SUCCESS){
         dataProcessing::dev_mutex.unlock();
+        Ltimer->stop();
         emit flyscanProcTerm();
-        emit flyscanErrorCode(RET_FAILED);
+        emit flyscanErrorCode(-104);
         return RET_FAILED;
     }
     if (!(dataProcessing::base_A24D32_ptr = (PUINT)calloc((UINT)( sizeof (UINT)*(flyscanSizeValue*1.5*axisNbr)), sizeof(unsigned int)))){
         dataProcessing::dev_mutex.unlock();
+        Ltimer->stop();
         WARN("can not allocate memory on the host machine");
-        emit flyscanErrorCode(RET_FAILED);
+        emit flyscanErrorCode(-105);
         emit flyscanProcTerm();
         return RET_FAILED;
     }
     if (!(dataProcessing::base_A24D32_FR_ptr = (PUINT)calloc((UINT)( sizeof (UINT)*flyscanSizeValue*1.5*axisNbr), sizeof(unsigned int)))){
         dataProcessing::dev_mutex.unlock();
+        Ltimer->stop();
         WARN("can not allocate memory on the host machine");
-        emit flyscanErrorCode(RET_FAILED);
+        emit flyscanErrorCode(-105);
         emit flyscanProcTerm();
         return RET_FAILED;
     }
@@ -320,14 +323,16 @@ int dataProcessing::on_acquisitionTimer_timeout(){
     if (getFlyscanData(  base_A24D32_FR_ptr, base_A24D32_ptr, &axisNbr, ramDataSize) != RET_SUCCESS)
     {
         dataProcessing::dev_mutex.unlock();
-        emit flyscanErrorCode(RET_FAILED);
+        Ltimer->stop();
+        emit flyscanErrorCode(-106);
         emit flyscanProcTerm();
         return RET_FAILED;
     }
     dataProcessing::dev_mutex.unlock();
     if (processRAMData(axisNbr, base_A24D32_FR_ptr, base_A24D32_ptr, ramDataSize, flyscanPath,(double*)meanVal, (double*)stdDevVal) != RET_SUCCESS)
     {
-        emit flyscanErrorCode(RET_FAILED);
+        Ltimer->stop();
+        emit flyscanErrorCode(-107);
         emit flyscanProcTerm();
         return RET_FAILED;
     }
@@ -339,6 +344,7 @@ int dataProcessing::on_acquisitionTimer_timeout(){
     delete (base_A24D32_FR_ptr);
     delete (base_A24D32_ptr);
     emit flyscanErrorCode(RET_SUCCESS);
+    Ltimer->stop();
     return RET_SUCCESS;
 }
 
@@ -354,7 +360,7 @@ int dataProcessing::on_configureFifoFlyscanRequest_recieved(){
     qDebug()<<"axisnbr in dataprocessing: "<<axisNbr;
     if (!(base_A24D32_ptr = (PUINT)calloc((UINT)(sizeof(UINT) * (flyscanSizeValue*1.5*axisNbr)), sizeof(unsigned int)))){
         WARN("can not allocate memory on the host machine");
-        emit flyscanErrorCode(RET_FAILED);
+        emit flyscanErrorCode(-105);
         emit flyscanProcTerm();
         delete flyscanFifoParam;
         return RET_FAILED;
@@ -367,7 +373,7 @@ int dataProcessing::on_configureFifoFlyscanRequest_recieved(){
     if (configureFifoFlyscan(  flyscanFifoParam,base_A24D32_ptr,(PUCHAR)fifoFlyscanAxisTab, &axisNbr, &ret_code) != RET_SUCCESS){
         dataProcessing::dev_mutex.unlock();
         qDebug()<<"fifo config failed";
-        emit flyscanErrorCode(RET_FAILED);
+        emit flyscanErrorCode(-99);
         emit flyscanProcTerm();
         delete (base_A24D32_ptr);
         delete flyscanFifoParam;
@@ -385,7 +391,7 @@ int dataProcessing::on_configureFifoFlyscanRequest_recieved(){
         qDebug()<<"processing fifo data, axis number: "<<axisNbr;
         if (processFifoData(axisNbr, (PUCHAR)fifoFlyscanAxisTab, base_A24D32_ptr, flyscanFifoParam->nbrPts, (PUCHAR)flyscanPath,(double*)meanVal, (double*)stdDevVal) != RET_SUCCESS){
             dataProcessing::dev_mutex.unlock();
-            emit flyscanErrorCode(RET_FAILED);
+            emit flyscanErrorCode(-107);
             emit flyscanProcTerm();
             delete (base_A24D32_ptr);
             delete flyscanFifoParam;
@@ -440,7 +446,7 @@ void dataProcessing::updateSettingsRequest( unsigned int a,  unsigned int b, int
             setSampleSourceClock(  3, (unsigned int*) val);
             break;
         case 6:
-            setSamplingFrequency((unsigned int)(* val));
+            setSamplingFrequency((unsigned int)(val[0]));
         break;
         default:
             r=( b-7)%3;
@@ -532,11 +538,7 @@ void dataProcessing::on_initSettingsFormRequest_received(){
 
 void dataProcessing::initSettingsFormRequest(){
     qDebug()<<"initSettingsFormRequestThread started";
-
     dataProcessing::dev_mutex.lock();
-    prop[0] = getCurrentInterType()-1;
-    prop[1] = getSampleSCLK();
-    prop[2] = getResetSCLK();
     for(int axis=1; axis<5; axis++){
         qDebug()<<"axis "<<axis;
         getSSISquelch(axis,ssiSq);
@@ -556,7 +558,11 @@ void dataProcessing::initSettingsFormRequest(){
         qDebug()<<"Gain min state on axis "<<axis<<" is "<<*gainControls;
         qDebug()<<"Gain max state on axis "<<axis<<" is "<<gainControls[1];
     }
+    getSamplingFrequency(nullptr);
     dataProcessing::dev_mutex.unlock();
+    prop[0] = getCurrentInterType()-1;
+    prop[1] = getSampleSCLK();
+    prop[2] = getResetSCLK();
     emit currentIntBoardProperties(prop, getSampFreq());
     qDebug()<<"dataProcessing::apdval0"<<getCurrentInterType()<<"apdval1"<<prop[0]<<"apdval2"<<prop[2]<<"apdval3"<<getSampFreq();
     qDebug()<<"initSettingsFormRequestThread done";

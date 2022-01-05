@@ -158,7 +158,7 @@ extern "C" {
 	static char ZYGO_BOARD_TYPE[50];
 	static bool currentSampleSCLK = 0;
 	static bool currentResetSCLK = 0;
-	static double currentSamplingFrequency = 20;
+	static double currentSamplingFrequency = 0;
 	static uint8_t tabLen = sizeof(ZYGO_BOARD_TYPE) / sizeof(ZYGO_BOARD_TYPE[0]);
 	/**/
 	//GUID sis1100w_GUID = { 0x944adde8, 0x4f6d, 0x4bee, 0xa309, 0x7ad62ab0b4bb };
@@ -181,7 +181,7 @@ extern "C" {
 	static const double	timeScale = 25 * (1e-6);                   //Converts to ms as default	
 	static const double	SSIScale = 0.019073486328125;           //Converts to mV as default	
 	static int return_code = 0;
-	static unsigned int curInterferoConfig=1;
+	static unsigned int curInterferoConfig=0;
 	static FILE* fdLog;
 	static SYSTEMTIME  lt;
 	static SIS1100_Device_Struct* dev = new SIS1100_Device_Struct;

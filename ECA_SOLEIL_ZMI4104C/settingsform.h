@@ -62,6 +62,7 @@ class SettingsForm : public QWidget
     bool prevResetSCLK = 0;
     unsigned int curSampleFreq = 0;
     unsigned int prevSampleFreq = 0;
+    bool baseAdChange=false;
 public:
     explicit SettingsForm(QWidget *parent = nullptr);
     ~SettingsForm();
@@ -82,7 +83,7 @@ signals:
     void initSettingsFormRequest();
 private slots:
     void on_pushButton_5_clicked();
-    void setBaseAddress();
+    void updateBaseAddress();
     void updateApdSettings();
     unsigned int convertHex2Uint(std::string hex);
     //void on_comboBox_currentIndexChanged(int index);

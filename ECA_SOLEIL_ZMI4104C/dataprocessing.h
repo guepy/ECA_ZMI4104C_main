@@ -41,6 +41,8 @@ public:
     uint32_t gain[4]={0,0,0,0};
     bool gainControls[3]={0,0,0};//Min|Max|AGC
     bool prop[3]={0,0,0};
+
+    QTimer *Ltimer;
 private:
     static SIS1100_Device_Struct* dev;
     //static bool accessToken;
@@ -58,7 +60,7 @@ signals:
     void KpKvValues( unsigned int axis, int* coeff);
     void apdValues( unsigned int axis, uint32_t* coeff);
     void gainControlsValues( unsigned int axis, bool* val);
-    void currentIntBoardProperties(bool* val, long unsigned int sampFreq);// bool*=[intType, sampleSclk, resetSclk]
+    void currentIntBoardProperties(bool* val, unsigned int sampFreq);// bool*=[intType, sampleSclk, resetSclk]
 public slots:
     void on_updateSettingsRequest_received( unsigned int a,  unsigned int b, int* val);
     void updateSettingsRequest( unsigned int a,  unsigned int b, int* val);

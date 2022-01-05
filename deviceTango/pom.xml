@@ -30,8 +30,8 @@
                 <sourceDirectory>src</sourceDirectory>
                 <includePaths>
                     <includePath>src</includePath>
-                    <includePath>C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib</includePath>
-                    <includePath>C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\ECA_ZMI4104C_main</includePath>
+                    <includePath>G:\eca_soleil_zmi4104_lib</includePath>
+                    <includePath>G:\</includePath>
                 </includePaths>
 				
 				<defines>
@@ -46,7 +46,12 @@
                     <lib>
                         <name>eca_soleil_zmi4104_lib</name>
                         <type>shared</type>
-                        <directory>C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\eca_soleil_zmi4104_lib\Release</directory>
+                        <directory>G:\eca_soleil_zmi4104_lib\Release</directory>
+                    </lib>
+                    <lib>
+                        <name>sis1100w</name>
+                        <type>shared</type>
+                        <directory>G:\eca_soleil_zmi4104_lib\sis1100_zmilib</directory>
                     </lib>
                 </libs>
             </linker>
