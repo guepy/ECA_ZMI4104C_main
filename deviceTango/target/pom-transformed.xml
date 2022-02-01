@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>fr.soleil</groupId>
+    <artifactId>super-pom-C-CPP-device</artifactId>
+    <version>RELEASE</version>
+  </parent>
+
+  <groupId>fr.soleil.device</groupId>
+  <artifactId>ZygoZMI410C-${aol}-${mode}</artifactId>
+  <version>1.0.0</version>
+
+  <packaging>nar</packaging>
+  <name>ZygoZMI410C</name>
+  <description>ZygoZMI410C device</description>
+  
+   <properties>
+		<!-- unique place to put the eca_lib version -->
+		<eca_lib.version>0.0.1</eca_lib.version>
+    </properties>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.freehep</groupId>
+        <artifactId>freehep-nar-plugin</artifactId>
+        <configuration>
+            <cpp>
+                <sourceDirectory>src</sourceDirectory>
+                <includePaths>
+                    <includePath>src</includePath>
+                    <includePath>G:\eca_soleil_zmi4104_lib</includePath>
+                    <includePath>G:\eca_soleil_zmi4104_lib\sis1100_zmilib</includePath>
+                    <includePath>G:\ECA_SOLEIL_ZMI4104C</includePath>
+                </includePaths>
+				
+				<defines>
+				  <define>PROJECT_NAME=${project.name}</define>
+				  <define>PROJECT_VERSION=${project.version}</define>
+				  <define>ECA_ZMI4104C_VERSION=${ECA_ZMI4104C.version}</define>
+				  <define>SIS1100_VERSION=${SIS1100.version}</define>
+				</defines>
+
+            </cpp>
+            <linker>
+                <libs>
+                    <lib>
+                        <name>eca_soleil_zmi4104_lib</name>
+                        <type>shared</type>
+                        <directory>C:\Users\Public\DeviceServers</directory>
+                    </lib>
+                    <lib>
+                        <name>sis1100w</name>
+                        <type>shared</type>
+                        <directory>C:\Users\Public\DeviceServers</directory>
+                    </lib>
+                </libs>
+            </linker>
+        </configuration>
+      </plugin>
+	  <plugin>
+			<groupId>fr.soleil.maven.plugins</groupId>
+			<artifactId>maven-check-plugin</artifactId>
+			<configuration>
+				<enable>false</enable>
+			</configuration>
+		</plugin>
+    </plugins>
+  </build>
+
+  <dependencies>  
+        <dependency>
+            <groupId>fr.soleil.lib</groupId>
+            <artifactId>YAT4Tango-${aol}-${library}-${mode}</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>fr.soleil.lib</groupId>
+            <artifactId>YAT-${aol}-${library}-${mode}</artifactId>
+        </dependency>
+<!--     <dependency>
+      <groupId>fr.soleil.lib</groupId>
+      <artifactId>YAT4Tango-${aol}-${library}-${mode}</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>com.taylor-hobson</groupId>
+        <artifactId>LuphoSDK-${aol}-shared-${mode}</artifactId>
+        <version>${LuphoSDK.version}</version>
+    </dependency> -->
+  </dependencies>
+
+	<scm>
+		<connection>${scm.connection.cvs.soleil}:DeviceServer/Specific/BeamLine/Nanoprobe/LuphoSmart</connection>
+		<developerConnection>${scm.developerConnection.cvs.soleil}:DeviceServer/Specific/BeamLine/Nanoprobe/LuphoSmart</developerConnection>
+		<url>${scm.url.cvs.soleil}/DeviceServer/Specific/BeamLine/Nanoprobe/LuphoSmart</url>
+	</scm>
+
+  <developers>
+    <developer>
+      <id>langlois</id>
+      <name>langlois</name>
+      <url>http://controle/</url>
+      <organization>Synchrotron Soleil</organization>
+      <organizationUrl>http://www.synchrotron-soleil.fr</organizationUrl>
+      <roles>
+        <role>manager</role>
+      </roles>
+      <timezone>1</timezone>
+    </developer>
+  </developers>
+  
+</project>

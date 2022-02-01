@@ -1,0 +1,90 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<title> ZygoZMI4104C Tango Class Commands </title>
+</head>
+<body text="Black" bgcolor="White" link="Blue" vlink="Purple" alink="Red">
+<br><br><br><br>
+<Table Border=2 Cellpadding=3 CELLSPACING=0>
+	<tr bgcolor="#CCCCFF" class="TableHeadingColor">
+	<td colspan=5> <font size=+1> <center><b> ZygoZMI4104C Class Commands </b></font></center></td>
+	<tr bgcolor="#CCCCFF" class="TableHeadingColor">
+		<td> <center><b> Name </b></center> </td>
+		<td> <center><b> Input type </b></center> </td>
+		<td> <center><b> Output type </b></center> </td>
+		<td> <center><b> Level </b></center> </td>
+		<td> <center><b> Description </b></center> </td>
+	</tr>
+	<tr>
+		<td> <a href="CmdState.html"> State </a> </td>
+		<td> DEV_VOID </td>
+		<td> DEV_STATE </td>
+		<td> OPERATOR </td>
+		<td> This command gets the device state (stored in its device_state data member) and returns it to the caller. </td>
+	</tr>
+	<tr>
+		<td> <a href="CmdStatus.html"> Status </a> </td>
+		<td> DEV_VOID </td>
+		<td> CONST_DEV_STRING </td>
+		<td> OPERATOR </td>
+		<td> This command gets the device status (stored in its device_status data member) and returns it to the caller. </td>
+	</tr>
+	<tr>
+		<td> <a href="CmdReadPosition.html"> ReadPosition </a> </td>
+		<td> DEV_USHORT </td>
+		<td> DEV_DOUBLE </td>
+		<td> OPERATOR </td>
+		<td> read the value of position on a specific axis </td>
+	</tr>
+	<tr>
+		<td> <a href="CmdReadVelocity.html"> ReadVelocity </a> </td>
+		<td> DEV_USHORT </td>
+		<td> DEV_DOUBLE </td>
+		<td> OPERATOR </td>
+		<td> read the velocity on a specific axis </td>
+	</tr>
+	<tr>
+		<td> <a href="CmdReadOpticalPower.html"> ReadOpticalPower </a> </td>
+		<td> DEV_USHORT </td>
+		<td> DEV_DOUBLE </td>
+		<td> OPERATOR </td>
+		<td> read the optical power on a specifc axis </td>
+	</tr>
+	<tr>
+		<td> <a href="CmdResetAxis.html"> ResetAxis </a> </td>
+		<td> DEV_USHORT </td>
+		<td> DEV_VOID </td>
+		<td> OPERATOR </td>
+		<td> reset a specific axis </td>
+	</tr>
+	<tr>
+		<td> <a href="CmdInitializeZMISystem.html"> InitializeZMISystem </a> </td>
+		<td> DEV_VOID </td>
+		<td> DEV_VOID </td>
+		<td> OPERATOR </td>
+		<td> reinitialize the overall measurement system </td>
+	</tr>
+	<tr>
+		<td> <a href="CmdEnableCyclicErrorCorrection.html"> EnableCyclicErrorCorrection </a> </td>
+		<td> DEV_VOID </td>
+		<td> DEV_VOID </td>
+		<td> OPERATOR </td>
+		<td> enable automatic cyclic error correction on all measurement axis </td>
+	</tr>
+	<tr>
+		<td> <a href="CmdDisableCyclicErrorCorrection.html"> DisableCyclicErrorCorrection </a> </td>
+		<td> DEV_VOID </td>
+		<td> DEV_VOID </td>
+		<td> OPERATOR </td>
+		<td> disable automatic cyclic error correction on all measurement axis </td>
+	</tr>
+	<tr>
+		<td> <a href="CmdStartContinuousScan.html"> StartContinuousScan </a> </td>
+		<td> DEV_BOOLEAN </td>
+		<td> DEV_VOID </td>
+		<td> OPERATOR </td>
+		<td> start the continuous scan on axis selected by continuousScanAxisTab or by continuousScanAxisNbr. the command also use continuousScanIntegrationTime, continuousScanFrequency attribute. </td>
+	</tr>
+</table>
+</body>
+</html>

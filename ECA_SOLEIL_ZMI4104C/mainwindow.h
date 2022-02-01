@@ -70,7 +70,11 @@ private:
     bool cecHarwareOn;
     CEratios* ceRatios;
     unsigned int currentcecAxis;
+    bool speedModeOn;
+    bool speedAxisSelect[4];
 signals:
+    void fifoModeSignal(bool index);
+    void stopContinuousScanSignal();
     void startGraph();
     void updateSettingsRequest(int a, int b, double* val);
     void closeFlyscanFormRequest();
@@ -142,6 +146,8 @@ private slots:
     void initBoards();
     void on_leftBlockUnits_currentIndexChanged(int index);
     void on_rightBlockUnits_currentIndexChanged(int index);
+    void speedUpdateLeftBlockValue();
+    void speedSelectLeftBlockValue(int index);
     void updateLeftBlockValue();
     void selectLeftBlockValue(int index);
     void updateRightBlockValue();
@@ -157,7 +163,8 @@ private slots:
     void on_comboBox_4_currentIndexChanged(int index);
     void on_modifyBaseAddressRequest_received(unsigned int add);
     void on_comboBox_currentIndexChanged(int index);
-
+    void on_stopContinuousScanSignal_received();
+    void stopContinuousScanThread();
     void on_radioButton_clicked();
 
     void on_ceUnits_currentIndexChanged(int index);
@@ -173,6 +180,16 @@ private slots:
     void on_cecAxis4_clicked();
 
     void on_ceDisplayAxis_currentIndexChanged(int index);
+
+    void on_checkBox_clicked(bool checked);
+
+    void on_enableAxis1_clicked(bool checked);
+
+    void on_enableAxis2_clicked(bool checked);
+
+    void on_enableAxis3_clicked(bool checked);
+
+    void on_enableAxis4_clicked(bool checked);
 
 private:
     Ui::MainWindow *ui;

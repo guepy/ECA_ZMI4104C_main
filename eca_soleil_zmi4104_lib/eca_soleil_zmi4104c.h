@@ -26,7 +26,6 @@ extern "C" {
 #include "sis3302.h"
 #include "sis3100.h"
 #include "sis3100_vme_calls.h"
-//#include "vmeInterruptConst.h"
 
 
 #define KPMIN	-7
@@ -65,9 +64,9 @@ extern "C" {
 #define NON_FATAL							0
 #define EXIT_FAILLURE						1
 #define INFO_PURPOSE						2
-#define SAMP_FREQ_MIN						0.000305	// 1/(65536*005) in Mhz
-#define SAMP_FREQ_MIN_DIV_2					0.000305/2	//in Mhz. min ferq with divide by 2 enable in control register 16
-#define SAMP_FREQ_MAX						20			// 1/(005) in Mhz
+#define SAMP_FREQ_MIN						305	// 1/(65536*005) in Hz
+#define SAMP_FREQ_MIN_DIV_2					305/2	//in Mhz. min freq with divide by 2 enable in control register 16
+#define SAMP_FREQ_MAX						20000000			// 1/(005) in Hz
 #define DESCRIPTOR_1_TEST
 #define DESCRIPTOR_2_TEST
 #define DESCRIPTOR_3_TEST
@@ -104,7 +103,7 @@ extern "C" {
 	}CECoeffBoundaries;
 	typedef struct _fifoParam {
 		double acqTime; // ACQUISITION TIME in ms
-		double freq;	// sample frequency in Hz
+		unsigned int freq;	// sample frequency in Hz
 		uint32_t nbrPts;	// number of points to acquire
 	}fifoParam;
 	typedef struct _CEratios {
@@ -158,6 +157,7 @@ extern "C" {
 	static char ZYGO_BOARD_TYPE[50];
 	static bool currentSampleSCLK = 0;
 	static bool currentResetSCLK = 0;
+	static bool curPrecision = 0;
 	static double currentSamplingFrequency = 0;
 	static uint8_t tabLen = sizeof(ZYGO_BOARD_TYPE) / sizeof(ZYGO_BOARD_TYPE[0]);
 	/**/
@@ -182,162 +182,198 @@ extern "C" {
 	static const double	SSIScale = 0.019073486328125;           //Converts to mV as default	
 	static int return_code = 0;
 	static unsigned int curInterferoConfig=0;
+	static bool cecState = 0;
 	static FILE* fdLog;
 	static SYSTEMTIME  lt;
 	static SIS1100_Device_Struct* dev = new SIS1100_Device_Struct;
 
-	ECASOLEILZMI4104CLIB_API int disableCECcompensation( unsigned char axis);
-	ECASOLEILZMI4104CLIB_API int readCEerrorStatReg( unsigned char axis, uint32_t* CEstatReg);
-	ECASOLEILZMI4104CLIB_API int getLEDsStatus( bool* ledsStatus);
-	ECASOLEILZMI4104CLIB_API int getLEDsErrorStatus( bool* ledsErrorStatus);
-	ECASOLEILZMI4104CLIB_API void modifyBaseAddress(uint32_t baseAddressAxis3);
-	ECASOLEILZMI4104CLIB_API void CreateEvents();
-	ECASOLEILZMI4104CLIB_API int  CreateThreads( );
-	ECASOLEILZMI4104CLIB_API void CloseThreads(void);
-	ECASOLEILZMI4104CLIB_API int convertUSFloat2Double(uint16_t, double*);
-	ECASOLEILZMI4104CLIB_API int calculateCEratio(  unsigned char, CEratios*, CEratioUnits);
-	ECASOLEILZMI4104CLIB_API int configureCEChardware(  uint8_t, uint16_t, uint16_t);
-	ECASOLEILZMI4104CLIB_API int readCEerrorStatReg( unsigned char axis, uint32_t* CEstatReg);
-	ECASOLEILZMI4104CLIB_API int getAproximateCEratio(  unsigned char, CEratios*, CEratioUnits);
-	ECASOLEILZMI4104CLIB_API int Read_Write(const char*, unsigned int, unsigned int*, unsigned short);
-	ECASOLEILZMI4104CLIB_API int FATAL(const char* fmt, ...);
-	ECASOLEILZMI4104CLIB_API int WARN(const char* fmt, ...);
-	ECASOLEILZMI4104CLIB_API int INFO(const char* fmt, ...);
-	ECASOLEILZMI4104CLIB_API int ReadVMEErrs(  unsigned char);
-	ECASOLEILZMI4104CLIB_API int initAxis(  BIAS_MODE);
-	ECASOLEILZMI4104CLIB_API int getGainControlAGC(unsigned char axis, bool* agcState);
-	ECASOLEILZMI4104CLIB_API int getGainMinControl(unsigned char axis, bool* agcState);
-	ECASOLEILZMI4104CLIB_API int getGainMaxControl(unsigned char axis, bool* agcState);
-	ECASOLEILZMI4104CLIB_API int initSISboards( );
-	ECASOLEILZMI4104CLIB_API int initZMIboards( );
+	ECASOLEILZMI4104CLIB_API int initAxis(BIAS_MODE);
+	ECASOLEILZMI4104CLIB_API int initSisBoards();
+	ECASOLEILZMI4104CLIB_API int initZmiBoards();
+	ECASOLEILZMI4104CLIB_API int sis3301wInit(uint32_t, uint32_t, uint32_t);
+	ECASOLEILZMI4104CLIB_API uint32_t* allocateMemSpace(uint32_t);
+	ECASOLEILZMI4104CLIB_API int vmeSysReset();
+	ECASOLEILZMI4104CLIB_API int boardControlMode(unsigned char, unsigned int);
+	ECASOLEILZMI4104CLIB_API int biasControlMode(unsigned char, unsigned int);
+	ECASOLEILZMI4104CLIB_API int startBiasCalculation(unsigned char);
+	ECASOLEILZMI4104CLIB_API int setTimeDelayBetweenResAndCompleteBit(unsigned char, unsigned char);
+	ECASOLEILZMI4104CLIB_API int resetAxis(unsigned char);
+	ECASOLEILZMI4104CLIB_API int waitResetComplete(unsigned char);
+	ECASOLEILZMI4104CLIB_API int enablePreset(unsigned char axis);
+
+	ECASOLEILZMI4104CLIB_API int setPrecision(bool prec);
+	ECASOLEILZMI4104CLIB_API bool getPrecision();
+
+	ECASOLEILZMI4104CLIB_API int enableSinglePassInterferometer(void);
+	ECASOLEILZMI4104CLIB_API int enableDoublePassInterferometer(void);
+
+	ECASOLEILZMI4104CLIB_API const char* getZygoFactoryProp();
+	ECASOLEILZMI4104CLIB_API const char* getSisFactoryProp();
 	ECASOLEILZMI4104CLIB_API uint32_t getCurrentInterType();
-	ECASOLEILZMI4104CLIB_API uint32_t getBaseAddress();
-	ECASOLEILZMI4104CLIB_API bool getSampleSCLK();
-	ECASOLEILZMI4104CLIB_API bool getResetSCLK();
-	ECASOLEILZMI4104CLIB_API double getSampFreq();
-	ECASOLEILZMI4104CLIB_API int ReadSamplePosition37(  unsigned char, double*);
-	ECASOLEILZMI4104CLIB_API int ReadSamplePosition32(  unsigned char, double*);
-	ECASOLEILZMI4104CLIB_API int ReadSamplePosition37_ForAllAxis(  double*);
-	ECASOLEILZMI4104CLIB_API int ReadSamplePosition32_ForAllAxis(  double*);
-	ECASOLEILZMI4104CLIB_API int ReadPosition37(  unsigned char, double*);
-	ECASOLEILZMI4104CLIB_API int ReadPosition32(  unsigned char, double*);
-	ECASOLEILZMI4104CLIB_API int ReadFIFOPosition(  unsigned char, uint32_t* position);
-	ECASOLEILZMI4104CLIB_API int ReadVelocity32(  unsigned char, double*);
-	ECASOLEILZMI4104CLIB_API int ReadPosition37_ForAllAxis(  double*);
-	ECASOLEILZMI4104CLIB_API int ReadPosition32_ForAllAxis(  double*);
-	ECASOLEILZMI4104CLIB_API int ReadVelocity32_ForAllAxis(  double*);
-	ECASOLEILZMI4104CLIB_API int ReadTime32(  unsigned char, double*);
-	ECASOLEILZMI4104CLIB_API int ReadTime32_ForAllAxis(  double*);
-	ECASOLEILZMI4104CLIB_API int ReadAllTime32(  double*);
-	ECASOLEILZMI4104CLIB_API int IsVMEPos32Overflow( unsigned char axis);
-	ECASOLEILZMI4104CLIB_API int ReadOpticalPowerUsingSSIav(  double*);
-	ECASOLEILZMI4104CLIB_API int ReadSSIav( double* ssiPtr);
-	ECASOLEILZMI4104CLIB_API int ReadSSICalibrationData(unsigned char axis, double* SSIVals, double* OptPwrVals);
-	ECASOLEILZMI4104CLIB_API int ReadAPDGain(  unsigned char, double*);
-	ECASOLEILZMI4104CLIB_API int EnableAuxRegisters(  unsigned char);
-	ECASOLEILZMI4104CLIB_API int DisableAuxRegisters(  unsigned char);
-	ECASOLEILZMI4104CLIB_API int Disable37bitsSignExtension(  unsigned char);
-	ECASOLEILZMI4104CLIB_API int Sclk_On( );
-	ECASOLEILZMI4104CLIB_API int Sclk_Off( );
-	ECASOLEILZMI4104CLIB_API int SetSampTimerFreq(  unsigned short);
-	ECASOLEILZMI4104CLIB_API int SetHoldSampEnable( );
-	ECASOLEILZMI4104CLIB_API int ResetHoldSampEnable( );
-	ECASOLEILZMI4104CLIB_API int EnableResetFindsVelocity( unsigned char axis);
-	ECASOLEILZMI4104CLIB_API int EnableResetFindsVelocity_ForAllAxis(   );
-	ECASOLEILZMI4104CLIB_API int DisableResetFindsVelocity( unsigned char axis);
-	ECASOLEILZMI4104CLIB_API int DisableResetFindsVelocity_ForAllAxis(   );
-	ECASOLEILZMI4104CLIB_API int enableSampling(  double);
-	ECASOLEILZMI4104CLIB_API int DisableSampleTimer( );
-	ECASOLEILZMI4104CLIB_API int setSamplingFrequency(unsigned int sampleFreq);
-	ECASOLEILZMI4104CLIB_API int VMESysReset( );
-	ECASOLEILZMI4104CLIB_API int startAquisition(  unsigned char);
-	ECASOLEILZMI4104CLIB_API int stopAquisition(  unsigned char);
-	ECASOLEILZMI4104CLIB_API int GetVMEExtSampFlag(  unsigned char);
-	ECASOLEILZMI4104CLIB_API int Disable32bitsOverflow(  unsigned char);
-	ECASOLEILZMI4104CLIB_API int Enable32bitsOverflow(  unsigned char);
-	ECASOLEILZMI4104CLIB_API int Enable37bitsSignExtension(  unsigned char);
-	ECASOLEILZMI4104CLIB_API int EnableSinglePassInterferometer(void);
-	ECASOLEILZMI4104CLIB_API int EnableDoublePassInterferometer(void);
-	ECASOLEILZMI4104CLIB_API int ReadAPDGain_ForAllAxis(  double*);
-	ECASOLEILZMI4104CLIB_API int SampleVMEPosition(  unsigned char);
-	ECASOLEILZMI4104CLIB_API int ParseVMEErrorStatus2(  unsigned char, unsigned int*);
-	ECASOLEILZMI4104CLIB_API int ParseVMEPosErrs(  unsigned char, unsigned int*);
-	ECASOLEILZMI4104CLIB_API int ParseVMEErrorStatus1(  unsigned char, unsigned int*);
-	ECASOLEILZMI4104CLIB_API int ParseVMEErrorStatus0(  unsigned char, unsigned int*);
-	ECASOLEILZMI4104CLIB_API int ParseAPDErrCode(  unsigned char, unsigned int*);
-	ECASOLEILZMI4104CLIB_API int BoardControlMode(  unsigned char, unsigned int);
-	ECASOLEILZMI4104CLIB_API int BiasControlMode(  unsigned char, unsigned int);
-	ECASOLEILZMI4104CLIB_API int StartBiasCalculation(  unsigned char);
-	ECASOLEILZMI4104CLIB_API int SetAPDGainL2(  unsigned char, unsigned int);
-	ECASOLEILZMI4104CLIB_API int checkValues(int, int, int);
-	ECASOLEILZMI4104CLIB_API int ClearAllVMEErrs_ForAllAxis( );
+
+	ECASOLEILZMI4104CLIB_API bool getCecState();
+	ECASOLEILZMI4104CLIB_API int disableCecCompensation( unsigned char axis);
+	ECASOLEILZMI4104CLIB_API int configureCecHardware(uint8_t, uint16_t, uint16_t);
+	ECASOLEILZMI4104CLIB_API int readCecoefBoundaries(unsigned char, CECoeffBoundaries*, CECoeffBoundaries*);
+	ECASOLEILZMI4104CLIB_API int readCalcCecoeffs(unsigned char, CECoeffs*);
+	ECASOLEILZMI4104CLIB_API int enableCecCompensation(unsigned char);
 	ECASOLEILZMI4104CLIB_API int setSampleSourceClock(unsigned char axis, bool SCLK);
 	ECASOLEILZMI4104CLIB_API int setResetSourceClock(unsigned char axis, bool SCLK);
 	ECASOLEILZMI4104CLIB_API int getSampleSourceClock(unsigned char axis, bool* SCLK);
 	ECASOLEILZMI4104CLIB_API int getResetSourceClock(unsigned char axis, bool* SCLK);
+	ECASOLEILZMI4104CLIB_API int calculateCeratio(unsigned char axis, CEratios* ceRatios, CEratioUnits units);
+	ECASOLEILZMI4104CLIB_API int readCecErrorStatReg( unsigned char axis, uint32_t* CEstatReg);
+	ECASOLEILZMI4104CLIB_API int getAproximateCeratio(unsigned char, CEratios*, CEratioUnits);
+	ECASOLEILZMI4104CLIB_API int waitCeinit2Complete(unsigned char);
+	ECASOLEILZMI4104CLIB_API int setCemaxVel(unsigned char, unsigned int);
+	ECASOLEILZMI4104CLIB_API int setCeminVel(unsigned char, unsigned int);
+
+	ECASOLEILZMI4104CLIB_API int getLedsStatus( bool* ledsStatus);
+	ECASOLEILZMI4104CLIB_API int getLedsErrorStatus( bool* ledsErrorStatus);
+
+	ECASOLEILZMI4104CLIB_API void setBaseAddress(uint32_t baseAddressAxis3);
+	ECASOLEILZMI4104CLIB_API uint32_t getBaseAddress();
+
+	ECASOLEILZMI4104CLIB_API void createEvents();
+	ECASOLEILZMI4104CLIB_API int  createThreads( );
+	ECASOLEILZMI4104CLIB_API void closeThreads(void);
+
+	ECASOLEILZMI4104CLIB_API int fatal(const char* fmt, ...);
+	ECASOLEILZMI4104CLIB_API int warn(const char* fmt, ...);
+	ECASOLEILZMI4104CLIB_API int info(const char* fmt, ...);
+
+	ECASOLEILZMI4104CLIB_API int getGainControlAgc(unsigned char axis, bool* agcState);
+	ECASOLEILZMI4104CLIB_API int getGainMinControl(unsigned char axis, bool* agcState);
+	ECASOLEILZMI4104CLIB_API int getGainMaxControl(unsigned char axis, bool* agcState);
+
+	ECASOLEILZMI4104CLIB_API bool getSampleSclk();
+	ECASOLEILZMI4104CLIB_API bool getResetSclk();
+
+	ECASOLEILZMI4104CLIB_API int readWrite(const char*, unsigned int, unsigned int*, unsigned short);
+	ECASOLEILZMI4104CLIB_API int eepromRead(unsigned short, unsigned int*, unsigned short);
+
+	ECASOLEILZMI4104CLIB_API int readSamplePosition32(unsigned char, double*);
+	ECASOLEILZMI4104CLIB_API int readSamplePosition37(unsigned char axis, double* position);
+	ECASOLEILZMI4104CLIB_API int readPosition(unsigned char, double*);
+	ECASOLEILZMI4104CLIB_API int readPositionForAllAxis(double* position);
+	ECASOLEILZMI4104CLIB_API int readFifoPosition(unsigned char, uint32_t* position);
+	ECASOLEILZMI4104CLIB_API int sampleVmePosition(unsigned char);
+	ECASOLEILZMI4104CLIB_API int setPresetPosition32(unsigned char axis, unsigned int presetPos32);
+	ECASOLEILZMI4104CLIB_API int setPositionOffset32(unsigned char, unsigned int);
+	ECASOLEILZMI4104CLIB_API int setPositionOffset37(unsigned char, double offsetPos);
+	ECASOLEILZMI4104CLIB_API int setPresetPosition37(unsigned char, double presetPos);
+	ECASOLEILZMI4104CLIB_API int isVmePos32Overflow(unsigned char axis);
+	ECASOLEILZMI4104CLIB_API int setHoldSampEnable();
+
+	ECASOLEILZMI4104CLIB_API int enable32BitsOverflow(unsigned char);
+	ECASOLEILZMI4104CLIB_API int disable32BitsOverflow(unsigned char);
+
+	ECASOLEILZMI4104CLIB_API int enable37BitsSignExtension(unsigned char);
+	ECASOLEILZMI4104CLIB_API int disable37bitsSignExtension(unsigned char);
+
+	ECASOLEILZMI4104CLIB_API int readTime(unsigned char, double*);
+	ECASOLEILZMI4104CLIB_API int readTimeForAllAxis(double*);
+
+	ECASOLEILZMI4104CLIB_API int readVelocity(unsigned char, double*);
+	ECASOLEILZMI4104CLIB_API int readVelocityForAllAxis(double*);
+
+	ECASOLEILZMI4104CLIB_API int readOpticalPowerUsingSsiAv(double*);
+	ECASOLEILZMI4104CLIB_API int readSsiAv(double* ssiPtr);
+	ECASOLEILZMI4104CLIB_API int readSsiCalibrationData(unsigned char axis, double* SSIVals, double* OptPwrVals);
+
+	ECASOLEILZMI4104CLIB_API int readApdGain(unsigned char, double*);
+	ECASOLEILZMI4104CLIB_API int readApdGainForAllAxis(double*);
+
+	ECASOLEILZMI4104CLIB_API int setSsiSquelch(unsigned short axis, uint32_t squelchValue);
+	ECASOLEILZMI4104CLIB_API int getSsiSquelch(unsigned short axis, uint32_t* squelchValue);
+
+	ECASOLEILZMI4104CLIB_API int readGseData(unsigned int axis, double* gseTargetGain, double* gseActualGain, double* gseSigRMS, double* gseMeasDC);
+	ECASOLEILZMI4104CLIB_API int readGseDataForAllAxis(double* gseTargetGain, double* gseActualGain, double* gseSigRMS, double* gseMeasDC);
+
+	ECASOLEILZMI4104CLIB_API int setApdBiasDac(unsigned char axis, unsigned int APDBiasDac);
+	ECASOLEILZMI4104CLIB_API int getApdBiasDac(unsigned char axis, unsigned int* APDBiasDac);
+
+	ECASOLEILZMI4104CLIB_API int setApdL2Gain(unsigned char, unsigned int);
+	ECASOLEILZMI4104CLIB_API int getApdL2Gain(unsigned char axis, unsigned int* APDGainL2);
+
+	ECASOLEILZMI4104CLIB_API int setApdL2OptPwr(unsigned char axis, unsigned int APDOptPwrL2);
+	ECASOLEILZMI4104CLIB_API int getApdL2OptPwr(unsigned char axis, unsigned int* APDOptPwrL2);
+
+	ECASOLEILZMI4104CLIB_API int setApdL2SigRms(unsigned char axis, unsigned int APDSigRMSL2);
+	ECASOLEILZMI4104CLIB_API int getApdL2SigRms(unsigned char axis, unsigned int* APDSigRMSL2);
+
+	ECASOLEILZMI4104CLIB_API int enableAuxRegisters(unsigned char);
+	ECASOLEILZMI4104CLIB_API int disableAuxRegisters(unsigned char);
+
+	ECASOLEILZMI4104CLIB_API int sclkOn();
+	ECASOLEILZMI4104CLIB_API int sclkOff();
+	ECASOLEILZMI4104CLIB_API unsigned int getSampFreq();
+	ECASOLEILZMI4104CLIB_API int setSamplingFrequency(unsigned int sampleFreq);
 	ECASOLEILZMI4104CLIB_API int getSamplingFrequency(double* sampFreq);
-	ECASOLEILZMI4104CLIB_API int ReadScaledSSIav( double* ssiPtr);
-	ECASOLEILZMI4104CLIB_API BOOL isRAMbusy( );
-	ECASOLEILZMI4104CLIB_API int SetAPDSigRMSL2( unsigned char, unsigned int);
-	ECASOLEILZMI4104CLIB_API int SetAPDOptPwrL2(  unsigned char, unsigned int);
-	ECASOLEILZMI4104CLIB_API int ResetAxis(  unsigned char);
-	ECASOLEILZMI4104CLIB_API int WaitResetComplete(  unsigned char);
-	ECASOLEILZMI4104CLIB_API int SetPresetPosition32( unsigned char axis, unsigned int presetPos32);
-	ECASOLEILZMI4104CLIB_API int SetPositionOffset32(  unsigned char, unsigned int);
-	ECASOLEILZMI4104CLIB_API int EnableCECcompensation(  unsigned char);
-	ECASOLEILZMI4104CLIB_API int SetPositionOffset37(  unsigned char, double offsetPos);
-	ECASOLEILZMI4104CLIB_API int SetPresetPosition37(  unsigned char, double presetPos);
-	ECASOLEILZMI4104CLIB_API int EnableVMEInterrupt_bit(  unsigned char, unsigned short);
-	ECASOLEILZMI4104CLIB_API int DisableVMEInterrupt_bit(  unsigned char, unsigned short);
-	ECASOLEILZMI4104CLIB_API int EnableVMEGlobalInterrupt(  unsigned char);
-	ECASOLEILZMI4104CLIB_API int DisableGlobalInterrupt(  unsigned char);
-	ECASOLEILZMI4104CLIB_API int DisableAllVMEInterrupts(  unsigned char);
-	ECASOLEILZMI4104CLIB_API int SetKpAndKvCoeff(  unsigned char, int, int);
-	ECASOLEILZMI4104CLIB_API int getKpAndKvCoeff(unsigned char axis, int* coeff);
-	ECASOLEILZMI4104CLIB_API int getAPDGainL2(unsigned char axis, unsigned int* APDGainL2);
-	ECASOLEILZMI4104CLIB_API int getAPDBiasDAC(unsigned char axis, unsigned int* APDBiasDac);
-	ECASOLEILZMI4104CLIB_API int getAPDOptPwrL2(unsigned char axis, unsigned int* APDOptPwrL2);
-	ECASOLEILZMI4104CLIB_API int getAPDSigRMSL2(unsigned char axis, unsigned int* APDSigRMSL2);
-	ECASOLEILZMI4104CLIB_API int ReadAPDCtrlSoftErrs(  unsigned char);
-	ECASOLEILZMI4104CLIB_API int ReadAllErrs(  unsigned char);
-	ECASOLEILZMI4104CLIB_API int SetTimeDelayBetweenResAndCompleteBit(  unsigned char, unsigned char);
-	ECASOLEILZMI4104CLIB_API int EnableAllVMEInterrupts(  unsigned char);
-	ECASOLEILZMI4104CLIB_API int EnableVMEGlobalInterrupt(  unsigned char);
-	ECASOLEILZMI4104CLIB_API int setVMEIntVector(  unsigned char, unsigned char);
-	ECASOLEILZMI4104CLIB_API int setVMEIntLevel(  unsigned char, unsigned char);
-	ECASOLEILZMI4104CLIB_API int sis3301w_Init(  uint32_t, uint32_t, uint32_t);
-	ECASOLEILZMI4104CLIB_API int AckForSis3100VME_Irq(  uint32_t);
-	ECASOLEILZMI4104CLIB_API int getFlyscanData(  uint32_t*, uint32_t*, uint32_t*, uint32_t size);
-	ECASOLEILZMI4104CLIB_API uint32_t* allocateMemSpace(uint32_t);
-	ECASOLEILZMI4104CLIB_API int processRAMData(uint32_t, uint32_t*, uint32_t*, uint32_t size, char* folderName, double* meanVal, double* stdDevVal);
+	ECASOLEILZMI4104CLIB_API int enableSampling(unsigned int);
+	ECASOLEILZMI4104CLIB_API int disableSampleTimer();
+	ECASOLEILZMI4104CLIB_API int setSampTimerFreq(unsigned short);
+	ECASOLEILZMI4104CLIB_API int getVmeExtSampFlag(unsigned char);
+
+	ECASOLEILZMI4104CLIB_API int resetHoldSampEnable();
+	ECASOLEILZMI4104CLIB_API int enableResetFindsVelocity(unsigned char axis);
+	ECASOLEILZMI4104CLIB_API int enableResetFindsVelocityForAllAxis();
+	ECASOLEILZMI4104CLIB_API int disableResetFindsVelocity(unsigned char axis);
+	ECASOLEILZMI4104CLIB_API int disableResetFindsVelocityForAllAxis();
+
+	ECASOLEILZMI4104CLIB_API int parseVmeErrorStatus2(unsigned char, unsigned int*);
+	ECASOLEILZMI4104CLIB_API int parseVmePosErrs(unsigned char, unsigned int*);
+	ECASOLEILZMI4104CLIB_API int parseVmeErrorStatus1(unsigned char, unsigned int*);
+	ECASOLEILZMI4104CLIB_API int parseVmeErrorStatus0(unsigned char, unsigned int*);
+	ECASOLEILZMI4104CLIB_API int parseApdErrCode(unsigned char, unsigned int*);
+	ECASOLEILZMI4104CLIB_API int readCecErrorStatReg(unsigned char axis, uint32_t* CEstatReg);
+	ECASOLEILZMI4104CLIB_API int readVmeErrs(unsigned char);
+	ECASOLEILZMI4104CLIB_API int readApdCtrlSoftErrs(unsigned char);
+	ECASOLEILZMI4104CLIB_API int readAllErrs(unsigned char);
+	ECASOLEILZMI4104CLIB_API int checkValues(int, int, int);
+
+	ECASOLEILZMI4104CLIB_API int configureFlyscan(unsigned char, double, uint8_t);
+	ECASOLEILZMI4104CLIB_API int startAquisition(unsigned char);
+	ECASOLEILZMI4104CLIB_API int stopAquisition(unsigned char);
+	ECASOLEILZMI4104CLIB_API int getFlyscanData(uint32_t*, uint32_t*, uint32_t*, uint32_t size);
+	ECASOLEILZMI4104CLIB_API int processRamData(uint32_t, uint32_t*, uint32_t*, uint32_t size, char* folderName, double* meanVal, double* stdDevVal);
+
+	ECASOLEILZMI4104CLIB_API int configureFifoFlyscan(fifoParam* fifoparameters, uint32_t* startAdress, uint8_t* axisTab, uint32_t* sizeOfTab, int32_t* ret_code, bool mode);
+	ECASOLEILZMI4104CLIB_API int fifoFlyscan(fifoParam param, uint32_t* startAddress, uint8_t nbrAxis, int32_t* ret_code, ...);
+	ECASOLEILZMI4104CLIB_API int manualFifoFlyscan(fifoParam param, uint32_t* startAddress, uint8_t nbrAxis, int32_t* ret_code, ...);
 	ECASOLEILZMI4104CLIB_API int processFifoData(uint32_t nbrAxis, uint8_t* axisTab, uint32_t* memPtr, uint32_t nbrOfPts, uint8_t* folderName, double* meanVal, double* stdDevVal);
-	ECASOLEILZMI4104CLIB_API int configureFifoFlyscan(  fifoParam* fifoparameters, uint32_t* startAdress, uint8_t* axisTab, uint32_t* sizeOfTab, int32_t* ret_code);
-	ECASOLEILZMI4104CLIB_API int fifoFlyscan(  fifoParam, uint32_t*, uint8_t, int32_t* ret_code, ...);
-	ECASOLEILZMI4104CLIB_API bool isFifoDavbitSet(  unsigned char);
-	ECASOLEILZMI4104CLIB_API bool isFifoOVFbitSet(  unsigned char);
-	ECASOLEILZMI4104CLIB_API int configureFlyscan(  unsigned char, double, uint8_t);
-	ECASOLEILZMI4104CLIB_API int convertCInt162Complex(uint32_t, complex*);
-	ECASOLEILZMI4104CLIB_API int convertCFloat2Complex(uint32_t, complex*);
-	ECASOLEILZMI4104CLIB_API int setSSISquelch(unsigned short axis, uint32_t squelchValue);
-	ECASOLEILZMI4104CLIB_API int getSSISquelch(unsigned short axis, uint32_t* squelchValue);
-	ECASOLEILZMI4104CLIB_API int waitCEinit2Complete(  unsigned char);
-	ECASOLEILZMI4104CLIB_API int SetCEMaxVel(  unsigned char, unsigned int);
-	ECASOLEILZMI4104CLIB_API int SetCEMinVel(  unsigned char, unsigned int);
-	ECASOLEILZMI4104CLIB_API int readCalcCECoeffs(  unsigned char, CECoeffs*);
-	ECASOLEILZMI4104CLIB_API int setGainControlAGC(unsigned char axis);
-	ECASOLEILZMI4104CLIB_API int resetGainControlAGC(unsigned char axis);
+	ECASOLEILZMI4104CLIB_API bool isFifoDavBitSet(unsigned char);
+	ECASOLEILZMI4104CLIB_API bool isFifoOvfBitSet(unsigned char);
+	ECASOLEILZMI4104CLIB_API int convertCint162Complex(uint32_t, complex*);
+	ECASOLEILZMI4104CLIB_API int convertCfloat2Complex(uint32_t, complex*);
+	ECASOLEILZMI4104CLIB_API bool isRamBusy();
+
+	ECASOLEILZMI4104CLIB_API int setGainControlAgc(unsigned char axis);
+	ECASOLEILZMI4104CLIB_API int resetGainControlAgc(unsigned char axis);
 	ECASOLEILZMI4104CLIB_API int setGainMinControl(unsigned char axis);
 	ECASOLEILZMI4104CLIB_API int resetGainMinControl(unsigned char axis);
 	ECASOLEILZMI4104CLIB_API int setGainMaxControl(unsigned char axis);
 	ECASOLEILZMI4104CLIB_API int resetGainMaxControl(unsigned char axis);
-	ECASOLEILZMI4104CLIB_API int readCECoeffboundaries(  unsigned char, CECoeffBoundaries*, CECoeffBoundaries*);
-	ECASOLEILZMI4104CLIB_API int calculateCEratio( unsigned char axis, CEratios* ceRatios, CEratioUnits units);
-	ECASOLEILZMI4104CLIB_API int EEPROMread(  unsigned short, unsigned int*, unsigned short);
+	ECASOLEILZMI4104CLIB_API int readScaledSsiAv(double* ssiPtr);
+
 	ECASOLEILZMI4104CLIB_API int convertFloat2Double(uint32_t, double*);
-	ECASOLEILZMI4104CLIB_API int SetAPDBiasDAC( unsigned char axis, unsigned int APDBiasDac);
-	ECASOLEILZMI4104CLIB_API int EnableGlitchFilter( unsigned char axis, unsigned short glitchFilterTime);
-	ECASOLEILZMI4104CLIB_API int readGSEData(unsigned int axis, double* gseTargetGain, double* gseActualGain, double* gseSigRMS, double* gseMeasDC);
-	ECASOLEILZMI4104CLIB_API int readGSEData_ForAllAxis(double* gseTargetGain, double* gseActualGain, double* gseSigRMS, double* gseMeasDC);
+	ECASOLEILZMI4104CLIB_API int convertUsfloat2Double(uint16_t, double*);
+
+
+	ECASOLEILZMI4104CLIB_API int enableVmeInterruptBit(  unsigned char, unsigned short);
+	ECASOLEILZMI4104CLIB_API int disableVmeInterruptBit(  unsigned char, unsigned short);
+	ECASOLEILZMI4104CLIB_API int enableVmeGlobalInterrupt(  unsigned char);
+	ECASOLEILZMI4104CLIB_API int disableGlobalInterrupt(  unsigned char);
+	ECASOLEILZMI4104CLIB_API int disableAllVmeInterrupts(  unsigned char);
+	ECASOLEILZMI4104CLIB_API int enableAllVmeInterrupts(unsigned char);
+	ECASOLEILZMI4104CLIB_API int enableVmeGlobalInterrupt(unsigned char);
+	ECASOLEILZMI4104CLIB_API int setVmeIntVector(unsigned char, unsigned char);
+	ECASOLEILZMI4104CLIB_API int setVmeIntLevel(unsigned char, unsigned char);
+	ECASOLEILZMI4104CLIB_API int ackForSis3100VmeIrq(uint32_t);
+
+	ECASOLEILZMI4104CLIB_API int setKpAndKvCoeff(  unsigned char, int, int);
+	ECASOLEILZMI4104CLIB_API int getKpAndKvCoeff(unsigned char axis, int* coeff);
+
 #ifdef __cplusplus
 }
 #endif

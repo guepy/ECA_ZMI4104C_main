@@ -24,7 +24,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_settingsMenu, SIGNAL(triggered(QAction*)), this, SLOT(on_m_settingsMenu_clicked(QAction*)));
 
     //settingsForm=new SettingsForm;
-    flyscanForm=new FlyscanForm;
+    //flyscanForm=new FlyscanForm;
     posOffsetForm=new positionOffsetForm;
     presPosForm = new presetPositionForm;
     dataProc = new dataProcessing;
@@ -50,39 +50,48 @@ MainWindow::MainWindow(QWidget *parent)
     ceVelMin = 96;
     ceVelMax=31457;
     currentcecAxis = 0;
+
     //currentColor.append("background-color: ");
     for(int i=0; i<5;i++){
         ledsColor[i] = 0;
         ledsColorPrev[i] = 0;
     }
-    qDebug()<<"Windows_address 1"<<dataProcessing::base_A24D32_ptr;
-    qDebug()<<"Windows_address 2"<<dataProcessing::base_A24D32_FR_ptr;
-    //*-------------CEC Hardware signals-slots---------------------------------------
+    for(int i=0; i<4;i++){
+        speedAxisSelect[i]=0;
+    }
 
-    //connect(this, &MainWindow::configureCEChardwareRequest, dataProc, &dataProcessing::on_configureCECHardware_recieved);
-    connect(this, &MainWindow::updateCECRatiosRequest, dataProc, &dataProcessing::updateCECRatios);
-    //connect(this, &MainWindow::stopCEChardwareRequest, dataProc, &dataProcessing::on_stopCECHardware_recieved);
-
-    //--------------Data processing signals-slots --------------------------------------
-    //connect(this, &MainWindow::changeBiasModeRequest, dataProc, &dataProcessing::on_changeBiasModeRequest_recieved);
+    speedModeOn=false;
+    ui->enableAxis->setEnabled(false);
+    //qDebug()<<"Windows_address 1"<<dataProcessing::base_A24D32_ptr;
+    //qDebug()<<"Windows_address 2"<<dataProcessing::base_A24D32_FR_ptr;
     connect(this, &MainWindow::resetAxisRequest, dataProc, &dataProcessing::on_resetAxisRequest_recieved);
     connect(dataProc, &dataProcessing::initAxisComplete,this, &MainWindow::on_initAxisComplete_recieved);
-
-    //connect(flyscanForm, &FlyscanForm::ramDataFlyscanRequest,this, &MainWindow::on_ramDataFlyscanRequest_recieved);
-
-    //connect(this, &MainWindow::updateSettingsRequest,dataProc, &dataProcessing::on_updateSettingsRequest_received);
     connect(dataProc, &dataProcessing::initAxisComplete,this, &MainWindow::on_initAxisComplete_recieved);
-    //connect(this, &MainWindow::initSettingsFormRequest, dataProc, &dataProcessing::on_initSettingsFormRequest_received);
+    connect(this, &MainWindow::fifoModeSignal, dataProc, &dataProcessing::on_fifoModeSignal_recieved);
+    //connect(this, &MainWindow::stopContinuousScanSignal, dataProc, &dataProcessing::on_stopContinuousScanSignal_received);
     //*
     gtimer = new QTimer(this);
     connect(gtimer, &QTimer::timeout, this, QOverload<>::of(&MainWindow::refresh_screen));
     //timer->setSingleShot(true);
-    gtimer->setInterval(100);
+    gtimer->setInterval(0);
     startApp =0;
 
     initBoards();
 
 }
+void MainWindow::on_stopContinuousScanSignal_received(){
+    qDebug()<<"OK 1";
+std::thread stopContinuous(&MainWindow::stopContinuousScanThread,this);
+stopContinuous.detach();
+}
+void MainWindow::stopContinuousScanThread(){
+
+    qDebug()<<"OK 2";
+    dataProcessing *dataProc1 = new dataProcessing;
+    dataProc1->on_stopContinuousScanSignal_received();
+}
+
+
 
 MainWindow::~MainWindow()
 {
@@ -112,17 +121,24 @@ MainWindow::~MainWindow()
 void MainWindow::refresh_screen(){
 
 ///*
-    qDebug()<<"timer timeout";
+    //qDebug()<<"timer timeout";
 
     if((dataProcessing::dev_mutex).try_lock()){
-        refreshLEDsStatus();
-        updateLeftBlockValue();
-        //updateRightBlockValue();
-        updateCECRatios();
-        emit updatePositionOnGraphs(scaledPosition);
-        dataProc->getLEDsColor(ledsColor);
-        (dataProcessing::dev_mutex).unlock();
-        startApp=0;
+        if(speedModeOn){
+            speedUpdateLeftBlockValue();
+            (dataProcessing::dev_mutex).unlock();
+        }
+        else{
+
+            refreshLEDsStatus();
+            updateLeftBlockValue();
+            updateRightBlockValue();
+            updateCECRatios();
+            emit updatePositionOnGraphs(scaledPosition);
+            dataProc->getLEDsColor(ledsColor);
+            (dataProcessing::dev_mutex).unlock();
+            startApp=0;
+        }
     }
     else{
         if(startApp==0){
@@ -131,6 +147,11 @@ void MainWindow::refresh_screen(){
             startApp=1;
         }
         else{
+            startApp++;
+            if(startApp==200){
+                strcpy_s(str,"");
+                startApp=1;
+            }
             strcat_s(str,".");
             ui->textBrowser_2->append(str);
         }
@@ -151,6 +172,68 @@ void MainWindow::updateLeftBlockValue(){
     ui->displayPositionAxis4->setAlignment(Qt::AlignCenter);
 }
 
+void MainWindow::speedUpdateLeftBlockValue(){
+
+    speedSelectLeftBlockValue(leftBlockIndex);
+    /*
+    if (speedAxisSelect[0]){
+    ui->displayPositionAxis1->setText(QString::number(scaledValueLeftBlock[0]));
+    ui->displayPositionAxis1->setAlignment(Qt::AlignCenter);
+    }
+    if (speedAxisSelect[1]){
+    ui->displayPositionAxis2->setText(QString::number(scaledValueLeftBlock[1]));
+    ui->displayPositionAxis2->setAlignment(Qt::AlignCenter);
+    }
+    if (speedAxisSelect[2]){
+    ui->displayPositionAxis3->setText(QString::number(scaledValueLeftBlock[2]));
+    ui->displayPositionAxis3->setAlignment(Qt::AlignCenter);
+    }
+    if (speedAxisSelect[3]){
+    //ui->displayPositionAxis3->setStyleSheet("text-align: center;");
+    ui->displayPositionAxis4->setText(QString::number(scaledValueLeftBlock[3]));
+    ui->displayPositionAxis4->setAlignment(Qt::AlignCenter);
+    }
+    */
+}
+
+void MainWindow::speedSelectLeftBlockValue(int index){
+
+    //qDebug()<<"updateLeftBlockValue";
+    int i=2;
+    switch (index) {
+        case 0:
+            //for(int i=0; i<4; i++){
+                if (speedAxisSelect[i]){
+                    dataProc->updatePVT(0,position, i+1);
+                    scaledPosition[i] = (*position)*displayUnitsCoeffs[currentLeftBlockUnits];
+                    scaledValueLeftBlock[i] = scaledPosition[i];
+                }
+            //}
+        break;
+        case 1:
+            //for(int i=0; i<4; i++){
+                if (speedAxisSelect[i]){
+                    dataProc->updatePVT(0,position, i+1);
+                    dataProc->updatePVT(1,velocity, i+1);
+                    scaledPosition[i] = (*position)*displayUnitsCoeffs[currentLeftBlockUnits];
+                    scaledValueLeftBlock[i] = velocity[i]*displayUnitsCoeffs[currentLeftBlockUnits];
+                }
+            //}
+            break;
+        case 2:
+            //for(int i=0; i<4; i++){
+                if (speedAxisSelect[i]){
+                    dataProc->updatePVT(0,position, i+1);
+                    dataProc->updatePVT(2,mTime, i+1);
+                    scaledPosition[i] = (*position)*displayUnitsCoeffs[currentLeftBlockUnits];
+                    scaledValueLeftBlock[i] = mTime[i]*displayUnitsCoeffs[currentLeftBlockUnits];
+                }
+            //}
+            break;
+        default:
+            break;
+    }
+}
 void MainWindow::updateRightBlockValue(){
 
     selectRightBlockValue(rightBlockIndex);
@@ -167,7 +250,7 @@ void MainWindow::updateRightBlockValue(){
 
 void MainWindow::refreshLEDsStatus(){
 
-    qDebug()<<"refreshLEDsStatus\n";
+    //qDebug()<<"refreshLEDsStatus\n";
     for(int i=0; i<5;i++){
         if(ledsColor[i] != ledsColorPrev[i]){
             ledsColorPrev[i]= ledsColor[i];
@@ -197,7 +280,7 @@ void MainWindow::onBoardsInitializationComplete(){
     ui->textBrowser_2->append("initialization complete");
 
     //ReadSamplePosition32(dev,3,position)";
-    qDebug()<<"onBoardsInitializationComplete\n";
+    //qDebug()<<"onBoardsInitializationComplete\n";
     ui->textBrowser->setText("CONNECTED");
     ui->textBrowser->setStyleSheet("background-color: rgb(37, 255, 81); "
                                     "font: 75 14pt \"MS Shell Dlg 2\";"
@@ -229,6 +312,8 @@ void MainWindow::on_pushButton_7_clicked()
     ui->textBrowser->clear();
     ui->textBrowser_2->clear();
     initBoards();
+
+    //dataProc->vmeSystemReset();
     //*/
 
 }
@@ -317,13 +402,15 @@ void MainWindow::openFlyscanForm(){
     connect(this, &MainWindow::closeFlyscanFormRequest, flyscanForm, &FlyscanForm::closeForm);
     connect(flyscanForm, &FlyscanForm::ramDataFlyscanRequest,this, &MainWindow::on_ramDataFlyscanRequest_recieved);
     connect(flyscanForm, &FlyscanForm::fifoFlyscanRequest,this, &MainWindow::on_fifoFlyscanRequest_recieved);
+    connect(flyscanForm, &FlyscanForm::fifoModeSignal,this, &MainWindow::fifoModeSignal);
+    connect(flyscanForm, &FlyscanForm::stopContinuousScanSignal,this, &MainWindow::on_stopContinuousScanSignal_received);
     flyscanForm->show();
     fsForm_int=1;
 }
 
 void MainWindow::closeFlyscanForm(){
     fsForm_int=0;
-    qDebug()<<"flyscanform closed";
+    //qDebug()<<"flyscanform closed";
 }
 
 void MainWindow::reopenFlyscanForm(){
@@ -364,7 +451,7 @@ void MainWindow::openSettingsForm(){
 }
 void MainWindow::closeSettingsForm(){
     sfForm_int=0;
-    qDebug()<<"Settingsform closed";
+    //qDebug()<<"Settingsform closed";
 }
 void MainWindow::reopenSettingsForm(){
     closeSettingsForm();
@@ -393,7 +480,7 @@ void MainWindow::openPositionOffsetForm(){
 }
 void MainWindow::closePositionOffsetForm(){
     posOffForm_int=0;
-    qDebug()<<"PositionOffset form closed";
+    //qDebug()<<"PositionOffset form closed";
 }
 void MainWindow::reopenPositionOffsetForm(){
     closePositionOffsetForm();
@@ -429,7 +516,7 @@ void MainWindow::openCustomplotForm(){
 }
 void MainWindow::closeCustomplotForm(){
     customplotForm_int=0;
-    qDebug()<<"Customplot form closed";
+    //qDebug()<<"Customplot form closed";
 }
 void MainWindow::reopenCustomplotForm(){
     closeCustomplotForm();
@@ -459,7 +546,7 @@ void MainWindow::openPresetPositionForm(){
 }
 void MainWindow::closePresetPositionForm(){
     presPosForm_int=0;
-    qDebug()<<"Customplot form closed";
+    //qDebug()<<"Customplot form closed";
 }
 void MainWindow::reopenPresetPositionForm(){
     closePresetPositionForm();
@@ -514,7 +601,7 @@ void MainWindow::on_comboBox_3_currentIndexChanged(int index)
     connect(initWorker, &dataProcessing::initAxisComplete, initAxisThread, &QThread::quit);
     connect(initAxisThread, &QThread::finished, initWorker,  &dataProcessing::deleteLater);
     initAxisThread->start();
-    //qDebug()<<"6";
+    ////qDebug()<<"6";
 
 }
 
@@ -559,7 +646,7 @@ void MainWindow::on_comboBox_4_currentIndexChanged(int index)
 //---------------Select the value to print in the left block-----------------------------------
 void MainWindow::selectLeftBlockValue(int index){
 
-    qDebug()<<"updateLeftBlockValue";
+    //qDebug()<<"updateLeftBlockValue";
     switch (index) {
         case 0:
             dataProc->updatePVT(0,position);
@@ -592,7 +679,7 @@ void MainWindow::selectLeftBlockValue(int index){
 void MainWindow::on_comboBox_currentIndexChanged(int index)
 {
     rightBlockIndex = index;
-    qDebug()<<"comboBox_currentIndexChanged";
+    //qDebug()<<"comboBox_currentIndexChanged";
     switch (index) {
     case 0:
         ui->rightBlockUnits->setItemText(0,QString::fromStdString("µW"));
@@ -619,12 +706,12 @@ void MainWindow::on_comboBox_currentIndexChanged(int index)
 //---------------Select the value to print in the right block-----------------------------------
 void MainWindow::selectRightBlockValue(int index){
 
-    qDebug()<<"updaterightBlockValue";
+    //qDebug()<<"updaterightBlockValue";
 
     switch (index) {
         case 0: //Print optical power
             dataProc->updateOAS(0,OptPwr);
-            qDebug()<<"optical power is"<<*OptPwr;
+            //qDebug()<<"optical power is"<<*OptPwr;
             for(int i=0; i<4; i++){
                 scaledOptPwr[i] = OptPwr[i]*displayUnitsCoeffs[currentRightBlockUnits];
                 scaledValueRightBlock[i] = scaledOptPwr[i];
@@ -657,7 +744,7 @@ void MainWindow::on_rightBlockUnits_currentIndexChanged(int index)
         currentRightBlockUnits=4;
     if(rightBlockIndex==1){
         currentRightBlockUnits=0;
-        qDebug()<<"APD gain doesn't have any units";
+        //qDebug()<<"APD gain doesn't have any units";
     }
 }
 void MainWindow::on_OffsetPos_Changed(double* OffPosPtr){
@@ -787,15 +874,15 @@ void MainWindow::processCecAxisClickedEvent(int axis, int* axisListIndex, QCheck
         }
 
         }
-    qDebug()<<"exiting thread";
+    //qDebug()<<"exiting thread";
 }
 
 void MainWindow::cecAxisClickedThreadEvent(int axis, int* axisListIndex, QCheckBox* cecAxisCheckBox)
 {
-    qDebug()<<"Starting cec config thread";
+    //qDebug()<<"Starting cec config thread";
     std::thread cecThread(&MainWindow::processCecAxisClickedEvent,this,axis, axisListIndex, cecAxisCheckBox);
     cecThread.detach();
-    qDebug()<<"exiting";
+    //qDebug()<<"exiting";
 }
 
 void MainWindow::on_cecAxis1_clicked()
@@ -837,7 +924,7 @@ void MainWindow::on_ceDisplayAxis_currentIndexChanged(int index)
 }
 
 void MainWindow::on_ramDataFlyscanRequest_recieved(double freq, double time, double size, unsigned int nbr){
-    qDebug()<<"MainWindow::on_ramDataFlyscanRequest_recieved";
+    //qDebug()<<"MainWindow::on_ramDataFlyscanRequest_recieved";
     dataProcessing* flyscanWorker = new dataProcessing;
     connect(flyscanWorker, &dataProcessing::flyscanErrorCode, this, &MainWindow::flyscanErrorCode);
     connect(flyscanWorker, &dataProcessing::flyscanStatValues, this, &MainWindow::flyscanStatValues);
@@ -848,7 +935,7 @@ void MainWindow::on_ramDataFlyscanRequest_recieved(double freq, double time, dou
     flyscanWorker->flyscanSizeValue=size;
     flyscanWorker->axisNbr=nbr;
     strcpy_s(flyscanWorker->flyscanPath, flyscanForm->extFolderName);
-    qDebug()<<"save values to: "<<flyscanWorker->flyscanPath;
+    //qDebug()<<"save values to: "<<flyscanWorker->flyscanPath;
     flyscanWorker->moveToThread(flyscanAxisThread);
     //A slot can be connected to a given signal if the signal has at least as many arguments as the slot
     connect(flyscanAxisThread, &QThread::started, flyscanWorker, &dataProcessing::on_configureFlyscanRequest_recieved);
@@ -861,7 +948,7 @@ void MainWindow::on_ramDataFlyscanRequest_recieved(double freq, double time, dou
 
 
 void MainWindow::on_fifoFlyscanRequest_recieved(double freq, double time, double size, unsigned int nbr){
-    qDebug()<<"MainWindow::on_fifoFlyscanRequest_recieved";
+    //qDebug()<<"MainWindow::on_fifoFlyscanRequest_recieved"<<"freq is "<<freq;
     dataProcessing* flyscanWorker = new dataProcessing;
     connect(flyscanWorker, &dataProcessing::flyscanErrorCode, this, &MainWindow::flyscanErrorCode);
     connect(flyscanWorker, &dataProcessing::flyscanStatValues, this, &MainWindow::flyscanStatValues);
@@ -871,12 +958,12 @@ void MainWindow::on_fifoFlyscanRequest_recieved(double freq, double time, double
     flyscanWorker->flyscanTimeValue=time;
     flyscanWorker->flyscanSizeValue=size;
     flyscanWorker->axisNbr=nbr;
-    qDebug()<<"axisnbr in mainwindow: "<<nbr;
+    //qDebug()<<"axisnbr in mainwindow: "<<nbr;
     for(int h=0;h<4;h++){
         flyscanWorker->fifoFlyscanAxisTab[h]= flyscanForm->axisTab[h];
     }
     strcpy_s(flyscanWorker->flyscanPath, flyscanForm->extFolderName);
-    qDebug()<<flyscanWorker->flyscanPath;
+    //qDebug()<<flyscanWorker->flyscanPath;
     flyscanWorker->moveToThread(flyscanAxisThread);
     //A slot can be connected to a given signal if the signal has at least as many arguments as the slot
     connect(flyscanAxisThread, &QThread::started, flyscanWorker, &dataProcessing::on_configureFifoFlyscanRequest_recieved);
@@ -892,3 +979,75 @@ void MainWindow::on_modifyBaseAddressRequest_received(unsigned int add){
     sprintf(str,"modifying base address...\n New BASE ADDRESS: 0x%07X",add);
     ui->textBrowser_2->append(str);
 }
+
+void MainWindow::on_checkBox_clicked(bool checked)
+{
+    if(checked){
+        speedModeOn=true;
+        ui->enableAxis->setEnabled(true);
+        ui->textBrowser_2->setTextColor(Qt::darkBlue);
+        ui->textBrowser_2->append("SPEED MODE activated ");
+        ui->textBrowser_2->setTextColor(QColor("dark"));
+        ui->textBrowser_2->append("Note apart the position on the selected axis, everything on the "
+"user interface is being halted");
+    }
+    else{
+        speedModeOn=false;
+        for(int i=0; i<4;i++){
+            speedAxisSelect[i]=0;
+        }
+        ui->enableAxis->setEnabled(false);
+        ui->textBrowser_2->setTextColor(Qt::green);
+        ui->textBrowser_2->append("SPEED MODE off ");
+        ui->textBrowser_2->setTextColor(QColor("dark"));
+    }
+}
+
+
+void MainWindow::on_enableAxis1_clicked(bool checked)
+{
+
+    if (checked){
+        speedAxisSelect[0]=1;
+    }
+    else{
+        speedAxisSelect[0]=0;
+    }
+}
+
+
+void MainWindow::on_enableAxis2_clicked(bool checked)
+{
+
+    if (checked){
+        speedAxisSelect[1]=1;
+    }
+    else{
+        speedAxisSelect[1]=0;
+    }
+}
+
+
+void MainWindow::on_enableAxis3_clicked(bool checked)
+{
+
+    if (checked){
+        speedAxisSelect[2]=1;
+        qDebug()<<"up";
+    }
+    else{
+        speedAxisSelect[2]=0;
+    }
+}
+
+
+void MainWindow::on_enableAxis4_clicked(bool checked)
+{
+    if (checked){
+        speedAxisSelect[3]=1;
+    }
+    else{
+        speedAxisSelect[3]=0;
+    }
+}
+

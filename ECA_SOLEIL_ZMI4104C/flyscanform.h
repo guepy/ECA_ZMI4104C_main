@@ -28,8 +28,10 @@ public:
 signals:
     void openThis();
     void closeThis();
+    void fifoModeSignal(bool index);
     void ramDataFlyscanRequest(double freq, double it, double np, unsigned int na);
     void fifoFlyscanRequest(double freq, double it, double np, unsigned int na);
+    void stopContinuousScanSignal();
 private slots:
     void on_pushButton_5_clicked();
     void selectFile();
@@ -52,6 +54,9 @@ private slots:
     void on_fifoAxis3_clicked();
     void on_fifoAxis4_clicked();
 
+    void on_comboBox_2_currentIndexChanged(int index);
+
+    void on_pushButton_4_clicked();
 private:
     Ui::FlyscanForm *ui;
     int scanParam=0;

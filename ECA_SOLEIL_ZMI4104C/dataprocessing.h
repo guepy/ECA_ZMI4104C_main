@@ -41,7 +41,7 @@ public:
     uint32_t gain[4]={0,0,0,0};
     bool gainControls[3]={0,0,0};//Min|Max|AGC
     bool prop[3]={0,0,0};
-
+    static bool fifoMode;
     QTimer *Ltimer;
 private:
     static SIS1100_Device_Struct* dev;
@@ -62,11 +62,14 @@ signals:
     void gainControlsValues( unsigned int axis, bool* val);
     void currentIntBoardProperties(bool* val, unsigned int sampFreq);// bool*=[intType, sampleSclk, resetSclk]
 public slots:
+    void on_fifoModeSignal_recieved(bool index);
+    void on_stopContinuousScanSignal_received();
     void on_updateSettingsRequest_received( unsigned int a,  unsigned int b, int* val);
     void updateSettingsRequest( unsigned int a,  unsigned int b, int* val);
     void on_initSettingsFormRequest_received();
     int  getLEDsColor(int*);
     void updatePVT(int index, double* val);
+    void updatePVT(int index, double* val, int axis);
     void initSettingsFormRequest();
     void updateOAS(int index, double* val);
     int updateCECRatios(unsigned int axis,CEratios* val, unsigned int index);

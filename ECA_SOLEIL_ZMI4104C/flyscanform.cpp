@@ -27,6 +27,7 @@ FlyscanForm::FlyscanForm(QWidget *parent) :
     ui->saveFile->setStyleSheet("font: 75 12pt \"MS Shell Dlg 2\";");
     ui->saveFile->setText(extFolderName);
     ui->saveFile->setDisabled(true);
+    ui->comboBox_2->setDisabled(true);
     ui->display->append("Choose flyscan parameter ");
     sprintf(txt,"default save folder %s ", extFolderName);
     ui->display->append(txt);
@@ -65,12 +66,14 @@ void FlyscanForm::on_comboBox_currentIndexChanged(int index)
         ui->spinBox_3->setMinimum(300);//min freq
         ui->spinBox_3->setMaximum(10e6);//max freq
         ui->spinBox_2->setMaximum(1.44e6);//1.44 sec max
+        ui->comboBox_2->setDisabled(true);
         flyscanModeIndex=0;
         break;
     case 1: // FIFO FLYSCAN MODE
         ui->display->append("FIFO FLYSCAN MODE activated ");
         ui->NbrOfAxisWidget->setEnabled(false);
         ui->selectAxisWidget->setEnabled(true);
+        ui->comboBox_2->setDisabled(false);
         ui->spinBox_3->setMinimum(0);//min freq
         ui->spinBox_3->setMaximum(10e6);//max freq
         ui->spinBox->setMaximum(10e6);//1e6 points max
@@ -193,12 +196,12 @@ void FlyscanForm::selectFile()
 void FlyscanForm::on_StartButton_clicked()
 {
 
-    ui->ButtonForm->setEnabled(false);// don't press start twice in succession
+    ui->StartButton->setEnabled(false);// don't press start twice in succession
     if(paramNbr<2){
         ui->display->setTextColor("red");
         ui->display->append("You should provide at least 2 scan parameters");
         ui->display->setTextColor("dark");
-        ui->ButtonForm->setEnabled(true);
+        ui->StartButton->setEnabled(true);
     }
     else{
 
@@ -241,11 +244,12 @@ void FlyscanForm::on_StartButton_clicked()
                 ui->display->setTextColor(QColor("red"));
                 ui->display->append("Select axis on which to perform continuous scan");
                 ui->display->setTextColor(QColor("dark"));
+                ui->StartButton->setEnabled(true);// don't press start twice in succession
             }
             else{
+                qDebug()<<"emit param: freq: "<<freqValue<<"Hz, it: "<<timeValue<<"s, size: "<<sizeValue;
                 emit fifoFlyscanRequest(freqValue, timeValue, sizeValue, nbrAxis);
                 ui->display->append("Setting up FIFO FLYSCAN...");
-                qDebug()<<"emit fifoFlyscanRequest signal";
             }
         }
     }
@@ -254,7 +258,7 @@ void FlyscanForm::on_StartButton_clicked()
 
 
 void FlyscanForm::on_flyscanProcTerm_received(){
-    ui->ButtonForm->setEnabled(true);
+    ui->StartButton->setEnabled(true);
 }
 void FlyscanForm::on_fifoAxis1_clicked()
 {
@@ -358,7 +362,7 @@ void FlyscanForm::on_flyscanErrorCode_recieved(int err_code){
     case -104:
         ui->display->setTextColor(QColor("red"));
         ui->display->append("failed to stop continuous acquisition");
-        ui->display->append("Try to adjust scan parameter ");
+        ui->display->append("Try to reinitialize the VME system ");
         ui->display->setTextColor(QColor("dark"));
         break;
     case -105:
@@ -418,5 +422,22 @@ void FlyscanForm::on_flyscanStatValues_received(unsigned char* axisTab, double* 
         break;
         }
     }
+
+}
+
+void FlyscanForm::on_comboBox_2_currentIndexChanged(int index)
+{
+    if(index)
+        ui->itCheckBox->setDisabled(true);
+    else
+        ui->itCheckBox->setDisabled(false);
+    emit fifoModeSignal(index);
+
+}
+
+
+void FlyscanForm::on_pushButton_4_clicked()
+{
+    emit stopContinuousScanSignal();
 
 }

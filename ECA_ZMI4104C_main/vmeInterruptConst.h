@@ -48,16 +48,17 @@
 #define THREADCOUNT							4 
 
 
-HANDLE vmeIrq6Event, lemoIN1Event;
+HANDLE vmeIrq6Event, lemoIN1Event, stopReadPositionEvent;
 HANDLE  hThreadArray[THREADCOUNT];
-HANDLE vmeIntThread, lemoIN1Thread, fastReadThread, WaitForSis3100IrqThread, WaitForVmeIrqThread;
+HANDLE vmeIntThread,
+	lemoIN1Thread, fastReadThread, waitForSis3100IrqThread, waitForVmeIrqThread;
 DWORD WINAPI vmeIntThreadFunc(LPVOID);
 
 DWORD WINAPI lemoIN1ThreadFunc(LPVOID);
 DWORD WINAPI readThreadFunc(LPVOID);
 DWORD WINAPI fastReadThreadFunc(LPVOID);
-DWORD WINAPI WaitForVmeIrqThreadFunc(LPVOID);
-DWORD WINAPI WaitForSis3100IrqThreadFunc(LPVOID);
+DWORD WINAPI waitForVmeIrqThreadFunc(LPVOID); 
+DWORD WINAPI waitForSis3100IrqThreadFunc(LPVOID);
 
 static UINT sisIrqMask = DOORBELL_DSP_IRQ |
 DOORBELL_LEMO_IN1_IRQ |
@@ -74,7 +75,6 @@ DOORBELL_VME_IRQ3 |
 DOORBELL_VME_IRQ4 |
 DOORBELL_VME_IRQ5 |
 DOORBELL_VME_IRQ6;
-
 static int irq;//previously volatile
 static DWORD dwWaitResult;
 static HANDLE ghMutex;
