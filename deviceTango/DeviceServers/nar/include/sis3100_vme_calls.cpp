@@ -320,7 +320,7 @@
 		int return_code;
 		unsigned int i;
 
-		buf = (uint32_t*)malloc(req_num_of_words * sizeof(uint32_t));
+		buf = (uint32_t*)calloc(req_num_of_words ,sizeof(uint32_t));
 		if (buf == NULL)
 			return -1;
 

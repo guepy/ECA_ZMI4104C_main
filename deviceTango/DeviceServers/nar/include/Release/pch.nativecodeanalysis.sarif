@@ -1,0 +1,52 @@
+{
+  "version": "2.1.0",
+  "$schema": "https://schemastore.azurewebsites.net/schemas/json/sarif-2.1.0-rtm.5.json",
+  "runs": [
+    {
+      "results": [],
+      "tool": {
+        "driver": {
+          "name": "PREfast",
+          "fullName": "PREfast Code Analysis",
+          "version": "14.28.29914.0",
+          "informationUri": "https://aka.ms/cpp/ca"
+        }
+      },
+      "invocations": [
+        {
+          "commandLine": "\"C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\VC\\Tools\\MSVC\\14.28.29910\\bin\\HostX86\\x86\\c1xx.dll\" -ACf{1F7B090C-16DB-4822-966A-A93D26ED4681} -ACpmspft140.dll -Alint -D_PREFAST_ -D_AST_FE_ -Analyze -zm0x00AAB1C0 -il C:\\Users\\guekam\\AppData\\Local\\Temp\\_CL_9a8ed3b2ast -typedil -f pch.cpp -Ze -D_MSC_EXTENSIONS -Zp8 -Gs -pc \\:/ -D_MSC_VER=1928 -D_MSC_FULL_VER=192829914 -D_MSC_BUILD=0 -D_WIN32 -D_M_IX86=600 -D_M_IX86_FP=2 -GR -D_CPPRTTI -I C:\\Users\\guekam\\source\\repos\\ECA_ZMI4104_Project\\ECA_ZMI4104C_main\\eca_soleil_zmi4104_lib\\sis1100_zmilib -nologo -W 1 -diagnostics:column -D_GUARDOVERFLOW_CRT_ALLOCATORS=1 -GF -Og -Ot -Oi -ltcg -DCODE_ANALYSIS -DWIN32 -DNDEBUG -DECASOLEILZMI4104LIB_EXPORTS -D_WINDOWS -D_USRDLL -D_WINDLL -D_UNICODE -DUNICODE -EHs -D_CPPUNWIND -EHc -MD -D_MT -D_DLL -GS -D_M_FP_PRECISE -permissive- -Zc:wchar_t -Zc:forScope -Ycpch.h -FpRelease\\eca_soleil_zmi4104_lib.pch -FoRelease\\pch.obj -FdRelease\\vc142.pdb -Gd -analyze:projectdirectory C:\\Users\\guekam\\source\\repos\\ECA_ZMI4104_Project\\ECA_ZMI4104C_main\\eca_soleil_zmi4104_lib -analyze:rulesetdirectory ;C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\Team Tools\\Static Analysis Tools\\\\Rule Sets; -analyze:ruleset C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\Team Tools\\Static Analysis Tools\\Rule Sets\\NativeRecommendedRules.ruleset -analyze:quiet -analyze:plugin C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\VC\\Tools\\MSVC\\14.28.29910\\bin\\HostX86\\x86\\EspXEngine.dll -FC -errorreport:prompt -I C:\\Users\\guekam\\source\\repos\\ECA_ZMI4104_Project\\ECA_ZMI4104C_main\\ECA_ZMI4104C_main -I C:\\Users\\guekam\\source\\repos\\ECA_ZMI4104_Project\\ECA_ZMI4104C_main\\eca_soleil_zmi4104_lib\\sis1100_zmilib -I C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\VC\\Tools\\MSVC\\14.28.29910\\include -I C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\VC\\Tools\\MSVC\\14.28.29910\\atlmfc\\include -I C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\VC\\Auxiliary\\VS\\include -I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.19041.0\\ucrt -I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.19041.0\\um -I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.19041.0\\shared -I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.19041.0\\winrt -I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.19041.0\\cppwinrt -I C:\\Users\\guekam\\source\\repos\\ECA_ZMI4104_Project\\ECA_ZMI4104C_main\\eca_soleil_zmi4104_lib\\Include\\um",
+          "executionSuccessful": true
+        }
+      ],
+      "artifacts": [
+        {
+          "location": {
+            "uri": "file:///c:/users/guekam/source/repos/eca_zmi4104_project/eca_zmi4104c_main/eca_soleil_zmi4104_lib/pch.cpp"
+          },
+          "roles": [
+            "analysisTarget"
+          ],
+          "hashes": {
+            "md5": "d9613031600d47c95e68bce3d3c10f07"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/guekam/source/repos/eca_zmi4104_project/eca_zmi4104c_main/eca_soleil_zmi4104_lib/pch.h"
+          },
+          "hashes": {
+            "md5": "f8592ae4100aa66c5a05b79c3c176525"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/guekam/source/repos/eca_zmi4104_project/eca_zmi4104c_main/eca_soleil_zmi4104_lib/framework.h"
+          },
+          "hashes": {
+            "md5": "e6d3d70db8312c6917132bed5c610438"
+          }
+        }
+      ]
+    }
+  ]
+}

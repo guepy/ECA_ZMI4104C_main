@@ -1,0 +1,14 @@
+#
+#       This is the Pogo user preferences file
+#
+
+org.tango.pogo.hinerit_home:	null
+org.tango.pogo.contact_address:	null
+org.tango.pogo.load_previous:	true
+
+org.tango.pogo.project_history:	
+	C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\deviceTango\NouveauDossier\src\ZygoZMI4104C.xmi
+	C:\Users\guekam\source\repos\ECA_ZMI4104_Project\ECA_ZMI4104C_main\deviceTango\ZygoZMI4104C\ZygoZMI4104C.xmi
+
+
+org.tango.pogo.multi_class_project_history:	
