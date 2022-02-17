@@ -53,8 +53,8 @@
 //
 //  Command name                    |  Method name
 //================================================================
-//  State                           |  Inherited (no method)
-//  Status                          |  Inherited (no method)
+//  State                           |  dev_state
+//  Status                          |  dev_status
 //  ResetMeasurementAxis            |  reset_measurement_axis
 //  StartContinuousAcquisition      |  start_continuous_acquisition
 //  StopContinnuousAcquisition      |  stop_continnuous_acquisition
@@ -104,6 +104,7 @@
 //  cecAxes                          |  Tango::DevString	Scalar
 //  continuousScanPositionMeanValue  |  Tango::DevDouble	Scalar
 //  continuousScanPositionStdDev     |  Tango::DevDouble	Scalar
+//  fifoMode                         |  Tango::DevEnum	Scalar
 //================================================================
 
 namespace ZygoZMI4104C_ns
@@ -166,7 +167,8 @@ void ZygoZMI4104C::delete_device()
 	delete[] ledsColorString ;
 	delete[] optPwr;
 	delete[] ledsColor;
-	delete[] axisTab;
+	delete[] flyscanAxesTab;
+	delete[] cecAxesTab;
 	delete[] biasModeString;
 	delete[] interferometerConfigurationString;
 	delete[] flyscanPath;
@@ -211,6 +213,7 @@ void ZygoZMI4104C::delete_device()
 	delete[] attr_cecAxes_read;
 	delete[] attr_continuousScanPositionMeanValue_read;
 	delete[] attr_continuousScanPositionStdDev_read;
+	delete[] attr_fifoMode_read;
 }
 
 //--------------------------------------------------------
@@ -290,12 +293,14 @@ void ZygoZMI4104C::init_device()
 	attr_cecAxes_read = new Tango::DevString[1];
 	attr_continuousScanPositionMeanValue_read = new Tango::DevDouble[1];
 	attr_continuousScanPositionStdDev_read = new Tango::DevDouble[1];
+	attr_fifoMode_read = new Tango::DevShort[1];
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::init_device) ENABLED START -----*/
 	
 	ledsColorString = new Tango::DevString[4];
 	optPwr = new Tango::DevDouble[5];
 	ledsColor = new Tango::DevUChar[6];
-	axisTab = new Tango::DevUShort[6];
+	flyscanAxesTab = new Tango::DevUShort[6];
+	cecAxesTab = new Tango::DevUShort[6];
 	biasModeString = new Tango::DevString[6];
 	interferometerConfigurationString = new Tango::DevString[3];
 	meanVal = new double;
@@ -328,10 +333,12 @@ void ZygoZMI4104C::init_device()
 	for(int i=0;i<sizeof(ledsColor);i++)
 	{
 		ledsColor[i] = 0;
-		axisTab[i] = 0;
+		flyscanAxesTab[i] = 0;
+		cecAxesTab[i] = 0;
 	}
 	ledsColor[sizeof(ledsColor)-1] = '\0';
-	axisTab[sizeof(axisTab)/sizeof(axisTab[0])-1] = '\0';
+	flyscanAxesTab[sizeof(flyscanAxesTab)/sizeof(flyscanAxesTab[0])-1] = '\0';
+	cecAxesTab[sizeof(cecAxesTab)/sizeof(cecAxesTab[0])-1] = '\0';
 	optPwr[4]='\0';
 	
 	biasModeString[0] ="OFF\0";
@@ -346,7 +353,10 @@ void ZygoZMI4104C::init_device()
 	*attr_continuousSamplingAxes_read="NO_AXIS_SELECTED";
 	*attr_cecAxes_read = "NO_AXIS_SELECTED";
 	*attr_continuousSamplingSize_read=1;
-	axisCtr = 0;
+	flyscanAxesCtr = 0;
+	cecAxesCtr = 0;
+    ceVelMin = 96;
+    ceVelMax=31457;
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::init_device
 }
 
@@ -431,11 +441,6 @@ void ZygoZMI4104C::read_attr_hardware(TANGO_UNUSED(vector<long> &attr_list))
 	
 	//	Add your own code
 	getLEDsColor(ledsColor);
-	for (int ledi=0;ledi<5 ;ledi++ ) 
-	{
-		DEBUG_STREAM << "ledsColor[" << ledi<<"]: "<<(int)ledsColor[ledi] << endl;
-		DEBUG_STREAM<<"LEDSCOLOR AXIS "<< ledi+1<<" is "<< ledsColorString[(int)ledsColor[ledi]]<<endl;
-	}
 	readOpticalPowerUsingSsiAv(optPwr);
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::read_attr_hardware
 }
@@ -1463,61 +1468,10 @@ void ZygoZMI4104C::write_continuousSamplingAxes(Tango::WAttribute &attr)
 	Tango::DevString	w_val;
 	attr.get_write_value(w_val);
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::write_continuousSamplingAxes) ENABLED START -----*/
-	
-	int len = ((std::string)w_val).length(), nbr=0;
-	char tempStr[100];
-	myStr = "";
-	axisCtr = 0;
-	*attr_continuousSamplingAxes_read="";
-	try
-	{
-	for(int i=0;i<len+1;i++){
-		if(w_val[i]=='\0' || w_val[i]==';')
-			break;
-		if(w_val[i]==',')
-			continue;
-		nbr = (uint32_t)atoi(&w_val[i]);
-		if((nbr<1) || (nbr>4))//value is not between 1 and 4
-		{
-			std::cerr << "Unknow axis value: " << nbr <<std::endl;
-			continue;
-		}
-		else
-		{
-			
-			axisTab[axisCtr]=nbr;
-			sprintf(tempStr, "AXIS%u | ",nbr);
-			myStr.append(tempStr);
-			axisCtr++;
-			if(axisCtr>4)
-			{
-				axisCtr=4;
-				throw std::invalid_argument("No more more axis can be read\n"); 
-				break;
-			}
-			
-		}
-			
-	}
-	}
-	catch(const invalid_argument& msg)
-	{
-		std::cerr << "exception:" << msg.what() <<endl;
-	}
-		std::cerr << "axisCtr is " << axisCtr <<endl;
-	if(!axisCtr)
-		*attr_continuousSamplingAxes_read = "NO_AXIS_SELECTED";
-	else
-	{
-		for(int i=0;i<axisCtr;i++)
-		{
-			std::cerr<< "selected axis are : " << axisTab[i] <<std::endl;
-		}
-		*attr_continuousSamplingAxes_read = (Tango::DevString)myStr.c_str();
-		std::cerr << "myStr is  " << myStr <<std::endl;
-	}
+	getAxesfromInputString(w_val, flyscanAxesCtr, flyscanAxesTab, attr_continuousSamplingAxes_read);
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::write_continuousSamplingAxes
 }
+
 //--------------------------------------------------------
 /**
  *	Read attribute continuousSamplingSize related method
@@ -1552,7 +1506,7 @@ void ZygoZMI4104C::write_continuousSamplingSize(Tango::WAttribute &attr)
 	Tango::DevULong	w_val;
 	attr.get_write_value(w_val);
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::write_continuousSamplingSize) ENABLED START -----*/
-	
+	*attr_continuousSamplingSize_read = w_val;
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::write_continuousSamplingSize
 }
@@ -1591,7 +1545,7 @@ void ZygoZMI4104C::write_cecAxes(Tango::WAttribute &attr)
 	attr.get_write_value(w_val);
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::write_cecAxes) ENABLED START -----*/
 	
-	
+	getAxesfromInputString(w_val, cecAxesCtr, cecAxesTab,attr_cecAxes_read);
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::write_cecAxes
 }
 //--------------------------------------------------------
@@ -1608,6 +1562,7 @@ void ZygoZMI4104C::read_continuousScanPositionMeanValue(Tango::Attribute &attr)
 	DEBUG_STREAM << "ZygoZMI4104C::read_continuousScanPositionMeanValue(Tango::Attribute &attr) entering... " << endl;
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::read_continuousScanPositionMeanValue) ENABLED START -----*/
 	//	Set the attribute value
+	*attr_continuousScanPositionMeanValue_read = (Tango::DevDouble)(*meanVal);
 	attr.set_value(attr_continuousScanPositionMeanValue_read);
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::read_continuousScanPositionMeanValue
@@ -1626,9 +1581,48 @@ void ZygoZMI4104C::read_continuousScanPositionStdDev(Tango::Attribute &attr)
 	DEBUG_STREAM << "ZygoZMI4104C::read_continuousScanPositionStdDev(Tango::Attribute &attr) entering... " << endl;
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::read_continuousScanPositionStdDev) ENABLED START -----*/
 	//	Set the attribute value
+	*attr_continuousScanPositionStdDev_read = (Tango::DevDouble)(*stdDevVal);
 	attr.set_value(attr_continuousScanPositionStdDev_read);
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::read_continuousScanPositionStdDev
+}
+//--------------------------------------------------------
+/**
+ *	Read attribute fifoMode related method
+ *	Description: choose the mode(auto/manual) in Fifo continuous acquisition. In manual mode, the number of samples to record is not taken into account by the device and the user has to execute stopContinuousAcquisition in order to halt the acquisition. In Auto mode, the device takes into account the number of samples and will stop recording once this number has been reached.
+ *
+ *	Data type:	Tango::DevEnum (fifoModeEnum)
+ *	Attr type:	Scalar
+ */
+//--------------------------------------------------------
+void ZygoZMI4104C::read_fifoMode(Tango::Attribute &attr)
+{
+	DEBUG_STREAM << "ZygoZMI4104C::read_fifoMode(Tango::Attribute &attr) entering... " << endl;
+	/*----- PROTECTED REGION ID(ZygoZMI4104C::read_fifoMode) ENABLED START -----*/
+	//	Set the attribute value
+	attr.set_value(attr_fifoMode_read);
+	
+	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::read_fifoMode
+}
+//--------------------------------------------------------
+/**
+ *	Write attribute fifoMode related method
+ *	Description: choose the mode(auto/manual) in Fifo continuous acquisition. In manual mode, the number of samples to record is not taken into account by the device and the user has to execute stopContinuousAcquisition in order to halt the acquisition. In Auto mode, the device takes into account the number of samples and will stop recording once this number has been reached.
+ *
+ *	Data type:	Tango::DevEnum (fifoModeEnum)
+ *	Attr type:	Scalar
+ */
+//--------------------------------------------------------
+void ZygoZMI4104C::write_fifoMode(Tango::WAttribute &attr)
+{
+	DEBUG_STREAM << "ZygoZMI4104C::write_fifoMode(Tango::WAttribute &attr) entering... " << endl;
+	//	Retrieve write value
+	Tango::DevShort	w_val;
+	attr.get_write_value(w_val);
+	/*----- PROTECTED REGION ID(ZygoZMI4104C::write_fifoMode) ENABLED START -----*/
+	*attr_fifoMode_read = w_val;
+	
+	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::write_fifoMode
 }
 
 //--------------------------------------------------------
@@ -1647,6 +1641,48 @@ void ZygoZMI4104C::add_dynamic_attributes()
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::add_dynamic_attributes
 }
 
+//--------------------------------------------------------
+/**
+ *	Command State related method
+ *	Description: This command gets the device state (stored in its device_state data member) and returns it to the caller.
+ *
+ *	@returns Device state
+ */
+//--------------------------------------------------------
+Tango::DevState ZygoZMI4104C::dev_state()
+{
+	DEBUG_STREAM << "ZygoZMI4104C::State()  - " << device_name << endl;
+	/*----- PROTECTED REGION ID(ZygoZMI4104C::dev_state) ENABLED START -----*/
+	
+	Tango::DevState	argout = Tango::UNKNOWN; // replace by your own algorithm
+	//	Add your own code
+	
+	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::dev_state
+	set_state(argout);    // Give the state to Tango.
+	if (argout!=Tango::ALARM)
+		Tango::DeviceImpl::dev_state();
+	return get_state();  // Return it after Tango management.
+}
+//--------------------------------------------------------
+/**
+ *	Command Status related method
+ *	Description: This command gets the device status (stored in its device_status data member) and returns it to the caller.
+ *
+ *	@returns Device status
+ */
+//--------------------------------------------------------
+Tango::ConstDevString ZygoZMI4104C::dev_status()
+{
+	DEBUG_STREAM << "ZygoZMI4104C::Status()  - " << device_name << endl;
+	/*----- PROTECTED REGION ID(ZygoZMI4104C::dev_status) ENABLED START -----*/
+	
+	//string	status = "Device is OK";
+	//	Add your own code
+	
+	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::dev_status
+	//set_status(status);               // Give the status to Tango.
+	return Tango::DeviceImpl::dev_status();  // Return it.
+}
 //--------------------------------------------------------
 /**
  *	Command ResetMeasurementAxis related method
@@ -1679,88 +1715,169 @@ Tango::DevShort ZygoZMI4104C::start_continuous_acquisition(Tango::DevBoolean arg
 {
 	Tango::DevShort argout;
 	DEBUG_STREAM << "ZygoZMI4104C::StartContinuousAcquisition()  - " << device_name << endl;
-	
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::start_continuous_acquisition) ENABLED START -----*/
 	flyscanPath = (char*)calloc(256, sizeof(char));
 	flyscanPath[0]='.';
 	flyscanPath[1]='\0';
-	std::cerr << "start flyscan" << std::endl;
-	//	Add your own code
-	if((*attr_continuousSamplingSize_read)<256){
-        (*attr_continuousSamplingSize_read)=256;
-        //qDebug()<<"setting size to the min: 256";
-        //emit flyscanErrorCode(-101);
-		std::cerr << "continuous scan size is a bacth of 256 samples" << std::endl;
-    }
-    if((*attr_continuousSamplingSize_read)>NBR_RAM_PAGES*256){
-        (*attr_continuousSamplingSize_read)=NBR_RAM_PAGES*256;
-        //qDebug()<<"setting size to the max: "<< NBR_RAM_PAGES*256;
-		std::cerr << "continuous scan size on one axis can not be greater than of 64*256 samples" << std::endl;
-        //emit flyscanErrorCode(-102);
-    }
-    if((*attr_continuousSamplingSize_read)>NBR_RAM_PAGES*128 && axisCtr>2){
-        (*attr_continuousSamplingSize_read)=NBR_RAM_PAGES*128;
-        //qDebug()<<"setting size to the max: "<< NBR_RAM_PAGES*128;
-		std::cerr << "continuous scan size on more than 3 axes can not be greater than of 64*128 samples" << std::endl;
-        //emit flyscanErrorCode(-103);
-    }
-    //*/
-    if (!(base_A24D32_ptr = (unsigned int*)calloc((size_t)(((*attr_continuousSamplingSize_read)*1.5*axisCtr)), sizeof(unsigned int)))){
+	std::cerr << "start flyscan with arg " << argin << std::endl;
+	string	status = "Setting up continuous acquisition...";
+	set_status(status);               // Give the status to Tango.
+	if(!((bool)argin))
+	{
+		//	Add your own code
+		
+		//*/
+		try
+		{
+		if((*attr_continuousSamplingSize_read)<256){
+			(*attr_continuousSamplingSize_read)=256;
+			//qDebug()<<"setting size to the min: 256";
+			//emit flyscanErrorCode(-101);
+			std::cerr << "continuous scan size is a bacth of 256 samples" << std::endl;
+		}
+		if((*attr_continuousSamplingSize_read)>NBR_RAM_PAGES*256){
+			(*attr_continuousSamplingSize_read)=NBR_RAM_PAGES*256;
+			//qDebug()<<"setting size to the max: "<< NBR_RAM_PAGES*256;
+			std::cerr << "continuous scan size on one axis can not be greater than of 64*256 samples" << std::endl;
+			//emit flyscanErrorCode(-102);
+		}
+		if((*attr_continuousSamplingSize_read)>NBR_RAM_PAGES*128 && flyscanAxesCtr>2){
+			(*attr_continuousSamplingSize_read)=NBR_RAM_PAGES*128;
+			//qDebug()<<"setting size to the max: "<< NBR_RAM_PAGES*128;
+			std::cerr << "continuous scan size on more than 3 axes can not be greater than of 64*128 samples" << std::endl;
+			//emit flyscanErrorCode(-103);
+		}
+		//*/
+		if (!(base_A24D32_ptr = (unsigned int*)calloc((size_t)(((*attr_continuousSamplingSize_read)*1.5*flyscanAxesCtr)), sizeof(unsigned int)))){
 
-        zygoLogWarn("can not allocate memory on the host machine");
-        //emit flyscanErrorCode(-105);
-        //emit flyscanProcTerm();
-        return RET_FAILED;
-    }
-	if(axisCtr>1){
-		if (!(base_A24D32_FR_ptr = (unsigned int*)calloc((size_t)(((*attr_continuousSamplingSize_read)*1.5*axisCtr)), sizeof(unsigned int)))){
-			//dev_mutex.unlock();
-			//Ltimer->stop();
 			zygoLogWarn("can not allocate memory on the host machine");
+			throw invalid_argument("can not allocate memory on the host machine");
 			//emit flyscanErrorCode(-105);
 			//emit flyscanProcTerm();
-			return RET_FAILED;
 		}
-	}
-    //*/
-	try
-	{
-		if (configureFlyscan(  (uint8_t)axisCtr, *attr_samplingFrequency_read, 1) != RET_SUCCESS){
-			throw "configure flyscan function failed ";
+		if(flyscanAxesCtr>1){
+			if (!(base_A24D32_FR_ptr = (unsigned int*)calloc((size_t)(((*attr_continuousSamplingSize_read)*1.5*flyscanAxesCtr)), sizeof(unsigned int)))){
+				//dev_mutex.unlock();
+				//Ltimer->stop();
+				zygoLogWarn("can not allocate memory on the host machine");
+				throw invalid_argument("can not allocate memory on the host machine");
+				//emit flyscanErrorCode(-105);
+				//emit flyscanProcTerm();
+			}
 		}
+			if (configureFlyscan(  (uint8_t)flyscanAxesCtr, *attr_samplingFrequency_read, 1) != RET_SUCCESS){
+				throw invalid_argument("connfiguration of continuous acquisition has failed!!!");
+			}
 
-		unsigned int ramDataSize = *attr_continuousSamplingSize_read/256;
-		if(axisCtr>2){
-			//ramDataSize = (flyscanSizeValue*2>16384)?flyscanSizeValue*2:16384;
-			ramDataSize = *attr_continuousSamplingSize_read/(4*256);
+			unsigned int ramDataSize = *attr_continuousSamplingSize_read/256;
+			if(flyscanAxesCtr>2){
+				//ramDataSize = (flyscanSizeValue*2>16384)?flyscanSizeValue*2:16384;
+				ramDataSize = *attr_continuousSamplingSize_read/(4*256);
+			}
+			if (getFlyscanData(  base_A24D32_FR_ptr, base_A24D32_ptr, (uint32_t*)&flyscanAxesCtr,ramDataSize) != RET_SUCCESS)
+			{
+				//dev_mutex.unlock();
+				//Ltimer->stop();
+				//emit flyscanErrorCode(-106);
+				//emit flyscanProcTerm();
+				throw invalid_argument("Getting RAMDATA failed");
+			}
+			if (processRamData(flyscanAxesCtr, base_A24D32_FR_ptr, base_A24D32_ptr, ramDataSize, flyscanPath,(double*)meanVal, (double*)stdDevVal) != RET_SUCCESS)
+			{
+				//Ltimer->stop();
+				//emit flyscanErrorCode(-107);
+				//emit flyscanProcTerm();
+				throw invalid_argument("Processing RAMDATA failed");
+			}
 		}
-		if (getFlyscanData(  base_A24D32_FR_ptr, base_A24D32_ptr, (uint32_t*)&axisCtr,ramDataSize) != RET_SUCCESS)
+		
+		catch(const invalid_argument& msg)
 		{
-			//dev_mutex.unlock();
-			//Ltimer->stop();
-			//emit flyscanErrorCode(-106);
-			//emit flyscanProcTerm();
-				throw "Geting RAMDATA failed ";
+			std::cerr << "exception : " << msg.what() << std::endl;
+			set_status(msg.what());               // Give the status to Tango.
 			return RET_FAILED;
 		}
-		if (processRamData(axisCtr, base_A24D32_FR_ptr, base_A24D32_ptr, ramDataSize, flyscanPath,(double*)meanVal, (double*)stdDevVal) != RET_SUCCESS)
-		{
-			//Ltimer->stop();
-			//emit flyscanErrorCode(-107);
-			//emit flyscanProcTerm();
-				throw "Processing RAMDATA failed ";
-			return RET_FAILED;
-		}
+	
 	}
-	
-	catch(const char* msg)
-	{
-		std::cerr << "exception : " << msg << std::endl;
-		return RET_FAILED;
-	}
-	
-	
+	else{
+		try{
+			
+			int ret_code=0, mysize=0;
+			bool ovf=0;
+			fifoParam* flyscanFifoParam = new fifoParam;
+			//flyscanFifoParam->acqTime=flyscanTimeValue;
+			flyscanFifoParam->freq=*attr_samplingFrequency_read;
+			flyscanFifoParam->nbrPts=*attr_continuousSamplingSize_read;
+			if(*attr_fifoMode_read){
+				mysize = 0x10000000;//128Mo
+			}
+			else{
+				mysize = (UINT)(sizeof(UINT) * ((*attr_continuousSamplingSize_read)*1.5*flyscanAxesCtr));
+			}
 
+			if (!(base_A24D32_ptr = (uint32_t*)calloc(mysize, sizeof(unsigned int)))){
+				zygoLogWarn("can not allocate memory on the host machine");
+				//emit flyscanErrorCode(-105);
+				//emit flyscanProcTerm();
+				delete flyscanFifoParam;
+				perror("base_A32D32_ptr");
+				throw invalid_argument(strerror(errno));
+			}
+			ovf_flag:
+			set_status("Setting up fifo flyscan\n"); 
+			if (configureFifoFlyscan(flyscanFifoParam,base_A24D32_ptr,(uint8_t*)flyscanAxesTab, (uint32_t*)&flyscanAxesCtr, &ret_code, *attr_fifoMode_read) != RET_SUCCESS){
+				//dataProcessing::dev_mutex.unlock();
+				//qDebug()<<"fifo config failed";
+				//emit flyscanErrorCode(-99);
+				//emit flyscanProcTerm();
+				//delete (base_A24D32_ptr);
+				delete flyscanFifoParam;
+				throw invalid_argument("Configure Fifo flyscan failed");
+			}
+			else
+			{
+				//emit flyscanErrorCode(1); // currently processing
+				//dataProcessing::dev_mutex.unlock();
+				if(ret_code==-100){
+					//qDebug()<<"overlapping detected";
+					//emit flyscanErrorCode(ret_code);
+					set_status("Overlapping detected, somme data may have been corrupted "); 
+				}
+				if(ret_code==100){
+					//qDebug()<<"RAM oveflow detected, allocating more space";
+					//emit flyscanErrorCode(ret_code);
+					ovf=1;
+					set_status("Overflow on dynamic memory allocated to stored samples"); 
+				}
+
+				//dataProcessing::dev_mutex.lock();
+				set_status("Processing fifo data"); 
+				if (processFifoData(flyscanAxesCtr, (uint8_t*)flyscanAxesTab, base_A24D32_ptr, flyscanFifoParam->nbrPts, (uint8_t*)flyscanPath,meanVal, stdDevVal) != RET_SUCCESS){
+					//dataProcessing::dev_mutex.unlock();
+					//emit flyscanErrorCode(-107);
+					//emit flyscanProcTerm();
+					//delete (base_A24D32_ptr);
+					delete flyscanFifoParam;
+					throw invalid_argument("failed to process fifo data");
+				}
+				if(ovf){
+					ovf=0;
+					memset(base_A24D32_ptr, 0, mysize);
+					goto ovf_flag;
+				}
+
+				//dataProcessing::dev_mutex.unlock();
+			}
+		}		
+		catch(const invalid_argument& msg)
+		{
+			std::cerr << "exception : " << msg.what() << std::endl;
+			set_status(msg.what());               // Give the status to Tango.
+			return RET_FAILED;
+		}
+	
+	}
+	argout = RET_SUCCESS;
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::start_continuous_acquisition
 	return argout;
 }
@@ -1801,7 +1918,21 @@ Tango::DevShort ZygoZMI4104C::enable_cyclic_error_compensation(Tango::DevShort a
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::enable_cyclic_error_compensation) ENABLED START -----*/
 	
 	//	Add your own code
+	    //qDebug()<<"config started ";
+	for(int i=0;i< (sizeof(cecAxesTab)/sizeof(cecAxesTab[0]));i++){
+		if(!cecAxesTab[i])
+			break;
+		argout=configureCecHardware(  (uint8_t)cecAxesTab[i], ceVelMin, ceVelMax);	
+		if(argout!=RET_SUCCESS)
+		{
+			*attr_cecAxes_read="NO_AXIS_SELECTED";
+			set_status("Cyclic error compensation failed");
+			break;
+		}
+	}
 	
+
+    //qDebug()<<"config terminated ";
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::enable_cyclic_error_compensation
 	return argout;
 }
@@ -1923,6 +2054,68 @@ void ZygoZMI4104C::localSetBiasMode(Tango::DevUChar axis, Tango::DevString w_val
 	{
 		std::cerr << "exception: " << msg.what() << std::endl;
 	}
+}
+
+
+int ZygoZMI4104C::getAxesfromInputString(Tango::DevString	val, Tango::DevUShort axisCtr, Tango::DevUShort	*axisTab,Tango::DevString *attr_read){
+	std::string w_val = (std::string)val;
+	int len = ((std::string)w_val).length(), nbr=0;
+	char tempStr[100];
+	std::string 		value;
+	std::set<std::string> 			myStr;
+	axisCtr = 0;
+	*attr_read="";
+	try{
+			
+		while(w_val.length()>0) {
+			size_t posV = w_val.find_first_of(',');
+			int nbr = -1;
+			if( posV>=0 ) {
+				value = w_val.substr(0, posV);
+				nbr = atoi(value.c_str());
+				w_val = w_val.substr(posV+1,w_val.length());
+			}
+			else {
+				nbr = atoi(w_val.c_str());
+				w_val = "";
+			}
+			
+			if((nbr<1) || (nbr>4))//value is not between 1 and 4
+			{
+				continue;
+			}
+			axisTab[axisCtr]=nbr;
+			sprintf(tempStr, "AXIS%u | ",nbr);
+			myStr.insert(tempStr);
+			axisCtr=(Tango::DevUShort)myStr.size();
+			if(axisCtr>=4)
+			{
+				axisCtr=4;
+				throw std::invalid_argument("No more more axis can be read\n"); 
+				break;
+			}
+			//TODO
+		}
+	}
+	catch(const invalid_argument& msg)
+	{
+		std::cerr << "exception:" << msg.what() <<endl;
+		//THROW_DEVFAILED("DECODE_ERROR", msg.what(), "ZygoZMI4104C::getAxesfromInputString");
+		
+	}
+
+	std::cerr << "axisCtr is " << axisCtr <<endl;
+	if(!axisCtr)
+		*attr_read = "NO_AXIS_SELECTED";
+	else
+	{
+		std::ostringstream s;
+		std::copy(myStr.begin(),myStr.end(), std::ostream_iterator<std::string>(s,""));
+		std::string result = s.str();
+		*attr_read =  (Tango::DevString)(result.c_str()) ;
+		std::cerr << "myStr is  " << result <<std::endl;
+	}
+	return RET_SUCCESS;
 }
 /*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::namespace_ending
 } //	namespace

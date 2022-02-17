@@ -729,6 +729,26 @@ bool ZygoZMI4104C::is_continuousScanPositionStdDev_allowed(TANGO_UNUSED(Tango::A
 	return true;
 }
 
+//--------------------------------------------------------
+/**
+ *	Method      : ZygoZMI4104C::is_fifoMode_allowed()
+ *	Description : Execution allowed for fifoMode attribute
+ */
+//--------------------------------------------------------
+bool ZygoZMI4104C::is_fifoMode_allowed(TANGO_UNUSED(Tango::AttReqType type))
+{
+	//	Not any excluded states for fifoMode attribute in Write access.
+	/*----- PROTECTED REGION ID(ZygoZMI4104C::fifoModeStateAllowed_WRITE) ENABLED START -----*/
+	
+	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::fifoModeStateAllowed_WRITE
+
+	//	Not any excluded states for fifoMode attribute in read access.
+	/*----- PROTECTED REGION ID(ZygoZMI4104C::fifoModeStateAllowed_READ) ENABLED START -----*/
+	
+	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::fifoModeStateAllowed_READ
+	return true;
+}
+
 
 //=================================================
 //		Commands Allowed Methods

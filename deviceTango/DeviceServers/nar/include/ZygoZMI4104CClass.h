@@ -586,6 +586,23 @@ public:
 		{return (static_cast<ZygoZMI4104C *>(dev))->is_continuousScanPositionStdDev_allowed(ty);}
 };
 
+//	Attribute fifoMode class definition
+class fifoModeAttrib: public Tango::Attr
+{
+public:
+	fifoModeAttrib():Attr("fifoMode",
+			Tango::DEV_ENUM, Tango::READ_WRITE) {};
+	~fifoModeAttrib() {};
+	virtual void read(Tango::DeviceImpl *dev,Tango::Attribute &att)
+		{(static_cast<ZygoZMI4104C *>(dev))->read_fifoMode(att);}
+	virtual void write(Tango::DeviceImpl *dev,Tango::WAttribute &att)
+		{(static_cast<ZygoZMI4104C *>(dev))->write_fifoMode(att);}
+	virtual bool is_allowed(Tango::DeviceImpl *dev,Tango::AttReqType ty)
+		{return (static_cast<ZygoZMI4104C *>(dev))->is_fifoMode_allowed(ty);}
+	virtual bool same_type(const type_info &in_type) {return typeid(fifoModeEnum) == in_type;}
+	virtual string get_enum_type() {return string("fifoModeEnum");}
+};
+
 
 //=========================================
 //	Define classes for commands

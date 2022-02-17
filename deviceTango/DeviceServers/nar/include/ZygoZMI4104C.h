@@ -50,10 +50,16 @@
 namespace ZygoZMI4104C_ns
 {
 enum _currentPrecisionEnum {
-	_REG32=0,
+	_REG32,
 	_REG37,
 } ;
 typedef _currentPrecisionEnum currentPrecisionEnum;
+
+enum _fifoModeEnum {
+	_AUTO,
+	_MANUAL,
+} ;
+typedef _fifoModeEnum fifoModeEnum;
 
 /*----- PROTECTED REGION ID(ZygoZMI4104C::Additional Class Declarations) ENABLED START -----*/
 
@@ -76,17 +82,17 @@ class ZygoZMI4104C : public TANGO_BASE_CLASS
 	Tango::DevULong	m_data;
 
 	Tango::DevUChar		*ledsColor;
-	Tango::DevString *ledsColorString;
-	Tango::DevDouble *optPwr;
-	Tango::DevString *biasModeString;
-	Tango::DevString *interferometerConfigurationString;	
-	static bool *ledsErrorStatus,*ledsStatus;
-	Tango::DevUShort axisCtr;
-	Tango::DevUShort* axisTab;
-	std::string 	myStr;
-	unsigned int	*base_A24D32_ptr,*base_A24D32_FR_ptr;
-	char	*flyscanPath;
-	double 			*meanVal, *stdDevVal;
+	Tango::DevString 	*ledsColorString;
+	Tango::DevDouble 	*optPwr;
+	Tango::DevString 	*biasModeString;
+	Tango::DevString 	*interferometerConfigurationString;	
+	static bool 		*ledsErrorStatus,*ledsStatus;
+	Tango::DevUShort 	flyscanAxesCtr, cecAxesCtr;
+	Tango::DevUShort	*flyscanAxesTab, *cecAxesTab;
+	unsigned int		*base_A24D32_ptr,*base_A24D32_FR_ptr;
+	char				*flyscanPath;
+	double 				*meanVal, *stdDevVal;
+	int 				ceVelMin, ceVelMax;
 /*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::Data Members
 
 //	Device property data members
@@ -102,7 +108,7 @@ public:
 	Tango::DevString	*attr_axis3LedState_read;
 	Tango::DevString	*attr_axis4LedState_read;
 	Tango::DevString	*attr_referenceAxisLedState_read;
-	Tango::DevShort	*attr_currentPrecision_read;
+	Tango::DevShort		*attr_currentPrecision_read;
 	Tango::DevDouble	*attr_axis1PositionValue_read;
 	Tango::DevDouble	*attr_axis2PositionValue_read;
 	Tango::DevDouble	*attr_axis3PositionValue_read;
@@ -134,6 +140,7 @@ public:
 	Tango::DevString	*attr_cecAxes_read;
 	Tango::DevDouble	*attr_continuousScanPositionMeanValue_read;
 	Tango::DevDouble	*attr_continuousScanPositionStdDev_read;
+	Tango::DevShort	*attr_fifoMode_read;
 
 //	Constructors and destructors
 public:
@@ -562,6 +569,16 @@ public:
  */
 	virtual void read_continuousScanPositionStdDev(Tango::Attribute &attr);
 	virtual bool is_continuousScanPositionStdDev_allowed(Tango::AttReqType type);
+/**
+ *	Attribute fifoMode related methods
+ *	Description: choose the mode(auto/manual) in Fifo continuous acquisition. In manual mode, the number of samples to record is not taken into account by the device and the user has to execute stopContinuousAcquisition in order to halt the acquisition. In Auto mode, the device takes into account the number of samples and will stop recording once this number has been reached.
+ *
+ *	Data type:	Tango::DevEnum
+ *	Attr type:	Scalar
+ */
+	virtual void read_fifoMode(Tango::Attribute &attr);
+	virtual void write_fifoMode(Tango::WAttribute &attr);
+	virtual bool is_fifoMode_allowed(Tango::AttReqType type);
 
 
 	//--------------------------------------------------------
@@ -577,6 +594,20 @@ public:
 
 //	Command related methods
 public:
+	/**
+	 *	Command State related method
+	 *	Description: This command gets the device state (stored in its device_state data member) and returns it to the caller.
+	 *
+	 *	@returns Device state
+	 */
+	virtual Tango::DevState dev_state();
+	/**
+	 *	Command Status related method
+	 *	Description: This command gets the device status (stored in its device_status data member) and returns it to the caller.
+	 *
+	 *	@returns Device status
+	 */
+	virtual Tango::ConstDevString dev_status();
 	/**
 	 *	Command ResetMeasurementAxis related method
 	 *	Description: reset the input measurement axis
@@ -648,6 +679,8 @@ public:
 	void vme_system_reset();
 	int getLEDsColor(unsigned char* ledsColor);
 	void localSetBiasMode(Tango::DevUChar axis, Tango::DevString w_val);
+	int ZygoZMI4104C::getAxesfromInputString(Tango::DevString	val, Tango::DevUShort axisCtr, Tango::DevUShort	*axisTab,Tango::DevString	*attr_read);
+
 /*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::Additional Method prototypes
 };
 

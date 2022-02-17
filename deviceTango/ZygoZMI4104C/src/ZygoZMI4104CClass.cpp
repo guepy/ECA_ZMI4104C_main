@@ -1368,6 +1368,36 @@ void ZygoZMI4104CClass::attribute_factory(vector<Tango::Attr *> &att_list)
 	//	Not Memorized
 	att_list.push_back(continuousscanpositionstddev);
 
+	//	Attribute : fifoMode
+	fifoModeAttrib	*fifomode = new fifoModeAttrib();
+	Tango::UserDefaultAttrProp	fifomode_prop;
+	fifomode_prop.set_description("choose the mode(auto/manual) in Fifo continuous acquisition. In manual mode, the number of samples to record is not taken into account by the device and the user has to execute stopContinuousAcquisition in order to halt the acquisition. In Auto mode, the device takes into account the number of samples and will stop recording once this number has been reached.");
+	//	label	not set for fifoMode
+	//	unit	not set for fifoMode
+	//	standard_unit	not set for fifoMode
+	//	display_unit	not set for fifoMode
+	//	format	not set for fifoMode
+	//	max_value	not set for fifoMode
+	//	min_value	not set for fifoMode
+	//	max_alarm	not set for fifoMode
+	//	min_alarm	not set for fifoMode
+	//	max_warning	not set for fifoMode
+	//	min_warning	not set for fifoMode
+	//	delta_t	not set for fifoMode
+	//	delta_val	not set for fifoMode
+	
+	{
+		vector<string> labels;
+		labels.push_back("AUTO");
+		labels.push_back("MANUAL");
+		fifomode_prop.set_enum_labels(labels);
+	}
+	fifomode->set_default_properties(fifomode_prop);
+	//	Not Polled
+	fifomode->set_disp_level(Tango::OPERATOR);
+	//	Not Memorized
+	att_list.push_back(fifomode);
+
 
 	//	Create a list of static attributes
 	create_static_attribute_list(get_class_attr()->get_attr_list());
