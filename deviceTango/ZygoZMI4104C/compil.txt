@@ -1,0 +1,163 @@
++ Error stacktraces are turned on.
+[INFO] Scanning for projects...
+[INFO] artifact fr.soleil:super-pom-C-CPP-device: checking for updates from central
+[INFO] snapshot fr.soleil.bom:C-CPP-3rdParties:22.1.7-SNAPSHOT: checking for updates from central
+[INFO] snapshot fr.soleil.bom:BOM:22.1.7-SNAPSHOT: checking for updates from central
+[INFO] snapshot fr.soleil.bom:C-CPP-Libraries:22.1.7-SNAPSHOT: checking for updates from central
+[INFO] snapshot fr.soleil.bom:C-CPP-Devices:22.1.7-SNAPSHOT: checking for updates from central
+[INFO] artifact fr.soleil:super-pom-SOLEIL: checking for updates from central
+[INFO] ------------------------------------------------------------------------
+[INFO] Building ZygoZMI4104C
+[INFO]    task-segment: [clean, install]
+[INFO] ------------------------------------------------------------------------
+[INFO] [clean:clean]
+[INFO] artifact fr.soleil:super-pom-C-CPP-tango: checking for updates from central
+[INFO] artifact fr.soleil:super-pom-C-CPP: checking for updates from central
+[INFO] [freehep-nar:nar-download]
+[INFO] Using AOL: x86-Windows-msvc
+[INFO] [freehep-nar:nar-system-generate]
+[INFO] [freehep-nar:nar-unpack]
+[INFO] [resources:resources]
+[WARNING] Using platform encoding (Cp1252 actually) to copy filtered resources, i.e. build is platform dependent!
+[INFO] skip non existing resourceDirectory G:\deviceTango\ZygoZMI4104C\src\main\resources
+[INFO] [freehep-nar:nar-resources]
+[INFO] [compiler:compile]
+[INFO] Nothing to compile - all classes are up to date
+[INFO] [freehep-nar:nar-javah]
+[INFO] [freehep-nar:nar-compile]
+[INFO] Execute:Java13CommandLauncher: Executing 'cl' with arguments:
+'/W3'
+'/Zi'
+'/Zc:forScope-'
+'/FS'
+'/c'
+'/nologo'
+'/EHsc'
+'/O2'
+'/DNDEBUG'
+'/MD'
+'/GR'
+'/DPROJECT_NAME=ZygoZMI4104C'
+'/DPROJECT_VERSION=1.0.0'
+'/DLuphoSDK_VERSION=null'
+'/D_CONSOLE'
+'/D_USING_V110_SDK71_'
+'/D_WIN32'
+'/DWIN32'
+'/D_USING_V110_SDK71_'
+'/DWIN32_LEAN_AND_MEAN'
+'/D_CRT_SECURE_NO_WARNINGS'
+'/D_SCL_SECURE_NO_WARNINGS'
+'/DENABLE_CRASH_REPORT'
+'/DLOG4TANGO_HAS_DLL'
+'/DTANGO_HAS_DLL'
+'/IC:\Users\Administrateur\.m2\repository\fr\soleil\lib\YAT4Tango-x86-Windows-msvc12-static-release\1.13.5\nar\include'
+'/IC:\Users\Administrateur\.m2\repository\fr\soleil\lib\YAT-x86-Windows-msvc12-static-release\1.18.8\nar\include'
+'/IC:\Users\Administrateur\.m2\repository\org\tango\tango-cpp-api-x86-Windows-msvc12-shared-release\9.2.5\nar\include'
+'/IC:\Users\Administrateur\.m2\repository\org\tango\tango-cpp-api-x86-Windows-msvc12-shared-release\9.2.5\nar\include\x86-Windows-msvc'
+'/IC:\Users\Administrateur\.m2\repository\org\omnigroup\omniORB-x86-Windows-msvc12-shared-release\4.2.1a\nar\include'
+'/IC:\Users\Administrateur\.m2\repository\org\omnigroup\omniORB-x86-Windows-msvc12-shared-release\4.2.1a\nar\include\x86-Windows-msvc'
+'/IC:\Users\Administrateur\.m2\repository\org\zeromq\zeromq-x86-Windows-msvc12-shared-release\4.0.5\nar\include'
+'/IC:\Users\Administrateur\.m2\repository\org\zeromq\zeromq-x86-Windows-msvc12-shared-release\4.0.5\nar\include\x86-Windows-msvc'
+'/IC:\Users\Administrateur\.m2\repository\fr\soleil\lib\CrashReporting-x86-Windows-msvc12-static-release\1.0.3\nar\include'
+'/IC:\Users\Administrateur\.m2\repository\fr\soleil\lib\CrashReporting-x86-Windows-msvc12-static-release\1.0.3\nar\include\x86-Windows-msvc'
+'/IG:\deviceTango\ZygoZMI4104C\src'
+'/IG:\eca_soleil_zmi4104_lib'
+'/IG:\eca_soleil_zmi4104_lib\sis1100_zmilib'
+'/IG:\ECA_SOLEIL_ZMI4104C'
+'G:\deviceTango\ZygoZMI4104C\src\ClassFactory.cpp'
+'G:\deviceTango\ZygoZMI4104C\src\ZygoZMI4104CStateMachine.cpp'
+
+The ' characters around the executable and arguments are
+not part of the command.
+[INFO] Execute:Java13CommandLauncher: Executing 'cl' with arguments:
+'/W3'
+'/Zi'
+'/Zc:forScope-'
+'/FS'
+'/c'
+'/nologo'
+'/EHsc'
+'/O2'
+'/DNDEBUG'
+'/MD'
+'/GR'
+'/DPROJECT_NAME=ZygoZMI4104C'
+'/DPROJECT_VERSION=1.0.0'
+'/DLuphoSDK_VERSION=null'
+'/D_CONSOLE'
+'/D_USING_V110_SDK71_'
+'/D_WIN32'
+'/DWIN32'
+'/D_USING_V110_SDK71_'
+'/DWIN32_LEAN_AND_MEAN'
+'/D_CRT_SECURE_NO_WARNINGS'
+'/D_SCL_SECURE_NO_WARNINGS'
+'/DENABLE_CRASH_REPORT'
+'/DLOG4TANGO_HAS_DLL'
+'/DTANGO_HAS_DLL'
+'/IC:\Users\Administrateur\.m2\repository\fr\soleil\lib\YAT4Tango-x86-Windows-msvc12-static-release\1.13.5\nar\include'
+'/IC:\Users\Administrateur\.m2\repository\fr\soleil\lib\YAT-x86-Windows-msvc12-static-release\1.18.8\nar\include'
+'/IC:\Users\Administrateur\.m2\repository\org\tango\tango-cpp-api-x86-Windows-msvc12-shared-release\9.2.5\nar\include'
+'/IC:\Users\Administrateur\.m2\repository\org\tango\tango-cpp-api-x86-Windows-msvc12-shared-release\9.2.5\nar\include\x86-Windows-msvc'
+'/IC:\Users\Administrateur\.m2\repository\org\omnigroup\omniORB-x86-Windows-msvc12-shared-release\4.2.1a\nar\include'
+'/IC:\Users\Administrateur\.m2\repository\org\omnigroup\omniORB-x86-Windows-msvc12-shared-release\4.2.1a\nar\include\x86-Windows-msvc'
+'/IC:\Users\Administrateur\.m2\repository\org\zeromq\zeromq-x86-Windows-msvc12-shared-release\4.0.5\nar\include'
+'/IC:\Users\Administrateur\.m2\repository\org\zeromq\zeromq-x86-Windows-msvc12-shared-release\4.0.5\nar\include\x86-Windows-msvc'
+'/IC:\Users\Administrateur\.m2\repository\fr\soleil\lib\CrashReporting-x86-Windows-msvc12-static-release\1.0.3\nar\include'
+'/IC:\Users\Administrateur\.m2\repository\fr\soleil\lib\CrashReporting-x86-Windows-msvc12-static-release\1.0.3\nar\include\x86-Windows-msvc'
+'/IG:\deviceTango\ZygoZMI4104C\src'
+'/IG:\eca_soleil_zmi4104_lib'
+'/IG:\eca_soleil_zmi4104_lib\sis1100_zmilib'
+'/IG:\ECA_SOLEIL_ZMI4104C'
+'G:\deviceTango\ZygoZMI4104C\src\main.cpp'
+'G:\deviceTango\ZygoZMI4104C\src\ZygoZMI4104C.cpp'
+'G:\deviceTango\ZygoZMI4104C\src\ZygoZMI4104CClass.cpp'
+
+The ' characters around the executable and arguments are
+not part of the command.
+[WARNING] G:\deviceTango\ZygoZMI4104C\src\ZygoZMI4104C.cpp(1811) : warning C4244: 'argument'ÿ: conversion de 'Tango::DevUShort' en 'uint8_t', perte possible de donn‚es
+[ERROR] C:\Program Files\Microsoft Visual Studio 12.0\VC\INCLUDE\type_traits(1293) : error C2154: 'const char'ÿ: seul le type ‚num‚ration est autoris‚ en tant qu'argument pour un trait de type intrinsŠque du compilateur '__underlying_type'
+[WARNING] G:\deviceTango\ZygoZMI4104C\src\ZygoZMI4104CClass.cpp(363) : warning C4101: 'end'ÿ: variable locale non r‚f‚renc‚e
+[WARNING] G:\deviceTango\ZygoZMI4104C\src\ZygoZMI4104CClass.cpp(363) : warning C4101: 'start'ÿ: variable locale non r‚f‚renc‚e
+[INFO] ------------------------------------------------------------------------
+[ERROR] BUILD ERROR
+[INFO] ------------------------------------------------------------------------
+[INFO] NAR: Compile failed
+
+Embedded error: cl failed with return code 2
+[INFO] ------------------------------------------------------------------------
+[INFO] Trace
+org.apache.maven.lifecycle.LifecycleExecutionException: NAR: Compile failed
+	at org.apache.maven.lifecycle.DefaultLifecycleExecutor.executeGoals(DefaultLifecycleExecutor.java:703)
+	at org.apache.maven.lifecycle.DefaultLifecycleExecutor.executeGoalWithLifecycle(DefaultLifecycleExecutor.java:540)
+	at org.apache.maven.lifecycle.DefaultLifecycleExecutor.executeGoal(DefaultLifecycleExecutor.java:519)
+	at org.apache.maven.lifecycle.DefaultLifecycleExecutor.executeGoalAndHandleFailures(DefaultLifecycleExecutor.java:371)
+	at org.apache.maven.lifecycle.DefaultLifecycleExecutor.executeTaskSegments(DefaultLifecycleExecutor.java:332)
+	at org.apache.maven.lifecycle.DefaultLifecycleExecutor.execute(DefaultLifecycleExecutor.java:181)
+	at org.apache.maven.DefaultMaven.doExecute(DefaultMaven.java:356)
+	at org.apache.maven.DefaultMaven.execute(DefaultMaven.java:137)
+	at org.apache.maven.cli.MavenCli.main(MavenCli.java:356)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+	at java.lang.reflect.Method.invoke(Unknown Source)
+	at org.codehaus.classworlds.Launcher.launchEnhanced(Launcher.java:315)
+	at org.codehaus.classworlds.Launcher.launch(Launcher.java:255)
+	at org.codehaus.classworlds.Launcher.mainWithExitCode(Launcher.java:430)
+	at org.codehaus.classworlds.Launcher.main(Launcher.java:375)
+Caused by: org.apache.maven.plugin.MojoExecutionException: NAR: Compile failed
+	at org.freehep.maven.nar.NarCompileMojo.createLibrary(NarCompileMojo.java:325)
+	at org.freehep.maven.nar.NarCompileMojo.execute(NarCompileMojo.java:59)
+	at org.apache.maven.plugin.DefaultPluginManager.executeMojo(DefaultPluginManager.java:483)
+	at org.apache.maven.lifecycle.DefaultLifecycleExecutor.executeGoals(DefaultLifecycleExecutor.java:678)
+	... 16 more
+Caused by: cl failed with return code 2
+	at net.sf.antcontrib.cpptasks.compiler.CommandLineCompiler.compile(CommandLineCompiler.java:218)
+	at net.sf.antcontrib.cpptasks.compiler.CommandLineCompilerConfiguration.compile(CommandLineCompilerConfiguration.java:133)
+	at net.sf.antcontrib.cpptasks.CCTask$Core.run(CCTask.java:965)
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 41 seconds
+[INFO] Finished at: Mon Feb 21 16:15:35 CET 2022
+[INFO] Final Memory: 15M/36M
+[INFO] ------------------------------------------------------------------------

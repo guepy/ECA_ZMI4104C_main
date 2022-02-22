@@ -36,11 +36,11 @@
 //================================================================
 //  States   |  Description
 //================================================================
-//  ON       |  the device is connected and initialized
+//  RUNNING  |  device is ready to accept request
 //  OFF      |  The device is not connected
-//  STANDBY  |  the device is not properly initialized / initialization has failed
 //  FAULT    |  There are some errors on the measurement board
 //  INIT     |  device is being initialized
+//  MOVING   |  The device is busy doing other stuffs
 
 
 namespace ZygoZMI4104C_ns
@@ -57,15 +57,34 @@ namespace ZygoZMI4104C_ns
 //--------------------------------------------------------
 bool ZygoZMI4104C::is_samplingFrequency_allowed(TANGO_UNUSED(Tango::AttReqType type))
 {
-	//	Not any excluded states for samplingFrequency attribute in Write access.
-	/*----- PROTECTED REGION ID(ZygoZMI4104C::samplingFrequencyStateAllowed_WRITE) ENABLED START -----*/
+	//	Check access type.
+	if ( type!=Tango::READ_REQ )
+	{
+		//	Compare device state with not allowed states for WRITE 
+		if (get_state()==Tango::MOVING)
+		{
+		/*----- PROTECTED REGION ID(ZygoZMI4104C::samplingFrequencyStateAllowed_WRITE) ENABLED START -----*/
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::samplingFrequencyStateAllowed_WRITE
+			return false;
+		}
+		return true;
+	}
+	else
 
-	//	Not any excluded states for samplingFrequency attribute in read access.
-	/*----- PROTECTED REGION ID(ZygoZMI4104C::samplingFrequencyStateAllowed_READ) ENABLED START -----*/
+	//	Check access type.
+	if ( type==Tango::READ_REQ )
+	{
+		//	Compare device state with not allowed states for READ 
+		if (get_state()==Tango::MOVING)
+		{
+		/*----- PROTECTED REGION ID(ZygoZMI4104C::samplingFrequencyStateAllowed_READ) ENABLED START -----*/
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::samplingFrequencyStateAllowed_READ
+			return false;
+		}
+		return true;
+	}
 	return true;
 }
 
@@ -78,10 +97,19 @@ bool ZygoZMI4104C::is_samplingFrequency_allowed(TANGO_UNUSED(Tango::AttReqType t
 bool ZygoZMI4104C::is_axis1LedState_allowed(TANGO_UNUSED(Tango::AttReqType type))
 {
 
-	//	Not any excluded states for axis1LedState attribute in read access.
-	/*----- PROTECTED REGION ID(ZygoZMI4104C::axis1LedStateStateAllowed_READ) ENABLED START -----*/
+	//	Check access type.
+	if ( type==Tango::READ_REQ )
+	{
+		//	Compare device state with not allowed states for READ 
+		if (get_state()==Tango::MOVING)
+		{
+		/*----- PROTECTED REGION ID(ZygoZMI4104C::axis1LedStateStateAllowed_READ) ENABLED START -----*/
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::axis1LedStateStateAllowed_READ
+			return false;
+		}
+		return true;
+	}
 	return true;
 }
 
@@ -94,10 +122,19 @@ bool ZygoZMI4104C::is_axis1LedState_allowed(TANGO_UNUSED(Tango::AttReqType type)
 bool ZygoZMI4104C::is_axis2LedState_allowed(TANGO_UNUSED(Tango::AttReqType type))
 {
 
-	//	Not any excluded states for axis2LedState attribute in read access.
-	/*----- PROTECTED REGION ID(ZygoZMI4104C::axis2LedStateStateAllowed_READ) ENABLED START -----*/
+	//	Check access type.
+	if ( type==Tango::READ_REQ )
+	{
+		//	Compare device state with not allowed states for READ 
+		if (get_state()==Tango::MOVING)
+		{
+		/*----- PROTECTED REGION ID(ZygoZMI4104C::axis2LedStateStateAllowed_READ) ENABLED START -----*/
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::axis2LedStateStateAllowed_READ
+			return false;
+		}
+		return true;
+	}
 	return true;
 }
 
@@ -110,10 +147,19 @@ bool ZygoZMI4104C::is_axis2LedState_allowed(TANGO_UNUSED(Tango::AttReqType type)
 bool ZygoZMI4104C::is_axis3LedState_allowed(TANGO_UNUSED(Tango::AttReqType type))
 {
 
-	//	Not any excluded states for axis3LedState attribute in read access.
-	/*----- PROTECTED REGION ID(ZygoZMI4104C::axis3LedStateStateAllowed_READ) ENABLED START -----*/
+	//	Check access type.
+	if ( type==Tango::READ_REQ )
+	{
+		//	Compare device state with not allowed states for READ 
+		if (get_state()==Tango::MOVING)
+		{
+		/*----- PROTECTED REGION ID(ZygoZMI4104C::axis3LedStateStateAllowed_READ) ENABLED START -----*/
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::axis3LedStateStateAllowed_READ
+			return false;
+		}
+		return true;
+	}
 	return true;
 }
 
@@ -126,10 +172,19 @@ bool ZygoZMI4104C::is_axis3LedState_allowed(TANGO_UNUSED(Tango::AttReqType type)
 bool ZygoZMI4104C::is_axis4LedState_allowed(TANGO_UNUSED(Tango::AttReqType type))
 {
 
-	//	Not any excluded states for axis4LedState attribute in read access.
-	/*----- PROTECTED REGION ID(ZygoZMI4104C::axis4LedStateStateAllowed_READ) ENABLED START -----*/
+	//	Check access type.
+	if ( type==Tango::READ_REQ )
+	{
+		//	Compare device state with not allowed states for READ 
+		if (get_state()==Tango::MOVING)
+		{
+		/*----- PROTECTED REGION ID(ZygoZMI4104C::axis4LedStateStateAllowed_READ) ENABLED START -----*/
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::axis4LedStateStateAllowed_READ
+			return false;
+		}
+		return true;
+	}
 	return true;
 }
 
@@ -142,10 +197,19 @@ bool ZygoZMI4104C::is_axis4LedState_allowed(TANGO_UNUSED(Tango::AttReqType type)
 bool ZygoZMI4104C::is_referenceAxisLedState_allowed(TANGO_UNUSED(Tango::AttReqType type))
 {
 
-	//	Not any excluded states for referenceAxisLedState attribute in read access.
-	/*----- PROTECTED REGION ID(ZygoZMI4104C::referenceAxisLedStateStateAllowed_READ) ENABLED START -----*/
+	//	Check access type.
+	if ( type==Tango::READ_REQ )
+	{
+		//	Compare device state with not allowed states for READ 
+		if (get_state()==Tango::MOVING)
+		{
+		/*----- PROTECTED REGION ID(ZygoZMI4104C::referenceAxisLedStateStateAllowed_READ) ENABLED START -----*/
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::referenceAxisLedStateStateAllowed_READ
+			return false;
+		}
+		return true;
+	}
 	return true;
 }
 
@@ -157,15 +221,34 @@ bool ZygoZMI4104C::is_referenceAxisLedState_allowed(TANGO_UNUSED(Tango::AttReqTy
 //--------------------------------------------------------
 bool ZygoZMI4104C::is_currentPrecision_allowed(TANGO_UNUSED(Tango::AttReqType type))
 {
-	//	Not any excluded states for currentPrecision attribute in Write access.
-	/*----- PROTECTED REGION ID(ZygoZMI4104C::currentPrecisionStateAllowed_WRITE) ENABLED START -----*/
+	//	Check access type.
+	if ( type!=Tango::READ_REQ )
+	{
+		//	Compare device state with not allowed states for WRITE 
+		if (get_state()==Tango::MOVING)
+		{
+		/*----- PROTECTED REGION ID(ZygoZMI4104C::currentPrecisionStateAllowed_WRITE) ENABLED START -----*/
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::currentPrecisionStateAllowed_WRITE
+			return false;
+		}
+		return true;
+	}
+	else
 
-	//	Not any excluded states for currentPrecision attribute in read access.
-	/*----- PROTECTED REGION ID(ZygoZMI4104C::currentPrecisionStateAllowed_READ) ENABLED START -----*/
+	//	Check access type.
+	if ( type==Tango::READ_REQ )
+	{
+		//	Compare device state with not allowed states for READ 
+		if (get_state()==Tango::MOVING)
+		{
+		/*----- PROTECTED REGION ID(ZygoZMI4104C::currentPrecisionStateAllowed_READ) ENABLED START -----*/
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::currentPrecisionStateAllowed_READ
+			return false;
+		}
+		return true;
+	}
 	return true;
 }
 
@@ -178,10 +261,19 @@ bool ZygoZMI4104C::is_currentPrecision_allowed(TANGO_UNUSED(Tango::AttReqType ty
 bool ZygoZMI4104C::is_axis1PositionValue_allowed(TANGO_UNUSED(Tango::AttReqType type))
 {
 
-	//	Not any excluded states for axis1PositionValue attribute in read access.
-	/*----- PROTECTED REGION ID(ZygoZMI4104C::axis1PositionValueStateAllowed_READ) ENABLED START -----*/
+	//	Check access type.
+	if ( type==Tango::READ_REQ )
+	{
+		//	Compare device state with not allowed states for READ 
+		if (get_state()==Tango::MOVING)
+		{
+		/*----- PROTECTED REGION ID(ZygoZMI4104C::axis1PositionValueStateAllowed_READ) ENABLED START -----*/
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::axis1PositionValueStateAllowed_READ
+			return false;
+		}
+		return true;
+	}
 	return true;
 }
 
@@ -194,10 +286,19 @@ bool ZygoZMI4104C::is_axis1PositionValue_allowed(TANGO_UNUSED(Tango::AttReqType 
 bool ZygoZMI4104C::is_axis2PositionValue_allowed(TANGO_UNUSED(Tango::AttReqType type))
 {
 
-	//	Not any excluded states for axis2PositionValue attribute in read access.
-	/*----- PROTECTED REGION ID(ZygoZMI4104C::axis2PositionValueStateAllowed_READ) ENABLED START -----*/
+	//	Check access type.
+	if ( type==Tango::READ_REQ )
+	{
+		//	Compare device state with not allowed states for READ 
+		if (get_state()==Tango::MOVING)
+		{
+		/*----- PROTECTED REGION ID(ZygoZMI4104C::axis2PositionValueStateAllowed_READ) ENABLED START -----*/
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::axis2PositionValueStateAllowed_READ
+			return false;
+		}
+		return true;
+	}
 	return true;
 }
 
@@ -210,10 +311,19 @@ bool ZygoZMI4104C::is_axis2PositionValue_allowed(TANGO_UNUSED(Tango::AttReqType 
 bool ZygoZMI4104C::is_axis3PositionValue_allowed(TANGO_UNUSED(Tango::AttReqType type))
 {
 
-	//	Not any excluded states for axis3PositionValue attribute in read access.
-	/*----- PROTECTED REGION ID(ZygoZMI4104C::axis3PositionValueStateAllowed_READ) ENABLED START -----*/
+	//	Check access type.
+	if ( type==Tango::READ_REQ )
+	{
+		//	Compare device state with not allowed states for READ 
+		if (get_state()==Tango::MOVING)
+		{
+		/*----- PROTECTED REGION ID(ZygoZMI4104C::axis3PositionValueStateAllowed_READ) ENABLED START -----*/
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::axis3PositionValueStateAllowed_READ
+			return false;
+		}
+		return true;
+	}
 	return true;
 }
 
@@ -226,10 +336,19 @@ bool ZygoZMI4104C::is_axis3PositionValue_allowed(TANGO_UNUSED(Tango::AttReqType 
 bool ZygoZMI4104C::is_axis4PositionValue_allowed(TANGO_UNUSED(Tango::AttReqType type))
 {
 
-	//	Not any excluded states for axis4PositionValue attribute in read access.
-	/*----- PROTECTED REGION ID(ZygoZMI4104C::axis4PositionValueStateAllowed_READ) ENABLED START -----*/
+	//	Check access type.
+	if ( type==Tango::READ_REQ )
+	{
+		//	Compare device state with not allowed states for READ 
+		if (get_state()==Tango::MOVING)
+		{
+		/*----- PROTECTED REGION ID(ZygoZMI4104C::axis4PositionValueStateAllowed_READ) ENABLED START -----*/
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::axis4PositionValueStateAllowed_READ
+			return false;
+		}
+		return true;
+	}
 	return true;
 }
 
@@ -242,10 +361,19 @@ bool ZygoZMI4104C::is_axis4PositionValue_allowed(TANGO_UNUSED(Tango::AttReqType 
 bool ZygoZMI4104C::is_axis1OpticalPowerValue_allowed(TANGO_UNUSED(Tango::AttReqType type))
 {
 
-	//	Not any excluded states for axis1OpticalPowerValue attribute in read access.
-	/*----- PROTECTED REGION ID(ZygoZMI4104C::axis1OpticalPowerValueStateAllowed_READ) ENABLED START -----*/
+	//	Check access type.
+	if ( type==Tango::READ_REQ )
+	{
+		//	Compare device state with not allowed states for READ 
+		if (get_state()==Tango::MOVING)
+		{
+		/*----- PROTECTED REGION ID(ZygoZMI4104C::axis1OpticalPowerValueStateAllowed_READ) ENABLED START -----*/
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::axis1OpticalPowerValueStateAllowed_READ
+			return false;
+		}
+		return true;
+	}
 	return true;
 }
 
@@ -258,10 +386,19 @@ bool ZygoZMI4104C::is_axis1OpticalPowerValue_allowed(TANGO_UNUSED(Tango::AttReqT
 bool ZygoZMI4104C::is_axis2OpticalPowerValue_allowed(TANGO_UNUSED(Tango::AttReqType type))
 {
 
-	//	Not any excluded states for axis2OpticalPowerValue attribute in read access.
-	/*----- PROTECTED REGION ID(ZygoZMI4104C::axis2OpticalPowerValueStateAllowed_READ) ENABLED START -----*/
+	//	Check access type.
+	if ( type==Tango::READ_REQ )
+	{
+		//	Compare device state with not allowed states for READ 
+		if (get_state()==Tango::MOVING)
+		{
+		/*----- PROTECTED REGION ID(ZygoZMI4104C::axis2OpticalPowerValueStateAllowed_READ) ENABLED START -----*/
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::axis2OpticalPowerValueStateAllowed_READ
+			return false;
+		}
+		return true;
+	}
 	return true;
 }
 
@@ -274,10 +411,19 @@ bool ZygoZMI4104C::is_axis2OpticalPowerValue_allowed(TANGO_UNUSED(Tango::AttReqT
 bool ZygoZMI4104C::is_axis3OpticalPowerValue_allowed(TANGO_UNUSED(Tango::AttReqType type))
 {
 
-	//	Not any excluded states for axis3OpticalPowerValue attribute in read access.
-	/*----- PROTECTED REGION ID(ZygoZMI4104C::axis3OpticalPowerValueStateAllowed_READ) ENABLED START -----*/
+	//	Check access type.
+	if ( type==Tango::READ_REQ )
+	{
+		//	Compare device state with not allowed states for READ 
+		if (get_state()==Tango::MOVING)
+		{
+		/*----- PROTECTED REGION ID(ZygoZMI4104C::axis3OpticalPowerValueStateAllowed_READ) ENABLED START -----*/
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::axis3OpticalPowerValueStateAllowed_READ
+			return false;
+		}
+		return true;
+	}
 	return true;
 }
 
@@ -290,10 +436,19 @@ bool ZygoZMI4104C::is_axis3OpticalPowerValue_allowed(TANGO_UNUSED(Tango::AttReqT
 bool ZygoZMI4104C::is_axis4OpticalPowerValue_allowed(TANGO_UNUSED(Tango::AttReqType type))
 {
 
-	//	Not any excluded states for axis4OpticalPowerValue attribute in read access.
-	/*----- PROTECTED REGION ID(ZygoZMI4104C::axis4OpticalPowerValueStateAllowed_READ) ENABLED START -----*/
+	//	Check access type.
+	if ( type==Tango::READ_REQ )
+	{
+		//	Compare device state with not allowed states for READ 
+		if (get_state()==Tango::MOVING)
+		{
+		/*----- PROTECTED REGION ID(ZygoZMI4104C::axis4OpticalPowerValueStateAllowed_READ) ENABLED START -----*/
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::axis4OpticalPowerValueStateAllowed_READ
+			return false;
+		}
+		return true;
+	}
 	return true;
 }
 
@@ -305,15 +460,34 @@ bool ZygoZMI4104C::is_axis4OpticalPowerValue_allowed(TANGO_UNUSED(Tango::AttReqT
 //--------------------------------------------------------
 bool ZygoZMI4104C::is_axis1OffsetPositionValue_allowed(TANGO_UNUSED(Tango::AttReqType type))
 {
-	//	Not any excluded states for axis1OffsetPositionValue attribute in Write access.
-	/*----- PROTECTED REGION ID(ZygoZMI4104C::axis1OffsetPositionValueStateAllowed_WRITE) ENABLED START -----*/
+	//	Check access type.
+	if ( type!=Tango::READ_REQ )
+	{
+		//	Compare device state with not allowed states for WRITE 
+		if (get_state()==Tango::MOVING)
+		{
+		/*----- PROTECTED REGION ID(ZygoZMI4104C::axis1OffsetPositionValueStateAllowed_WRITE) ENABLED START -----*/
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::axis1OffsetPositionValueStateAllowed_WRITE
+			return false;
+		}
+		return true;
+	}
+	else
 
-	//	Not any excluded states for axis1OffsetPositionValue attribute in read access.
-	/*----- PROTECTED REGION ID(ZygoZMI4104C::axis1OffsetPositionValueStateAllowed_READ) ENABLED START -----*/
+	//	Check access type.
+	if ( type==Tango::READ_REQ )
+	{
+		//	Compare device state with not allowed states for READ 
+		if (get_state()==Tango::MOVING)
+		{
+		/*----- PROTECTED REGION ID(ZygoZMI4104C::axis1OffsetPositionValueStateAllowed_READ) ENABLED START -----*/
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::axis1OffsetPositionValueStateAllowed_READ
+			return false;
+		}
+		return true;
+	}
 	return true;
 }
 
@@ -325,15 +499,34 @@ bool ZygoZMI4104C::is_axis1OffsetPositionValue_allowed(TANGO_UNUSED(Tango::AttRe
 //--------------------------------------------------------
 bool ZygoZMI4104C::is_axis2OffsetPositionValue_allowed(TANGO_UNUSED(Tango::AttReqType type))
 {
-	//	Not any excluded states for axis2OffsetPositionValue attribute in Write access.
-	/*----- PROTECTED REGION ID(ZygoZMI4104C::axis2OffsetPositionValueStateAllowed_WRITE) ENABLED START -----*/
+	//	Check access type.
+	if ( type!=Tango::READ_REQ )
+	{
+		//	Compare device state with not allowed states for WRITE 
+		if (get_state()==Tango::MOVING)
+		{
+		/*----- PROTECTED REGION ID(ZygoZMI4104C::axis2OffsetPositionValueStateAllowed_WRITE) ENABLED START -----*/
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::axis2OffsetPositionValueStateAllowed_WRITE
+			return false;
+		}
+		return true;
+	}
+	else
 
-	//	Not any excluded states for axis2OffsetPositionValue attribute in read access.
-	/*----- PROTECTED REGION ID(ZygoZMI4104C::axis2OffsetPositionValueStateAllowed_READ) ENABLED START -----*/
+	//	Check access type.
+	if ( type==Tango::READ_REQ )
+	{
+		//	Compare device state with not allowed states for READ 
+		if (get_state()==Tango::MOVING)
+		{
+		/*----- PROTECTED REGION ID(ZygoZMI4104C::axis2OffsetPositionValueStateAllowed_READ) ENABLED START -----*/
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::axis2OffsetPositionValueStateAllowed_READ
+			return false;
+		}
+		return true;
+	}
 	return true;
 }
 
@@ -345,15 +538,34 @@ bool ZygoZMI4104C::is_axis2OffsetPositionValue_allowed(TANGO_UNUSED(Tango::AttRe
 //--------------------------------------------------------
 bool ZygoZMI4104C::is_axis3OffsetPositionValue_allowed(TANGO_UNUSED(Tango::AttReqType type))
 {
-	//	Not any excluded states for axis3OffsetPositionValue attribute in Write access.
-	/*----- PROTECTED REGION ID(ZygoZMI4104C::axis3OffsetPositionValueStateAllowed_WRITE) ENABLED START -----*/
+	//	Check access type.
+	if ( type!=Tango::READ_REQ )
+	{
+		//	Compare device state with not allowed states for WRITE 
+		if (get_state()==Tango::MOVING)
+		{
+		/*----- PROTECTED REGION ID(ZygoZMI4104C::axis3OffsetPositionValueStateAllowed_WRITE) ENABLED START -----*/
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::axis3OffsetPositionValueStateAllowed_WRITE
+			return false;
+		}
+		return true;
+	}
+	else
 
-	//	Not any excluded states for axis3OffsetPositionValue attribute in read access.
-	/*----- PROTECTED REGION ID(ZygoZMI4104C::axis3OffsetPositionValueStateAllowed_READ) ENABLED START -----*/
+	//	Check access type.
+	if ( type==Tango::READ_REQ )
+	{
+		//	Compare device state with not allowed states for READ 
+		if (get_state()==Tango::MOVING)
+		{
+		/*----- PROTECTED REGION ID(ZygoZMI4104C::axis3OffsetPositionValueStateAllowed_READ) ENABLED START -----*/
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::axis3OffsetPositionValueStateAllowed_READ
+			return false;
+		}
+		return true;
+	}
 	return true;
 }
 
@@ -365,15 +577,34 @@ bool ZygoZMI4104C::is_axis3OffsetPositionValue_allowed(TANGO_UNUSED(Tango::AttRe
 //--------------------------------------------------------
 bool ZygoZMI4104C::is_axis4OffsetPositionValue_allowed(TANGO_UNUSED(Tango::AttReqType type))
 {
-	//	Not any excluded states for axis4OffsetPositionValue attribute in Write access.
-	/*----- PROTECTED REGION ID(ZygoZMI4104C::axis4OffsetPositionValueStateAllowed_WRITE) ENABLED START -----*/
+	//	Check access type.
+	if ( type!=Tango::READ_REQ )
+	{
+		//	Compare device state with not allowed states for WRITE 
+		if (get_state()==Tango::MOVING)
+		{
+		/*----- PROTECTED REGION ID(ZygoZMI4104C::axis4OffsetPositionValueStateAllowed_WRITE) ENABLED START -----*/
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::axis4OffsetPositionValueStateAllowed_WRITE
+			return false;
+		}
+		return true;
+	}
+	else
 
-	//	Not any excluded states for axis4OffsetPositionValue attribute in read access.
-	/*----- PROTECTED REGION ID(ZygoZMI4104C::axis4OffsetPositionValueStateAllowed_READ) ENABLED START -----*/
+	//	Check access type.
+	if ( type==Tango::READ_REQ )
+	{
+		//	Compare device state with not allowed states for READ 
+		if (get_state()==Tango::MOVING)
+		{
+		/*----- PROTECTED REGION ID(ZygoZMI4104C::axis4OffsetPositionValueStateAllowed_READ) ENABLED START -----*/
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::axis4OffsetPositionValueStateAllowed_READ
+			return false;
+		}
+		return true;
+	}
 	return true;
 }
 
@@ -385,15 +616,34 @@ bool ZygoZMI4104C::is_axis4OffsetPositionValue_allowed(TANGO_UNUSED(Tango::AttRe
 //--------------------------------------------------------
 bool ZygoZMI4104C::is_axis1PresetPositionValue_allowed(TANGO_UNUSED(Tango::AttReqType type))
 {
-	//	Not any excluded states for axis1PresetPositionValue attribute in Write access.
-	/*----- PROTECTED REGION ID(ZygoZMI4104C::axis1PresetPositionValueStateAllowed_WRITE) ENABLED START -----*/
+	//	Check access type.
+	if ( type!=Tango::READ_REQ )
+	{
+		//	Compare device state with not allowed states for WRITE 
+		if (get_state()==Tango::MOVING)
+		{
+		/*----- PROTECTED REGION ID(ZygoZMI4104C::axis1PresetPositionValueStateAllowed_WRITE) ENABLED START -----*/
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::axis1PresetPositionValueStateAllowed_WRITE
+			return false;
+		}
+		return true;
+	}
+	else
 
-	//	Not any excluded states for axis1PresetPositionValue attribute in read access.
-	/*----- PROTECTED REGION ID(ZygoZMI4104C::axis1PresetPositionValueStateAllowed_READ) ENABLED START -----*/
+	//	Check access type.
+	if ( type==Tango::READ_REQ )
+	{
+		//	Compare device state with not allowed states for READ 
+		if (get_state()==Tango::MOVING)
+		{
+		/*----- PROTECTED REGION ID(ZygoZMI4104C::axis1PresetPositionValueStateAllowed_READ) ENABLED START -----*/
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::axis1PresetPositionValueStateAllowed_READ
+			return false;
+		}
+		return true;
+	}
 	return true;
 }
 
@@ -405,15 +655,34 @@ bool ZygoZMI4104C::is_axis1PresetPositionValue_allowed(TANGO_UNUSED(Tango::AttRe
 //--------------------------------------------------------
 bool ZygoZMI4104C::is_axis2PresetPositionValue_allowed(TANGO_UNUSED(Tango::AttReqType type))
 {
-	//	Not any excluded states for axis2PresetPositionValue attribute in Write access.
-	/*----- PROTECTED REGION ID(ZygoZMI4104C::axis2PresetPositionValueStateAllowed_WRITE) ENABLED START -----*/
+	//	Check access type.
+	if ( type!=Tango::READ_REQ )
+	{
+		//	Compare device state with not allowed states for WRITE 
+		if (get_state()==Tango::MOVING)
+		{
+		/*----- PROTECTED REGION ID(ZygoZMI4104C::axis2PresetPositionValueStateAllowed_WRITE) ENABLED START -----*/
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::axis2PresetPositionValueStateAllowed_WRITE
+			return false;
+		}
+		return true;
+	}
+	else
 
-	//	Not any excluded states for axis2PresetPositionValue attribute in read access.
-	/*----- PROTECTED REGION ID(ZygoZMI4104C::axis2PresetPositionValueStateAllowed_READ) ENABLED START -----*/
+	//	Check access type.
+	if ( type==Tango::READ_REQ )
+	{
+		//	Compare device state with not allowed states for READ 
+		if (get_state()==Tango::MOVING)
+		{
+		/*----- PROTECTED REGION ID(ZygoZMI4104C::axis2PresetPositionValueStateAllowed_READ) ENABLED START -----*/
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::axis2PresetPositionValueStateAllowed_READ
+			return false;
+		}
+		return true;
+	}
 	return true;
 }
 
@@ -425,15 +694,34 @@ bool ZygoZMI4104C::is_axis2PresetPositionValue_allowed(TANGO_UNUSED(Tango::AttRe
 //--------------------------------------------------------
 bool ZygoZMI4104C::is_axis3PresetPositionValue_allowed(TANGO_UNUSED(Tango::AttReqType type))
 {
-	//	Not any excluded states for axis3PresetPositionValue attribute in Write access.
-	/*----- PROTECTED REGION ID(ZygoZMI4104C::axis3PresetPositionValueStateAllowed_WRITE) ENABLED START -----*/
+	//	Check access type.
+	if ( type!=Tango::READ_REQ )
+	{
+		//	Compare device state with not allowed states for WRITE 
+		if (get_state()==Tango::MOVING)
+		{
+		/*----- PROTECTED REGION ID(ZygoZMI4104C::axis3PresetPositionValueStateAllowed_WRITE) ENABLED START -----*/
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::axis3PresetPositionValueStateAllowed_WRITE
+			return false;
+		}
+		return true;
+	}
+	else
 
-	//	Not any excluded states for axis3PresetPositionValue attribute in read access.
-	/*----- PROTECTED REGION ID(ZygoZMI4104C::axis3PresetPositionValueStateAllowed_READ) ENABLED START -----*/
+	//	Check access type.
+	if ( type==Tango::READ_REQ )
+	{
+		//	Compare device state with not allowed states for READ 
+		if (get_state()==Tango::MOVING)
+		{
+		/*----- PROTECTED REGION ID(ZygoZMI4104C::axis3PresetPositionValueStateAllowed_READ) ENABLED START -----*/
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::axis3PresetPositionValueStateAllowed_READ
+			return false;
+		}
+		return true;
+	}
 	return true;
 }
 
@@ -445,15 +733,34 @@ bool ZygoZMI4104C::is_axis3PresetPositionValue_allowed(TANGO_UNUSED(Tango::AttRe
 //--------------------------------------------------------
 bool ZygoZMI4104C::is_axis4PresetPositionValue_allowed(TANGO_UNUSED(Tango::AttReqType type))
 {
-	//	Not any excluded states for axis4PresetPositionValue attribute in Write access.
-	/*----- PROTECTED REGION ID(ZygoZMI4104C::axis4PresetPositionValueStateAllowed_WRITE) ENABLED START -----*/
+	//	Check access type.
+	if ( type!=Tango::READ_REQ )
+	{
+		//	Compare device state with not allowed states for WRITE 
+		if (get_state()==Tango::MOVING)
+		{
+		/*----- PROTECTED REGION ID(ZygoZMI4104C::axis4PresetPositionValueStateAllowed_WRITE) ENABLED START -----*/
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::axis4PresetPositionValueStateAllowed_WRITE
+			return false;
+		}
+		return true;
+	}
+	else
 
-	//	Not any excluded states for axis4PresetPositionValue attribute in read access.
-	/*----- PROTECTED REGION ID(ZygoZMI4104C::axis4PresetPositionValueStateAllowed_READ) ENABLED START -----*/
+	//	Check access type.
+	if ( type==Tango::READ_REQ )
+	{
+		//	Compare device state with not allowed states for READ 
+		if (get_state()==Tango::MOVING)
+		{
+		/*----- PROTECTED REGION ID(ZygoZMI4104C::axis4PresetPositionValueStateAllowed_READ) ENABLED START -----*/
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::axis4PresetPositionValueStateAllowed_READ
+			return false;
+		}
+		return true;
+	}
 	return true;
 }
 
@@ -465,15 +772,34 @@ bool ZygoZMI4104C::is_axis4PresetPositionValue_allowed(TANGO_UNUSED(Tango::AttRe
 //--------------------------------------------------------
 bool ZygoZMI4104C::is_axis1BiasMode_allowed(TANGO_UNUSED(Tango::AttReqType type))
 {
-	//	Not any excluded states for axis1BiasMode attribute in Write access.
-	/*----- PROTECTED REGION ID(ZygoZMI4104C::axis1BiasModeStateAllowed_WRITE) ENABLED START -----*/
+	//	Check access type.
+	if ( type!=Tango::READ_REQ )
+	{
+		//	Compare device state with not allowed states for WRITE 
+		if (get_state()==Tango::MOVING)
+		{
+		/*----- PROTECTED REGION ID(ZygoZMI4104C::axis1BiasModeStateAllowed_WRITE) ENABLED START -----*/
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::axis1BiasModeStateAllowed_WRITE
+			return false;
+		}
+		return true;
+	}
+	else
 
-	//	Not any excluded states for axis1BiasMode attribute in read access.
-	/*----- PROTECTED REGION ID(ZygoZMI4104C::axis1BiasModeStateAllowed_READ) ENABLED START -----*/
+	//	Check access type.
+	if ( type==Tango::READ_REQ )
+	{
+		//	Compare device state with not allowed states for READ 
+		if (get_state()==Tango::MOVING)
+		{
+		/*----- PROTECTED REGION ID(ZygoZMI4104C::axis1BiasModeStateAllowed_READ) ENABLED START -----*/
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::axis1BiasModeStateAllowed_READ
+			return false;
+		}
+		return true;
+	}
 	return true;
 }
 
@@ -485,15 +811,34 @@ bool ZygoZMI4104C::is_axis1BiasMode_allowed(TANGO_UNUSED(Tango::AttReqType type)
 //--------------------------------------------------------
 bool ZygoZMI4104C::is_axis2BiasMode_allowed(TANGO_UNUSED(Tango::AttReqType type))
 {
-	//	Not any excluded states for axis2BiasMode attribute in Write access.
-	/*----- PROTECTED REGION ID(ZygoZMI4104C::axis2BiasModeStateAllowed_WRITE) ENABLED START -----*/
+	//	Check access type.
+	if ( type!=Tango::READ_REQ )
+	{
+		//	Compare device state with not allowed states for WRITE 
+		if (get_state()==Tango::MOVING)
+		{
+		/*----- PROTECTED REGION ID(ZygoZMI4104C::axis2BiasModeStateAllowed_WRITE) ENABLED START -----*/
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::axis2BiasModeStateAllowed_WRITE
+			return false;
+		}
+		return true;
+	}
+	else
 
-	//	Not any excluded states for axis2BiasMode attribute in read access.
-	/*----- PROTECTED REGION ID(ZygoZMI4104C::axis2BiasModeStateAllowed_READ) ENABLED START -----*/
+	//	Check access type.
+	if ( type==Tango::READ_REQ )
+	{
+		//	Compare device state with not allowed states for READ 
+		if (get_state()==Tango::MOVING)
+		{
+		/*----- PROTECTED REGION ID(ZygoZMI4104C::axis2BiasModeStateAllowed_READ) ENABLED START -----*/
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::axis2BiasModeStateAllowed_READ
+			return false;
+		}
+		return true;
+	}
 	return true;
 }
 
@@ -505,15 +850,34 @@ bool ZygoZMI4104C::is_axis2BiasMode_allowed(TANGO_UNUSED(Tango::AttReqType type)
 //--------------------------------------------------------
 bool ZygoZMI4104C::is_axis3BiasMode_allowed(TANGO_UNUSED(Tango::AttReqType type))
 {
-	//	Not any excluded states for axis3BiasMode attribute in Write access.
-	/*----- PROTECTED REGION ID(ZygoZMI4104C::axis3BiasModeStateAllowed_WRITE) ENABLED START -----*/
+	//	Check access type.
+	if ( type!=Tango::READ_REQ )
+	{
+		//	Compare device state with not allowed states for WRITE 
+		if (get_state()==Tango::MOVING)
+		{
+		/*----- PROTECTED REGION ID(ZygoZMI4104C::axis3BiasModeStateAllowed_WRITE) ENABLED START -----*/
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::axis3BiasModeStateAllowed_WRITE
+			return false;
+		}
+		return true;
+	}
+	else
 
-	//	Not any excluded states for axis3BiasMode attribute in read access.
-	/*----- PROTECTED REGION ID(ZygoZMI4104C::axis3BiasModeStateAllowed_READ) ENABLED START -----*/
+	//	Check access type.
+	if ( type==Tango::READ_REQ )
+	{
+		//	Compare device state with not allowed states for READ 
+		if (get_state()==Tango::MOVING)
+		{
+		/*----- PROTECTED REGION ID(ZygoZMI4104C::axis3BiasModeStateAllowed_READ) ENABLED START -----*/
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::axis3BiasModeStateAllowed_READ
+			return false;
+		}
+		return true;
+	}
 	return true;
 }
 
@@ -525,15 +889,34 @@ bool ZygoZMI4104C::is_axis3BiasMode_allowed(TANGO_UNUSED(Tango::AttReqType type)
 //--------------------------------------------------------
 bool ZygoZMI4104C::is_axis4BiasMode_allowed(TANGO_UNUSED(Tango::AttReqType type))
 {
-	//	Not any excluded states for axis4BiasMode attribute in Write access.
-	/*----- PROTECTED REGION ID(ZygoZMI4104C::axis4BiasModeStateAllowed_WRITE) ENABLED START -----*/
+	//	Check access type.
+	if ( type!=Tango::READ_REQ )
+	{
+		//	Compare device state with not allowed states for WRITE 
+		if (get_state()==Tango::MOVING)
+		{
+		/*----- PROTECTED REGION ID(ZygoZMI4104C::axis4BiasModeStateAllowed_WRITE) ENABLED START -----*/
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::axis4BiasModeStateAllowed_WRITE
+			return false;
+		}
+		return true;
+	}
+	else
 
-	//	Not any excluded states for axis4BiasMode attribute in read access.
-	/*----- PROTECTED REGION ID(ZygoZMI4104C::axis4BiasModeStateAllowed_READ) ENABLED START -----*/
+	//	Check access type.
+	if ( type==Tango::READ_REQ )
+	{
+		//	Compare device state with not allowed states for READ 
+		if (get_state()==Tango::MOVING)
+		{
+		/*----- PROTECTED REGION ID(ZygoZMI4104C::axis4BiasModeStateAllowed_READ) ENABLED START -----*/
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::axis4BiasModeStateAllowed_READ
+			return false;
+		}
+		return true;
+	}
 	return true;
 }
 
@@ -545,15 +928,34 @@ bool ZygoZMI4104C::is_axis4BiasMode_allowed(TANGO_UNUSED(Tango::AttReqType type)
 //--------------------------------------------------------
 bool ZygoZMI4104C::is_interferometerConfiguration_allowed(TANGO_UNUSED(Tango::AttReqType type))
 {
-	//	Not any excluded states for interferometerConfiguration attribute in Write access.
-	/*----- PROTECTED REGION ID(ZygoZMI4104C::interferometerConfigurationStateAllowed_WRITE) ENABLED START -----*/
+	//	Check access type.
+	if ( type!=Tango::READ_REQ )
+	{
+		//	Compare device state with not allowed states for WRITE 
+		if (get_state()==Tango::MOVING)
+		{
+		/*----- PROTECTED REGION ID(ZygoZMI4104C::interferometerConfigurationStateAllowed_WRITE) ENABLED START -----*/
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::interferometerConfigurationStateAllowed_WRITE
+			return false;
+		}
+		return true;
+	}
+	else
 
-	//	Not any excluded states for interferometerConfiguration attribute in read access.
-	/*----- PROTECTED REGION ID(ZygoZMI4104C::interferometerConfigurationStateAllowed_READ) ENABLED START -----*/
+	//	Check access type.
+	if ( type==Tango::READ_REQ )
+	{
+		//	Compare device state with not allowed states for READ 
+		if (get_state()==Tango::MOVING)
+		{
+		/*----- PROTECTED REGION ID(ZygoZMI4104C::interferometerConfigurationStateAllowed_READ) ENABLED START -----*/
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::interferometerConfigurationStateAllowed_READ
+			return false;
+		}
+		return true;
+	}
 	return true;
 }
 
@@ -566,10 +968,19 @@ bool ZygoZMI4104C::is_interferometerConfiguration_allowed(TANGO_UNUSED(Tango::At
 bool ZygoZMI4104C::is_sisFirmwareVersion_allowed(TANGO_UNUSED(Tango::AttReqType type))
 {
 
-	//	Not any excluded states for sisFirmwareVersion attribute in read access.
-	/*----- PROTECTED REGION ID(ZygoZMI4104C::sisFirmwareVersionStateAllowed_READ) ENABLED START -----*/
+	//	Check access type.
+	if ( type==Tango::READ_REQ )
+	{
+		//	Compare device state with not allowed states for READ 
+		if (get_state()==Tango::MOVING)
+		{
+		/*----- PROTECTED REGION ID(ZygoZMI4104C::sisFirmwareVersionStateAllowed_READ) ENABLED START -----*/
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::sisFirmwareVersionStateAllowed_READ
+			return false;
+		}
+		return true;
+	}
 	return true;
 }
 
@@ -582,10 +993,19 @@ bool ZygoZMI4104C::is_sisFirmwareVersion_allowed(TANGO_UNUSED(Tango::AttReqType 
 bool ZygoZMI4104C::is_sisBoardVersion_allowed(TANGO_UNUSED(Tango::AttReqType type))
 {
 
-	//	Not any excluded states for sisBoardVersion attribute in read access.
-	/*----- PROTECTED REGION ID(ZygoZMI4104C::sisBoardVersionStateAllowed_READ) ENABLED START -----*/
+	//	Check access type.
+	if ( type==Tango::READ_REQ )
+	{
+		//	Compare device state with not allowed states for READ 
+		if (get_state()==Tango::MOVING)
+		{
+		/*----- PROTECTED REGION ID(ZygoZMI4104C::sisBoardVersionStateAllowed_READ) ENABLED START -----*/
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::sisBoardVersionStateAllowed_READ
+			return false;
+		}
+		return true;
+	}
 	return true;
 }
 
@@ -598,10 +1018,19 @@ bool ZygoZMI4104C::is_sisBoardVersion_allowed(TANGO_UNUSED(Tango::AttReqType typ
 bool ZygoZMI4104C::is_zygoFirmwareVersion_allowed(TANGO_UNUSED(Tango::AttReqType type))
 {
 
-	//	Not any excluded states for zygoFirmwareVersion attribute in read access.
-	/*----- PROTECTED REGION ID(ZygoZMI4104C::zygoFirmwareVersionStateAllowed_READ) ENABLED START -----*/
+	//	Check access type.
+	if ( type==Tango::READ_REQ )
+	{
+		//	Compare device state with not allowed states for READ 
+		if (get_state()==Tango::MOVING)
+		{
+		/*----- PROTECTED REGION ID(ZygoZMI4104C::zygoFirmwareVersionStateAllowed_READ) ENABLED START -----*/
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::zygoFirmwareVersionStateAllowed_READ
+			return false;
+		}
+		return true;
+	}
 	return true;
 }
 
@@ -614,10 +1043,19 @@ bool ZygoZMI4104C::is_zygoFirmwareVersion_allowed(TANGO_UNUSED(Tango::AttReqType
 bool ZygoZMI4104C::is_zygoBoardVersion_allowed(TANGO_UNUSED(Tango::AttReqType type))
 {
 
-	//	Not any excluded states for zygoBoardVersion attribute in read access.
-	/*----- PROTECTED REGION ID(ZygoZMI4104C::zygoBoardVersionStateAllowed_READ) ENABLED START -----*/
+	//	Check access type.
+	if ( type==Tango::READ_REQ )
+	{
+		//	Compare device state with not allowed states for READ 
+		if (get_state()==Tango::MOVING)
+		{
+		/*----- PROTECTED REGION ID(ZygoZMI4104C::zygoBoardVersionStateAllowed_READ) ENABLED START -----*/
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::zygoBoardVersionStateAllowed_READ
+			return false;
+		}
+		return true;
+	}
 	return true;
 }
 
@@ -630,10 +1068,19 @@ bool ZygoZMI4104C::is_zygoBoardVersion_allowed(TANGO_UNUSED(Tango::AttReqType ty
 bool ZygoZMI4104C::is_zygoSerialNumber_allowed(TANGO_UNUSED(Tango::AttReqType type))
 {
 
-	//	Not any excluded states for zygoSerialNumber attribute in read access.
-	/*----- PROTECTED REGION ID(ZygoZMI4104C::zygoSerialNumberStateAllowed_READ) ENABLED START -----*/
+	//	Check access type.
+	if ( type==Tango::READ_REQ )
+	{
+		//	Compare device state with not allowed states for READ 
+		if (get_state()==Tango::MOVING)
+		{
+		/*----- PROTECTED REGION ID(ZygoZMI4104C::zygoSerialNumberStateAllowed_READ) ENABLED START -----*/
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::zygoSerialNumberStateAllowed_READ
+			return false;
+		}
+		return true;
+	}
 	return true;
 }
 
@@ -645,15 +1092,34 @@ bool ZygoZMI4104C::is_zygoSerialNumber_allowed(TANGO_UNUSED(Tango::AttReqType ty
 //--------------------------------------------------------
 bool ZygoZMI4104C::is_continuousSamplingAxes_allowed(TANGO_UNUSED(Tango::AttReqType type))
 {
-	//	Not any excluded states for continuousSamplingAxes attribute in Write access.
-	/*----- PROTECTED REGION ID(ZygoZMI4104C::continuousSamplingAxesStateAllowed_WRITE) ENABLED START -----*/
+	//	Check access type.
+	if ( type!=Tango::READ_REQ )
+	{
+		//	Compare device state with not allowed states for WRITE 
+		if (get_state()==Tango::MOVING)
+		{
+		/*----- PROTECTED REGION ID(ZygoZMI4104C::continuousSamplingAxesStateAllowed_WRITE) ENABLED START -----*/
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::continuousSamplingAxesStateAllowed_WRITE
+			return false;
+		}
+		return true;
+	}
+	else
 
-	//	Not any excluded states for continuousSamplingAxes attribute in read access.
-	/*----- PROTECTED REGION ID(ZygoZMI4104C::continuousSamplingAxesStateAllowed_READ) ENABLED START -----*/
+	//	Check access type.
+	if ( type==Tango::READ_REQ )
+	{
+		//	Compare device state with not allowed states for READ 
+		if (get_state()==Tango::MOVING)
+		{
+		/*----- PROTECTED REGION ID(ZygoZMI4104C::continuousSamplingAxesStateAllowed_READ) ENABLED START -----*/
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::continuousSamplingAxesStateAllowed_READ
+			return false;
+		}
+		return true;
+	}
 	return true;
 }
 
@@ -685,15 +1151,34 @@ bool ZygoZMI4104C::is_continuousSamplingSize_allowed(TANGO_UNUSED(Tango::AttReqT
 //--------------------------------------------------------
 bool ZygoZMI4104C::is_cecAxes_allowed(TANGO_UNUSED(Tango::AttReqType type))
 {
-	//	Not any excluded states for cecAxes attribute in Write access.
-	/*----- PROTECTED REGION ID(ZygoZMI4104C::cecAxesStateAllowed_WRITE) ENABLED START -----*/
+	//	Check access type.
+	if ( type!=Tango::READ_REQ )
+	{
+		//	Compare device state with not allowed states for WRITE 
+		if (get_state()==Tango::MOVING)
+		{
+		/*----- PROTECTED REGION ID(ZygoZMI4104C::cecAxesStateAllowed_WRITE) ENABLED START -----*/
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::cecAxesStateAllowed_WRITE
+			return false;
+		}
+		return true;
+	}
+	else
 
-	//	Not any excluded states for cecAxes attribute in read access.
-	/*----- PROTECTED REGION ID(ZygoZMI4104C::cecAxesStateAllowed_READ) ENABLED START -----*/
+	//	Check access type.
+	if ( type==Tango::READ_REQ )
+	{
+		//	Compare device state with not allowed states for READ 
+		if (get_state()==Tango::MOVING)
+		{
+		/*----- PROTECTED REGION ID(ZygoZMI4104C::cecAxesStateAllowed_READ) ENABLED START -----*/
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::cecAxesStateAllowed_READ
+			return false;
+		}
+		return true;
+	}
 	return true;
 }
 
@@ -706,10 +1191,19 @@ bool ZygoZMI4104C::is_cecAxes_allowed(TANGO_UNUSED(Tango::AttReqType type))
 bool ZygoZMI4104C::is_continuousScanPositionMeanValue_allowed(TANGO_UNUSED(Tango::AttReqType type))
 {
 
-	//	Not any excluded states for continuousScanPositionMeanValue attribute in read access.
-	/*----- PROTECTED REGION ID(ZygoZMI4104C::continuousScanPositionMeanValueStateAllowed_READ) ENABLED START -----*/
+	//	Check access type.
+	if ( type==Tango::READ_REQ )
+	{
+		//	Compare device state with not allowed states for READ 
+		if (get_state()==Tango::MOVING)
+		{
+		/*----- PROTECTED REGION ID(ZygoZMI4104C::continuousScanPositionMeanValueStateAllowed_READ) ENABLED START -----*/
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::continuousScanPositionMeanValueStateAllowed_READ
+			return false;
+		}
+		return true;
+	}
 	return true;
 }
 
@@ -722,10 +1216,19 @@ bool ZygoZMI4104C::is_continuousScanPositionMeanValue_allowed(TANGO_UNUSED(Tango
 bool ZygoZMI4104C::is_continuousScanPositionStdDev_allowed(TANGO_UNUSED(Tango::AttReqType type))
 {
 
-	//	Not any excluded states for continuousScanPositionStdDev attribute in read access.
-	/*----- PROTECTED REGION ID(ZygoZMI4104C::continuousScanPositionStdDevStateAllowed_READ) ENABLED START -----*/
+	//	Check access type.
+	if ( type==Tango::READ_REQ )
+	{
+		//	Compare device state with not allowed states for READ 
+		if (get_state()==Tango::MOVING)
+		{
+		/*----- PROTECTED REGION ID(ZygoZMI4104C::continuousScanPositionStdDevStateAllowed_READ) ENABLED START -----*/
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::continuousScanPositionStdDevStateAllowed_READ
+			return false;
+		}
+		return true;
+	}
 	return true;
 }
 
@@ -737,15 +1240,34 @@ bool ZygoZMI4104C::is_continuousScanPositionStdDev_allowed(TANGO_UNUSED(Tango::A
 //--------------------------------------------------------
 bool ZygoZMI4104C::is_fifoMode_allowed(TANGO_UNUSED(Tango::AttReqType type))
 {
-	//	Not any excluded states for fifoMode attribute in Write access.
-	/*----- PROTECTED REGION ID(ZygoZMI4104C::fifoModeStateAllowed_WRITE) ENABLED START -----*/
+	//	Check access type.
+	if ( type!=Tango::READ_REQ )
+	{
+		//	Compare device state with not allowed states for WRITE 
+		if (get_state()==Tango::MOVING)
+		{
+		/*----- PROTECTED REGION ID(ZygoZMI4104C::fifoModeStateAllowed_WRITE) ENABLED START -----*/
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::fifoModeStateAllowed_WRITE
+			return false;
+		}
+		return true;
+	}
+	else
 
-	//	Not any excluded states for fifoMode attribute in read access.
-	/*----- PROTECTED REGION ID(ZygoZMI4104C::fifoModeStateAllowed_READ) ENABLED START -----*/
+	//	Check access type.
+	if ( type==Tango::READ_REQ )
+	{
+		//	Compare device state with not allowed states for READ 
+		if (get_state()==Tango::MOVING)
+		{
+		/*----- PROTECTED REGION ID(ZygoZMI4104C::fifoModeStateAllowed_READ) ENABLED START -----*/
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::fifoModeStateAllowed_READ
+			return false;
+		}
+		return true;
+	}
 	return true;
 }
 
@@ -762,10 +1284,14 @@ bool ZygoZMI4104C::is_fifoMode_allowed(TANGO_UNUSED(Tango::AttReqType type))
 //--------------------------------------------------------
 bool ZygoZMI4104C::is_ResetMeasurementAxis_allowed(TANGO_UNUSED(const CORBA::Any &any))
 {
-	//	Not any excluded states for ResetMeasurementAxis command.
+	//	Compare device state with not allowed states.
+	if (get_state()==Tango::MOVING)
+	{
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::ResetMeasurementAxisStateAllowed) ENABLED START -----*/
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::ResetMeasurementAxisStateAllowed
+		return false;
+	}
 	return true;
 }
 
@@ -777,10 +1303,14 @@ bool ZygoZMI4104C::is_ResetMeasurementAxis_allowed(TANGO_UNUSED(const CORBA::Any
 //--------------------------------------------------------
 bool ZygoZMI4104C::is_StartContinuousAcquisition_allowed(TANGO_UNUSED(const CORBA::Any &any))
 {
-	//	Not any excluded states for StartContinuousAcquisition command.
+	//	Compare device state with not allowed states.
+	if (get_state()==Tango::MOVING)
+	{
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::StartContinuousAcquisitionStateAllowed) ENABLED START -----*/
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::StartContinuousAcquisitionStateAllowed
+		return false;
+	}
 	return true;
 }
 
@@ -807,10 +1337,14 @@ bool ZygoZMI4104C::is_StopContinnuousAcquisition_allowed(TANGO_UNUSED(const CORB
 //--------------------------------------------------------
 bool ZygoZMI4104C::is_EnableCyclicErrorCompensation_allowed(TANGO_UNUSED(const CORBA::Any &any))
 {
-	//	Not any excluded states for EnableCyclicErrorCompensation command.
+	//	Compare device state with not allowed states.
+	if (get_state()==Tango::MOVING)
+	{
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::EnableCyclicErrorCompensationStateAllowed) ENABLED START -----*/
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::EnableCyclicErrorCompensationStateAllowed
+		return false;
+	}
 	return true;
 }
 
@@ -822,10 +1356,14 @@ bool ZygoZMI4104C::is_EnableCyclicErrorCompensation_allowed(TANGO_UNUSED(const C
 //--------------------------------------------------------
 bool ZygoZMI4104C::is_DisableCyclicErrorCompensation_allowed(TANGO_UNUSED(const CORBA::Any &any))
 {
-	//	Not any excluded states for DisableCyclicErrorCompensation command.
+	//	Compare device state with not allowed states.
+	if (get_state()==Tango::MOVING)
+	{
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::DisableCyclicErrorCompensationStateAllowed) ENABLED START -----*/
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::DisableCyclicErrorCompensationStateAllowed
+		return false;
+	}
 	return true;
 }
 
@@ -837,10 +1375,14 @@ bool ZygoZMI4104C::is_DisableCyclicErrorCompensation_allowed(TANGO_UNUSED(const 
 //--------------------------------------------------------
 bool ZygoZMI4104C::is_ResetMeasurementSystem_allowed(TANGO_UNUSED(const CORBA::Any &any))
 {
-	//	Not any excluded states for ResetMeasurementSystem command.
+	//	Compare device state with not allowed states.
+	if (get_state()==Tango::MOVING)
+	{
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::ResetMeasurementSystemStateAllowed) ENABLED START -----*/
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::ResetMeasurementSystemStateAllowed
+		return false;
+	}
 	return true;
 }
 

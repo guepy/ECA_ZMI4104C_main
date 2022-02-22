@@ -26,7 +26,7 @@ extern "C" {
 #include "sis3302.h"
 #include "sis3100.h"
 #include "sis3100_vme_calls.h"
-
+#include "zygoErrorCodes.h"
 
 #ifdef __cplusplus
 }
@@ -53,11 +53,6 @@ extern "C" {
 #define DOUBLE_PASS_INT_VEL_COEF			1.473352 * (1e-3)	// ± 2.55 m/sec resolution
 #define CE_MAX_VEL_DFLT						31457
 #define CE_MIN_VEL_DFLT						96
-#define NO_EXCEPTION_ERROR					0
-#define EXCEPTION_ERROR						1
-#define STACK_OVERFLOW						2
-#define SWITCH_DEFAULT_ERROR				3
-#define COMM_ERROR							4
 #define AXIS1								1
 #define AXIS2								2
 #define AXIS3								3
@@ -66,7 +61,7 @@ extern "C" {
 #define PI									3.14159265359
 #define BIAS_CTRL_MODE_NBR					5		
 #define NON_FATAL							0
-#define EXIT_FAILLURE						1
+#define EXIT_FAILLURE						-1
 #define INFO_PURPOSE						2
 #define SAMP_FREQ_MIN						305	// 1/(65536*005) in Hz
 #define SAMP_FREQ_MIN_DIV_2					305/2	//in Mhz. min freq with divide by 2 enable in control register 16
@@ -81,12 +76,10 @@ extern "C" {
 #define defaultAPDSigRMSL2Set				0x3390
 #define READ								0
 #define WRITE								1
-#define VME_PROT_ERROR						0x211
-#define FIFO_OVERLAP_ERR_CODE				-100
 #define ERRSTRMAX							512
 #define NBR_RAM_PAGES						64
 #define NBR_SAMP_PER_PAGE					256
-#define CE_MIN_VEL							50 // min vel is 0.5mm/s
+#define CE_MIN_VEL							24
 #define CE_MAX_VEL							31457 // max vel is 0.38 m/s
 #define ACTIVATE_CEC						0
 #define FIFO_FLYSCAN_MODE					1
@@ -174,7 +167,8 @@ extern "C" {
 	static bool curPrecision = 0;
 	//static variable which hold the cached value of sampling frequency in Hertz
 	static uint32_t currentSamplingFrequency = 0;
-
+	HANDLE	zygoLogInfo_key,zygoLogWarn_key,zygoLogFatal_key, rw_key;
+	
 	static uint8_t tabLen = sizeof(ZYGO_BOARD_TYPE) / sizeof(ZYGO_BOARD_TYPE[0]);
 	/**/
 	//GUID sis1100w_GUID = { 0x944adde8, 0x4f6d, 0x4bee, 0xa309, 0x7ad62ab0b4bb };
@@ -258,7 +252,7 @@ extern "C" {
 	ECASOLEILZMI4104CLIB_API void setBaseAddress(uint32_t baseAddressAxis3);
 	ECASOLEILZMI4104CLIB_API uint32_t getCachedBaseAddress();
 
-	ECASOLEILZMI4104CLIB_API void createEvents();
+	ECASOLEILZMI4104CLIB_API int createEvents();
 	ECASOLEILZMI4104CLIB_API int  createThreads( );
 	ECASOLEILZMI4104CLIB_API void closeThreads(void);
 
@@ -291,7 +285,7 @@ extern "C" {
 	ECASOLEILZMI4104CLIB_API int setPresetPosition37(uint8_t axis, double presetPos);
 	ECASOLEILZMI4104CLIB_API int setPresetPosition(uint8_t axis, double presetPos);
 	ECASOLEILZMI4104CLIB_API int getPresetPosition(uint8_t axis, double* offsetPos);
-	ECASOLEILZMI4104CLIB_API int isVmePos32Overflow(uint8_t axis);
+	ECASOLEILZMI4104CLIB_API bool isVmePos32Overflow(uint8_t axis);
 	ECASOLEILZMI4104CLIB_API int setHoldSampEnable();
 
 	ECASOLEILZMI4104CLIB_API int enable32BitsOverflow(uint8_t axis);
@@ -342,7 +336,7 @@ extern "C" {
 	ECASOLEILZMI4104CLIB_API int enableSampling(uint32_t);
 	ECASOLEILZMI4104CLIB_API int disableSampleTimer();
 	ECASOLEILZMI4104CLIB_API int setSampTimerFreq(uint16_t sampTimerVal);
-	ECASOLEILZMI4104CLIB_API int getVmeExtSampFlag(uint8_t axis);
+	ECASOLEILZMI4104CLIB_API int getVmeExtSampFlag(uint8_t axis, int* sampleFlag);
 
 	ECASOLEILZMI4104CLIB_API int resetHoldSampEnable();
 	ECASOLEILZMI4104CLIB_API int enableResetFindsVelocity(uint8_t axis);
@@ -362,6 +356,7 @@ extern "C" {
 	ECASOLEILZMI4104CLIB_API int checkLimits(int num2check, int minVal, int maxVal);
 
 	ECASOLEILZMI4104CLIB_API int configureFlyscan(uint8_t axis, double, uint8_t);
+	ECASOLEILZMI4104CLIB_API int deconfigureFlycsan(uint8_t axesNbr);
 	ECASOLEILZMI4104CLIB_API int startAquisition(uint8_t axis);
 	ECASOLEILZMI4104CLIB_API int stopAquisition(uint8_t axis);
 	ECASOLEILZMI4104CLIB_API int getFlyscanData(uint32_t*, uint32_t*, uint32_t*, uint32_t ramPagesNbr);

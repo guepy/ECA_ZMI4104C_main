@@ -1282,7 +1282,7 @@ void ZygoZMI4104CClass::attribute_factory(vector<Tango::Attr *> &att_list)
 	//	display_unit	not set for continuousSamplingSize
 	//	format	not set for continuousSamplingSize
 	//	max_value	not set for continuousSamplingSize
-	//	min_value	not set for continuousSamplingSize
+	continuoussamplingsize_prop.set_min_value("0");
 	//	max_alarm	not set for continuousSamplingSize
 	//	min_alarm	not set for continuousSamplingSize
 	//	max_warning	not set for continuousSamplingSize

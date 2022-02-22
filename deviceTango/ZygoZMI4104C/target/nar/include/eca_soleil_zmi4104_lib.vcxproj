@@ -177,6 +177,7 @@
     <ClInclude Include="..\ECA_ZMI4104C_main\vmeInterruptConst.h" />
     <ClInclude Include="eca_soleil_zmi4104c.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="Header.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="sis1100_zmilib\sis1100w.h" />
     <ClInclude Include="sis1100_zmilib\sis1100wStat.h" />
@@ -184,6 +185,7 @@
     <ClInclude Include="sis1100_zmilib\sis3100.h" />
     <ClInclude Include="sis1100_zmilib\sis3100_vme_calls.h" />
     <ClInclude Include="sis1100_zmilib\sis3302.h" />
+    <ClInclude Include="zygoErrorCodes.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />

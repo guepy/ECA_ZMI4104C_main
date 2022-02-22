@@ -174,6 +174,32 @@ void ZygoZMI4104C::delete_device()
 	delete[] flyscanPath;
 	delete[] meanVal;
 	delete[] stdDevVal;
+	delete[] attr_continuousSamplingAxes_read[0];
+	delete[] attr_continuousSamplingAxes_read[0];
+	delete[] attr_interferometerConfiguration_read[0] 	;
+	delete[] attr_axis1BiasMode_read[0] 					;
+	delete[] attr_axis2BiasMode_read[0] 					;
+	delete[] attr_axis3BiasMode_read[0] 					;
+	delete[] attr_axis4BiasMode_read[0] 					;
+	delete[] attr_sisFirmwareVersion_read[0]				;
+	delete[] attr_sisBoardVersion_read[0] 				;
+	delete[] attr_zygoFirmwareVersion_read[0] 			;
+	delete[] attr_zygoBoardVersion_read[0] 				;
+	delete[] attr_zygoSerialNumber_read[0] 				;
+	delete[] attr_referenceAxisLedState_read[0]  		;
+	delete[] attr_axis1LedState_read[0] 					;
+	delete[] attr_axis2LedState_read[0] 					;
+	delete[] attr_axis3LedState_read[0] 					;
+	delete[] attr_axis4LedState_read[0] 					;	
+	delete[] attr_cecAxes_read[0] 						;
+	
+	for(int i= 0; i<2; i++)
+		delete[] interferometerConfigurationString[i] 	;
+	for(int i= 0; i<3; i++)
+		delete[] ledsColorString[i] 						;
+	for(int i= 0; i<5; i++)
+		delete[] biasModeString[i] 						;
+	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::delete_device
 	delete[] attr_samplingFrequency_read;
 	delete[] attr_axis1LedState_read;
@@ -245,7 +271,7 @@ void ZygoZMI4104C::init_device()
 	catch( Tango::DevFailed& df )
 	{
 		ERROR_STREAM << df << std::endl;
-		m_status_message << "Initialization failed - could not instanciate the InnerAppender!";
+		append_status_msg("Initialization failed - could not instanciate the InnerAppender!\n");
 		return;
 	}
 	
@@ -294,42 +320,52 @@ void ZygoZMI4104C::init_device()
 	attr_continuousScanPositionMeanValue_read = new Tango::DevDouble[1];
 	attr_continuousScanPositionStdDev_read = new Tango::DevDouble[1];
 	attr_fifoMode_read = new Tango::DevShort[1];
-	/*----- PROTECTED REGION ID(ZygoZMI4104C::init_device) ENABLED START -----*/
 	
-	ledsColorString = new Tango::DevString[4];
+	
+	/*----- PROTECTED REGION ID(ZygoZMI4104C::init_device) ENABLED START -----*/
+	ledsColorString = new Tango::DevString[3];
 	optPwr = new Tango::DevDouble[5];
 	ledsColor = new Tango::DevUChar[6];
 	flyscanAxesTab = new Tango::DevUShort[6];
 	cecAxesTab = new Tango::DevUShort[6];
-	biasModeString = new Tango::DevString[6];
-	interferometerConfigurationString = new Tango::DevString[3];
+	biasModeString = new Tango::DevString[5];
+	interferometerConfigurationString = new Tango::DevString[2];
 	meanVal = new double;
 	stdDevVal = new double;
 	
-	//	Initialize device
 	
-#if 0
+	attr_continuousSamplingAxes_read[0] 		= new char[256];
+	attr_interferometerConfiguration_read[0] 	= new char[16];
+	attr_axis1BiasMode_read[0] 					= new char[128];
+	attr_axis2BiasMode_read[0] 					= new char[128];
+	attr_axis3BiasMode_read[0] 					= new char[128];
+	attr_axis4BiasMode_read[0] 					= new char[128];
+	attr_sisFirmwareVersion_read[0]				= new char[32];
+	attr_sisBoardVersion_read[0] 				= new char[32];
+	attr_zygoFirmwareVersion_read[0] 			= new char[32];
+	attr_zygoBoardVersion_read[0] 				= new char[256];
+	attr_zygoSerialNumber_read[0] 				= new char[256];
+	attr_referenceAxisLedState_read[0]  		= new char[16];
+	attr_axis1LedState_read[0] 					= new char[16];
+	attr_axis2LedState_read[0] 					= new char[16];
+	attr_axis3LedState_read[0] 					= new char[16];
+	attr_axis4LedState_read[0] 					= new char[16];	
+	attr_cecAxes_read[0] 						= new char[16];
 	
-	DEBUG_STREAM << "ZygoZMI4104C::vme_system_reset() Start" << endl;
-	vme_system_reset();
-	DEBUG_STREAM << "ZygoZMI4104C::vme_system_reset() Stop" << endl;
+	for(int i= 0; i<2; i++)
+		interferometerConfigurationString[i] 	= new char[16];
+	for(int i= 0; i<3; i++)
+		ledsColorString[i] 						= new char[16];
+	for(int i= 0; i<5; i++)
+		biasModeString[i] 						= new char[16];
+	
 
-	ERROR_STREAM << "Initialization failed - in vme_system_reset() function" << std::endl;
-
-
-
-#else
-	if (initSisBoards() != RET_SUCCESS) 
-	{
-		DEBUG_STREAM << "Failed to initialize SIS boards" << endl;	
-		zygoLogFatal("Failed to initialize SIS boards\n");	
-		return;
-	}
-#endif
-	ledsColorString[0] = "Black\0";
-	ledsColorString[1] = "Green\0";
-	ledsColorString[2] = "Yellow\0";
-	ledsColorString[3] = "\0";
+	append_status_msg("Starting the device\n");
+	m_status_retrieved = true;
+	strcpy(ledsColorString[0],"Black\0");
+	strcpy(ledsColorString[1],"Green\0");
+	strcpy(ledsColorString[2],"Yellow\0");
+	
 	for(int i=0;i<sizeof(ledsColor);i++)
 	{
 		ledsColor[i] = 0;
@@ -341,22 +377,46 @@ void ZygoZMI4104C::init_device()
 	cecAxesTab[sizeof(cecAxesTab)/sizeof(cecAxesTab[0])-1] = '\0';
 	optPwr[4]='\0';
 	
-	biasModeString[0] ="OFF\0";
-	biasModeString[1] ="CONSTANT_VOLTAGE\0";
-	biasModeString[2] ="CONSTANT_GAIN\0";
-	biasModeString[3] ="CONSTANT_OPTICAL_POWER\0";
-	biasModeString[4] ="SIG_RMS_ADJUST_MODE\0";
-	biasModeString[5] ="\0";
-	interferometerConfigurationString[0] ="SINGLE\0";
-	interferometerConfigurationString[1] ="DOUBLE\0";
-	interferometerConfigurationString[2] ='\0';
-	*attr_continuousSamplingAxes_read="NO_AXIS_SELECTED";
-	*attr_cecAxes_read = "NO_AXIS_SELECTED";
+	strcpy(biasModeString[0],"OFF\0");
+	strcpy(biasModeString[1],"CONSTANT_VOLTAGE\0");
+	strcpy(biasModeString[2],"CONSTANT_GAIN\0");
+	strcpy(biasModeString[3],"CONSTANT_OPTICAL_POWER\0");
+	strcpy(biasModeString[4],"SIG_RMS_ADJUST_MODE\0");
+	
+	strcpy(interferometerConfigurationString[0],"SINGLE\0");
+	strcpy(interferometerConfigurationString[1],"DOUBLE\0");
+	
+	attr_continuousSamplingAxes="NO_AXIS_SELECTED\0";
+	attr_cecAxes = "NO_AXIS_SELECTED\0";
+	strcpy(attr_cecAxes_read[0], "NO_AXIS_SELECTED\0");
 	*attr_continuousSamplingSize_read=1;
 	flyscanAxesCtr = 0;
 	cecAxesCtr = 0;
     ceVelMin = 96;
     ceVelMax=31457;
+		
+	//	Initialize device
+	
+#if 0
+	
+	DEBUG_STREAM << "initializing the device..." << endl;
+	vme_system_reset();
+	dev_state_val = Tango::RUNNING;
+	append_status_msg("Starting complete\n");
+	DEBUG_STREAM << "Starting complete" << endl;
+
+
+#else
+	if (initSisBoards() != RET_SUCCESS) 
+	{
+		DEBUG_STREAM << "Failed to initialize SIS boards" << endl;	
+		zygoLogFatal("Failed to initialize SIS boards\n");	
+		return;
+	}
+	append_status_msg("initialization complete\n");
+	DEBUG_STREAM << "initialization complete" << endl;
+	dev_state_val = Tango::RUNNING;
+#endif
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::init_device
 }
 
@@ -475,7 +535,9 @@ void ZygoZMI4104C::read_samplingFrequency(Tango::Attribute &attr)
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::read_samplingFrequency) ENABLED START -----*/
 	//	Set the attribute value
 	getSamplingFrequency((uint32_t*)attr_samplingFrequency_read);
+	yat::MutexLock lock(flyscan_param_key);
 	attr.set_value(attr_samplingFrequency_read);
+	yat::MutexLock unlock(flyscan_param_key);
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::read_samplingFrequency
 }
@@ -514,7 +576,7 @@ void ZygoZMI4104C::read_axis1LedState(Tango::Attribute &attr)
 	DEBUG_STREAM << "ZygoZMI4104C::read_axis1LedState(Tango::Attribute &attr) entering... " << endl;
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::read_axis1LedState) ENABLED START -----*/
 	//	Set the attribute value
-	*attr_axis1LedState_read=ledsColorString[(int)ledsColor[0]];
+	strcpy(attr_axis1LedState_read[0],ledsColorString[(int)ledsColor[0]]);
 	attr.set_value(attr_axis1LedState_read);
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::read_axis1LedState
@@ -533,7 +595,7 @@ void ZygoZMI4104C::read_axis2LedState(Tango::Attribute &attr)
 	DEBUG_STREAM << "ZygoZMI4104C::read_axis2LedState(Tango::Attribute &attr) entering... " << endl;
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::read_axis2LedState) ENABLED START -----*/
 	//	Set the attribute value
-	*attr_axis2LedState_read=ledsColorString[(int)ledsColor[1]];
+	strcpy(attr_axis2LedState_read[0],ledsColorString[(int)ledsColor[1]]);
 	attr.set_value(attr_axis2LedState_read);
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::read_axis2LedState
@@ -552,7 +614,7 @@ void ZygoZMI4104C::read_axis3LedState(Tango::Attribute &attr)
 	DEBUG_STREAM << "ZygoZMI4104C::read_axis3LedState(Tango::Attribute &attr) entering... " << endl;
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::read_axis3LedState) ENABLED START -----*/
 	//	Set the attribute value
-	*attr_axis3LedState_read=ledsColorString[(int)ledsColor[2]];
+	strcpy(attr_axis3LedState_read[0],ledsColorString[(int)ledsColor[2]]);
 	attr.set_value(attr_axis3LedState_read);
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::read_axis3LedState
@@ -571,7 +633,7 @@ void ZygoZMI4104C::read_axis4LedState(Tango::Attribute &attr)
 	DEBUG_STREAM << "ZygoZMI4104C::read_axis4LedState(Tango::Attribute &attr) entering... " << endl;
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::read_axis4LedState) ENABLED START -----*/
 	//	Set the attribute value
-	*attr_axis4LedState_read=ledsColorString[(int)ledsColor[3]];
+	strcpy(attr_axis4LedState_read[0],ledsColorString[(int)ledsColor[3]]);
 	attr.set_value(attr_axis4LedState_read);
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::read_axis4LedState
@@ -590,7 +652,7 @@ void ZygoZMI4104C::read_referenceAxisLedState(Tango::Attribute &attr)
 	DEBUG_STREAM << "ZygoZMI4104C::read_referenceAxisLedState(Tango::Attribute &attr) entering... " << endl;
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::read_referenceAxisLedState) ENABLED START -----*/
 	//	Set the attribute value
-	*attr_referenceAxisLedState_read=ledsColorString[(int)ledsColor[4]];
+	strcpy(attr_referenceAxisLedState_read[0],ledsColorString[(int)ledsColor[4]]);
 	attr.set_value(attr_referenceAxisLedState_read);
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::read_referenceAxisLedState
@@ -1122,7 +1184,7 @@ void ZygoZMI4104C::read_axis1BiasMode(Tango::Attribute &attr)
 	//	Set the attribute value
 	uint32_t biasMode=0;
 	getBiasMode(1,&biasMode);
-	*attr_axis1BiasMode_read = biasModeString[biasMode];
+	strcpy(attr_axis1BiasMode_read[0], biasModeString[biasMode]);
 	attr.set_value(attr_axis1BiasMode_read);
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::read_axis1BiasMode
@@ -1163,7 +1225,7 @@ void ZygoZMI4104C::read_axis2BiasMode(Tango::Attribute &attr)
 	//	Set the attribute value
 	uint32_t biasMode=0;
 	getBiasMode(2,&biasMode);
-	*attr_axis2BiasMode_read = biasModeString[biasMode];
+	strcpy(attr_axis2BiasMode_read[0] ,biasModeString[biasMode]);
 	attr.set_value(attr_axis2BiasMode_read);
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::read_axis2BiasMode
@@ -1204,7 +1266,7 @@ void ZygoZMI4104C::read_axis3BiasMode(Tango::Attribute &attr)
 	//	Set the attribute value
 	uint32_t biasMode=0;
 	getBiasMode(3,&biasMode);
-	*attr_axis3BiasMode_read = biasModeString[biasMode];
+	strcpy(attr_axis3BiasMode_read[0] ,biasModeString[biasMode]);
 	attr.set_value(attr_axis3BiasMode_read);
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::read_axis3BiasMode
@@ -1246,7 +1308,7 @@ void ZygoZMI4104C::read_axis4BiasMode(Tango::Attribute &attr)
 	//	Set the attribute value
 	uint32_t biasMode=0;
 	getBiasMode(4,&biasMode);
-	*attr_axis4BiasMode_read = biasModeString[biasMode];
+	strcpy(attr_axis4BiasMode_read[0] , biasModeString[biasMode]);
 	attr.set_value(attr_axis4BiasMode_read);
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::read_axis4BiasMode
@@ -1288,7 +1350,7 @@ void ZygoZMI4104C::read_interferometerConfiguration(Tango::Attribute &attr)
 	Tango::DevUShort val=1;
 	val = (Tango::DevUShort)getInterferometerConfiguration();
 	DEBUG_STREAM << "interferometer config is: " << val << endl;
-	attr_interferometerConfiguration_read[0] = interferometerConfigurationString[val-1];
+	strcpy(attr_interferometerConfiguration_read[0],interferometerConfigurationString[val-1]);
 	attr.set_value(attr_interferometerConfiguration_read);
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::read_interferometerConfiguration
@@ -1353,7 +1415,7 @@ void ZygoZMI4104C::read_sisFirmwareVersion(Tango::Attribute &attr)
 	DEBUG_STREAM << "ZygoZMI4104C::read_sisFirmwareVersion(Tango::Attribute &attr) entering... " << endl;
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::read_sisFirmwareVersion) ENABLED START -----*/
 	//	Set the attribute value
-	*attr_sisFirmwareVersion_read = (Tango::DevString)getSisFirmwareVersion();
+	strcpy(attr_sisFirmwareVersion_read[0] , getSisFirmwareVersion());
 	attr.set_value(attr_sisFirmwareVersion_read);
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::read_sisFirmwareVersion
@@ -1372,7 +1434,7 @@ void ZygoZMI4104C::read_sisBoardVersion(Tango::Attribute &attr)
 	DEBUG_STREAM << "ZygoZMI4104C::read_sisBoardVersion(Tango::Attribute &attr) entering... " << endl;
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::read_sisBoardVersion) ENABLED START -----*/
 	//	Set the attribute value
-	*attr_sisBoardVersion_read=(Tango::DevString)getSisBoardVersion();
+	strcpy(attr_sisBoardVersion_read[0],getSisBoardVersion());
 	attr.set_value(attr_sisBoardVersion_read);
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::read_sisBoardVersion
@@ -1391,7 +1453,7 @@ void ZygoZMI4104C::read_zygoFirmwareVersion(Tango::Attribute &attr)
 	DEBUG_STREAM << "ZygoZMI4104C::read_zygoFirmwareVersion(Tango::Attribute &attr) entering... " << endl;
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::read_zygoFirmwareVersion) ENABLED START -----*/
 	//	Set the attribute value
-	*attr_zygoFirmwareVersion_read =(Tango::DevString)getZygoFirmwareVersion();
+	strcpy(attr_zygoFirmwareVersion_read[0] , getZygoFirmwareVersion());
 	attr.set_value(attr_zygoFirmwareVersion_read);
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::read_zygoFirmwareVersion
@@ -1410,7 +1472,7 @@ void ZygoZMI4104C::read_zygoBoardVersion(Tango::Attribute &attr)
 	DEBUG_STREAM << "ZygoZMI4104C::read_zygoBoardVersion(Tango::Attribute &attr) entering... " << endl;
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::read_zygoBoardVersion) ENABLED START -----*/
 	//	Set the attribute value
-	*attr_zygoBoardVersion_read =(Tango::DevString)getZygoBoardVersion();
+	strcpy(attr_zygoBoardVersion_read[0] , getZygoBoardVersion());
 	attr.set_value(attr_zygoBoardVersion_read);
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::read_zygoBoardVersion
@@ -1429,7 +1491,7 @@ void ZygoZMI4104C::read_zygoSerialNumber(Tango::Attribute &attr)
 	DEBUG_STREAM << "ZygoZMI4104C::read_zygoSerialNumber(Tango::Attribute &attr) entering... " << endl;
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::read_zygoSerialNumber) ENABLED START -----*/
 	//	Set the attribute value
-	*attr_zygoSerialNumber_read =(Tango::DevString)getZygoSerialNumber();
+	strcpy(attr_zygoSerialNumber_read[0] , getZygoSerialNumber());
 	attr.set_value(attr_zygoSerialNumber_read);
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::read_zygoSerialNumber
@@ -1448,6 +1510,7 @@ void ZygoZMI4104C::read_continuousSamplingAxes(Tango::Attribute &attr)
 	DEBUG_STREAM << "ZygoZMI4104C::read_continuousSamplingAxes(Tango::Attribute &attr) entering... " << endl;
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::read_continuousSamplingAxes) ENABLED START -----*/
 	//	Set the attribute value
+	strcpy(attr_continuousSamplingAxes_read[0], attr_continuousSamplingAxes.c_str());
 	attr.set_value(attr_continuousSamplingAxes_read);
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::read_continuousSamplingAxes
@@ -1468,10 +1531,9 @@ void ZygoZMI4104C::write_continuousSamplingAxes(Tango::WAttribute &attr)
 	Tango::DevString	w_val;
 	attr.get_write_value(w_val);
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::write_continuousSamplingAxes) ENABLED START -----*/
-	getAxesfromInputString(w_val, flyscanAxesCtr, flyscanAxesTab, attr_continuousSamplingAxes_read);
+	getAxesfromInputString(w_val, flyscanAxesCtr, flyscanAxesTab, attr_continuousSamplingAxes);
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::write_continuousSamplingAxes
 }
-
 //--------------------------------------------------------
 /**
  *	Read attribute continuousSamplingSize related method
@@ -1486,7 +1548,10 @@ void ZygoZMI4104C::read_continuousSamplingSize(Tango::Attribute &attr)
 	DEBUG_STREAM << "ZygoZMI4104C::read_continuousSamplingSize(Tango::Attribute &attr) entering... " << endl;
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::read_continuousSamplingSize) ENABLED START -----*/
 	//	Set the attribute value
+	
+	yat::MutexLock lock(flyscan_param_key);
 	attr.set_value(attr_continuousSamplingSize_read);
+	yat::MutexLock unlock(flyscan_param_key);
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::read_continuousSamplingSize
 }
@@ -1506,7 +1571,10 @@ void ZygoZMI4104C::write_continuousSamplingSize(Tango::WAttribute &attr)
 	Tango::DevULong	w_val;
 	attr.get_write_value(w_val);
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::write_continuousSamplingSize) ENABLED START -----*/
+	
+	yat::MutexLock lock(flyscan_param_key);
 	*attr_continuousSamplingSize_read = w_val;
+	yat::MutexLock unlock(flyscan_param_key);
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::write_continuousSamplingSize
 }
@@ -1524,6 +1592,7 @@ void ZygoZMI4104C::read_cecAxes(Tango::Attribute &attr)
 	DEBUG_STREAM << "ZygoZMI4104C::read_cecAxes(Tango::Attribute &attr) entering... " << endl;
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::read_cecAxes) ENABLED START -----*/
 	//	Set the attribute value
+	strcpy(attr_cecAxes_read[0], attr_cecAxes.c_str());
 	attr.set_value(attr_cecAxes_read);
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::read_cecAxes
@@ -1545,7 +1614,7 @@ void ZygoZMI4104C::write_cecAxes(Tango::WAttribute &attr)
 	attr.get_write_value(w_val);
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::write_cecAxes) ENABLED START -----*/
 	
-	getAxesfromInputString(w_val, cecAxesCtr, cecAxesTab,attr_cecAxes_read);
+	getAxesfromInputString(w_val, cecAxesCtr, cecAxesTab,attr_cecAxes);
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::write_cecAxes
 }
 //--------------------------------------------------------
@@ -1654,7 +1723,7 @@ Tango::DevState ZygoZMI4104C::dev_state()
 	DEBUG_STREAM << "ZygoZMI4104C::State()  - " << device_name << endl;
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::dev_state) ENABLED START -----*/
 	
-	Tango::DevState	argout = Tango::UNKNOWN; // replace by your own algorithm
+	Tango::DevState	argout = dev_state_val; 
 	//	Add your own code
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::dev_state
@@ -1676,11 +1745,11 @@ Tango::ConstDevString ZygoZMI4104C::dev_status()
 	DEBUG_STREAM << "ZygoZMI4104C::Status()  - " << device_name << endl;
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::dev_status) ENABLED START -----*/
 	
-	//string	status = "Device is OK";
+	std::string	status = get_status_msg();
 	//	Add your own code
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::dev_status
-	//set_status(status);               // Give the status to Tango.
+	set_status(status);               // Give the status to Tango.
 	return Tango::DeviceImpl::dev_status();  // Return it.
 }
 //--------------------------------------------------------
@@ -1716,168 +1785,10 @@ Tango::DevShort ZygoZMI4104C::start_continuous_acquisition(Tango::DevBoolean arg
 	Tango::DevShort argout;
 	DEBUG_STREAM << "ZygoZMI4104C::StartContinuousAcquisition()  - " << device_name << endl;
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::start_continuous_acquisition) ENABLED START -----*/
-	flyscanPath = (char*)calloc(256, sizeof(char));
-	flyscanPath[0]='.';
-	flyscanPath[1]='\0';
-	std::cerr << "start flyscan with arg " << argin << std::endl;
-	string	status = "Setting up continuous acquisition...";
-	set_status(status);               // Give the status to Tango.
-	if(!((bool)argin))
-	{
-		//	Add your own code
-		
-		//*/
-		try
-		{
-		if((*attr_continuousSamplingSize_read)<256){
-			(*attr_continuousSamplingSize_read)=256;
-			//qDebug()<<"setting size to the min: 256";
-			//emit flyscanErrorCode(-101);
-			std::cerr << "continuous scan size is a bacth of 256 samples" << std::endl;
-		}
-		if((*attr_continuousSamplingSize_read)>NBR_RAM_PAGES*256){
-			(*attr_continuousSamplingSize_read)=NBR_RAM_PAGES*256;
-			//qDebug()<<"setting size to the max: "<< NBR_RAM_PAGES*256;
-			std::cerr << "continuous scan size on one axis can not be greater than of 64*256 samples" << std::endl;
-			//emit flyscanErrorCode(-102);
-		}
-		if((*attr_continuousSamplingSize_read)>NBR_RAM_PAGES*128 && flyscanAxesCtr>2){
-			(*attr_continuousSamplingSize_read)=NBR_RAM_PAGES*128;
-			//qDebug()<<"setting size to the max: "<< NBR_RAM_PAGES*128;
-			std::cerr << "continuous scan size on more than 3 axes can not be greater than of 64*128 samples" << std::endl;
-			//emit flyscanErrorCode(-103);
-		}
-		//*/
-		if (!(base_A24D32_ptr = (unsigned int*)calloc((size_t)(((*attr_continuousSamplingSize_read)*1.5*flyscanAxesCtr)), sizeof(unsigned int)))){
-
-			zygoLogWarn("can not allocate memory on the host machine");
-			throw invalid_argument("can not allocate memory on the host machine");
-			//emit flyscanErrorCode(-105);
-			//emit flyscanProcTerm();
-		}
-		if(flyscanAxesCtr>1){
-			if (!(base_A24D32_FR_ptr = (unsigned int*)calloc((size_t)(((*attr_continuousSamplingSize_read)*1.5*flyscanAxesCtr)), sizeof(unsigned int)))){
-				//dev_mutex.unlock();
-				//Ltimer->stop();
-				zygoLogWarn("can not allocate memory on the host machine");
-				throw invalid_argument("can not allocate memory on the host machine");
-				//emit flyscanErrorCode(-105);
-				//emit flyscanProcTerm();
-			}
-		}
-			if (configureFlyscan(  (uint8_t)flyscanAxesCtr, *attr_samplingFrequency_read, 1) != RET_SUCCESS){
-				throw invalid_argument("connfiguration of continuous acquisition has failed!!!");
-			}
-
-			unsigned int ramDataSize = *attr_continuousSamplingSize_read/256;
-			if(flyscanAxesCtr>2){
-				//ramDataSize = (flyscanSizeValue*2>16384)?flyscanSizeValue*2:16384;
-				ramDataSize = *attr_continuousSamplingSize_read/(4*256);
-			}
-			if (getFlyscanData(  base_A24D32_FR_ptr, base_A24D32_ptr, (uint32_t*)&flyscanAxesCtr,ramDataSize) != RET_SUCCESS)
-			{
-				//dev_mutex.unlock();
-				//Ltimer->stop();
-				//emit flyscanErrorCode(-106);
-				//emit flyscanProcTerm();
-				throw invalid_argument("Getting RAMDATA failed");
-			}
-			if (processRamData(flyscanAxesCtr, base_A24D32_FR_ptr, base_A24D32_ptr, ramDataSize, flyscanPath,(double*)meanVal, (double*)stdDevVal) != RET_SUCCESS)
-			{
-				//Ltimer->stop();
-				//emit flyscanErrorCode(-107);
-				//emit flyscanProcTerm();
-				throw invalid_argument("Processing RAMDATA failed");
-			}
-		}
-		
-		catch(const invalid_argument& msg)
-		{
-			std::cerr << "exception : " << msg.what() << std::endl;
-			set_status(msg.what());               // Give the status to Tango.
-			return RET_FAILED;
-		}
 	
-	}
-	else{
-		try{
-			
-			int ret_code=0, mysize=0;
-			bool ovf=0;
-			fifoParam* flyscanFifoParam = new fifoParam;
-			//flyscanFifoParam->acqTime=flyscanTimeValue;
-			flyscanFifoParam->freq=*attr_samplingFrequency_read;
-			flyscanFifoParam->nbrPts=*attr_continuousSamplingSize_read;
-			if(*attr_fifoMode_read){
-				mysize = 0x10000000;//128Mo
-			}
-			else{
-				mysize = (UINT)(sizeof(UINT) * ((*attr_continuousSamplingSize_read)*1.5*flyscanAxesCtr));
-			}
-
-			if (!(base_A24D32_ptr = (uint32_t*)calloc(mysize, sizeof(unsigned int)))){
-				zygoLogWarn("can not allocate memory on the host machine");
-				//emit flyscanErrorCode(-105);
-				//emit flyscanProcTerm();
-				delete flyscanFifoParam;
-				perror("base_A32D32_ptr");
-				throw invalid_argument(strerror(errno));
-			}
-			ovf_flag:
-			set_status("Setting up fifo flyscan\n"); 
-			if (configureFifoFlyscan(flyscanFifoParam,base_A24D32_ptr,(uint8_t*)flyscanAxesTab, (uint32_t*)&flyscanAxesCtr, &ret_code, *attr_fifoMode_read) != RET_SUCCESS){
-				//dataProcessing::dev_mutex.unlock();
-				//qDebug()<<"fifo config failed";
-				//emit flyscanErrorCode(-99);
-				//emit flyscanProcTerm();
-				//delete (base_A24D32_ptr);
-				delete flyscanFifoParam;
-				throw invalid_argument("Configure Fifo flyscan failed");
-			}
-			else
-			{
-				//emit flyscanErrorCode(1); // currently processing
-				//dataProcessing::dev_mutex.unlock();
-				if(ret_code==-100){
-					//qDebug()<<"overlapping detected";
-					//emit flyscanErrorCode(ret_code);
-					set_status("Overlapping detected, somme data may have been corrupted "); 
-				}
-				if(ret_code==100){
-					//qDebug()<<"RAM oveflow detected, allocating more space";
-					//emit flyscanErrorCode(ret_code);
-					ovf=1;
-					set_status("Overflow on dynamic memory allocated to stored samples"); 
-				}
-
-				//dataProcessing::dev_mutex.lock();
-				set_status("Processing fifo data"); 
-				if (processFifoData(flyscanAxesCtr, (uint8_t*)flyscanAxesTab, base_A24D32_ptr, flyscanFifoParam->nbrPts, (uint8_t*)flyscanPath,meanVal, stdDevVal) != RET_SUCCESS){
-					//dataProcessing::dev_mutex.unlock();
-					//emit flyscanErrorCode(-107);
-					//emit flyscanProcTerm();
-					//delete (base_A24D32_ptr);
-					delete flyscanFifoParam;
-					throw invalid_argument("failed to process fifo data");
-				}
-				if(ovf){
-					ovf=0;
-					memset(base_A24D32_ptr, 0, mysize);
-					goto ovf_flag;
-				}
-
-				//dataProcessing::dev_mutex.unlock();
-			}
-		}		
-		catch(const invalid_argument& msg)
-		{
-			std::cerr << "exception : " << msg.what() << std::endl;
-			set_status(msg.what());               // Give the status to Tango.
-			return RET_FAILED;
-		}
-	
-	}
-	argout = RET_SUCCESS;
+	//set_state(Tango::MOVING); 
+	std::thread sca_thread(&ZygoZMI4104C::sca_thread_function,this,argin);
+	sca_thread.detach();
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::start_continuous_acquisition
 	return argout;
 }
@@ -1894,7 +1805,7 @@ Tango::DevShort ZygoZMI4104C::stop_continnuous_acquisition()
 	Tango::DevShort argout;
 	DEBUG_STREAM << "ZygoZMI4104C::StopContinnuousAcquisition()  - " << device_name << endl;
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::stop_continnuous_acquisition) ENABLED START -----*/
-	
+	argout=stopAquisition(flyscanAxesCtr);
 	//	Add your own code
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::stop_continnuous_acquisition
@@ -1919,16 +1830,17 @@ Tango::DevShort ZygoZMI4104C::enable_cyclic_error_compensation(Tango::DevShort a
 	
 	//	Add your own code
 	    //qDebug()<<"config started ";
-	for(int i=0;i< (sizeof(cecAxesTab)/sizeof(cecAxesTab[0]));i++){
+	for(unsigned int i=0;i< cecAxesCtr;i++){
 		if(!cecAxesTab[i])
 			break;
 		argout=configureCecHardware(  (uint8_t)cecAxesTab[i], ceVelMin, ceVelMax);	
 		if(argout!=RET_SUCCESS)
 		{
 			*attr_cecAxes_read="NO_AXIS_SELECTED";
-			set_status("Cyclic error compensation failed");
+			append_status_msg("Cyclic error compensation failed");
 			break;
 		}
+		append_status_msg(get_ZYGO_error_string(argout));
 	}
 	
 
@@ -1952,7 +1864,10 @@ Tango::DevShort ZygoZMI4104C::disable_cyclic_error_compensation(Tango::DevShort 
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::disable_cyclic_error_compensation) ENABLED START -----*/
 	
 	//	Add your own code
-	
+	for(unsigned int axis = 0; axis < cecAxesCtr; axis++){
+		argout = disableCecCompensation((uint8_t)cecAxesTab[axis]);
+		append_status_msg(get_ZYGO_error_string(argout));
+	}
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::disable_cyclic_error_compensation
 	return argout;
 }
@@ -1993,12 +1908,21 @@ void ZygoZMI4104C::add_dynamic_commands()
 //	Additional Methods
 void ZygoZMI4104C::vme_system_reset(){
 	BIAS_MODE bias_mode = BIAS_CONSTANT_VOLT_MODE;
-    //zygoLogInfo("VME SYSTEM RESET!!!\n");
+	
+	append_status_msg("Initializing the VME/PCIe gateway device...\n");
     if(initSisBoards( )!= RET_SUCCESS) zygoLogFatal("Failed to initialize SIS boards\n");
-    //Sleep(10);
+	append_status_msg("[Done]\n");
+    //Sleep(10);	
+	append_status_msg("Initializing measurement board...\n");
     if(initZmiBoards( ) != RET_SUCCESS) zygoLogFatal("Failed to initialize ZMI board\n");
+	append_status_msg("[Done]");
+	append_status_msg("Initializing measurement axes...\n");
     if(initAxis(  bias_mode) != RET_SUCCESS) zygoLogFatal("Failed to initialize axis\n");
+	append_status_msg("[Done]\n");
+	append_status_msg("Enabling double pass interferometer...\n");
     enableDoublePassInterferometer();
+	append_status_msg("[Done]\n");
+	append_status_msg("Initialization successful\n");
 	DEBUG_STREAM << "vme system reset complete  - " << endl;
 
 }
@@ -2057,28 +1981,34 @@ void ZygoZMI4104C::localSetBiasMode(Tango::DevUChar axis, Tango::DevString w_val
 }
 
 
-int ZygoZMI4104C::getAxesfromInputString(Tango::DevString	val, Tango::DevUShort axisCtr, Tango::DevUShort	*axisTab,Tango::DevString *attr_read){
-	std::string w_val = (std::string)val;
-	int len = ((std::string)w_val).length(), nbr=0;
+int ZygoZMI4104C::getAxesfromInputString(Tango::DevString	val, unsigned int axisCtr, Tango::DevUShort	*axisTab, std::string& attr_read){
+	std::string w_val = val;
+	int arglen = 0, nbr=0;
 	char tempStr[100];
-	std::string 		value;
+	std::string 					value;
 	std::set<std::string> 			myStr;
 	axisCtr = 0;
-	*attr_read="";
+	attr_read="";
+	int posV=0;
+	std::cerr<< "try block begin"<<std::endl;
 	try{
 			
-		while(w_val.length()>0) {
-			size_t posV = w_val.find_first_of(',');
-			int nbr = -1;
+		arglen = w_val.length();
+		while(arglen>0) {
+			std::cerr<< "iterate"<<std::endl;
+			posV = w_val.find_first_of(',');
+			nbr = -1;
 			if( posV>=0 ) {
 				value = w_val.substr(0, posV);
 				nbr = atoi(value.c_str());
-				w_val = w_val.substr(posV+1,w_val.length());
+				w_val = w_val.substr(posV+1,arglen);
+				std::cerr<< "w_val is "<<w_val<<std::endl;
 			}
 			else {
 				nbr = atoi(w_val.c_str());
-				w_val = "";
+				w_val="";
 			}
+			arglen = w_val.length();
 			
 			if((nbr<1) || (nbr>4))//value is not between 1 and 4
 			{
@@ -2086,8 +2016,8 @@ int ZygoZMI4104C::getAxesfromInputString(Tango::DevString	val, Tango::DevUShort 
 			}
 			axisTab[axisCtr]=nbr;
 			sprintf(tempStr, "AXIS%u | ",nbr);
-			myStr.insert(tempStr);
-			axisCtr=(Tango::DevUShort)myStr.size();
+			myStr.insert((std::string)(tempStr));
+			axisCtr=(Tango::DevUShort)(myStr.size());
 			if(axisCtr>=4)
 			{
 				axisCtr=4;
@@ -2096,6 +2026,7 @@ int ZygoZMI4104C::getAxesfromInputString(Tango::DevString	val, Tango::DevUShort 
 			}
 			//TODO
 		}
+		flyscanAxesCtr=axisCtr;
 	}
 	catch(const invalid_argument& msg)
 	{
@@ -2103,19 +2034,345 @@ int ZygoZMI4104C::getAxesfromInputString(Tango::DevString	val, Tango::DevUShort 
 		//THROW_DEVFAILED("DECODE_ERROR", msg.what(), "ZygoZMI4104C::getAxesfromInputString");
 		
 	}
+	std::cerr<< "try block out"<<std::endl;
 
 	std::cerr << "axisCtr is " << axisCtr <<endl;
 	if(!axisCtr)
-		*attr_read = "NO_AXIS_SELECTED";
+		attr_read = "NO_AXIS_SELECTED";
 	else
 	{
 		std::ostringstream s;
 		std::copy(myStr.begin(),myStr.end(), std::ostream_iterator<std::string>(s,""));
-		std::string result = s.str();
-		*attr_read =  (Tango::DevString)(result.c_str()) ;
-		std::cerr << "myStr is  " << result <<std::endl;
+		attr_read = s.str();
+		std::cerr << "myStr is  " << attr_read <<std::endl;
 	}
 	return RET_SUCCESS;
 }
+
+int ZygoZMI4104C::sca_thread_function(Tango::DevBoolean argin){
+	int argout = -10000;
+	std::stringstream str;
+	flyscanPath = (char*)calloc(256, sizeof(char));
+	flyscanPath[0]='.';
+	flyscanPath[1]='\0';
+	std::cerr << "start flyscan with arg " << argin << std::endl;
+	append_status_msg("Setting up continuous acquisition...\n");
+	
+	dev_state_val = Tango::MOVING; // in this state, no other function are authorized to run isnstead of
+	//this function itself
+	set_state(Tango::MOVING); 
+	yat::MutexLock lock(flyscan_param_key);
+	Tango::DevULong samplingSize = *attr_continuousSamplingSize_read;
+	Tango::DevULong samplingFrequency = *attr_samplingFrequency_read;
+	yat::MutexLock unlock(flyscan_param_key);
+	try
+	{
+		if(!((bool)argin))
+		{
+			append_status_msg("Running continuous scan in RAM DATA mode\n");
+			std::cerr<< "flyscan freq is "<< samplingFrequency << std::endl;
+			std::cerr<< "flyscan axisctr is "<< flyscanAxesCtr << std::endl;
+			std::cerr<< "flyscan sampling size is "<<samplingSize <<std::endl;
+			if(samplingSize<NBR_SAMP_PER_PAGE){
+				samplingSize=NBR_SAMP_PER_PAGE;
+				append_status_msg("continuous scan size is a bacth of 256 samples\n");
+				append_status_msg("setting size to the min: 256\n");
+				//emit flyscanErrorCode(-101);
+			}
+			if(samplingSize>NBR_RAM_PAGES*NBR_SAMP_PER_PAGE){
+				samplingSize=NBR_RAM_PAGES*NBR_SAMP_PER_PAGE;
+				append_status_msg("setting size to the max: 64*256");
+				throw invalid_argument("continuous scan size on one/two axis can not be greater than of 64*256 samples\n");
+				//emit flyscanErrorCode(-102);
+			}
+			if(samplingSize>(NBR_RAM_PAGES*NBR_SAMP_PER_PAGE)/2 && flyscanAxesCtr>2){
+				samplingSize=(NBR_RAM_PAGES*NBR_SAMP_PER_PAGE)/2;
+				append_status_msg("setting size to the max: 60*128");
+				throw invalid_argument("continuous scan size on more than 3 axes can not be greater than of 64*128 samples\n");
+				//emit flyscanErrorCode(-103);
+			}
+			//*/
+			std::cerr<< "flyscan 1 sampling size is "<<samplingSize <<std::endl;
+			if ((base_A24D32_ptr = (unsigned int*)calloc((size_t)((samplingSize*1.1*flyscanAxesCtr)), sizeof(unsigned int)))== NULL){
+
+				zygoLogWarn("can not allocate memory on the host machine\n");
+				throw invalid_argument("can not allocate memory on the host machine\n");
+				
+			}
+			std::cerr<< "flyscan 2 sampling size is "<<samplingSize <<std::endl;
+			if(flyscanAxesCtr>1){
+				if ((base_A24D32_FR_ptr = (unsigned int*)calloc((size_t)((samplingSize*1.1*flyscanAxesCtr)), sizeof(unsigned int))) == NULL){
+				
+					zygoLogWarn("can not allocate memory on the host machine\n");
+					// throw invalid_argument("can not allocate memory on the host machine\n");
+					//emit flyscanProcTerm();
+				}
+			}
+			if ((argout=configureFlyscan(flyscanAxesCtr, samplingFrequency, 1)) != RET_SUCCESS){
+				throw invalid_argument("configuration of continuous acquisition has failed!!!\n");
+			}
+			append_status_msg(get_ZYGO_error_string(argout));
+			std::cerr<< "argout after flyscan configuration done is "<< argout << std::endl;
+			std::cerr<< "flyscan configuration done"<<std::endl;
+			if(flyscanAxesCtr>2){
+				samplingSize = (samplingSize*2>FFTRAM_SIZE_PER_AXIS)?FFTRAM_SIZE_PER_AXIS/2:samplingSize;
+			}
+			static unsigned int ramDataSize = samplingSize/NBR_SAMP_PER_PAGE;
+			std::cerr<< "flyscan 3a sampling size is "<<samplingSize <<std::endl;
+			if ((argout=getFlyscanData(  base_A24D32_FR_ptr, base_A24D32_ptr, &flyscanAxesCtr,ramDataSize)) != RET_SUCCESS)
+			{
+				
+				throw invalid_argument("Getting RAMDATA failed\n");
+			}
+			std::cerr<< "flyscan 3b sampling size is "<<samplingSize <<std::endl;
+			append_status_msg(get_ZYGO_error_string(argout));
+			std::cerr<< "get flyscan data done"<<std::endl;
+			if ((argout=processRamData(flyscanAxesCtr, base_A24D32_FR_ptr, base_A24D32_ptr, ramDataSize, flyscanPath,meanVal, stdDevVal)) != RET_SUCCESS)
+			{
+				throw invalid_argument("Processing RAMDATA failed\n");
+			}
+			append_status_msg(get_ZYGO_error_string(argout));
+			std::cerr<< "process flyscan data done"<<std::endl;
+		}
+
+		else{
+			append_status_msg("Running continuous scan in FIFO mode\n");
+			int ret_code=0, mysize=0;
+			bool ovf=0;
+			fifoParam* flyscanFifoParam = new fifoParam;
+			//flyscanFifoParam->acqTime=flyscanTimeValue;
+			flyscanFifoParam->freq=samplingFrequency;
+			flyscanFifoParam->nbrPts=samplingSize;
+			if(*attr_fifoMode_read){
+				mysize = MAX_HEAP_SIZE;//128Mo
+			}
+			else{
+				mysize = (UINT)(sizeof(UINT) * (samplingSize*1.5*flyscanAxesCtr));
+			}
+
+			if (!(base_A24D32_ptr = (uint32_t*)calloc(mysize, sizeof(unsigned int)))){
+				zygoLogWarn("can not allocate memory on the host machine\n");
+				delete flyscanFifoParam;
+				perror("base_A32D32_ptr");
+				append_status_msg("can not allocate memory on the host machine\n");
+				throw invalid_argument(strerror(errno));
+			}
+			ovf_flag:
+			set_status("Setting up fifo flyscan\n"); 
+			if (configureFifoFlyscan(flyscanFifoParam,base_A24D32_ptr,(uint8_t*)flyscanAxesTab, &flyscanAxesCtr, &ret_code, *attr_fifoMode_read) != RET_SUCCESS){
+				
+				delete flyscanFifoParam;
+				throw invalid_argument("Configure Fifo flyscan failed\n");
+			}
+			else
+			{
+				//emit flyscanErrorCode(1); // currently processing
+				//dataProcessing::dev_mutex.unlock();
+				if(ret_code==-100){
+					append_status_msg("Overlapping detected, somme data may have been corrupted \n"); 
+				}
+				if(ret_code==100){
+					ovf=1;
+					append_status_msg("Overflow on dynamic memory allocated to stored samples\n"); 
+				}
+
+				set_status("Processing fifo data"); 
+				if (processFifoData(flyscanAxesCtr, (uint8_t*)flyscanAxesTab, base_A24D32_ptr, flyscanFifoParam->nbrPts, (uint8_t*)flyscanPath,meanVal, stdDevVal) != RET_SUCCESS){
+				
+					delete flyscanFifoParam;
+					throw invalid_argument("failed to process fifo data\n");
+				}
+				if(ovf){
+					ovf=0;
+					memset(base_A24D32_ptr, 0, mysize);
+					goto ovf_flag;
+				}
+
+				//dataProcessing::dev_mutex.unlock();
+			}
+		}	
+			
+
+	
+	}
+	catch(const invalid_argument& msg)
+	{
+		std::cerr << "exception : " << msg.what() << std::endl;
+		std::cerr << "argout value is  " << argout << std::endl;
+		append_status_msg("Continuous scan failed\n"); 
+		append_status_msg(msg.what());                   // Give the status to Tango.
+		dev_state_val = Tango::RUNNING;
+		append_status_msg(get_ZYGO_error_string(argout));
+		//Tango::Except::throw_exception("CONTINUOUS_SCAN_ERROR", "The flyscan config failed", "ZygoZMI4104C::start_continuous_acquisition");
+
+		return RET_FAILED;
+	}
+	
+	dev_state_val = Tango::RUNNING;
+	append_status_msg("Continuous scan succeed\n");              // Give the status to Tango.
+	//Tango::Except::throw_exception("TANGO_DEVICE_ERROR", "The initialization is not done.", "Controller::start()");
+	return RET_SUCCESS;
+}
+void ZygoZMI4104C::append_status_msg(const std::string& message)
+	{
+		yat::MutexLock scoped_lock(dev_status_msg_key);
+		if( m_status_retrieved )
+		{
+			dev_status_msg.str(message);
+		}
+		else
+		{
+			dev_status_msg << message;
+		}
+		m_status_retrieved = false;
+	}
+
+std::string ZygoZMI4104C::get_status_msg()
+	{
+		yat::MutexLock scoped_lock(dev_status_msg_key);
+		m_status_retrieved = true;
+		return dev_status_msg.str();
+	}
+
+std::string ZygoZMI4104C::get_ZYGO_error_string(int err_code){
+	std::string argout;
+	switch (err_code){
+		case APD_UAERR:
+			argout="Measurement Board: APD Unaligned access exception\n";
+			break;
+		case APD_IOPBUS_TIMEOUT:
+			argout="Measurement Board: Timeout from the IOPB bus exception\n";
+			break;
+		case APD_ILLEXEC:
+			argout="Measurement Board: Illegal op code execution exception\n";
+			break;
+		case APD_DOPBUS_TIMEOUT:
+			argout="Measurement Board: Timeout on the DOPB bus exception\n";
+			break;
+		case APD_DIV_ZERO:
+			argout="Measurement Board: Divide by zero exception\n";
+			break;
+		case APD_UNKNOW_EXCEP:
+			argout="Measurement Board: Unknow APD exception error ID\n";
+			break;			
+		case APD_STACK_OVERFLOW:
+			argout="Measurement Board: Stack overflow has been detected\n";
+			break;		
+		case APD_SWDEFERR:
+			argout="Measurement Board: Swith default error has been detected\n";
+			break;	
+		case RESET_AXIS_FAILED:
+			argout="Measurement Board: Failed to reset axes\n";
+			break;	
+		case EEPROM_READ_FAILED:
+			argout="Measurement Board: Can not read eeprom\n";
+			break;	
+		case RW_FAILED:
+			argout="Measurement Board: can not read/write on the measurement board\n";
+			break;
+		case LOGFILE_RW_FAILED:
+			argout="Can not read/write in the logile\n";
+			break;
+			
+			
+		case VME_PCI_GATEWAY_NOT_FOUND:
+			argout="VME/PCI Gateway device init Error: No gateway found on this computer";
+			break;
+		case Stat1100NullArgument:
+			argout="VME/PCI Gateway device init Error: At least 1 pointer argument is NULL\n";
+			break;
+		case Stat1100InvalidDeviceIndex:
+			argout="VME/PCI Gateway device init Error: No valid device on supplied index\n";
+			break;
+		case Stat1100ErrorDeviceOpen:
+			argout="VME/PCI Gateway device init Error: Can't open a handle on supplied index\n";
+			break;
+		case Stat1100ErrorBarMap:
+			argout="VME/PCI Gateway device init Error: Error mapping register space\n";
+			break;
+		case Stat1100ErrorAllocUserHandle:
+			argout="VME/PCI Gateway device init Error: Error allocating memory for user handle\n";
+			break;
+		case Stat1100ErrorCommonBufferInfo:
+			argout="VME/PCI Gateway device init Error: Error unexpected buffer properties\n";
+			break;
+		case Stat1100ErrorCommonBufferSize:
+			argout="VME/PCI Gateway device init Error: Error unexpected buffer size\n";
+			break;
+		case Stat1100ErrorCommonBufferMap:
+			argout="VME/PCI Gateway device init Error: Error mapping buffer space\n";
+			break;
+		case Stat1100ErrorCommonBufferUnmap:
+			argout="VME/PCI Gateway device init Error: Error unmapping buffer space\n";
+			break;
+		case Stat1100ErrorBarUnmap:
+			argout="VME/PCI Gateway device init Error: Error unmapping register space\n";
+			break;			
+		case Stat1100ErrorDeviceClose:
+			argout="VME/PCI Gateway device init Error: Error closing PLX handle\n";
+			break;		
+		case Stat1100ErrorDeviceReset:
+			argout="VME/PCI Gateway device init Error: Error resetting PLX chip\n";
+			break;		
+		case Stat1100ErrorRegisterAccess:
+			argout="VME/PCI Gateway device init Error: Error accessing PLX config registers\n";
+			break;		
+		case Stat1100ErrorNoRemoteDevice:
+			argout="VME/PCI Gateway device init Error: No remote device present (link down)\n";
+			break;
+		case Stat1100InvalidSizeValue:
+			argout="VME/PCI Gateway device init Error: Error invalid size\n";
+			break;
+		case Stat1100LESynch:
+			argout="VME/PCI Gateway local device error: Synchronization error\n";
+		case Stat1100LENrdy:
+			argout="VME/PCI Gateway local device error: Device not ready error\n";
+			break;
+		case Stat1100LEXoff:
+			argout="VME/PCI Gateway dlocal device error: Device off error\n";
+			break;
+		case Stat1100LEResource:
+			argout="VME/PCI Gateway local device error: Ressource not found error\n";
+			break;
+		case Stat1100LEDlock:
+			argout="VME/PCI Gateway local device error: device lock error\n";
+			break;
+		case Stat1100LETimeout:
+			argout="VME/PCI Gateway local device error: device timeout error\n";
+			break;		
+		case Stat1100RENrdy:
+			argout="VME/PCI Gateway remote device error: Device not ready error\n";
+			break;
+		case Stat1100REProt:
+			argout="VME/PCI Gateway remote device error: Device protocol error\n";
+			break;
+		case Stat1100RETimeout:
+			argout="VME/PCI Gateway remote device error: Device timeout error\n";
+			break;
+		case Stat1100REBusErr:
+			argout="VME/PCI Gateway remote device error: Device bus error\n";
+			break;
+		case CEC_MIN_VEL_ERROR:
+			argout="CEC HARDWARE ERROR: The CE Min Velocity should not be set to a value smaller than 24, which represents a \
+				1.8 kHz Doppler shift, or a velocity of approximately 0.29 mm/s. this may cause improper operation of the CEC function\n";
+			break;
+		case Stat1100REFerr:
+			argout="VME/PCI Gateway remote device error: Device Float error\n";
+			break;		
+		case NO_DEVICE_FOUND:
+			argout="VME/PCI Gateway remote device error: No device found on the current host\n";
+			break;			
+			/*
+		case Stat1100REFerr:
+			argout="VME/PCI Gateway remote device error: Device Float error\n";
+			break;
+		*/
+		default:
+			argout="unknow error code\n";
+			break;
+	}
+	return argout;
+}
+
 /*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::namespace_ending
 } //	namespace
