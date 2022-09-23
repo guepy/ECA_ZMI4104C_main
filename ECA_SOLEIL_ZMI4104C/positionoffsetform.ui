@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>Set Position Offset</string>
   </property>
   <property name="styleSheet">
    <string notr="true">QLabel, QRadioButton{
@@ -388,24 +388,6 @@ color: white;</string>
      </widget>
     </item>
    </layout>
-  </widget>
-  <widget class="QLabel" name="label">
-   <property name="geometry">
-    <rect>
-     <x>60</x>
-     <y>290</y>
-     <width>351</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">
-font: 75 12pt &quot;MS Shell Dlg 2&quot;;
-color: red;</string>
-   </property>
-   <property name="text">
-    <string>TextLabel</string>
-   </property>
   </widget>
  </widget>
  <resources/>

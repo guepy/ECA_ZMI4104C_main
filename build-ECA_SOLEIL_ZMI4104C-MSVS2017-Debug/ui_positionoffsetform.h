@@ -55,7 +55,6 @@ public:
     QPushButton *pushButton_2;
     QPushButton *okButton;
     QPushButton *pushButton_5;
-    QLabel *label;
 
     void setupUi(QWidget *positionOffsetForm)
     {
@@ -267,12 +266,6 @@ public:
 
         horizontalLayout_11->addWidget(pushButton_5);
 
-        label = new QLabel(positionOffsetForm);
-        label->setObjectName(QString::fromUtf8("label"));
-        label->setGeometry(QRect(60, 290, 351, 31));
-        label->setStyleSheet(QString::fromUtf8("\n"
-"font: 75 12pt \"MS Shell Dlg 2\";\n"
-"color: red;"));
 
         retranslateUi(positionOffsetForm);
 
@@ -281,7 +274,7 @@ public:
 
     void retranslateUi(QWidget *positionOffsetForm)
     {
-        positionOffsetForm->setWindowTitle(QCoreApplication::translate("positionOffsetForm", "Form", nullptr));
+        positionOffsetForm->setWindowTitle(QCoreApplication::translate("positionOffsetForm", "Set Position Offset", nullptr));
         radioButton_2->setText(QCoreApplication::translate("positionOffsetForm", "Enable position offsets", nullptr));
         label_2->setText(QCoreApplication::translate("positionOffsetForm", "units", nullptr));
         leftBlockUnits->setItemText(0, QCoreApplication::translate("positionOffsetForm", "mm", nullptr));
@@ -296,7 +289,6 @@ public:
         pushButton_2->setText(QCoreApplication::translate("positionOffsetForm", "Apply", nullptr));
         okButton->setText(QCoreApplication::translate("positionOffsetForm", "OK", nullptr));
         pushButton_5->setText(QCoreApplication::translate("positionOffsetForm", "Cancel", nullptr));
-        label->setText(QCoreApplication::translate("positionOffsetForm", "TextLabel", nullptr));
     } // retranslateUi
 
 };

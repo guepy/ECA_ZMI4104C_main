@@ -337,7 +337,9 @@ void FlyscanForm::on_flyscanErrorCode_recieved(int err_code){
     case -99:
         ui->display->setTextColor(QColor("red"));
         ui->display->append("Flyscan configuration failed ");
-        ui->display->append("Try to reset the system ");
+        ui->display->append("1- Make sure the destination file is not currently open. If so, close the file and try again");
+        ui->display->append("2- If it still doesn't work, Try to reset the vme system ");
+        ui->display->append("3- If the issue remain, Try to reset the host system ");
         ui->display->setTextColor(QColor("dark"));
         break;
     case -100:
@@ -386,7 +388,9 @@ void FlyscanForm::on_flyscanErrorCode_recieved(int err_code){
     case -107:
         ui->display->setTextColor(QColor("red"));
         ui->display->append("Faillure while processing flyscan data");
-        ui->display->append("Try to reset the system ");
+        ui->display->append("1- Make sure the destination file is not currently open. If so, close the file and try again");
+        ui->display->append("2- If it still doesn't work, Try to reset the vme system ");
+        ui->display->append("3- If the issue remain, Try to reset the host system ");
         ui->display->setTextColor(QColor("dark"));
         break;
     default:
@@ -394,9 +398,8 @@ void FlyscanForm::on_flyscanErrorCode_recieved(int err_code){
     }
 }
 
-
 void FlyscanForm::on_flyscanStatValues_received(unsigned char* axisTab, double* mean, double* stdDev){
-    qDebug()<<"flyscan stat val";
+    qDebug()<<"flyscan stat 3 val"<<(int)(axisTab[2])<<"mean "<<mean[2]<<" stdev "<<stdDev[2];
 
     for(int i=0; i<4;i++){
         switch ((unsigned int)axisTab[i]) {

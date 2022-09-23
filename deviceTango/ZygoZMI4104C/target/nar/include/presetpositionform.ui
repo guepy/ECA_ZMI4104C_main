@@ -153,7 +153,7 @@ border: 1px solid;
 font: 75 14pt &quot;MS Shell Dlg 2&quot;;</string>
         </property>
         <property name="text">
-         <string>Enable position offsets</string>
+         <string>Enable preset position </string>
         </property>
        </widget>
       </item>

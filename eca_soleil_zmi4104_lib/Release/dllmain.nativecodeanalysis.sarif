@@ -14,7 +14,7 @@
       },
       "invocations": [
         {
-          "commandLine": "\"C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\VC\\Tools\\MSVC\\14.28.29910\\bin\\HostX86\\x86\\c1xx.dll\" -ACf{1F7B090C-16DB-4822-966A-A93D26ED4681} -ACpmspft140.dll -Alint -D_PREFAST_ -D_AST_FE_ -Analyze -zm0x00AAB1C0 -allChunksReserved -il C:\\Users\\guekam\\AppData\\Local\\Temp\\_CL_94347408ast -typedil -f dllmain.cpp -Ze -D_MSC_EXTENSIONS -Zp8 -Gs -pc \\:/ -D_MSC_VER=1928 -D_MSC_FULL_VER=192829914 -D_MSC_BUILD=0 -D_WIN32 -D_M_IX86=600 -D_M_IX86_FP=2 -GR -D_CPPRTTI -I C:\\Users\\guekam\\source\\repos\\ECA_ZMI4104_Project\\ECA_ZMI4104C_main\\eca_soleil_zmi4104_lib\\sis1100_zmilib -nologo -W 1 -diagnostics:column -D_GUARDOVERFLOW_CRT_ALLOCATORS=1 -GF -Og -Ot -Oi -ltcg -DCODE_ANALYSIS -DWIN32 -DNDEBUG -DECASOLEILZMI4104LIB_EXPORTS -D_WINDOWS -D_USRDLL -D_WINDLL -D_UNICODE -DUNICODE -EHs -D_CPPUNWIND -EHc -MD -D_MT -D_DLL -GS -D_M_FP_PRECISE -permissive- -Zc:wchar_t -Zc:forScope -Yupch.h -FpRelease\\eca_soleil_zmi4104_lib.pch -FoRelease\\dllmain.obj -FdRelease\\vc142.pdb -Gd -analyze:projectdirectory C:\\Users\\guekam\\source\\repos\\ECA_ZMI4104_Project\\ECA_ZMI4104C_main\\eca_soleil_zmi4104_lib -analyze:rulesetdirectory ;C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\Team Tools\\Static Analysis Tools\\\\Rule Sets; -analyze:ruleset C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\Team Tools\\Static Analysis Tools\\Rule Sets\\NativeRecommendedRules.ruleset -analyze:quiet -analyze:plugin C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\VC\\Tools\\MSVC\\14.28.29910\\bin\\HostX86\\x86\\EspXEngine.dll -FC -errorreport:prompt -I C:\\Users\\guekam\\source\\repos\\ECA_ZMI4104_Project\\ECA_ZMI4104C_main\\ECA_ZMI4104C_main -I C:\\Users\\guekam\\source\\repos\\ECA_ZMI4104_Project\\ECA_ZMI4104C_main\\eca_soleil_zmi4104_lib\\sis1100_zmilib -I C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\VC\\Tools\\MSVC\\14.28.29910\\include -I C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\VC\\Tools\\MSVC\\14.28.29910\\atlmfc\\include -I C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\VC\\Auxiliary\\VS\\include -I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.19041.0\\ucrt -I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.19041.0\\um -I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.19041.0\\shared -I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.19041.0\\winrt -I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.19041.0\\cppwinrt -I C:\\Users\\guekam\\source\\repos\\ECA_ZMI4104_Project\\ECA_ZMI4104C_main\\eca_soleil_zmi4104_lib\\Include\\um",
+          "commandLine": "\"C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\VC\\Tools\\MSVC\\14.28.29910\\bin\\HostX86\\x86\\c1xx.dll\" -ACf{1F7B090C-16DB-4822-966A-A93D26ED4681} -ACpmspft140.dll -Alint -D_PREFAST_ -D_AST_FE_ -Analyze -zm0x009AB1C0 -allChunksReserved -il C:\\Users\\guekam\\AppData\\Local\\Temp\\_CL_27500371ast -typedil -f dllmain.cpp -Ze -D_MSC_EXTENSIONS -Zp8 -Gs -pc \\:/ -D_MSC_VER=1928 -D_MSC_FULL_VER=192829914 -D_MSC_BUILD=0 -D_WIN32 -D_M_IX86=600 -D_M_IX86_FP=2 -GR -D_CPPRTTI -I C:\\Users\\guekam\\source\\repos\\ECA_ZMI4104_Project\\ECA_ZMI4104C_main\\eca_soleil_zmi4104_lib\\sis1100_zmilib -nologo -W 1 -diagnostics:column -D_GUARDOVERFLOW_CRT_ALLOCATORS=1 -GF -Og -Ot -Oi -ltcg -DCODE_ANALYSIS -DWIN32 -DNDEBUG -DECASOLEILZMI4104LIB_EXPORTS -D_WINDOWS -D_USRDLL -D_WINDLL -D_UNICODE -DUNICODE -EHs -D_CPPUNWIND -EHc -MD -D_MT -D_DLL -GS -D_M_FP_PRECISE -permissive- -Zc:wchar_t -Zc:forScope -Yupch.h -FpRelease\\eca_soleil_zmi4104_lib.pch -FoRelease\\dllmain.obj -FdRelease\\vc142.pdb -Gd -analyze:projectdirectory C:\\Users\\guekam\\source\\repos\\ECA_ZMI4104_Project\\ECA_ZMI4104C_main\\eca_soleil_zmi4104_lib -analyze:rulesetdirectory ;C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\Team Tools\\Static Analysis Tools\\\\Rule Sets; -analyze:ruleset C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\Team Tools\\Static Analysis Tools\\Rule Sets\\NativeRecommendedRules.ruleset -analyze:quiet -analyze:plugin C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\VC\\Tools\\MSVC\\14.28.29910\\bin\\HostX86\\x86\\EspXEngine.dll -FC -errorreport:prompt -I C:\\Users\\guekam\\source\\repos\\ECA_ZMI4104_Project\\ECA_ZMI4104C_main\\ECA_ZMI4104C_main -I C:\\Users\\guekam\\source\\repos\\ECA_ZMI4104_Project\\ECA_ZMI4104C_main\\eca_soleil_zmi4104_lib\\sis1100_zmilib -I C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\VC\\Tools\\MSVC\\14.28.29910\\include -I C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\VC\\Tools\\MSVC\\14.28.29910\\atlmfc\\include -I C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\VC\\Auxiliary\\VS\\include -I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.19041.0\\ucrt -I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.19041.0\\um -I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.19041.0\\shared -I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.19041.0\\winrt -I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.19041.0\\cppwinrt -I C:\\Users\\guekam\\source\\repos\\ECA_ZMI4104_Project\\ECA_ZMI4104C_main\\eca_soleil_zmi4104_lib\\Include\\um",
           "executionSuccessful": true
         }
       ],
@@ -28,7 +28,7 @@
             "resultFile"
           ],
           "hashes": {
-            "md5": "fad955f9104a4940cd3a33bfc5c44217"
+            "md5": "8815a5efe3fcc820e8afedd3477e0978"
           }
         },
         {
@@ -68,7 +68,7 @@
             "uri": "file:///c:/users/guekam/source/repos/eca_zmi4104_project/eca_zmi4104c_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis1100wstat.h"
           },
           "hashes": {
-            "md5": "d2b9e7242f0822099f3f0ed65fb4c7f7"
+            "md5": "3b00e42112bdce625699611c689c461c"
           }
         },
         {
@@ -88,15 +88,18 @@
             "resultFile"
           ],
           "hashes": {
-            "md5": "327269a045da48eb6df67bf5240dd549"
+            "md5": "b6a10b9e559aa816614803e512c471cc"
           }
         },
         {
           "location": {
-            "uri": "file:///c:/users/guekam/source/repos/eca_zmi4104_project/eca_zmi4104c_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.h"
+            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.h"
           },
+          "roles": [
+            "resultFile"
+          ],
           "hashes": {
-            "md5": "3484a8e10dec7038a0ddf77ea439ff1e"
+            "md5": "d518fabe388ae384cbca2f70d3d3b16a"
           }
         },
         {
@@ -104,7 +107,7 @@
             "uri": "file:///c:/users/guekam/source/repos/eca_zmi4104_project/eca_zmi4104c_main/eca_zmi4104c_main/zvme_const.h"
           },
           "hashes": {
-            "md5": "4586d81b08ab00857ad73514904fb14e"
+            "md5": "57134592cf221e0a2ea6caa326c6c12e"
           }
         },
         {
@@ -121,6 +124,14 @@
           },
           "hashes": {
             "md5": "1b4b286b013d3c60b7af68617be55cb3"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/guekam/source/repos/eca_zmi4104_project/eca_zmi4104c_main/eca_soleil_zmi4104_lib/zygoerrorcodes.h"
+          },
+          "hashes": {
+            "md5": "cc7da8542e57c64c36c246722578ddcb"
           }
         },
         {

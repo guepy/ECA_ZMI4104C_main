@@ -113,8 +113,14 @@ namespace ZygoZMI4104C_ns
 
 //	static initializations
 
-bool* ZygoZMI4104C::ledsErrorStatus = new bool[5];
-bool* ZygoZMI4104C::ledsStatus=new bool[5];
+bool* 					ZygoZMI4104C::ledsErrorStatus = new bool[5];
+bool* 					ZygoZMI4104C::ledsStatus=new bool[5];
+bool* 					ZygoZMI4104C::init_done =new bool;
+double*					ZygoZMI4104C::meanVal = new double;
+double*					ZygoZMI4104C::stdDevVal= new double;
+int						ZygoZMI4104C::ceVelMin = 0;
+int 					ZygoZMI4104C::ceVelMax = 0;
+fifoParam* 				flyscanFifoParam = new fifoParam;
 /*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::namespace_starting
 
 //--------------------------------------------------------
@@ -163,7 +169,6 @@ void ZygoZMI4104C::delete_device()
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::delete_device) ENABLED START -----*/
 	
 	//	Delete device allocated objects
-	delete[] flyscanPath;
 	delete[] ledsColorString ;
 	delete[] optPwr;
 	delete[] ledsColor;
@@ -171,10 +176,8 @@ void ZygoZMI4104C::delete_device()
 	delete[] cecAxesTab;
 	delete[] biasModeString;
 	delete[] interferometerConfigurationString;
-	delete[] flyscanPath;
 	delete[] meanVal;
 	delete[] stdDevVal;
-	delete[] attr_continuousSamplingAxes_read[0];
 	delete[] attr_continuousSamplingAxes_read[0];
 	delete[] attr_interferometerConfiguration_read[0] 	;
 	delete[] attr_axis1BiasMode_read[0] 					;
@@ -326,13 +329,12 @@ void ZygoZMI4104C::init_device()
 	ledsColorString = new Tango::DevString[3];
 	optPwr = new Tango::DevDouble[5];
 	ledsColor = new Tango::DevUChar[6];
-	flyscanAxesTab = new Tango::DevUShort[6];
-	cecAxesTab = new Tango::DevUShort[6];
+	flyscanAxesTab = new uint8_t[6];
+	cecAxesTab = new uint8_t[6];
 	biasModeString = new Tango::DevString[5];
 	interferometerConfigurationString = new Tango::DevString[2];
-	meanVal = new double;
-	stdDevVal = new double;
-	
+	*meanVal = 0;
+	*stdDevVal = 0;
 	
 	attr_continuousSamplingAxes_read[0] 		= new char[256];
 	attr_interferometerConfiguration_read[0] 	= new char[16];
@@ -357,7 +359,7 @@ void ZygoZMI4104C::init_device()
 	for(int i= 0; i<3; i++)
 		ledsColorString[i] 						= new char[16];
 	for(int i= 0; i<5; i++)
-		biasModeString[i] 						= new char[16];
+		biasModeString[i] 						= new char[64];
 	
 
 	append_status_msg("Starting the device\n");
@@ -366,22 +368,18 @@ void ZygoZMI4104C::init_device()
 	strcpy(ledsColorString[1],"Green\0");
 	strcpy(ledsColorString[2],"Yellow\0");
 	
-	for(int i=0;i<sizeof(ledsColor);i++)
+	for(int i=0;i<6;i++)
 	{
 		ledsColor[i] = 0;
 		flyscanAxesTab[i] = 0;
 		cecAxesTab[i] = 0;
 	}
-	ledsColor[sizeof(ledsColor)-1] = '\0';
-	flyscanAxesTab[sizeof(flyscanAxesTab)/sizeof(flyscanAxesTab[0])-1] = '\0';
-	cecAxesTab[sizeof(cecAxesTab)/sizeof(cecAxesTab[0])-1] = '\0';
-	optPwr[4]='\0';
 	
-	strcpy(biasModeString[0],"OFF\0");
-	strcpy(biasModeString[1],"CONSTANT_VOLTAGE\0");
-	strcpy(biasModeString[2],"CONSTANT_GAIN\0");
-	strcpy(biasModeString[3],"CONSTANT_OPTICAL_POWER\0");
-	strcpy(biasModeString[4],"SIG_RMS_ADJUST_MODE\0");
+	strcpy(biasModeString[0],"OFF");
+	strcpy(biasModeString[1],"CONSTANT_VOLTAGE");
+	strcpy(biasModeString[2],"CONSTANT_GAIN");
+	strcpy(biasModeString[3],"CONSTANT_OPTICAL_POWER");
+	strcpy(biasModeString[4],"SIG_RMS_ADJUST_MODE");
 	
 	strcpy(interferometerConfigurationString[0],"SINGLE\0");
 	strcpy(interferometerConfigurationString[1],"DOUBLE\0");
@@ -392,30 +390,32 @@ void ZygoZMI4104C::init_device()
 	*attr_continuousSamplingSize_read=1;
 	flyscanAxesCtr = 0;
 	cecAxesCtr = 0;
-    ceVelMin = 96;
-    ceVelMax=31457;
-		
+    ZygoZMI4104C::ceVelMin = CE_MIN_VEL;
+    ZygoZMI4104C::ceVelMax= CE_MAX_VEL;	
+	write_init_done(false);
+	*attr_fifoMode_read = (Tango::DevShort) fifoModeEnum::_AUTO;
 	//	Initialize device
 	
 #if 0
 	
 	DEBUG_STREAM << "initializing the device..." << endl;
-	vme_system_reset();
+	vme_system_reset(0);
 	dev_state_val = Tango::RUNNING;
 	append_status_msg("Starting complete\n");
 	DEBUG_STREAM << "Starting complete" << endl;
 
 
 #else
-	if (initSisBoards() != RET_SUCCESS) 
+	if (initSisBoards(0) != RET_SUCCESS) 
 	{
-		DEBUG_STREAM << "Failed to initialize SIS boards" << endl;	
+		DEBUG_STREAM << "Failed to initialize SIS boards" << std::endl;	
 		zygoLogFatal("Failed to initialize SIS boards\n");	
 		return;
 	}
 	append_status_msg("initialization complete\n");
-	DEBUG_STREAM << "initialization complete" << endl;
+	DEBUG_STREAM << "initialization complete" << std::endl;
 	dev_state_val = Tango::RUNNING;
+	write_init_done(true);
 #endif
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::init_device
 }
@@ -500,8 +500,13 @@ void ZygoZMI4104C::read_attr_hardware(TANGO_UNUSED(vector<long> &attr_list))
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::read_attr_hardware) ENABLED START -----*/
 	
 	//	Add your own code
-	getLEDsColor(ledsColor);
-	readOpticalPowerUsingSsiAv(optPwr);
+	if(read_init_done()){
+		getLEDsColor(ledsColor);
+		readOpticalPowerUsingSsiAv(optPwr);
+	}
+	else{
+		append_status_msg(".");
+	}
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::read_attr_hardware
 }
 //--------------------------------------------------------
@@ -534,11 +539,11 @@ void ZygoZMI4104C::read_samplingFrequency(Tango::Attribute &attr)
 	DEBUG_STREAM << "ZygoZMI4104C::read_samplingFrequency(Tango::Attribute &attr) entering... " << endl;
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::read_samplingFrequency) ENABLED START -----*/
 	//	Set the attribute value
-	getSamplingFrequency((uint32_t*)attr_samplingFrequency_read);
-	yat::MutexLock lock(flyscan_param_key);
-	attr.set_value(attr_samplingFrequency_read);
-	yat::MutexLock unlock(flyscan_param_key);
 	
+	if(read_init_done()){
+	getSamplingFrequency((uint32_t*)attr_samplingFrequency_read);
+	attr.set_value(attr_samplingFrequency_read);
+	}
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::read_samplingFrequency
 }
 //--------------------------------------------------------
@@ -557,8 +562,8 @@ void ZygoZMI4104C::write_samplingFrequency(Tango::WAttribute &attr)
 	Tango::DevULong	w_val;
 	attr.get_write_value(w_val);
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::write_samplingFrequency) ENABLED START -----*/
-	
-	setSamplingFrequency((unsigned int)w_val);
+	if(read_init_done())
+		setSamplingFrequency((unsigned int)w_val);
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::write_samplingFrequency
 }
@@ -671,9 +676,10 @@ void ZygoZMI4104C::read_currentPrecision(Tango::Attribute &attr)
 	DEBUG_STREAM << "ZygoZMI4104C::read_currentPrecision(Tango::Attribute &attr) entering... " << endl;
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::read_currentPrecision) ENABLED START -----*/
 	//	Set the attribute value
+	if(read_init_done()){
 	*attr_currentPrecision_read = (Tango::DevShort)(getPrecision()? currentPrecisionEnum::_REG37 : currentPrecisionEnum::_REG32);
 	attr.set_value(attr_currentPrecision_read);
-	
+	}
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::read_currentPrecision
 }
 //--------------------------------------------------------
@@ -692,7 +698,8 @@ void ZygoZMI4104C::write_currentPrecision(Tango::WAttribute &attr)
 	Tango::DevShort	w_val;
 	attr.get_write_value(w_val);
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::write_currentPrecision) ENABLED START -----*/
-	setPrecision(int(w_val));
+	if(read_init_done())
+		setPrecision(int(w_val));
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::write_currentPrecision
 }
@@ -710,7 +717,8 @@ void ZygoZMI4104C::read_axis1PositionValue(Tango::Attribute &attr)
 	DEBUG_STREAM << "ZygoZMI4104C::read_axis1PositionValue(Tango::Attribute &attr) entering... " << endl;
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::read_axis1PositionValue) ENABLED START -----*/
 	//	Set the attribute value
-	readPosition(1,attr_axis1PositionValue_read);
+	if(read_init_done())
+		readPosition(1,attr_axis1PositionValue_read);
 	attr.set_value(attr_axis1PositionValue_read);
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::read_axis1PositionValue
@@ -729,7 +737,8 @@ void ZygoZMI4104C::read_axis2PositionValue(Tango::Attribute &attr)
 	DEBUG_STREAM << "ZygoZMI4104C::read_axis2PositionValue(Tango::Attribute &attr) entering... " << endl;
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::read_axis2PositionValue) ENABLED START -----*/
 	//	Set the attribute value
-	readPosition(2,attr_axis2PositionValue_read);
+	if(read_init_done())
+		readPosition(2,attr_axis2PositionValue_read);
 	attr.set_value(attr_axis2PositionValue_read);
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::read_axis2PositionValue
@@ -748,7 +757,8 @@ void ZygoZMI4104C::read_axis3PositionValue(Tango::Attribute &attr)
 	DEBUG_STREAM << "ZygoZMI4104C::read_axis3PositionValue(Tango::Attribute &attr) entering... " << endl;
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::read_axis3PositionValue) ENABLED START -----*/
 	//	Set the attribute value
-	readPosition(3,attr_axis3PositionValue_read);
+	if(read_init_done())
+		readPosition(3,attr_axis3PositionValue_read);
 	attr.set_value(attr_axis3PositionValue_read);
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::read_axis3PositionValue
@@ -767,7 +777,8 @@ void ZygoZMI4104C::read_axis4PositionValue(Tango::Attribute &attr)
 	DEBUG_STREAM << "ZygoZMI4104C::read_axis4PositionValue(Tango::Attribute &attr) entering... " << endl;
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::read_axis4PositionValue) ENABLED START -----*/
 	//	Set the attribute value
-	readPosition(4,attr_axis4PositionValue_read);
+	if(read_init_done())
+		readPosition(4,attr_axis4PositionValue_read);
 	attr.set_value(attr_axis4PositionValue_read);
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::read_axis4PositionValue
@@ -862,9 +873,10 @@ void ZygoZMI4104C::read_axis1OffsetPositionValue(Tango::Attribute &attr)
 	DEBUG_STREAM << "ZygoZMI4104C::read_axis1OffsetPositionValue(Tango::Attribute &attr) entering... " << endl;
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::read_axis1OffsetPositionValue) ENABLED START -----*/
 	//	Set the attribute value
+	if(read_init_done()){
 	getPositionOffset(1, attr_axis1OffsetPositionValue_read);
 	attr.set_value(attr_axis1OffsetPositionValue_read);
-	
+	}
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::read_axis1OffsetPositionValue
 }
 //--------------------------------------------------------
@@ -883,8 +895,8 @@ void ZygoZMI4104C::write_axis1OffsetPositionValue(Tango::WAttribute &attr)
 	Tango::DevDouble	w_val;
 	attr.get_write_value(w_val);
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::write_axis1OffsetPositionValue) ENABLED START -----*/
-	
-	setPositionOffset(1, w_val);
+	if(read_init_done())
+		setPositionOffset(1, w_val);
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::write_axis1OffsetPositionValue
 }
@@ -902,7 +914,8 @@ void ZygoZMI4104C::read_axis2OffsetPositionValue(Tango::Attribute &attr)
 	DEBUG_STREAM << "ZygoZMI4104C::read_axis2OffsetPositionValue(Tango::Attribute &attr) entering... " << endl;
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::read_axis2OffsetPositionValue) ENABLED START -----*/
 	//	Set the attribute value
-	getPositionOffset(2, attr_axis2OffsetPositionValue_read);
+	if(read_init_done())
+		getPositionOffset(2, attr_axis2OffsetPositionValue_read);
 	attr.set_value(attr_axis2OffsetPositionValue_read);
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::read_axis2OffsetPositionValue
@@ -922,10 +935,9 @@ void ZygoZMI4104C::write_axis2OffsetPositionValue(Tango::WAttribute &attr)
 	//	Retrieve write value
 	Tango::DevDouble	w_val;
 	attr.get_write_value(w_val);
-	/*----- PROTECTED REGION ID(ZygoZMI4104C::write_axis2OffsetPositionValue) ENABLED START -----*/
-	
-	
-	setPositionOffset(2, w_val);
+	/*----- PROTECTED REGION ID(ZygoZMI4104C::write_axis2OffsetPositionValue) ENABLED START -----*/	
+	if(read_init_done())
+		setPositionOffset(2, w_val);
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::write_axis2OffsetPositionValue
 }
 //--------------------------------------------------------
@@ -942,7 +954,8 @@ void ZygoZMI4104C::read_axis3OffsetPositionValue(Tango::Attribute &attr)
 	DEBUG_STREAM << "ZygoZMI4104C::read_axis3OffsetPositionValue(Tango::Attribute &attr) entering... " << endl;
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::read_axis3OffsetPositionValue) ENABLED START -----*/
 	//	Set the attribute value
-	getPositionOffset(3, attr_axis3OffsetPositionValue_read);
+	if(read_init_done())
+		getPositionOffset(3, attr_axis3OffsetPositionValue_read);
 	attr.set_value(attr_axis3OffsetPositionValue_read);
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::read_axis3OffsetPositionValue
@@ -963,8 +976,8 @@ void ZygoZMI4104C::write_axis3OffsetPositionValue(Tango::WAttribute &attr)
 	Tango::DevDouble	w_val;
 	attr.get_write_value(w_val);
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::write_axis3OffsetPositionValue) ENABLED START -----*/
-	
-	setPositionOffset(3, w_val);
+	if(read_init_done())
+		setPositionOffset(3, w_val);
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::write_axis3OffsetPositionValue
 }
@@ -982,7 +995,8 @@ void ZygoZMI4104C::read_axis4OffsetPositionValue(Tango::Attribute &attr)
 	DEBUG_STREAM << "ZygoZMI4104C::read_axis4OffsetPositionValue(Tango::Attribute &attr) entering... " << endl;
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::read_axis4OffsetPositionValue) ENABLED START -----*/
 	//	Set the attribute value
-	getPositionOffset(4, attr_axis4OffsetPositionValue_read);
+	if(read_init_done())
+		getPositionOffset(4, attr_axis4OffsetPositionValue_read);
 	attr.set_value(attr_axis4OffsetPositionValue_read);
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::read_axis4OffsetPositionValue
@@ -1002,10 +1016,9 @@ void ZygoZMI4104C::write_axis4OffsetPositionValue(Tango::WAttribute &attr)
 	//	Retrieve write value
 	Tango::DevDouble	w_val;
 	attr.get_write_value(w_val);
-	/*----- PROTECTED REGION ID(ZygoZMI4104C::write_axis4OffsetPositionValue) ENABLED START -----*/
-	
-	
-	setPositionOffset(4, w_val);
+	/*----- PROTECTED REGION ID(ZygoZMI4104C::write_axis4OffsetPositionValue) ENABLED START -----*/	
+	if(read_init_done())
+		setPositionOffset(4, w_val);
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::write_axis4OffsetPositionValue
 }
 //--------------------------------------------------------
@@ -1022,7 +1035,8 @@ void ZygoZMI4104C::read_axis1PresetPositionValue(Tango::Attribute &attr)
 	DEBUG_STREAM << "ZygoZMI4104C::read_axis1PresetPositionValue(Tango::Attribute &attr) entering... " << endl;
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::read_axis1PresetPositionValue) ENABLED START -----*/
 	//	Set the attribute value
-	getPresetPosition(1, attr_axis1PresetPositionValue_read);
+	if(read_init_done())
+		getPresetPosition(1, attr_axis1PresetPositionValue_read);
 	attr.set_value(attr_axis1PresetPositionValue_read);
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::read_axis1PresetPositionValue
@@ -1043,9 +1057,8 @@ void ZygoZMI4104C::write_axis1PresetPositionValue(Tango::WAttribute &attr)
 	Tango::DevDouble	w_val;
 	attr.get_write_value(w_val);
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::write_axis1PresetPositionValue) ENABLED START -----*/
-	
-	
-	setPresetPosition(1, w_val);
+	if(read_init_done())
+		setPresetPosition(1, w_val);
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::write_axis1PresetPositionValue
 }
 //--------------------------------------------------------
@@ -1062,7 +1075,8 @@ void ZygoZMI4104C::read_axis2PresetPositionValue(Tango::Attribute &attr)
 	DEBUG_STREAM << "ZygoZMI4104C::read_axis2PresetPositionValue(Tango::Attribute &attr) entering... " << endl;
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::read_axis2PresetPositionValue) ENABLED START -----*/
 	//	Set the attribute value
-	getPresetPosition(2, attr_axis2PresetPositionValue_read);
+	if(read_init_done())
+		getPresetPosition(2, attr_axis2PresetPositionValue_read);
 	attr.set_value(attr_axis2PresetPositionValue_read);
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::read_axis2PresetPositionValue
@@ -1083,8 +1097,8 @@ void ZygoZMI4104C::write_axis2PresetPositionValue(Tango::WAttribute &attr)
 	Tango::DevDouble	w_val;
 	attr.get_write_value(w_val);
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::write_axis2PresetPositionValue) ENABLED START -----*/
-	
-	setPresetPosition(2, w_val);
+	if(read_init_done())
+		setPresetPosition(2, w_val);
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::write_axis2PresetPositionValue
 }
@@ -1102,7 +1116,8 @@ void ZygoZMI4104C::read_axis3PresetPositionValue(Tango::Attribute &attr)
 	DEBUG_STREAM << "ZygoZMI4104C::read_axis3PresetPositionValue(Tango::Attribute &attr) entering... " << endl;
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::read_axis3PresetPositionValue) ENABLED START -----*/
 	//	Set the attribute value
-	getPresetPosition(3, attr_axis3PresetPositionValue_read);
+	if(read_init_done())
+		getPresetPosition(3, attr_axis3PresetPositionValue_read);
 	attr.set_value(attr_axis3PresetPositionValue_read);
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::read_axis3PresetPositionValue
@@ -1123,9 +1138,8 @@ void ZygoZMI4104C::write_axis3PresetPositionValue(Tango::WAttribute &attr)
 	Tango::DevDouble	w_val;
 	attr.get_write_value(w_val);
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::write_axis3PresetPositionValue) ENABLED START -----*/
-	
-	
-	setPresetPosition(3, w_val);
+	if(read_init_done())
+		setPresetPosition(3, w_val);
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::write_axis3PresetPositionValue
 }
 //--------------------------------------------------------
@@ -1142,7 +1156,8 @@ void ZygoZMI4104C::read_axis4PresetPositionValue(Tango::Attribute &attr)
 	DEBUG_STREAM << "ZygoZMI4104C::read_axis4PresetPositionValue(Tango::Attribute &attr) entering... " << endl;
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::read_axis4PresetPositionValue) ENABLED START -----*/
 	//	Set the attribute value
-	getPresetPosition(4, attr_axis4PresetPositionValue_read);
+	if(read_init_done())
+		getPresetPosition(4, attr_axis4PresetPositionValue_read);
 	attr.set_value(attr_axis4PresetPositionValue_read);
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::read_axis4PresetPositionValue
@@ -1164,8 +1179,8 @@ void ZygoZMI4104C::write_axis4PresetPositionValue(Tango::WAttribute &attr)
 	attr.get_write_value(w_val);
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::write_axis4PresetPositionValue) ENABLED START -----*/
 	
-	
-	setPresetPosition(4, w_val);
+	if(read_init_done())
+		setPresetPosition(4, w_val);
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::write_axis4PresetPositionValue
 }
 //--------------------------------------------------------
@@ -1182,9 +1197,11 @@ void ZygoZMI4104C::read_axis1BiasMode(Tango::Attribute &attr)
 	DEBUG_STREAM << "ZygoZMI4104C::read_axis1BiasMode(Tango::Attribute &attr) entering... " << endl;
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::read_axis1BiasMode) ENABLED START -----*/
 	//	Set the attribute value
-	uint32_t biasMode=0;
-	getBiasMode(1,&biasMode);
-	strcpy(attr_axis1BiasMode_read[0], biasModeString[biasMode]);
+	if(read_init_done()){
+		static uint32_t biasMode=0;
+		getBiasMode(1,&biasMode);
+		strcpy(attr_axis1BiasMode_read[0], biasModeString[biasMode]);
+	}
 	attr.set_value(attr_axis1BiasMode_read);
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::read_axis1BiasMode
@@ -1205,8 +1222,8 @@ void ZygoZMI4104C::write_axis1BiasMode(Tango::WAttribute &attr)
 	Tango::DevString	w_val;
 	attr.get_write_value(w_val);
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::write_axis1BiasMode) ENABLED START -----*/
-	
-	localSetBiasMode(1,w_val);
+	if(read_init_done())
+		localSetBiasMode(1,w_val);
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::write_axis1BiasMode
 }
 //--------------------------------------------------------
@@ -1223,9 +1240,11 @@ void ZygoZMI4104C::read_axis2BiasMode(Tango::Attribute &attr)
 	DEBUG_STREAM << "ZygoZMI4104C::read_axis2BiasMode(Tango::Attribute &attr) entering... " << endl;
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::read_axis2BiasMode) ENABLED START -----*/
 	//	Set the attribute value
-	uint32_t biasMode=0;
-	getBiasMode(2,&biasMode);
-	strcpy(attr_axis2BiasMode_read[0] ,biasModeString[biasMode]);
+	if(read_init_done()){
+		static uint32_t biasMode=0;
+		getBiasMode(2,&biasMode);
+		strcpy(attr_axis2BiasMode_read[0] ,biasModeString[biasMode]);
+	}
 	attr.set_value(attr_axis2BiasMode_read);
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::read_axis2BiasMode
@@ -1246,8 +1265,8 @@ void ZygoZMI4104C::write_axis2BiasMode(Tango::WAttribute &attr)
 	Tango::DevString	w_val;
 	attr.get_write_value(w_val);
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::write_axis2BiasMode) ENABLED START -----*/
-	
-	localSetBiasMode(2,w_val);
+	if(read_init_done())
+		localSetBiasMode(2,w_val);
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::write_axis2BiasMode
 }
 //--------------------------------------------------------
@@ -1264,9 +1283,11 @@ void ZygoZMI4104C::read_axis3BiasMode(Tango::Attribute &attr)
 	DEBUG_STREAM << "ZygoZMI4104C::read_axis3BiasMode(Tango::Attribute &attr) entering... " << endl;
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::read_axis3BiasMode) ENABLED START -----*/
 	//	Set the attribute value
-	uint32_t biasMode=0;
-	getBiasMode(3,&biasMode);
-	strcpy(attr_axis3BiasMode_read[0] ,biasModeString[biasMode]);
+	if(read_init_done()){
+		static uint32_t biasMode=0;
+		getBiasMode(3,&biasMode);
+		strcpy(attr_axis3BiasMode_read[0] ,biasModeString[biasMode]);
+	}
 	attr.set_value(attr_axis3BiasMode_read);
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::read_axis3BiasMode
@@ -1287,8 +1308,8 @@ void ZygoZMI4104C::write_axis3BiasMode(Tango::WAttribute &attr)
 	Tango::DevString	w_val;
 	attr.get_write_value(w_val);
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::write_axis3BiasMode) ENABLED START -----*/
-	
-	localSetBiasMode(3,w_val);
+	if(read_init_done())
+		localSetBiasMode(3,w_val);
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::write_axis3BiasMode
 }
@@ -1306,9 +1327,11 @@ void ZygoZMI4104C::read_axis4BiasMode(Tango::Attribute &attr)
 	DEBUG_STREAM << "ZygoZMI4104C::read_axis4BiasMode(Tango::Attribute &attr) entering... " << endl;
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::read_axis4BiasMode) ENABLED START -----*/
 	//	Set the attribute value
-	uint32_t biasMode=0;
-	getBiasMode(4,&biasMode);
-	strcpy(attr_axis4BiasMode_read[0] , biasModeString[biasMode]);
+	if(read_init_done()){
+		static uint32_t biasMode=0;
+		getBiasMode(4,&biasMode);
+		strcpy(attr_axis4BiasMode_read[0] , biasModeString[biasMode]);
+	}
 	attr.set_value(attr_axis4BiasMode_read);
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::read_axis4BiasMode
@@ -1329,7 +1352,8 @@ void ZygoZMI4104C::write_axis4BiasMode(Tango::WAttribute &attr)
 	Tango::DevString	w_val;
 	attr.get_write_value(w_val);
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::write_axis4BiasMode) ENABLED START -----*/
-	localSetBiasMode(4,w_val);
+	if(read_init_done())
+		localSetBiasMode(4,w_val);
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::write_axis4BiasMode
 }
@@ -1347,10 +1371,11 @@ void ZygoZMI4104C::read_interferometerConfiguration(Tango::Attribute &attr)
 	DEBUG_STREAM << "ZygoZMI4104C::read_interferometerConfiguration(Tango::Attribute &attr) entering... " << endl;
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::read_interferometerConfiguration) ENABLED START -----*/
 	//	Set the attribute value
-	Tango::DevUShort val=1;
-	val = (Tango::DevUShort)getInterferometerConfiguration();
-	DEBUG_STREAM << "interferometer config is: " << val << endl;
-	strcpy(attr_interferometerConfiguration_read[0],interferometerConfigurationString[val-1]);
+	if(read_init_done()){
+		static uint8_t val=1;
+		val = getInterferometerConfiguration();
+		strcpy(attr_interferometerConfiguration_read[0],interferometerConfigurationString[val-1]);
+	}
 	attr.set_value(attr_interferometerConfiguration_read);
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::read_interferometerConfiguration
@@ -1373,32 +1398,32 @@ void ZygoZMI4104C::write_interferometerConfiguration(Tango::WAttribute &attr)
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::write_interferometerConfiguration) ENABLED START -----*/
 	int len=2, res=0;
 	int len_wval = ((std::string)w_val).length();
-	
-	for(int i=0; i<len_wval;i++){
-			w_val[i] = (char)(toupper(w_val[i]));
-		}
-	try
-	{
-		for(int i=0; i<len;i++){
-			res = (((std::string)w_val).compare(interferometerConfigurationString[i]));
-			std::cerr<<"res is " << res << std::endl;
-			
-			if(!res){
-				if(setInterferometerConfiguration(i+1)!=RET_SUCCESS)
-					throw std::invalid_argument("Failed to set interferometer configuration");
-				else
-					
-				break;
+	if(read_init_done()){
+		for(int i=0; i<len_wval;i++){
+				w_val[i] = (char)(toupper(w_val[i]));
 			}
+		try
+		{
+			for(int i=0; i<len;i++){
+				res = (((std::string)w_val).compare(interferometerConfigurationString[i]));
+				std::cerr<<"res is " << res << std::endl;
+				
+				if(!res){
+					if(setInterferometerConfiguration(i+1)!=RET_SUCCESS)
+						throw std::invalid_argument("Failed to set interferometer configuration");
+					else
+						
+					break;
+				}
+			}
+			if(i>=len)
+				throw std::invalid_argument("Unknow interferometer configuration. Please read the attribute description");
 		}
-		if(i>=len)
-			throw std::invalid_argument("Unknow interferometer configuration. Please read the attribute description");
+		catch(const invalid_argument& msg)
+		{
+			std::cerr << "exception: " << msg.what() << std::endl;
+		}
 	}
-	catch(const invalid_argument& msg)
-	{
-		std::cerr << "exception: " << msg.what() << std::endl;
-	}
-	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::write_interferometerConfiguration
 }
 //--------------------------------------------------------
@@ -1415,7 +1440,8 @@ void ZygoZMI4104C::read_sisFirmwareVersion(Tango::Attribute &attr)
 	DEBUG_STREAM << "ZygoZMI4104C::read_sisFirmwareVersion(Tango::Attribute &attr) entering... " << endl;
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::read_sisFirmwareVersion) ENABLED START -----*/
 	//	Set the attribute value
-	strcpy(attr_sisFirmwareVersion_read[0] , getSisFirmwareVersion());
+	if(read_init_done())
+		strcpy(attr_sisFirmwareVersion_read[0] , getSisFirmwareVersion());
 	attr.set_value(attr_sisFirmwareVersion_read);
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::read_sisFirmwareVersion
@@ -1434,7 +1460,8 @@ void ZygoZMI4104C::read_sisBoardVersion(Tango::Attribute &attr)
 	DEBUG_STREAM << "ZygoZMI4104C::read_sisBoardVersion(Tango::Attribute &attr) entering... " << endl;
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::read_sisBoardVersion) ENABLED START -----*/
 	//	Set the attribute value
-	strcpy(attr_sisBoardVersion_read[0],getSisBoardVersion());
+	if(read_init_done())
+		strcpy(attr_sisBoardVersion_read[0],getSisBoardVersion());
 	attr.set_value(attr_sisBoardVersion_read);
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::read_sisBoardVersion
@@ -1453,7 +1480,8 @@ void ZygoZMI4104C::read_zygoFirmwareVersion(Tango::Attribute &attr)
 	DEBUG_STREAM << "ZygoZMI4104C::read_zygoFirmwareVersion(Tango::Attribute &attr) entering... " << endl;
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::read_zygoFirmwareVersion) ENABLED START -----*/
 	//	Set the attribute value
-	strcpy(attr_zygoFirmwareVersion_read[0] , getZygoFirmwareVersion());
+	if(read_init_done())
+		strcpy(attr_zygoFirmwareVersion_read[0] , getZygoFirmwareVersion());
 	attr.set_value(attr_zygoFirmwareVersion_read);
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::read_zygoFirmwareVersion
@@ -1472,7 +1500,8 @@ void ZygoZMI4104C::read_zygoBoardVersion(Tango::Attribute &attr)
 	DEBUG_STREAM << "ZygoZMI4104C::read_zygoBoardVersion(Tango::Attribute &attr) entering... " << endl;
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::read_zygoBoardVersion) ENABLED START -----*/
 	//	Set the attribute value
-	strcpy(attr_zygoBoardVersion_read[0] , getZygoBoardVersion());
+	if(read_init_done())
+		strcpy(attr_zygoBoardVersion_read[0] , getZygoBoardVersion());
 	attr.set_value(attr_zygoBoardVersion_read);
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::read_zygoBoardVersion
@@ -1491,7 +1520,8 @@ void ZygoZMI4104C::read_zygoSerialNumber(Tango::Attribute &attr)
 	DEBUG_STREAM << "ZygoZMI4104C::read_zygoSerialNumber(Tango::Attribute &attr) entering... " << endl;
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::read_zygoSerialNumber) ENABLED START -----*/
 	//	Set the attribute value
-	strcpy(attr_zygoSerialNumber_read[0] , getZygoSerialNumber());
+	if(read_init_done())
+		strcpy(attr_zygoSerialNumber_read[0] , getZygoSerialNumber());
 	attr.set_value(attr_zygoSerialNumber_read);
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::read_zygoSerialNumber
@@ -1531,7 +1561,7 @@ void ZygoZMI4104C::write_continuousSamplingAxes(Tango::WAttribute &attr)
 	Tango::DevString	w_val;
 	attr.get_write_value(w_val);
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::write_continuousSamplingAxes) ENABLED START -----*/
-	getAxesfromInputString(w_val, flyscanAxesCtr, flyscanAxesTab, attr_continuousSamplingAxes);
+	getAxesfromInputString(w_val, &flyscanAxesCtr, flyscanAxesTab, attr_continuousSamplingAxes);
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::write_continuousSamplingAxes
 }
 //--------------------------------------------------------
@@ -1549,9 +1579,9 @@ void ZygoZMI4104C::read_continuousSamplingSize(Tango::Attribute &attr)
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::read_continuousSamplingSize) ENABLED START -----*/
 	//	Set the attribute value
 	
-	yat::MutexLock lock(flyscan_param_key);
+	flyscan_param_key.lock();
 	attr.set_value(attr_continuousSamplingSize_read);
-	yat::MutexLock unlock(flyscan_param_key);
+	flyscan_param_key.unlock();
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::read_continuousSamplingSize
 }
@@ -1572,9 +1602,9 @@ void ZygoZMI4104C::write_continuousSamplingSize(Tango::WAttribute &attr)
 	attr.get_write_value(w_val);
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::write_continuousSamplingSize) ENABLED START -----*/
 	
-	yat::MutexLock lock(flyscan_param_key);
-	*attr_continuousSamplingSize_read = w_val;
-	yat::MutexLock unlock(flyscan_param_key);
+	flyscan_param_key.lock();
+	*attr_continuousSamplingSize_read = (Tango::DevULong) w_val;
+	flyscan_param_key.unlock();
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::write_continuousSamplingSize
 }
@@ -1614,7 +1644,7 @@ void ZygoZMI4104C::write_cecAxes(Tango::WAttribute &attr)
 	attr.get_write_value(w_val);
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::write_cecAxes) ENABLED START -----*/
 	
-	getAxesfromInputString(w_val, cecAxesCtr, cecAxesTab,attr_cecAxes);
+	getAxesfromInputString(w_val, &cecAxesCtr, cecAxesTab,attr_cecAxes);
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::write_cecAxes
 }
 //--------------------------------------------------------
@@ -1764,7 +1794,9 @@ void ZygoZMI4104C::reset_measurement_axis(Tango::DevUShort argin)
 {
 	DEBUG_STREAM << "ZygoZMI4104C::ResetMeasurementAxis()  - " << device_name << endl;
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::reset_measurement_axis) ENABLED START -----*/
-	resetAxis((unsigned char)argin);
+	
+	if(read_init_done())
+		resetAxis((unsigned char)argin);
 	//	Add your own code
 	
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::reset_measurement_axis
@@ -1786,9 +1818,13 @@ Tango::DevShort ZygoZMI4104C::start_continuous_acquisition(Tango::DevBoolean arg
 	DEBUG_STREAM << "ZygoZMI4104C::StartContinuousAcquisition()  - " << device_name << endl;
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::start_continuous_acquisition) ENABLED START -----*/
 	
-	//set_state(Tango::MOVING); 
-	std::thread sca_thread(&ZygoZMI4104C::sca_thread_function,this,argin);
-	sca_thread.detach();
+	if(read_init_done()){
+		write_init_done(false);
+		argout = (Tango::DevShort)0;
+		set_state(Tango::MOVING);
+		std::thread sca_thread(&ZygoZMI4104C::sca_thread_function,this,argin);
+		sca_thread.detach();
+	}
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::start_continuous_acquisition
 	return argout;
 }
@@ -1827,23 +1863,9 @@ Tango::DevShort ZygoZMI4104C::enable_cyclic_error_compensation(Tango::DevShort a
 	Tango::DevShort argout;
 	DEBUG_STREAM << "ZygoZMI4104C::EnableCyclicErrorCompensation()  - " << device_name << endl;
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::enable_cyclic_error_compensation) ENABLED START -----*/
-	
-	//	Add your own code
-	    //qDebug()<<"config started ";
-	for(unsigned int i=0;i< cecAxesCtr;i++){
-		if(!cecAxesTab[i])
-			break;
-		argout=configureCecHardware(  (uint8_t)cecAxesTab[i], ceVelMin, ceVelMax);	
-		if(argout!=RET_SUCCESS)
-		{
-			*attr_cecAxes_read="NO_AXIS_SELECTED";
-			append_status_msg("Cyclic error compensation failed");
-			break;
-		}
-		append_status_msg(get_ZYGO_error_string(argout));
-	}
-	
-
+	std::thread enable_cec_hardware_thread(&ZygoZMI4104C::enable_cec_hardware, this, argin);
+	enable_cec_hardware_thread.detach();
+	argout = 0;
     //qDebug()<<"config terminated ";
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::enable_cyclic_error_compensation
 	return argout;
@@ -1884,7 +1906,10 @@ void ZygoZMI4104C::reset_measurement_system()
 	/*----- PROTECTED REGION ID(ZygoZMI4104C::reset_measurement_system) ENABLED START -----*/
 	
 	//	Add your own code
-	vme_system_reset();
+	if(read_init_done()){
+		std::thread vsr_thread(&ZygoZMI4104C::vme_system_reset, this,0);
+		vsr_thread.detach();
+	}
 	/*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::reset_measurement_system
 }
 //--------------------------------------------------------
@@ -1906,11 +1931,11 @@ void ZygoZMI4104C::add_dynamic_commands()
 /*----- PROTECTED REGION ID(ZygoZMI4104C::namespace_ending) ENABLED START -----*/
 
 //	Additional Methods
-void ZygoZMI4104C::vme_system_reset(){
+void ZygoZMI4104C::vme_system_reset(bool argin){
 	BIAS_MODE bias_mode = BIAS_CONSTANT_VOLT_MODE;
-	
+	write_init_done(false);
 	append_status_msg("Initializing the VME/PCIe gateway device...\n");
-    if(initSisBoards( )!= RET_SUCCESS) zygoLogFatal("Failed to initialize SIS boards\n");
+    if(initSisBoards(argin)!= RET_SUCCESS) zygoLogFatal("Failed to initialize SIS boards\n");
 	append_status_msg("[Done]\n");
     //Sleep(10);	
 	append_status_msg("Initializing measurement board...\n");
@@ -1924,6 +1949,7 @@ void ZygoZMI4104C::vme_system_reset(){
 	append_status_msg("[Done]\n");
 	append_status_msg("Initialization successful\n");
 	DEBUG_STREAM << "vme system reset complete  - " << endl;
+	write_init_done(true);
 
 }
 int ZygoZMI4104C::getLEDsColor(unsigned char* ledsColor){
@@ -1952,18 +1978,18 @@ int ZygoZMI4104C::getLEDsColor(unsigned char* ledsColor){
 void ZygoZMI4104C::localSetBiasMode(Tango::DevUChar axis, Tango::DevString w_val)
 {
 	int res =0;
-	int len =6;
+	int len =5;//sizeof(biasModeString)/sizeof(biasModeString[0]);
 	int len_wval = ((std::string)w_val).length();
 	for(int i=0; i<len_wval;i++){
 			w_val[i] = (char)(toupper(w_val[i]));
 		}
 		std::cerr<<"w_val in biasmode is " << w_val << std::endl;
-		std::cerr<<"len is " << len << std::endl;
+		std::cerr<<"len is " << len_wval << std::endl;
 	try
 	{
 		for(int i=0; i<len;i++)
 		{
-			res = ((std::string)w_val).compare(biasModeString[i]);
+			res = ((std::string)w_val).compare(((std::string)biasModeString[i]));
 			std::cerr<<"res is " << res << std::endl;
 			if(!res){
 				if(setBiasMode(axis, i)!=RET_SUCCESS)
@@ -1977,25 +2003,25 @@ void ZygoZMI4104C::localSetBiasMode(Tango::DevUChar axis, Tango::DevString w_val
 	catch(const invalid_argument& msg)
 	{
 		std::cerr << "exception: " << msg.what() << std::endl;
+		append_status_msg(msg.what());                   // Give the status to Tango.
 	}
 }
 
 
-int ZygoZMI4104C::getAxesfromInputString(Tango::DevString	val, unsigned int axisCtr, Tango::DevUShort	*axisTab, std::string& attr_read){
+int ZygoZMI4104C::getAxesfromInputString(Tango::DevString val, uint32_t* axisCtr, uint8_t *axisTab, std::string& attr_read){
 	std::string w_val = val;
 	int arglen = 0, nbr=0;
 	char tempStr[100];
 	std::string 					value;
 	std::set<std::string> 			myStr;
-	axisCtr = 0;
+	*axisCtr = 0;
 	attr_read="";
 	int posV=0;
-	std::cerr<< "try block begin"<<std::endl;
-	try{
-			
+	for(int i=0;i<6;i++)
+		axisTab[i]= 0;
+	try{			
 		arglen = w_val.length();
 		while(arglen>0) {
-			std::cerr<< "iterate"<<std::endl;
 			posV = w_val.find_first_of(',');
 			nbr = -1;
 			if( posV>=0 ) {
@@ -2014,19 +2040,29 @@ int ZygoZMI4104C::getAxesfromInputString(Tango::DevString	val, unsigned int axis
 			{
 				continue;
 			}
-			axisTab[axisCtr]=nbr;
+			
+			if(!ledsColor[nbr-1])//No signal on the selected axis
+			{
+				static std::stringstream stat_msg;
+				stat_msg << "There is no signal detected on axis " << nbr <<std::endl;
+				//sprintf(stat_msg,"There is no signal detected on axis %d\n",nbr); 
+				append_status_msg(stat_msg.str());
+				stat_msg.str("");
+				//append_status_msg("Skipping this axis \n");
+				//continue;
+			}
+			axisTab[*axisCtr]=nbr;
 			sprintf(tempStr, "AXIS%u | ",nbr);
 			myStr.insert((std::string)(tempStr));
-			axisCtr=(Tango::DevUShort)(myStr.size());
-			if(axisCtr>=4)
+			*axisCtr=(uint8_t)(myStr.size());
+			if((*axisCtr)>=4)
 			{
-				axisCtr=4;
+				*axisCtr=4;
 				throw std::invalid_argument("No more more axis can be read\n"); 
 				break;
 			}
 			//TODO
 		}
-		flyscanAxesCtr=axisCtr;
 	}
 	catch(const invalid_argument& msg)
 	{
@@ -2036,8 +2072,8 @@ int ZygoZMI4104C::getAxesfromInputString(Tango::DevString	val, unsigned int axis
 	}
 	std::cerr<< "try block out"<<std::endl;
 
-	std::cerr << "axisCtr is " << axisCtr <<endl;
-	if(!axisCtr)
+	std::cerr << "axisCtr is " << (int)*axisCtr <<endl;
+	if(!(*axisCtr))
 		attr_read = "NO_AXIS_SELECTED";
 	else
 	{
@@ -2050,25 +2086,30 @@ int ZygoZMI4104C::getAxesfromInputString(Tango::DevString	val, unsigned int axis
 }
 
 int ZygoZMI4104C::sca_thread_function(Tango::DevBoolean argin){
-	int argout = -10000;
+	int argout = RET_SUCCESS;
 	std::stringstream str;
-	flyscanPath = (char*)calloc(256, sizeof(char));
 	flyscanPath[0]='.';
 	flyscanPath[1]='\0';
 	std::cerr << "start flyscan with arg " << argin << std::endl;
 	append_status_msg("Setting up continuous acquisition...\n");
-	
+	//write_init_done(false);
 	dev_state_val = Tango::MOVING; // in this state, no other function are authorized to run isnstead of
 	//this function itself
-	set_state(Tango::MOVING); 
-	yat::MutexLock lock(flyscan_param_key);
-	Tango::DevULong samplingSize = *attr_continuousSamplingSize_read;
-	Tango::DevULong samplingFrequency = *attr_samplingFrequency_read;
-	yat::MutexLock unlock(flyscan_param_key);
+	uint32_t		*base_A24D32_ptr= NULL ,*base_A24D32_FR_ptr= NULL ;
+	static uint32_t samplingSize = (uint32_t)(*attr_continuousSamplingSize_read);
+	static uint32_t samplingFrequency = (uint32_t)(*attr_samplingFrequency_read);
+	for(int i=0; i<6;i++)
+		std::cerr<<"flyscan axes tab value " << i << "is " << (int)flyscanAxesTab[i]<<std::endl;
+
 	try
 	{
-		if(!((bool)argin))
-		{
+		append_status_msg("\n Processing.");
+		if(!flyscanAxesCtr){
+			//Tango::Except::throw_exception("General","Select Axes first","ZygoZMI4104C::sca_thread_function");
+			argout = BAD_AXIS_VALUE;
+			throw invalid_argument("Bad axes value\n");
+		}
+		if(!((bool)argin)){
 			append_status_msg("Running continuous scan in RAM DATA mode\n");
 			std::cerr<< "flyscan freq is "<< samplingFrequency << std::endl;
 			std::cerr<< "flyscan axisctr is "<< flyscanAxesCtr << std::endl;
@@ -2077,56 +2118,47 @@ int ZygoZMI4104C::sca_thread_function(Tango::DevBoolean argin){
 				samplingSize=NBR_SAMP_PER_PAGE;
 				append_status_msg("continuous scan size is a bacth of 256 samples\n");
 				append_status_msg("setting size to the min: 256\n");
-				//emit flyscanErrorCode(-101);
 			}
 			if(samplingSize>NBR_RAM_PAGES*NBR_SAMP_PER_PAGE){
 				samplingSize=NBR_RAM_PAGES*NBR_SAMP_PER_PAGE;
+				append_status_msg("continuous scan size on one/two axis can not be greater than of 64*256 samples\n");
 				append_status_msg("setting size to the max: 64*256");
-				throw invalid_argument("continuous scan size on one/two axis can not be greater than of 64*256 samples\n");
-				//emit flyscanErrorCode(-102);
 			}
 			if(samplingSize>(NBR_RAM_PAGES*NBR_SAMP_PER_PAGE)/2 && flyscanAxesCtr>2){
 				samplingSize=(NBR_RAM_PAGES*NBR_SAMP_PER_PAGE)/2;
+				append_status_msg("continuous scan size on more than 3 axes can not be greater than of 64*128 samples\n");
+				
 				append_status_msg("setting size to the max: 60*128");
-				throw invalid_argument("continuous scan size on more than 3 axes can not be greater than of 64*128 samples\n");
-				//emit flyscanErrorCode(-103);
 			}
 			//*/
+			if(flyscanAxesCtr>2){
+				samplingSize = (samplingSize*2>FFTRAM_SIZE_PER_AXIS)?FFTRAM_SIZE_PER_AXIS/2:samplingSize;
+			}
 			std::cerr<< "flyscan 1 sampling size is "<<samplingSize <<std::endl;
-			if ((base_A24D32_ptr = (unsigned int*)calloc((size_t)((samplingSize*1.1*flyscanAxesCtr)), sizeof(unsigned int)))== NULL){
+			if ((base_A24D32_ptr = (uint32_t*)calloc((size_t)((samplingSize*1.1*flyscanAxesCtr)), sizeof(uint32_t)))== NULL){
 
 				zygoLogWarn("can not allocate memory on the host machine\n");
-				throw invalid_argument("can not allocate memory on the host machine\n");
-				
+				argout = ALLOC_MEM_ERROR;
+				throw invalid_argument("can not allocate memory on the host machine\n");				
 			}
-			std::cerr<< "flyscan 2 sampling size is "<<samplingSize <<std::endl;
 			if(flyscanAxesCtr>1){
-				if ((base_A24D32_FR_ptr = (unsigned int*)calloc((size_t)((samplingSize*1.1*flyscanAxesCtr)), sizeof(unsigned int))) == NULL){
+				if ((base_A24D32_FR_ptr = (uint32_t	*)calloc((size_t)((samplingSize*1.1*flyscanAxesCtr)), sizeof(uint32_t))) == NULL){
 				
 					zygoLogWarn("can not allocate memory on the host machine\n");
-					// throw invalid_argument("can not allocate memory on the host machine\n");
-					//emit flyscanProcTerm();
+					argout = ALLOC_MEM_ERROR;
+					throw invalid_argument("can not allocate memory on the host machine\n");
 				}
 			}
 			if ((argout=configureFlyscan(flyscanAxesCtr, samplingFrequency, 1)) != RET_SUCCESS){
 				throw invalid_argument("configuration of continuous acquisition has failed!!!\n");
 			}
 			append_status_msg(get_ZYGO_error_string(argout));
-			std::cerr<< "argout after flyscan configuration done is "<< argout << std::endl;
-			std::cerr<< "flyscan configuration done"<<std::endl;
-			if(flyscanAxesCtr>2){
-				samplingSize = (samplingSize*2>FFTRAM_SIZE_PER_AXIS)?FFTRAM_SIZE_PER_AXIS/2:samplingSize;
-			}
-			static unsigned int ramDataSize = samplingSize/NBR_SAMP_PER_PAGE;
-			std::cerr<< "flyscan 3a sampling size is "<<samplingSize <<std::endl;
+			static uint32_t	 ramDataSize = samplingSize/NBR_SAMP_PER_PAGE;
 			if ((argout=getFlyscanData(  base_A24D32_FR_ptr, base_A24D32_ptr, &flyscanAxesCtr,ramDataSize)) != RET_SUCCESS)
-			{
-				
+			{				
 				throw invalid_argument("Getting RAMDATA failed\n");
 			}
-			std::cerr<< "flyscan 3b sampling size is "<<samplingSize <<std::endl;
 			append_status_msg(get_ZYGO_error_string(argout));
-			std::cerr<< "get flyscan data done"<<std::endl;
 			if ((argout=processRamData(flyscanAxesCtr, base_A24D32_FR_ptr, base_A24D32_ptr, ramDataSize, flyscanPath,meanVal, stdDevVal)) != RET_SUCCESS)
 			{
 				throw invalid_argument("Processing RAMDATA failed\n");
@@ -2137,13 +2169,15 @@ int ZygoZMI4104C::sca_thread_function(Tango::DevBoolean argin){
 
 		else{
 			append_status_msg("Running continuous scan in FIFO mode\n");
+			//dev_state_val = Tango::RUNNING;	
+			//return 0;
 			int ret_code=0, mysize=0;
 			bool ovf=0;
-			fifoParam* flyscanFifoParam = new fifoParam;
-			//flyscanFifoParam->acqTime=flyscanTimeValue;
+			
 			flyscanFifoParam->freq=samplingFrequency;
 			flyscanFifoParam->nbrPts=samplingSize;
-			if(*attr_fifoMode_read){
+			flyscanFifoParam->acqTime=samplingSize/samplingFrequency;
+			if(attr_fifoMode_read[0]>0){
 				mysize = MAX_HEAP_SIZE;//128Mo
 			}
 			else{
@@ -2152,43 +2186,42 @@ int ZygoZMI4104C::sca_thread_function(Tango::DevBoolean argin){
 
 			if (!(base_A24D32_ptr = (uint32_t*)calloc(mysize, sizeof(unsigned int)))){
 				zygoLogWarn("can not allocate memory on the host machine\n");
-				delete flyscanFifoParam;
+				//delete flyscanFifoParam;
 				perror("base_A32D32_ptr");
 				append_status_msg("can not allocate memory on the host machine\n");
+				argout = ALLOC_MEM_ERROR;
 				throw invalid_argument(strerror(errno));
 			}
-			ovf_flag:
-			set_status("Setting up fifo flyscan\n"); 
-			if (configureFifoFlyscan(flyscanFifoParam,base_A24D32_ptr,(uint8_t*)flyscanAxesTab, &flyscanAxesCtr, &ret_code, *attr_fifoMode_read) != RET_SUCCESS){
-				
-				delete flyscanFifoParam;
+			//ovf_flag:
+			append_status_msg("Setting up fifo flyscan\n"); 
+			if ((argout=configureFifoFlyscan(flyscanFifoParam,base_A24D32_ptr,flyscanAxesTab, &flyscanAxesCtr, &ret_code, (attr_fifoMode_read[0]>0)? true:false)) != RET_SUCCESS){				
+				//delete flyscanFifoParam;
 				throw invalid_argument("Configure Fifo flyscan failed\n");
 			}
 			else
 			{
 				//emit flyscanErrorCode(1); // currently processing
 				//dataProcessing::dev_mutex.unlock();
-				if(ret_code==-100){
-					append_status_msg("Overlapping detected, somme data may have been corrupted \n"); 
+				append_status_msg("[Done]\n"); 
+				if(ret_code==FIFO_OVERLAP_ERR_CODE){
+					append_status_msg("Overlapping detected, Some data may have been corrupted \n"); 
 				}
-				if(ret_code==100){
+				if(ret_code==MAX_HEAP_SIZE_REACH){
 					ovf=1;
 					append_status_msg("Overflow on dynamic memory allocated to stored samples\n"); 
 				}
-
-				set_status("Processing fifo data"); 
-				if (processFifoData(flyscanAxesCtr, (uint8_t*)flyscanAxesTab, base_A24D32_ptr, flyscanFifoParam->nbrPts, (uint8_t*)flyscanPath,meanVal, stdDevVal) != RET_SUCCESS){
+				append_status_msg("Processing fifo data\n"); 
+				if ((argout=processFifoData(flyscanAxesCtr, flyscanAxesTab, base_A24D32_ptr, flyscanFifoParam->nbrPts, (const char*)flyscanPath,meanVal, stdDevVal)) != RET_SUCCESS){
 				
-					delete flyscanFifoParam;
+					//delete flyscanFifoParam;
 					throw invalid_argument("failed to process fifo data\n");
 				}
+				append_status_msg("[Done]\n"); 
 				if(ovf){
 					ovf=0;
 					memset(base_A24D32_ptr, 0, mysize);
-					goto ovf_flag;
+					//goto ovf_flag;
 				}
-
-				//dataProcessing::dev_mutex.unlock();
 			}
 		}	
 			
@@ -2199,28 +2232,44 @@ int ZygoZMI4104C::sca_thread_function(Tango::DevBoolean argin){
 	{
 		std::cerr << "exception : " << msg.what() << std::endl;
 		std::cerr << "argout value is  " << argout << std::endl;
-		append_status_msg("Continuous scan failed\n"); 
+
 		append_status_msg(msg.what());                   // Give the status to Tango.
 		dev_state_val = Tango::RUNNING;
 		append_status_msg(get_ZYGO_error_string(argout));
-		delete[] base_A24D32_FR_ptr;
-		delete[] base_A24D32_ptr;
-		//Tango::Except::throw_exception("CONTINUOUS_SCAN_ERROR", "The flyscan config failed", "ZygoZMI4104C::start_continuous_acquisition");
-
-		return RET_FAILED;
 	}
-	
-	delete[] base_A24D32_FR_ptr;
-	delete[] base_A24D32_ptr;
-	dev_state_val = Tango::RUNNING;
-	append_status_msg("Continuous scan succeed\n");              // Give the status to Tango.
-	//Tango::Except::throw_exception("TANGO_DEVICE_ERROR", "The initialization is not done.", "Controller::start()");
+	if(base_A24D32_FR_ptr != NULL)
+		delete[] base_A24D32_FR_ptr;
+	if(base_A24D32_ptr != NULL)
+		delete[] base_A24D32_ptr;
+	dev_state_val = Tango::RUNNING;	
+	write_init_done(true);;
 	return RET_SUCCESS;
 }
+
+int ZygoZMI4104C::enable_cec_hardware(Tango::DevShort argin)
+{
+	int argout = BAD_AXIS_VALUE;
+	for(unsigned int i=0;i< cecAxesCtr;i++){
+		if(!cecAxesTab[i])
+			break;
+		argout=configureCecHardware(  (uint8_t)cecAxesTab[i], ZygoZMI4104C::ceVelMin, ZygoZMI4104C::ceVelMax);	
+		if(argout!=RET_SUCCESS)
+		{
+			strcpy(attr_cecAxes_read[0],"NO_AXIS_SELECTED\0");
+			append_status_msg("Cyclic error compensation failed");
+			break;
+		}
+		append_status_msg(get_ZYGO_error_string(argout));
+	}	
+	append_status_msg(get_ZYGO_error_string(argout));
+	return argout;
+}
+
 void ZygoZMI4104C::append_status_msg(const std::string& message)
 	{
 		yat::MutexLock scoped_lock(dev_status_msg_key);
-		if( m_status_retrieved )
+		dev_status_msg << message;
+		/*if( m_status_retrieved )
 		{
 			dev_status_msg.str(message);
 		}
@@ -2228,6 +2277,7 @@ void ZygoZMI4104C::append_status_msg(const std::string& message)
 		{
 			dev_status_msg << message;
 		}
+		*/
 		m_status_retrieved = false;
 	}
 
@@ -2238,6 +2288,21 @@ std::string ZygoZMI4104C::get_status_msg()
 		return dev_status_msg.str();
 	}
 
+bool ZygoZMI4104C::read_init_done(void){
+	bool argout;
+	if(flyscan_param_key.try_lock()){
+		argout = *init_done;
+		flyscan_param_key.unlock();
+	}
+	else
+		append_status_msg("b.");
+	return argout;
+}
+void ZygoZMI4104C::write_init_done(bool argin){
+	flyscan_param_key.lock();
+	*init_done = argin;
+	flyscan_param_key.unlock();
+}
 std::string ZygoZMI4104C::get_ZYGO_error_string(int err_code){
 	std::string argout;
 	switch (err_code){
@@ -2293,12 +2358,19 @@ std::string ZygoZMI4104C::get_ZYGO_error_string(int err_code){
 			argout="Measurement Board: No measurement Data  available in the Fifo buffer, try to reset the system\n";
 			break;
 		case NO_MOTION_DETECTED:
-			argout="Measurement Board: No motion has been detected. \
-			Motion detection is a must when setting up cyclic error compensation. Start the motor\
-			then try enabling CEC hardware again\n";
+			argout="Measurement Board: No motion has been detected. \n"
+			"Motion detection is a must when setting up cyclic error compensation. Start the motor then try enabling CEC hardware again\n";
 			break;
 			
 			
+		case BAD_AXIS_VALUE:
+			argout="General: Unknow selected Axes\n";
+			//Tango::Except::throw_exception("General",argout,"nom de la classe et méthode");
+			
+			break;
+		case RET_SUCCESS:
+			argout="General: No Error detected in the last processing\n";
+			break;
 		case CREATE_EVENT_FAILED:
 			argout="General: Can not create events on the host machine\n";
 			break;

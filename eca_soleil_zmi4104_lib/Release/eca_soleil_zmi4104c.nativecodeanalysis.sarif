@@ -5,508 +5,6 @@
     {
       "results": [
         {
-          "ruleId": "C6387",
-          "message": {
-            "text": "'fd' could be '0':  this does not adhere to the specification for the function 'fprintf'. "
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                },
-                "region": {
-                  "startLine": 164,
-                  "startColumn": 2,
-                  "endLine": 164,
-                  "endColumn": 109
-                }
-              },
-              "logicalLocations": [
-                {
-                  "decoratedName": "?lemoIN1ThreadFunc@@YGKPAX@Z",
-                  "kind": "function"
-                }
-              ]
-            }
-          ],
-          "codeFlows": [
-            {
-              "threadFlows": [
-                {
-                  "locations": [
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 160,
-                            "startColumn": 23
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 161,
-                            "startColumn": 8
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 162,
-                            "startColumn": 14
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 163,
-                            "startColumn": 55
-                          }
-                        },
-                        "message": {
-                          "text": "'fd' may be NULL (Enter this branch)"
-                        }
-                      },
-                      "kinds": [
-                        "branch"
-                      ],
-                      "importance": "important"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 163,
-                            "startColumn": 75
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 164,
-                            "startColumn": 9
-                          }
-                        },
-                        "message": {
-                          "text": "'fd' is an In/Out argument to 'fprintf' (declared at c:\\program files (x86)\\windows kits\\10\\include\\10.0.19041.0\\ucrt\\stdio.h:830)"
-                        }
-                      },
-                      "kinds": [
-                        "declaration"
-                      ],
-                      "importance": "important"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 164,
-                            "startColumn": 9
-                          }
-                        },
-                        "message": {
-                          "text": "'fd' should not be NULL, because this is not consistent with the SAL annotation on 'fprintf'"
-                        }
-                      },
-                      "kinds": [
-                        "usage"
-                      ],
-                      "importance": "essential"
-                    }
-                  ]
-                }
-              ]
-            }
-          ],
-          "suppressions": []
-        },
-        {
-          "ruleId": "C6387",
-          "message": {
-            "text": "'fd' could be '0':  this does not adhere to the specification for the function 'fclose'. See line 164 for an earlier location where this can occur"
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                },
-                "region": {
-                  "startLine": 184,
-                  "startColumn": 4,
-                  "endLine": 184,
-                  "endColumn": 11
-                }
-              },
-              "logicalLocations": [
-                {
-                  "decoratedName": "?lemoIN1ThreadFunc@@YGKPAX@Z",
-                  "kind": "function"
-                }
-              ]
-            }
-          ],
-          "codeFlows": [
-            {
-              "threadFlows": [
-                {
-                  "locations": [
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 160,
-                            "startColumn": 23
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 161,
-                            "startColumn": 8
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 162,
-                            "startColumn": 14
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 163,
-                            "startColumn": 55
-                          }
-                        },
-                        "message": {
-                          "text": "'fd' may be NULL (Enter this branch)"
-                        }
-                      },
-                      "kinds": [
-                        "branch"
-                      ],
-                      "importance": "important"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 163,
-                            "startColumn": 75
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 164,
-                            "startColumn": 9
-                          }
-                        },
-                        "message": {
-                          "text": "'fd' is an In/Out argument to 'fprintf' (declared at c:\\program files (x86)\\windows kits\\10\\include\\10.0.19041.0\\ucrt\\stdio.h:830)"
-                        }
-                      },
-                      "kinds": [
-                        "declaration"
-                      ],
-                      "importance": "important"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 165,
-                            "startColumn": 11
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 166,
-                            "startColumn": 8
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 167,
-                            "startColumn": 15
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 167,
-                            "startColumn": 25
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 169,
-                            "startColumn": 12
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 170,
-                            "startColumn": 11
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 171,
-                            "startColumn": 6
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 173,
-                            "startColumn": 16
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 177,
-                            "startColumn": 11
-                          }
-                        },
-                        "message": {
-                          "text": "Assume switch ( 'dwWaitResult' ) resolves to case ((((DWORD)0))+0): "
-                        }
-                      },
-                      "kinds": [
-                        "branch"
-                      ],
-                      "importance": "important"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 180,
-                            "startColumn": 3
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 181,
-                            "startColumn": 8
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 182,
-                            "startColumn": 8
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 184,
-                            "startColumn": 10
-                          }
-                        },
-                        "message": {
-                          "text": "'fd' is an Input to 'fclose' (declared at c:\\program files (x86)\\windows kits\\10\\include\\10.0.19041.0\\ucrt\\stdio.h:152)"
-                        }
-                      },
-                      "kinds": [
-                        "usage"
-                      ],
-                      "importance": "important"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 184,
-                            "startColumn": 10
-                          }
-                        },
-                        "message": {
-                          "text": "'fd' should not be NULL, because this is not consistent with the SAL annotation on 'fclose'"
-                        }
-                      },
-                      "kinds": [
-                        "usage"
-                      ],
-                      "importance": "essential"
-                    }
-                  ]
-                }
-              ]
-            }
-          ],
-          "suppressions": []
-        },
-        {
           "ruleId": "C26812",
           "message": {
             "text": "The enum type '_SIS1100W_STATUS' is unscoped. Prefer 'enum class' over 'enum' (Enum.3)."
@@ -518,9 +16,9 @@
                   "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                 },
                 "region": {
-                  "startLine": 529,
+                  "startLine": 527,
                   "startColumn": 3,
-                  "endLine": 529,
+                  "endLine": 527,
                   "endColumn": 8
                 }
               },
@@ -528,2604 +26,6 @@
                 {
                   "decoratedName": "?waitForVmeIrqThreadFunc@@YGKPAX@Z",
                   "kind": "function"
-                }
-              ]
-            }
-          ],
-          "suppressions": []
-        },
-        {
-          "ruleId": "C26812",
-          "message": {
-            "text": "The enum type '_BIAS_MODE' is unscoped. Prefer 'enum class' over 'enum' (Enum.3)."
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                },
-                "region": {
-                  "startLine": 718,
-                  "startColumn": 5,
-                  "endLine": 718,
-                  "endColumn": 5
-                }
-              },
-              "logicalLocations": [
-                {
-                  "decoratedName": "initAxis",
-                  "kind": "function"
-                }
-              ]
-            }
-          ],
-          "suppressions": []
-        },
-        {
-          "ruleId": "C6011",
-          "message": {
-            "text": "Dereferencing NULL pointer 'localPos'. "
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                },
-                "region": {
-                  "startLine": 938,
-                  "startColumn": 4,
-                  "endLine": 938,
-                  "endColumn": 45
-                }
-              },
-              "logicalLocations": [
-                {
-                  "decoratedName": "processRamData",
-                  "kind": "function"
-                }
-              ]
-            }
-          ],
-          "codeFlows": [
-            {
-              "threadFlows": [
-                {
-                  "locations": [
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 884,
-                            "startColumn": 13
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 885,
-                            "startColumn": 14
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 886,
-                            "startColumn": 15
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 887,
-                            "startColumn": 11
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 887,
-                            "startColumn": 21
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 888,
-                            "startColumn": 9
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 888,
-                            "startColumn": 21
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 889,
-                            "startColumn": 9
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 889,
-                            "startColumn": 44
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 890,
-                            "startColumn": 10
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 891,
-                            "startColumn": 7
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 892,
-                            "startColumn": 17
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 896,
-                            "startColumn": 6
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 897,
-                            "startColumn": 14
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 903,
-                            "startColumn": 30
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 907,
-                            "startColumn": 11
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 908,
-                            "startColumn": 6
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 909,
-                            "startColumn": 30
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 913,
-                            "startColumn": 9
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 914,
-                            "startColumn": 11
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 915,
-                            "startColumn": 11
-                          }
-                        },
-                        "message": {
-                          "text": "'localPos' may be NULL"
-                        }
-                      },
-                      "kinds": [
-                        "declaration"
-                      ],
-                      "importance": "essential"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 916,
-                            "startColumn": 10
-                          }
-                        },
-                        "message": {
-                          "text": "Assume switch ( 'nbrAxis' ) resolves to case 1: "
-                        }
-                      },
-                      "kinds": [
-                        "branch"
-                      ],
-                      "importance": "important"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 918,
-                            "startColumn": 2
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 919,
-                            "startColumn": 10
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 920,
-                            "startColumn": 12
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 920,
-                            "startColumn": 21
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 934,
-                            "startColumn": 14
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 937,
-                            "startColumn": 17
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 937,
-                            "startColumn": 26
-                          }
-                        },
-                        "message": {
-                          "text": "Enter this loop, (assume 'i<nbrOfPts')"
-                        }
-                      },
-                      "kinds": [
-                        "branch"
-                      ],
-                      "importance": "important"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 938,
-                            "startColumn": 12
-                          }
-                        },
-                        "message": {
-                          "text": "'localPos' is dereferenced, but may still be NULL"
-                        }
-                      },
-                      "kinds": [
-                        "usage"
-                      ],
-                      "importance": "essential"
-                    }
-                  ]
-                }
-              ]
-            }
-          ],
-          "suppressions": []
-        },
-        {
-          "ruleId": "C6385",
-          "message": {
-            "text": "Reading invalid data from 'localPos':  the readable size is '_Param_(1)*_Param_(2)' bytes, but '16' bytes may be read."
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                },
-                "region": {
-                  "startLine": 1025,
-                  "startColumn": 4,
-                  "endLine": 1025,
-                  "endColumn": 57
-                }
-              },
-              "logicalLocations": [
-                {
-                  "decoratedName": "processRamData",
-                  "kind": "function"
-                }
-              ]
-            }
-          ],
-          "codeFlows": [
-            {
-              "threadFlows": [
-                {
-                  "locations": [
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 884,
-                            "startColumn": 13
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 885,
-                            "startColumn": 14
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 886,
-                            "startColumn": 15
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 887,
-                            "startColumn": 11
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 887,
-                            "startColumn": 21
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 888,
-                            "startColumn": 9
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 888,
-                            "startColumn": 21
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 889,
-                            "startColumn": 9
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 889,
-                            "startColumn": 44
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 890,
-                            "startColumn": 10
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 891,
-                            "startColumn": 7
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 892,
-                            "startColumn": 17
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 896,
-                            "startColumn": 6
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 897,
-                            "startColumn": 14
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 903,
-                            "startColumn": 30
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 907,
-                            "startColumn": 11
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 908,
-                            "startColumn": 6
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 909,
-                            "startColumn": 30
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 913,
-                            "startColumn": 9
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 914,
-                            "startColumn": 11
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 915,
-                            "startColumn": 11
-                          }
-                        },
-                        "message": {
-                          "text": "'localPos' is an array"
-                        }
-                      },
-                      "kinds": [
-                        "declaration"
-                      ],
-                      "importance": "essential"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 916,
-                            "startColumn": 10
-                          }
-                        },
-                        "message": {
-                          "text": "Assume switch ( 'nbrAxis' ) resolves to the default case"
-                        }
-                      },
-                      "kinds": [
-                        "branch"
-                      ],
-                      "importance": "important"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 983,
-                            "startColumn": 2
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 984,
-                            "startColumn": 10
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 985,
-                            "startColumn": 12
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 986,
-                            "startColumn": 10
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 987,
-                            "startColumn": 12
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 988,
-                            "startColumn": 10
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 989,
-                            "startColumn": 12
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 989,
-                            "startColumn": 21
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 1020,
-                            "startColumn": 12
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 1020,
-                            "startColumn": 21
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 1021,
-                            "startColumn": 15
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 1020,
-                            "startColumn": 27
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 1020,
-                            "startColumn": 21
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 1021,
-                            "startColumn": 15
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 1020,
-                            "startColumn": 27
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 1020,
-                            "startColumn": 21
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 1023,
-                            "startColumn": 17
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 1023,
-                            "startColumn": 26
-                          }
-                        },
-                        "message": {
-                          "text": "Enter this loop, (assume 'i<nbrOfPts')"
-                        }
-                      },
-                      "kinds": [
-                        "branch"
-                      ],
-                      "importance": "important"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 1024,
-                            "startColumn": 12
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 1025,
-                            "startColumn": 14
-                          }
-                        },
-                        "message": {
-                          "text": "Invalid read from 'localPos', (outside its readable range)"
-                        }
-                      },
-                      "kinds": [
-                        "usage"
-                      ],
-                      "importance": "essential"
-                    }
-                  ]
-                }
-              ]
-            }
-          ],
-          "suppressions": []
-        },
-        {
-          "ruleId": "C6011",
-          "message": {
-            "text": "Dereferencing NULL pointer 'localPos'. "
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                },
-                "region": {
-                  "startLine": 1066,
-                  "startColumn": 4,
-                  "endLine": 1066,
-                  "endColumn": 18
-                }
-              },
-              "logicalLocations": [
-                {
-                  "decoratedName": "processFifoData",
-                  "kind": "function"
-                }
-              ]
-            }
-          ],
-          "codeFlows": [
-            {
-              "threadFlows": [
-                {
-                  "locations": [
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 1044,
-                            "startColumn": 14
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 1045,
-                            "startColumn": 15
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 1046,
-                            "startColumn": 11
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 1046,
-                            "startColumn": 21
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 1047,
-                            "startColumn": 9
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 1047,
-                            "startColumn": 21
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 1047,
-                            "startColumn": 33
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 1047,
-                            "startColumn": 45
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 1048,
-                            "startColumn": 9
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 1048,
-                            "startColumn": 44
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 1049,
-                            "startColumn": 10
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 1050,
-                            "startColumn": 7
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 1051,
-                            "startColumn": 6
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 1052,
-                            "startColumn": 6
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 1053,
-                            "startColumn": 11
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 1054,
-                            "startColumn": 30
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 1058,
-                            "startColumn": 9
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 1059,
-                            "startColumn": 11
-                          }
-                        },
-                        "message": {
-                          "text": "'localPos' may be NULL"
-                        }
-                      },
-                      "kinds": [
-                        "declaration"
-                      ],
-                      "importance": "essential"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 1060,
-                            "startColumn": 10
-                          }
-                        },
-                        "message": {
-                          "text": "Assume switch ( 'nbrAxis' ) resolves to case 1: "
-                        }
-                      },
-                      "kinds": [
-                        "branch"
-                      ],
-                      "importance": "important"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 1062,
-                            "startColumn": 2
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 1063,
-                            "startColumn": 10
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 1064,
-                            "startColumn": 17
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 1064,
-                            "startColumn": 26
-                          }
-                        },
-                        "message": {
-                          "text": "Enter this loop, (assume 'i<nbrOfPts')"
-                        }
-                      },
-                      "kinds": [
-                        "branch"
-                      ],
-                      "importance": "important"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 1065,
-                            "startColumn": 9
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 1066,
-                            "startColumn": 16
-                          }
-                        },
-                        "message": {
-                          "text": "'localPos' is dereferenced, but may still be NULL"
-                        }
-                      },
-                      "kinds": [
-                        "usage"
-                      ],
-                      "importance": "essential"
-                    }
-                  ]
-                }
-              ]
-            }
-          ],
-          "suppressions": []
-        },
-        {
-          "ruleId": "C6011",
-          "message": {
-            "text": "Dereferencing NULL pointer 'axisPtr'. "
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                },
-                "region": {
-                  "startLine": 1364,
-                  "startColumn": 3,
-                  "endLine": 1364,
-                  "endColumn": 16
-                }
-              },
-              "logicalLocations": [
-                {
-                  "decoratedName": "manualFifoFlyscan",
-                  "kind": "function"
-                }
-              ]
-            }
-          ],
-          "codeFlows": [
-            {
-              "threadFlows": [
-                {
-                  "locations": [
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 1357,
-                            "startColumn": 11
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 1357,
-                            "startColumn": 30
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 1357,
-                            "startColumn": 52
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 1358,
-                            "startColumn": 11
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 1359,
-                            "startColumn": 10
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 1360,
-                            "startColumn": 10
-                          }
-                        },
-                        "message": {
-                          "text": "'axisPtr' may be NULL"
-                        }
-                      },
-                      "kinds": [
-                        "declaration"
-                      ],
-                      "importance": "essential"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 1361,
-                            "startColumn": 6
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 1362,
-                            "startColumn": 2
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 1363,
-                            "startColumn": 11
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 1363,
-                            "startColumn": 20
-                          }
-                        },
-                        "message": {
-                          "text": "Enter this loop, (assume 'i<nbrAxis')"
-                        }
-                      },
-                      "kinds": [
-                        "branch"
-                      ],
-                      "importance": "important"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 1364,
-                            "startColumn": 14
-                          }
-                        },
-                        "message": {
-                          "text": "'axisPtr' is dereferenced, but may still be NULL"
-                        }
-                      },
-                      "kinds": [
-                        "usage"
-                      ],
-                      "importance": "essential"
-                    }
-                  ]
-                }
-              ]
-            }
-          ],
-          "suppressions": []
-        },
-        {
-          "ruleId": "C6011",
-          "message": {
-            "text": "Dereferencing NULL pointer 'ledsStatus'. "
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                },
-                "region": {
-                  "startLine": 2931,
-                  "startColumn": 7,
-                  "endLine": 2931,
-                  "endColumn": 19
-                }
-              },
-              "logicalLocations": [
-                {
-                  "decoratedName": "initZmiBoards",
-                  "kind": "function"
-                }
-              ]
-            }
-          ],
-          "codeFlows": [
-            {
-              "threadFlows": [
-                {
-                  "locations": [
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 2810,
-                            "startColumn": 8
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 2811,
-                            "startColumn": 7
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 2812,
-                            "startColumn": 7
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 2813,
-                            "startColumn": 8
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 2814,
-                            "startColumn": 15
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 2815,
-                            "startColumn": 3
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 2816,
-                            "startColumn": 3
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 2817,
-                            "startColumn": 16
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 2819,
-                            "startColumn": 6
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 2820,
-                            "startColumn": 14
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 2821,
-                            "startColumn": 36
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 2826,
-                            "startColumn": 7
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 2827,
-                            "startColumn": 8
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 2828,
-                            "startColumn": 6
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 2829,
-                            "startColumn": 10
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 2831,
-                            "startColumn": 6
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 2833,
-                            "startColumn": 87
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 2838,
-                            "startColumn": 11
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 2839,
-                            "startColumn": 16
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 2841,
-                            "startColumn": 10
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 2851,
-                            "startColumn": 2
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 2852,
-                            "startColumn": 9
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 2853,
-                            "startColumn": 7
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 2854,
-                            "startColumn": 14
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 2866,
-                            "startColumn": 6
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 2873,
-                            "startColumn": 16
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 2875,
-                            "startColumn": 20
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 2878,
-                            "startColumn": 7
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 2881,
-                            "startColumn": 20
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 2884,
-                            "startColumn": 7
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 2887,
-                            "startColumn": 20
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 2890,
-                            "startColumn": 7
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 2892,
-                            "startColumn": 20
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 2895,
-                            "startColumn": 7
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 2897,
-                            "startColumn": 20
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 2900,
-                            "startColumn": 7
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 2902,
-                            "startColumn": 20
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 2906,
-                            "startColumn": 7
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 2908,
-                            "startColumn": 20
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 2911,
-                            "startColumn": 7
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 2913,
-                            "startColumn": 20
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 2916,
-                            "startColumn": 16
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 2917,
-                            "startColumn": 88
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 2921,
-                            "startColumn": 6
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 2923,
-                            "startColumn": 8
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 2924,
-                            "startColumn": 13
-                          }
-                        },
-                        "message": {
-                          "text": "'ledsStatus' may be NULL"
-                        }
-                      },
-                      "kinds": [
-                        "declaration"
-                      ],
-                      "importance": "essential"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 2925,
-                            "startColumn": 48
-                          }
-                        },
-                        "message": {
-                          "text": "'ledsStatus' is an In/Out argument to 'getLedsStatus' (declared at c:\\users\\guekam\\source\\repos\\eca_zmi4104_project\\eca_zmi4104c_main\\eca_soleil_zmi4104_lib\\eca_soleil_zmi4104c.h:242)"
-                        }
-                      },
-                      "kinds": [
-                        "declaration"
-                      ],
-                      "importance": "important"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 2925,
-                            "startColumn": 48
-                          }
-                        },
-                        "message": {
-                          "text": "Skip this branch, (assume '<branch condition>' is false)"
-                        }
-                      },
-                      "kinds": [
-                        "branch"
-                      ],
-                      "importance": "important"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 2929,
-                            "startColumn": 11
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 2929,
-                            "startColumn": 20
-                          }
-                        },
-                        "message": {
-                          "text": "Enter this loop, (assume 'i<4')"
-                        }
-                      },
-                      "kinds": [
-                        "branch"
-                      ],
-                      "importance": "important"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 2930,
-                            "startColumn": 17
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 2931,
-                            "startColumn": 19
-                          }
-                        },
-                        "message": {
-                          "text": "Skip this branch, (assume 'ledsStatus[i]' is false)"
-                        }
-                      },
-                      "kinds": [
-                        "branch"
-                      ],
-                      "importance": "important"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 2931,
-                            "startColumn": 19
-                          }
-                        },
-                        "message": {
-                          "text": "'ledsStatus' is dereferenced, but may still be NULL"
-                        }
-                      },
-                      "kinds": [
-                        "usage"
-                      ],
-                      "importance": "essential"
-                    }
-                  ]
                 }
               ]
             }
@@ -3144,15 +44,15 @@
                   "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                 },
                 "region": {
-                  "startLine": 2954,
+                  "startLine": 3127,
                   "startColumn": 2,
-                  "endLine": 2954,
-                  "endColumn": 84
+                  "endLine": 3127,
+                  "endColumn": 89
                 }
               },
               "logicalLocations": [
                 {
-                  "decoratedName": "initZmiBoards",
+                  "decoratedName": "?initZmiBoards@@YAHXZ",
                   "kind": "function"
                 }
               ]
@@ -3170,7 +70,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                           },
                           "region": {
-                            "startLine": 2810,
+                            "startLine": 2977,
                             "startColumn": 8
                           }
                         }
@@ -3184,7 +84,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                           },
                           "region": {
-                            "startLine": 2811,
+                            "startLine": 2978,
                             "startColumn": 7
                           }
                         }
@@ -3198,7 +98,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                           },
                           "region": {
-                            "startLine": 2812,
+                            "startLine": 2979,
                             "startColumn": 7
                           }
                         }
@@ -3212,7 +112,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                           },
                           "region": {
-                            "startLine": 2813,
+                            "startLine": 2980,
                             "startColumn": 8
                           }
                         }
@@ -3226,8 +126,8 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                           },
                           "region": {
-                            "startLine": 2814,
-                            "startColumn": 15
+                            "startLine": 2981,
+                            "startColumn": 11
                           }
                         }
                       },
@@ -3240,7 +140,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                           },
                           "region": {
-                            "startLine": 2815,
+                            "startLine": 2982,
                             "startColumn": 3
                           }
                         }
@@ -3254,7 +154,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                           },
                           "region": {
-                            "startLine": 2816,
+                            "startLine": 2983,
                             "startColumn": 3
                           }
                         }
@@ -3268,8 +168,8 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                           },
                           "region": {
-                            "startLine": 2817,
-                            "startColumn": 16
+                            "startLine": 2984,
+                            "startColumn": 12
                           }
                         },
                         "message": {
@@ -3288,7 +188,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                           },
                           "region": {
-                            "startLine": 2819,
+                            "startLine": 2986,
                             "startColumn": 6
                           }
                         }
@@ -3302,7 +202,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                           },
                           "region": {
-                            "startLine": 2820,
+                            "startLine": 2987,
                             "startColumn": 14
                           }
                         }
@@ -3316,12 +216,12 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                           },
                           "region": {
-                            "startLine": 2821,
-                            "startColumn": 36
+                            "startLine": 2988,
+                            "startColumn": 18
                           }
                         },
                         "message": {
-                          "text": "Skip this branch, (assume '<branch condition>' is false)"
+                          "text": "Skip this branch, (assume 'return_code=vmeSysReset()' is false)"
                         }
                       },
                       "kinds": [
@@ -3336,7 +236,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                           },
                           "region": {
-                            "startLine": 2826,
+                            "startLine": 2993,
                             "startColumn": 7
                           }
                         }
@@ -3350,7 +250,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                           },
                           "region": {
-                            "startLine": 2827,
+                            "startLine": 2994,
                             "startColumn": 8
                           }
                         },
@@ -3370,8 +270,8 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                           },
                           "region": {
-                            "startLine": 2828,
-                            "startColumn": 6
+                            "startLine": 2995,
+                            "startColumn": 24
                           }
                         }
                       },
@@ -3384,7 +284,21 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                           },
                           "region": {
-                            "startLine": 2829,
+                            "startLine": 2996,
+                            "startColumn": 13
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
+                          },
+                          "region": {
+                            "startLine": 2997,
                             "startColumn": 10
                           }
                         }
@@ -3398,8 +312,8 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                           },
                           "region": {
-                            "startLine": 2831,
-                            "startColumn": 6
+                            "startLine": 2999,
+                            "startColumn": 13
                           }
                         }
                       },
@@ -3412,8 +326,8 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                           },
                           "region": {
-                            "startLine": 2833,
-                            "startColumn": 87
+                            "startLine": 3001,
+                            "startColumn": 18
                           }
                         },
                         "message": {
@@ -3432,7 +346,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                           },
                           "region": {
-                            "startLine": 2838,
+                            "startLine": 3006,
                             "startColumn": 11
                           }
                         }
@@ -3446,7 +360,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                           },
                           "region": {
-                            "startLine": 2839,
+                            "startLine": 3007,
                             "startColumn": 16
                           }
                         }
@@ -3460,7 +374,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                           },
                           "region": {
-                            "startLine": 2841,
+                            "startLine": 3009,
                             "startColumn": 10
                           }
                         },
@@ -3480,7 +394,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                           },
                           "region": {
-                            "startLine": 2851,
+                            "startLine": 3019,
                             "startColumn": 2
                           }
                         }
@@ -3494,7 +408,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                           },
                           "region": {
-                            "startLine": 2852,
+                            "startLine": 3020,
                             "startColumn": 9
                           }
                         }
@@ -3508,21 +422,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                           },
                           "region": {
-                            "startLine": 2853,
-                            "startColumn": 7
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 2854,
+                            "startLine": 3021,
                             "startColumn": 14
                           }
                         }
@@ -3536,7 +436,21 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                           },
                           "region": {
-                            "startLine": 2866,
+                            "startLine": 3022,
+                            "startColumn": 14
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
+                          },
+                          "region": {
+                            "startLine": 3034,
                             "startColumn": 6
                           }
                         },
@@ -3556,7 +470,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                           },
                           "region": {
-                            "startLine": 2873,
+                            "startLine": 3041,
                             "startColumn": 16
                           }
                         }
@@ -3570,7 +484,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                           },
                           "region": {
-                            "startLine": 2875,
+                            "startLine": 3043,
                             "startColumn": 20
                           }
                         },
@@ -3590,8 +504,8 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                           },
                           "region": {
-                            "startLine": 2878,
-                            "startColumn": 7
+                            "startLine": 3046,
+                            "startColumn": 14
                           }
                         }
                       },
@@ -3604,7 +518,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                           },
                           "region": {
-                            "startLine": 2881,
+                            "startLine": 3049,
                             "startColumn": 20
                           }
                         },
@@ -3624,8 +538,8 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                           },
                           "region": {
-                            "startLine": 2884,
-                            "startColumn": 7
+                            "startLine": 3052,
+                            "startColumn": 14
                           }
                         }
                       },
@@ -3638,7 +552,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                           },
                           "region": {
-                            "startLine": 2887,
+                            "startLine": 3055,
                             "startColumn": 20
                           }
                         },
@@ -3658,8 +572,8 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                           },
                           "region": {
-                            "startLine": 2890,
-                            "startColumn": 7
+                            "startLine": 3058,
+                            "startColumn": 14
                           }
                         }
                       },
@@ -3672,7 +586,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                           },
                           "region": {
-                            "startLine": 2892,
+                            "startLine": 3060,
                             "startColumn": 20
                           }
                         },
@@ -3692,8 +606,8 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                           },
                           "region": {
-                            "startLine": 2895,
-                            "startColumn": 7
+                            "startLine": 3063,
+                            "startColumn": 14
                           }
                         }
                       },
@@ -3706,7 +620,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                           },
                           "region": {
-                            "startLine": 2897,
+                            "startLine": 3065,
                             "startColumn": 20
                           }
                         },
@@ -3726,8 +640,8 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                           },
                           "region": {
-                            "startLine": 2900,
-                            "startColumn": 7
+                            "startLine": 3068,
+                            "startColumn": 14
                           }
                         }
                       },
@@ -3740,41 +654,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                           },
                           "region": {
-                            "startLine": 2902,
-                            "startColumn": 20
-                          }
-                        },
-                        "message": {
-                          "text": "Skip this branch, (assume 'uint_vme_data' is false)"
-                        }
-                      },
-                      "kinds": [
-                        "branch"
-                      ],
-                      "importance": "important"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 2906,
-                            "startColumn": 7
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
-                          },
-                          "region": {
-                            "startLine": 2908,
+                            "startLine": 3070,
                             "startColumn": 20
                           }
                         }
@@ -3788,8 +668,8 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                           },
                           "region": {
-                            "startLine": 2911,
-                            "startColumn": 7
+                            "startLine": 3074,
+                            "startColumn": 14
                           }
                         }
                       },
@@ -3802,7 +682,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                           },
                           "region": {
-                            "startLine": 2913,
+                            "startLine": 3076,
                             "startColumn": 20
                           }
                         }
@@ -3816,7 +696,35 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                           },
                           "region": {
-                            "startLine": 2916,
+                            "startLine": 3079,
+                            "startColumn": 14
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
+                          },
+                          "region": {
+                            "startLine": 3081,
+                            "startColumn": 20
+                          }
+                        }
+                      },
+                      "importance": "unimportant"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
+                          },
+                          "region": {
+                            "startLine": 3084,
                             "startColumn": 16
                           }
                         }
@@ -3830,8 +738,8 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                           },
                           "region": {
-                            "startLine": 2917,
-                            "startColumn": 88
+                            "startLine": 3085,
+                            "startColumn": 18
                           }
                         },
                         "message": {
@@ -3850,8 +758,8 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                           },
                           "region": {
-                            "startLine": 2921,
-                            "startColumn": 6
+                            "startLine": 3089,
+                            "startColumn": 13
                           }
                         }
                       },
@@ -3864,7 +772,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                           },
                           "region": {
-                            "startLine": 2923,
+                            "startLine": 3091,
                             "startColumn": 8
                           }
                         },
@@ -3884,7 +792,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                           },
                           "region": {
-                            "startLine": 2924,
+                            "startLine": 3092,
                             "startColumn": 13
                           }
                         }
@@ -3898,8 +806,28 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                           },
                           "region": {
-                            "startLine": 2925,
-                            "startColumn": 48
+                            "startLine": 3093,
+                            "startColumn": 17
+                          }
+                        },
+                        "message": {
+                          "text": "Skip this branch, (assume 'ledsStatus==0' is false)"
+                        }
+                      },
+                      "kinds": [
+                        "branch"
+                      ],
+                      "importance": "important"
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
+                          },
+                          "region": {
+                            "startLine": 3096,
+                            "startColumn": 18
                           }
                         },
                         "message": {
@@ -3918,7 +846,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                           },
                           "region": {
-                            "startLine": 2929,
+                            "startLine": 3101,
                             "startColumn": 11
                           }
                         }
@@ -3932,7 +860,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                           },
                           "region": {
-                            "startLine": 2929,
+                            "startLine": 3101,
                             "startColumn": 20
                           }
                         }
@@ -3946,7 +874,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                           },
                           "region": {
-                            "startLine": 2930,
+                            "startLine": 3102,
                             "startColumn": 17
                           }
                         }
@@ -3960,7 +888,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                           },
                           "region": {
-                            "startLine": 2931,
+                            "startLine": 3103,
                             "startColumn": 19
                           }
                         }
@@ -3974,8 +902,8 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                           },
                           "region": {
-                            "startLine": 2934,
-                            "startColumn": 8
+                            "startLine": 3106,
+                            "startColumn": 15
                           }
                         }
                       },
@@ -3988,7 +916,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                           },
                           "region": {
-                            "startLine": 2929,
+                            "startLine": 3101,
                             "startColumn": 26
                           }
                         }
@@ -4002,7 +930,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                           },
                           "region": {
-                            "startLine": 2929,
+                            "startLine": 3101,
                             "startColumn": 20
                           }
                         }
@@ -4016,7 +944,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                           },
                           "region": {
-                            "startLine": 2930,
+                            "startLine": 3102,
                             "startColumn": 17
                           }
                         }
@@ -4030,7 +958,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                           },
                           "region": {
-                            "startLine": 2931,
+                            "startLine": 3103,
                             "startColumn": 19
                           }
                         }
@@ -4044,8 +972,8 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                           },
                           "region": {
-                            "startLine": 2934,
-                            "startColumn": 8
+                            "startLine": 3106,
+                            "startColumn": 15
                           }
                         }
                       },
@@ -4058,7 +986,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                           },
                           "region": {
-                            "startLine": 2929,
+                            "startLine": 3101,
                             "startColumn": 26
                           }
                         }
@@ -4072,7 +1000,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                           },
                           "region": {
-                            "startLine": 2929,
+                            "startLine": 3101,
                             "startColumn": 20
                           }
                         }
@@ -4086,7 +1014,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                           },
                           "region": {
-                            "startLine": 2937,
+                            "startLine": 3109,
                             "startColumn": 20
                           }
                         },
@@ -4106,8 +1034,8 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                           },
                           "region": {
-                            "startLine": 2940,
-                            "startColumn": 6
+                            "startLine": 3112,
+                            "startColumn": 13
                           }
                         }
                       },
@@ -4120,7 +1048,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                           },
                           "region": {
-                            "startLine": 2941,
+                            "startLine": 3113,
                             "startColumn": 11
                           }
                         }
@@ -4134,7 +1062,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                           },
                           "region": {
-                            "startLine": 2941,
+                            "startLine": 3113,
                             "startColumn": 20
                           }
                         },
@@ -4154,7 +1082,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                           },
                           "region": {
-                            "startLine": 2943,
+                            "startLine": 3115,
                             "startColumn": 17
                           }
                         }
@@ -4168,8 +1096,8 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                           },
                           "region": {
-                            "startLine": 2944,
-                            "startColumn": 56
+                            "startLine": 3116,
+                            "startColumn": 19
                           }
                         },
                         "message": {
@@ -4188,7 +1116,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                           },
                           "region": {
-                            "startLine": 2948,
+                            "startLine": 3121,
                             "startColumn": 24
                           }
                         }
@@ -4202,7 +1130,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                           },
                           "region": {
-                            "startLine": 2941,
+                            "startLine": 3113,
                             "startColumn": 27
                           }
                         }
@@ -4216,7 +1144,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                           },
                           "region": {
-                            "startLine": 2941,
+                            "startLine": 3113,
                             "startColumn": 20
                           }
                         },
@@ -4236,7 +1164,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                           },
                           "region": {
-                            "startLine": 2943,
+                            "startLine": 3115,
                             "startColumn": 17
                           }
                         }
@@ -4250,8 +1178,8 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                           },
                           "region": {
-                            "startLine": 2944,
-                            "startColumn": 56
+                            "startLine": 3116,
+                            "startColumn": 19
                           }
                         },
                         "message": {
@@ -4270,7 +1198,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                           },
                           "region": {
-                            "startLine": 2948,
+                            "startLine": 3121,
                             "startColumn": 24
                           }
                         }
@@ -4284,7 +1212,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                           },
                           "region": {
-                            "startLine": 2941,
+                            "startLine": 3113,
                             "startColumn": 27
                           }
                         }
@@ -4298,7 +1226,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                           },
                           "region": {
-                            "startLine": 2941,
+                            "startLine": 3113,
                             "startColumn": 20
                           }
                         },
@@ -4318,12 +1246,12 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                           },
                           "region": {
-                            "startLine": 2951,
-                            "startColumn": 6
+                            "startLine": 3124,
+                            "startColumn": 13
                           }
                         },
                         "message": {
-                          "text": "'uint_vme_data_buf' is an In/Out argument to 'info' (declared at c:\\users\\guekam\\source\\repos\\eca_zmi4104_project\\eca_zmi4104c_main\\eca_soleil_zmi4104_lib\\eca_soleil_zmi4104c.h:254)"
+                          "text": "'uint_vme_data_buf' is an In/Out argument to 'zygoLogInfo' (declared at c:\\users\\guekam\\source\\repos\\eca_zmi4104_project\\eca_zmi4104c_main\\eca_soleil_zmi4104_lib\\eca_soleil_zmi4104c.h:262)"
                         }
                       },
                       "kinds": [
@@ -4338,12 +1266,12 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                           },
                           "region": {
-                            "startLine": 2952,
-                            "startColumn": 6
+                            "startLine": 3125,
+                            "startColumn": 13
                           }
                         },
                         "message": {
-                          "text": "'uint_vme_data_buf' is an In/Out argument to 'info' (declared at c:\\users\\guekam\\source\\repos\\eca_zmi4104_project\\eca_zmi4104c_main\\eca_soleil_zmi4104_lib\\eca_soleil_zmi4104c.h:254)"
+                          "text": "'uint_vme_data_buf' is an In/Out argument to 'zygoLogInfo' (declared at c:\\users\\guekam\\source\\repos\\eca_zmi4104_project\\eca_zmi4104c_main\\eca_soleil_zmi4104_lib\\eca_soleil_zmi4104c.h:262)"
                         }
                       },
                       "kinds": [
@@ -4358,12 +1286,12 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                           },
                           "region": {
-                            "startLine": 2953,
-                            "startColumn": 6
+                            "startLine": 3126,
+                            "startColumn": 13
                           }
                         },
                         "message": {
-                          "text": "'uint_vme_data_buf' is an In/Out argument to 'info' (declared at c:\\users\\guekam\\source\\repos\\eca_zmi4104_project\\eca_zmi4104c_main\\eca_soleil_zmi4104_lib\\eca_soleil_zmi4104c.h:254)"
+                          "text": "'uint_vme_data_buf' is an In/Out argument to 'zygoLogInfo' (declared at c:\\users\\guekam\\source\\repos\\eca_zmi4104_project\\eca_zmi4104c_main\\eca_soleil_zmi4104_lib\\eca_soleil_zmi4104c.h:262)"
                         }
                       },
                       "kinds": [
@@ -4378,12 +1306,12 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                           },
                           "region": {
-                            "startLine": 2954,
-                            "startColumn": 6
+                            "startLine": 3127,
+                            "startColumn": 13
                           }
                         },
                         "message": {
-                          "text": "'uint_vme_data_buf' is an In/Out argument to 'info' (declared at c:\\users\\guekam\\source\\repos\\eca_zmi4104_project\\eca_zmi4104c_main\\eca_soleil_zmi4104_lib\\eca_soleil_zmi4104c.h:254)"
+                          "text": "'uint_vme_data_buf' is an In/Out argument to 'zygoLogInfo' (declared at c:\\users\\guekam\\source\\repos\\eca_zmi4104_project\\eca_zmi4104c_main\\eca_soleil_zmi4104_lib\\eca_soleil_zmi4104c.h:262)"
                         }
                       },
                       "kinds": [
@@ -4398,8 +1326,8 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                           },
                           "region": {
-                            "startLine": 2954,
-                            "startColumn": 6
+                            "startLine": 3127,
+                            "startColumn": 13
                           }
                         },
                         "message": {
@@ -4419,9 +1347,40 @@
           "suppressions": []
         },
         {
-          "ruleId": "C26812",
+          "ruleId": "C26495",
           "message": {
-            "text": "The enum type '_CEratioUnits' is unscoped. Prefer 'enum class' over 'enum' (Enum.3)."
+            "text": "Variable 'CECoeffs::CEC1coeff' is uninitialized. Always initialize a member variable (type.6)."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.h"
+                },
+                "region": {
+                  "startLine": 97,
+                  "startColumn": 2,
+                  "endLine": 97,
+                  "endColumn": 2
+                }
+              },
+              "logicalLocations": [
+                {
+                  "decoratedName": "??0CECoeffs@@QAE@XZ",
+                  "kind": "function"
+                }
+              ]
+            }
+          ],
+          "suppressions": [],
+          "properties": {
+            "targetSymbol": "CECoeffs::CEC1coeff"
+          }
+        },
+        {
+          "ruleId": "C26451",
+          "message": {
+            "text": "Arithmetic overflow: Using operator '+' on a 4 byte value and then casting the result to a 8 byte value. Cast the value to the wider type before calling operator '+' to avoid overflow (io.2)."
           },
           "locations": [
             {
@@ -4430,15 +1389,15 @@
                   "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                 },
                 "region": {
-                  "startLine": 3498,
-                  "startColumn": 5,
-                  "endLine": 3498,
-                  "endColumn": 5
+                  "startLine": 3929,
+                  "startColumn": 74,
+                  "endLine": 3929,
+                  "endColumn": 81
                 }
               },
               "logicalLocations": [
                 {
-                  "decoratedName": "calculateCeratio",
+                  "decoratedName": "?convertFloat2Decimal@@YAHIPAN@Z",
                   "kind": "function"
                 }
               ]
@@ -4458,15 +1417,15 @@
                   "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                 },
                 "region": {
-                  "startLine": 3789,
-                  "startColumn": 49,
-                  "endLine": 3789,
-                  "endColumn": 66
+                  "startLine": 4349,
+                  "startColumn": 45,
+                  "endLine": 4349,
+                  "endColumn": 61
                 }
               },
               "logicalLocations": [
                 {
-                  "decoratedName": "convertFloat2Double",
+                  "decoratedName": "?getPositionOffset@@YAHEPAN@Z",
                   "kind": "function"
                 }
               ]
@@ -4486,15 +1445,15 @@
                   "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                 },
                 "region": {
-                  "startLine": 3818,
-                  "startColumn": 24,
-                  "endLine": 3818,
-                  "endColumn": 39
+                  "startLine": 4405,
+                  "startColumn": 45,
+                  "endLine": 4405,
+                  "endColumn": 79
                 }
               },
               "logicalLocations": [
                 {
-                  "decoratedName": "convertUsfloat2Double",
+                  "decoratedName": "?getPresetPosition@@YAHEPAN@Z",
                   "kind": "function"
                 }
               ]
@@ -4514,15 +1473,43 @@
                   "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
                 },
                 "region": {
-                  "startLine": 6274,
-                  "startColumn": 37,
-                  "endLine": 6274,
-                  "endColumn": 53
+                  "startLine": 5500,
+                  "startColumn": 43,
+                  "endLine": 5500,
+                  "endColumn": 80
                 }
               },
               "logicalLocations": [
                 {
-                  "decoratedName": "getSamplingFrequency",
+                  "decoratedName": "?readSamplePosition37@@YAHEPAN@Z",
+                  "kind": "function"
+                }
+              ]
+            }
+          ],
+          "suppressions": []
+        },
+        {
+          "ruleId": "C26451",
+          "message": {
+            "text": "Arithmetic overflow: Using operator '+' on a 4 byte value and then casting the result to a 8 byte value. Cast the value to the wider type before calling operator '+' to avoid overflow (io.2)."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.cpp"
+                },
+                "region": {
+                  "startLine": 5706,
+                  "startColumn": 44,
+                  "endLine": 5706,
+                  "endColumn": 67
+                }
+              },
+              "logicalLocations": [
+                {
+                  "decoratedName": "?readPosition@@YAHEPAN@Z",
                   "kind": "function"
                 }
               ]
@@ -4541,7 +1528,7 @@
       },
       "invocations": [
         {
-          "commandLine": "\"C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\VC\\Tools\\MSVC\\14.28.29910\\bin\\HostX86\\x86\\c1xx.dll\" -ACf{1F7B090C-16DB-4822-966A-A93D26ED4681} -ACpmspft140.dll -Alint -D_PREFAST_ -D_AST_FE_ -Analyze -zm0x00AAB1C0 -allChunksReserved -il C:\\Users\\guekam\\AppData\\Local\\Temp\\_CL_2347294fast -typedil -f eca_soleil_zmi4104c.cpp -Ze -D_MSC_EXTENSIONS -Zp8 -Gs -pc \\:/ -D_MSC_VER=1928 -D_MSC_FULL_VER=192829914 -D_MSC_BUILD=0 -D_WIN32 -D_M_IX86=600 -D_M_IX86_FP=2 -GR -D_CPPRTTI -I C:\\Users\\guekam\\source\\repos\\ECA_ZMI4104_Project\\ECA_ZMI4104C_main\\eca_soleil_zmi4104_lib\\sis1100_zmilib -nologo -W 1 -diagnostics:column -D_GUARDOVERFLOW_CRT_ALLOCATORS=1 -GF -Og -Ot -Oi -ltcg -DCODE_ANALYSIS -DWIN32 -DNDEBUG -DECASOLEILZMI4104LIB_EXPORTS -D_WINDOWS -D_USRDLL -D_WINDLL -D_UNICODE -DUNICODE -EHs -D_CPPUNWIND -EHc -MD -D_MT -D_DLL -GS -D_M_FP_PRECISE -permissive- -Zc:wchar_t -Zc:forScope -Yupch.h -FpRelease\\eca_soleil_zmi4104_lib.pch -FoRelease\\eca_soleil_zmi4104c.obj -FdRelease\\vc142.pdb -Gd -analyze:projectdirectory C:\\Users\\guekam\\source\\repos\\ECA_ZMI4104_Project\\ECA_ZMI4104C_main\\eca_soleil_zmi4104_lib -analyze:rulesetdirectory ;C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\Team Tools\\Static Analysis Tools\\\\Rule Sets; -analyze:ruleset C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\Team Tools\\Static Analysis Tools\\Rule Sets\\NativeRecommendedRules.ruleset -analyze:quiet -analyze:plugin C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\VC\\Tools\\MSVC\\14.28.29910\\bin\\HostX86\\x86\\EspXEngine.dll -FC -errorreport:prompt -I C:\\Users\\guekam\\source\\repos\\ECA_ZMI4104_Project\\ECA_ZMI4104C_main\\ECA_ZMI4104C_main -I C:\\Users\\guekam\\source\\repos\\ECA_ZMI4104_Project\\ECA_ZMI4104C_main\\eca_soleil_zmi4104_lib\\sis1100_zmilib -I C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\VC\\Tools\\MSVC\\14.28.29910\\include -I C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\VC\\Tools\\MSVC\\14.28.29910\\atlmfc\\include -I C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\VC\\Auxiliary\\VS\\include -I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.19041.0\\ucrt -I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.19041.0\\um -I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.19041.0\\shared -I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.19041.0\\winrt -I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.19041.0\\cppwinrt -I C:\\Users\\guekam\\source\\repos\\ECA_ZMI4104_Project\\ECA_ZMI4104C_main\\eca_soleil_zmi4104_lib\\Include\\um",
+          "commandLine": "\"C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\VC\\Tools\\MSVC\\14.28.29910\\bin\\HostX86\\x86\\c1xx.dll\" -ACf{1F7B090C-16DB-4822-966A-A93D26ED4681} -ACpmspft140.dll -Alint -D_PREFAST_ -D_AST_FE_ -Analyze -zm0x009AB1C0 -allChunksReserved -il C:\\Users\\guekam\\AppData\\Local\\Temp\\_CL_eaecac91ast -typedil -f eca_soleil_zmi4104c.cpp -Ze -D_MSC_EXTENSIONS -Zp8 -Gs -pc \\:/ -D_MSC_VER=1928 -D_MSC_FULL_VER=192829914 -D_MSC_BUILD=0 -D_WIN32 -D_M_IX86=600 -D_M_IX86_FP=2 -GR -D_CPPRTTI -I C:\\Users\\guekam\\source\\repos\\ECA_ZMI4104_Project\\ECA_ZMI4104C_main\\eca_soleil_zmi4104_lib\\sis1100_zmilib -nologo -W 1 -diagnostics:column -D_GUARDOVERFLOW_CRT_ALLOCATORS=1 -GF -Og -Ot -Oi -ltcg -DCODE_ANALYSIS -DWIN32 -DNDEBUG -DECASOLEILZMI4104LIB_EXPORTS -D_WINDOWS -D_USRDLL -D_WINDLL -D_UNICODE -DUNICODE -EHs -D_CPPUNWIND -EHc -MD -D_MT -D_DLL -GS -D_M_FP_PRECISE -permissive- -Zc:wchar_t -Zc:forScope -Yupch.h -FpRelease\\eca_soleil_zmi4104_lib.pch -FoRelease\\eca_soleil_zmi4104c.obj -FdRelease\\vc142.pdb -Gd -analyze:projectdirectory C:\\Users\\guekam\\source\\repos\\ECA_ZMI4104_Project\\ECA_ZMI4104C_main\\eca_soleil_zmi4104_lib -analyze:rulesetdirectory ;C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\Team Tools\\Static Analysis Tools\\\\Rule Sets; -analyze:ruleset C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\Team Tools\\Static Analysis Tools\\Rule Sets\\NativeRecommendedRules.ruleset -analyze:quiet -analyze:plugin C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\VC\\Tools\\MSVC\\14.28.29910\\bin\\HostX86\\x86\\EspXEngine.dll -FC -errorreport:prompt -I C:\\Users\\guekam\\source\\repos\\ECA_ZMI4104_Project\\ECA_ZMI4104C_main\\ECA_ZMI4104C_main -I C:\\Users\\guekam\\source\\repos\\ECA_ZMI4104_Project\\ECA_ZMI4104C_main\\eca_soleil_zmi4104_lib\\sis1100_zmilib -I C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\VC\\Tools\\MSVC\\14.28.29910\\include -I C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\VC\\Tools\\MSVC\\14.28.29910\\atlmfc\\include -I C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\VC\\Auxiliary\\VS\\include -I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.19041.0\\ucrt -I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.19041.0\\um -I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.19041.0\\shared -I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.19041.0\\winrt -I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.19041.0\\cppwinrt -I C:\\Users\\guekam\\source\\repos\\ECA_ZMI4104_Project\\ECA_ZMI4104C_main\\eca_soleil_zmi4104_lib\\Include\\um",
           "executionSuccessful": true
         }
       ],
@@ -4555,7 +1542,7 @@
             "resultFile"
           ],
           "hashes": {
-            "md5": "fad955f9104a4940cd3a33bfc5c44217"
+            "md5": "8815a5efe3fcc820e8afedd3477e0978"
           }
         },
         {
@@ -4595,7 +1582,7 @@
             "uri": "file:///c:/users/guekam/source/repos/eca_zmi4104_project/eca_zmi4104c_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis1100wstat.h"
           },
           "hashes": {
-            "md5": "d2b9e7242f0822099f3f0ed65fb4c7f7"
+            "md5": "3b00e42112bdce625699611c689c461c"
           }
         },
         {
@@ -4615,15 +1602,18 @@
             "resultFile"
           ],
           "hashes": {
-            "md5": "327269a045da48eb6df67bf5240dd549"
+            "md5": "b6a10b9e559aa816614803e512c471cc"
           }
         },
         {
           "location": {
-            "uri": "file:///c:/users/guekam/source/repos/eca_zmi4104_project/eca_zmi4104c_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.h"
+            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.h"
           },
+          "roles": [
+            "resultFile"
+          ],
           "hashes": {
-            "md5": "3484a8e10dec7038a0ddf77ea439ff1e"
+            "md5": "d518fabe388ae384cbca2f70d3d3b16a"
           }
         },
         {
@@ -4631,7 +1621,7 @@
             "uri": "file:///c:/users/guekam/source/repos/eca_zmi4104_project/eca_zmi4104c_main/eca_zmi4104c_main/zvme_const.h"
           },
           "hashes": {
-            "md5": "4586d81b08ab00857ad73514904fb14e"
+            "md5": "57134592cf221e0a2ea6caa326c6c12e"
           }
         },
         {
@@ -4648,6 +1638,14 @@
           },
           "hashes": {
             "md5": "1b4b286b013d3c60b7af68617be55cb3"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///c:/users/guekam/source/repos/eca_zmi4104_project/eca_zmi4104c_main/eca_soleil_zmi4104_lib/zygoerrorcodes.h"
+          },
+          "hashes": {
+            "md5": "cc7da8542e57c64c36c246722578ddcb"
           }
         },
         {

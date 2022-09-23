@@ -26,7 +26,10 @@ QT_BEGIN_NAMESPACE
 class Ui_graphsForm
 {
 public:
-    QCustomPlot *customPlot;
+    QHBoxLayout *horizontalLayout_5;
+    QSpacerItem *horizontalSpacer_6;
+    QVBoxLayout *verticalLayout_3;
+    QSpacerItem *verticalSpacer_2;
     QWidget *horizontalWidget_3;
     QHBoxLayout *horizontalLayout_3;
     QHBoxLayout *horizontalLayout;
@@ -45,7 +48,8 @@ public:
     QCheckBox *checkBox_2;
     QCheckBox *checkBox_3;
     QCheckBox *checkBox_4;
-    QWidget *horizontalLayoutWidget;
+    QSpacerItem *verticalSpacer_3;
+    QCustomPlot *customPlot;
     QHBoxLayout *horizontalLayout_2;
     QWidget *verticalWidget_2;
     QVBoxLayout *verticalLayout_2;
@@ -53,6 +57,8 @@ public:
     QSpacerItem *horizontalSpacer_5;
     QVBoxLayout *verticalLayout;
     QLabel *dataAxis;
+    QSpacerItem *verticalSpacer;
+    QSpacerItem *horizontalSpacer_7;
 
     void setupUi(QWidget *graphsForm)
     {
@@ -90,12 +96,25 @@ public:
 "#graphsForm{\n"
 "background-color: rgb(94, 94, 94);\n"
 "}"));
-        customPlot = new QCustomPlot(graphsForm);
-        customPlot->setObjectName(QString::fromUtf8("customPlot"));
-        customPlot->setGeometry(QRect(20, 140, 831, 441));
+        horizontalLayout_5 = new QHBoxLayout(graphsForm);
+        horizontalLayout_5->setObjectName(QString::fromUtf8("horizontalLayout_5"));
+        horizontalSpacer_6 = new QSpacerItem(10, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
+
+        horizontalLayout_5->addItem(horizontalSpacer_6);
+
+        verticalLayout_3 = new QVBoxLayout();
+        verticalLayout_3->setObjectName(QString::fromUtf8("verticalLayout_3"));
+        verticalSpacer_2 = new QSpacerItem(20, 20, QSizePolicy::Minimum, QSizePolicy::Fixed);
+
+        verticalLayout_3->addItem(verticalSpacer_2);
+
         horizontalWidget_3 = new QWidget(graphsForm);
         horizontalWidget_3->setObjectName(QString::fromUtf8("horizontalWidget_3"));
-        horizontalWidget_3->setGeometry(QRect(110, 30, 654, 51));
+        QSizePolicy sizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
+        sizePolicy.setHorizontalStretch(0);
+        sizePolicy.setVerticalStretch(0);
+        sizePolicy.setHeightForWidth(horizontalWidget_3->sizePolicy().hasHeightForWidth());
+        horizontalWidget_3->setSizePolicy(sizePolicy);
         horizontalWidget_3->setStyleSheet(QString::fromUtf8("#horizontalWidget_3{\n"
 "border: 1px solid;\n"
 "	background-color:rgb(182, 182, 182);\n"
@@ -108,9 +127,6 @@ public:
         horizontalLayout->setObjectName(QString::fromUtf8("horizontalLayout"));
         label_3 = new QLabel(horizontalWidget_3);
         label_3->setObjectName(QString::fromUtf8("label_3"));
-        QSizePolicy sizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
-        sizePolicy.setHorizontalStretch(0);
-        sizePolicy.setVerticalStretch(0);
         sizePolicy.setHeightForWidth(label_3->sizePolicy().hasHeightForWidth());
         label_3->setSizePolicy(sizePolicy);
         label_3->setMinimumSize(QSize(0, 35));
@@ -132,7 +148,7 @@ public:
 
         horizontalLayout->addWidget(spinBox);
 
-        horizontalSpacer_4 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+        horizontalSpacer_4 = new QSpacerItem(40, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
 
         horizontalLayout->addItem(horizontalSpacer_4);
 
@@ -147,7 +163,9 @@ public:
 
         pushButton_2 = new QPushButton(horizontalWidget_3);
         pushButton_2->setObjectName(QString::fromUtf8("pushButton_2"));
-        pushButton_2->setMinimumSize(QSize(0, 40));
+        sizePolicy1.setHeightForWidth(pushButton_2->sizePolicy().hasHeightForWidth());
+        pushButton_2->setSizePolicy(sizePolicy1);
+        pushButton_2->setMinimumSize(QSize(80, 40));
         pushButton_2->setStyleSheet(QString::fromUtf8("background-color:rgb(108, 255, 137)"));
 
         horizontalLayout->addWidget(pushButton_2);
@@ -155,9 +173,14 @@ public:
 
         horizontalLayout_3->addLayout(horizontalLayout);
 
+
+        verticalLayout_3->addWidget(horizontalWidget_3);
+
         selectAxisWidget = new QWidget(graphsForm);
         selectAxisWidget->setObjectName(QString::fromUtf8("selectAxisWidget"));
-        selectAxisWidget->setGeometry(QRect(40, 90, 773, 41));
+        sizePolicy.setHeightForWidth(selectAxisWidget->sizePolicy().hasHeightForWidth());
+        selectAxisWidget->setSizePolicy(sizePolicy);
+        selectAxisWidget->setMinimumSize(QSize(0, 60));
         selectAxisWidget->setStyleSheet(QString::fromUtf8("#selectAxisWidget{\n"
 "border: 1px solid;\n"
 "	background-color:rgb(240, 255, 216);\n"
@@ -205,20 +228,35 @@ public:
 
         horizontalLayout_4->addWidget(checkBox_4);
 
-        horizontalLayoutWidget = new QWidget(graphsForm);
-        horizontalLayoutWidget->setObjectName(QString::fromUtf8("horizontalLayoutWidget"));
-        horizontalLayoutWidget->setGeometry(QRect(60, 580, 771, 51));
-        horizontalLayout_2 = new QHBoxLayout(horizontalLayoutWidget);
+
+        verticalLayout_3->addWidget(selectAxisWidget);
+
+        verticalSpacer_3 = new QSpacerItem(20, 20, QSizePolicy::Minimum, QSizePolicy::Fixed);
+
+        verticalLayout_3->addItem(verticalSpacer_3);
+
+        customPlot = new QCustomPlot(graphsForm);
+        customPlot->setObjectName(QString::fromUtf8("customPlot"));
+        QSizePolicy sizePolicy3(QSizePolicy::Expanding, QSizePolicy::Expanding);
+        sizePolicy3.setHorizontalStretch(0);
+        sizePolicy3.setVerticalStretch(0);
+        sizePolicy3.setHeightForWidth(customPlot->sizePolicy().hasHeightForWidth());
+        customPlot->setSizePolicy(sizePolicy3);
+        customPlot->setMinimumSize(QSize(830, 440));
+
+        verticalLayout_3->addWidget(customPlot);
+
+        horizontalLayout_2 = new QHBoxLayout();
         horizontalLayout_2->setObjectName(QString::fromUtf8("horizontalLayout_2"));
-        horizontalLayout_2->setContentsMargins(0, 0, 0, 0);
-        verticalWidget_2 = new QWidget(horizontalLayoutWidget);
+        verticalWidget_2 = new QWidget(graphsForm);
         verticalWidget_2->setObjectName(QString::fromUtf8("verticalWidget_2"));
-        sizePolicy2.setHeightForWidth(verticalWidget_2->sizePolicy().hasHeightForWidth());
-        verticalWidget_2->setSizePolicy(sizePolicy2);
+        sizePolicy1.setHeightForWidth(verticalWidget_2->sizePolicy().hasHeightForWidth());
+        verticalWidget_2->setSizePolicy(sizePolicy1);
         verticalLayout_2 = new QVBoxLayout(verticalWidget_2);
         verticalLayout_2->setObjectName(QString::fromUtf8("verticalLayout_2"));
         labelAxis = new QLabel(verticalWidget_2);
         labelAxis->setObjectName(QString::fromUtf8("labelAxis"));
+        labelAxis->setMinimumSize(QSize(0, 35));
         labelAxis->setStyleSheet(QString::fromUtf8("color: rgb(255, 170, 0)"));
 
         verticalLayout_2->addWidget(labelAxis);
@@ -232,14 +270,31 @@ public:
 
         verticalLayout = new QVBoxLayout();
         verticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
-        dataAxis = new QLabel(horizontalLayoutWidget);
+        dataAxis = new QLabel(graphsForm);
         dataAxis->setObjectName(QString::fromUtf8("dataAxis"));
+        sizePolicy.setHeightForWidth(dataAxis->sizePolicy().hasHeightForWidth());
+        dataAxis->setSizePolicy(sizePolicy);
+        dataAxis->setMinimumSize(QSize(40, 40));
         dataAxis->setStyleSheet(QString::fromUtf8("color: rgb(255, 255, 255);"));
 
         verticalLayout->addWidget(dataAxis);
 
 
         horizontalLayout_2->addLayout(verticalLayout);
+
+
+        verticalLayout_3->addLayout(horizontalLayout_2);
+
+        verticalSpacer = new QSpacerItem(20, 20, QSizePolicy::Minimum, QSizePolicy::Fixed);
+
+        verticalLayout_3->addItem(verticalSpacer);
+
+
+        horizontalLayout_5->addLayout(verticalLayout_3);
+
+        horizontalSpacer_7 = new QSpacerItem(10, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
+
+        horizontalLayout_5->addItem(horizontalSpacer_7);
 
 
         retranslateUi(graphsForm);
@@ -259,7 +314,7 @@ public:
         checkBox_3->setText(QCoreApplication::translate("graphsForm", "Axis3", nullptr));
         checkBox_4->setText(QCoreApplication::translate("graphsForm", "Axis4", nullptr));
         labelAxis->setText(QCoreApplication::translate("graphsForm", "Axis : ", nullptr));
-        dataAxis->setText(QCoreApplication::translate("graphsForm", "TextLabel", nullptr));
+        dataAxis->setText(QString());
     } // retranslateUi
 
 };

@@ -1,12 +1,21 @@
 ﻿#include "pch.h"
 #include "eca_soleil_zmi4104c.h"
 #include "vmeInterruptConst.h"
+#include <zVME_const.h>
+
+volatile uint32_t pNbr = 0;
+volatile uint32_t tNbr = 0;
+
+int operator-(const Axes& a, const int l) {
+	int tmp = static_cast<uint8_t>(a) - l;
+	return tmp;
+}
 
 void setBaseAddress(uint32_t baseAddressAxis3) {
 	zygoLogInfo("Modifying base address\n");
 	BASE_ADDRESS[0] = baseAddressAxis3 - 0x2000;
 	BASE_ADDRESS[1] = baseAddressAxis3 - 0x1000;
-	BASE_ADDRESS[2] = baseAddressAxis3;
+	BASE_ADDRESS[AXIS3 - 1] = baseAddressAxis3;
 	BASE_ADDRESS[3] = baseAddressAxis3 + 0x1000;
 	zygoLogInfo("New base address is 0x%07X", baseAddressAxis3);
 }
@@ -42,7 +51,7 @@ int createEvents()
 		printf("CreateEvent failed (%d)\n", GetLastError());
 		return CREATE_EVENT_FAILED;
 	}
-
+	return RET_SUCCESS;
 }
 int  createThreads()
 {
@@ -147,7 +156,7 @@ void CloseEvents()
 int lemoInterruptCallbackFunction(FILE* fd) {
 	double pos[4];
 
-	if ((return_code = readPositionForAllAxis(pos)) != RET_SUCCESS) {
+	if (return_code = readPositionForAllAxis(pos)) {
 		zygoLogWarn("read sample position faillure\n");
 		return return_code;
 	}
@@ -158,14 +167,6 @@ int lemoInterruptCallbackFunction(FILE* fd) {
 DWORD WINAPI lemoIN1ThreadFunc(LPVOID lpParam)
 {
 	SIS1100_Device_Struct* dev = (SIS1100_Device_Struct*)lpParam;
-	FILE* fd;
-	GetLocalTime(&lt);
-	if (fopen_s(&fd, "interrupt_position_read.csv", "w") != RET_SUCCESS) {
-		perror("lemoIN1ThreadFunc");
-		zygoLogWarn("fopen failed\n");
-		return RET_FAILED;
-	}
-	fprintf(fd, "[***********; %d/%d/%d at %d:%d] ;************]\n", lt.wYear, lt.wMonth, lt.wDay, lt.wHour, lt.wMinute);
 	uint32_t get_irq_level = 0;
 	DWORD dwWaitResult = 0;
 	uint32_t loop_cnt, error_cnt;
@@ -185,7 +186,6 @@ DWORD WINAPI lemoIN1ThreadFunc(LPVOID lpParam)
 			zygoLogInfo("Interrupt Thread %d is using the dev structure...\n", GetCurrentThreadId());
 			zygoLogInfo("A LEMO INTERRUPT HAS OCCURED\n");
 			//lemoInterruptCallbackFunction(fd);
-			fclose(fd);
 			loop_cnt++;
 			break;
 		case WAIT_ABANDONED:
@@ -430,7 +430,7 @@ int releaseWinMemSpace(  uint8_t nof_vme_windows) {
 /// 0 if success
 /// -1 else
 /// </returns>
-int configureCecHardware(uint8_t axis, USHORT ceVelMin, USHORT ceVelMax) {
+int configureCecHardware(Axes axis, USHORT ceVelMin, USHORT ceVelMax) {
 	uint32_t uint_vme_address = 0, uint_vme_data = 0;
 	char sc_char[3];
 	/*At the startup CEC is disabled*/
@@ -439,13 +439,13 @@ int configureCecHardware(uint8_t axis, USHORT ceVelMin, USHORT ceVelMax) {
 	 * - The default value of CE_Min_Vel is 96 which represents a 7.3Khz Doppler shift or
 	 * a velocity of approximately 1.2mm/s. . The units of this register are 76.3 Hz, or 12 μm/sec for a double-pass
 	 * interferometer Its value shouldn't be less than 24 which represents a 1.8Khz Doppler shift
-	 * and may cause improper operation of the CEC fuction
+	 * and may cause improper operation of the CEC function
 	 * - The default value of CE_Max_Vel is 31457  which represents a 2.4Mhz Doppler shift or a velocity of approximately
 	 * 0.38m/s(double pass)*/
 
 
 	 /*1-Then, we should perform a motion at a velocity higher than the CE_Min_Vel and
-	  *greater than CE_Max_Vel so that the the CEC coeff can be calculated. The motion should last at least
+	  *lesser than CE_Max_Vel so that the the CEC coeff can be calculated. The motion should last at least
 	  *4.1ms before CEC coeff can be updated
 	  */
 
@@ -455,29 +455,29 @@ int configureCecHardware(uint8_t axis, USHORT ceVelMin, USHORT ceVelMax) {
 		return CEC_MIN_VEL_ERROR;
 	}
 	//set ce min velocity
-	if ((return_code = setCeminVel(axis, CE_MIN_VEL)) != RET_SUCCESS)
+	if (return_code = setCeminVel(axis, CE_MIN_VEL))
 	{
 		{zygoLogWarn("setCeminVel failed !  \n"); return return_code; }
 	}
 	//set ce max velocity
-	if ((return_code = setCemaxVel(axis, CE_MAX_VEL)) != RET_SUCCESS)
+	if (return_code = setCemaxVel(axis, CE_MAX_VEL))
 	{
 		{zygoLogWarn("setCemaxVel failed !  \n");  return return_code; }
 	}
 	zygoLogInfo("Start the motor for a displacement of at least 1s then press Enter. CEC hardware need to observe the motion at startup \
 in order to determine correct CE coefficients \n");
-	if ((return_code = waitCeinit2Complete(axis)) != RET_SUCCESS) {
+	if (return_code = waitCeinit2Complete(axis)) {
 		zygoLogWarn("failed to initialize CE hardware\n");
 		return return_code;
 	}
 	zygoLogInfo(" CE hardware configuration is complete\n");
 
-	if ((return_code = enableCecCompensation(axis)) != RET_SUCCESS) {
+	if (return_code = enableCecCompensation(axis)) {
 		zygoLogWarn("failed to enable CE compensation\n");
 		return return_code;
 	}
 	/*
-	if ((return_code = readCecErrorStatReg(  axis, &uint_vme_data)) != RET_SUCCESS) {
+	if (return_code = readCecErrorStatReg(  axis, &uint_vme_data)) {
 		zygoLogWarn("readCecErrorStatReg failed\n");
 		return return_code;
 	}
@@ -486,12 +486,12 @@ in order to determine correct CE coefficients \n");
 	return RET_SUCCESS;
 
 }
-int readCecErrorStatReg(uint8_t axis, uint32_t* CEstatReg) {
+int readCecErrorStatReg(Axes axis, uint32_t* CEstatReg) {
 	uint32_t uint_vme_address = 0, uint_vme_data;
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCEerrorStat);
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCEerrorStat);
 	uint_vme_data = 0;
 	zygoLogInfo("Reading CE status register\n");
-	if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ)) != RET_SUCCESS)
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ))
 	{
 		{zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code; }
 	}
@@ -719,6 +719,15 @@ int enableDoublePassInterferometer(void) {
 	velocityScale = DOUBLE_PASS_INT_VEL_COEF * (1e-3);    //Converts to m/s as default
 	return RET_SUCCESS;
 }
+int enableQuadPassInterferometer(void) {
+
+	zygoLogInfo("Quad pass interferometer activated\n");
+	positionScale = QUAD_PASS_INT_POS_COEF;    //Converts to mm as default
+	curInterferoConfig = 3;
+	velocityScale = QUAD_PASS_INT_VEL_COEF * (1e-3);    //Converts to m/s as default
+	return RET_SUCCESS;
+}
+
 int setInterferometerConfiguration(uint32_t config) {
 	if (checkLimits(config, 1, 2))
 		return BAD_ARG_VALUE;
@@ -735,165 +744,167 @@ int initAxis(BIAS_MODE bias_mode) {
 	uint32_t	vme_data = 0,
 		uint_vme_address = 0,
 		uint_vme_data = 0;
-
+	double val = 0.0;
 	zygoLogInfo("Initializing axis\n");
 	strcpy_s(ch_access_mode, sizeof(ch_access_mode), access_mode_Selection[6]);
 	//select SCLK0 as sample clock source
-	if ((return_code = setSampleSourceClock(3, 0)) != RET_SUCCESS)
+	if (return_code = setVMEBusSampleClk(AXIS3, SCLK::SCLK0))
 	{
 		zygoLogWarn("setSampleSourceClock failed !  \n");
 		return return_code;
 	}
-	if ((return_code = setResetSourceClock(3, 0)) != RET_SUCCESS)
+	if (return_code = setResetSourceClock(AXIS3, SCLK::SCLK0))
 	{
 		zygoLogWarn("setResetSourceClock failed !  \n");
 		return return_code;
 	}//select SCLK0 as reset clock source
-	if ((return_code = setTimeDelayBetweenResAndCompleteBit(AXIS3, 0)) != RET_SUCCESS)
+	if (return_code = setTimeDelayBetweenResAndCompleteBit(AXIS3, 0))
 	{
 		zygoLogWarn("setTimeDelayBetweenResAndCompleteBit failed !  \n");
 		return return_code;
 	}
-	if ((return_code = enableDoublePassInterferometer()) != RET_SUCCESS)
+	if (return_code = enableDoublePassInterferometer())
 	{
 		zygoLogWarn("enableDoublePassInterferometer failed !  \n");
 		return return_code;
 	}
 	//sis1100w_sis310x_Register_For_Irq(dev, sis_irq_mask); //Register to listen to IRQ6 level interrupt
-	if ((return_code = setVmeIntLevel(AXIS3, INT_LEVEL6)) != RET_SUCCESS)
+	if (return_code = setVmeIntLevel(AXIS3, INT_LEVEL6))
 	{
 		zygoLogWarn("setResetSourceClock failed !  \n");
 		return return_code;
 	}//3
-	if ((return_code = setVmeIntVector(AXIS3, 0x12)) != RET_SUCCESS)
+	if (return_code = setVmeIntVector(AXIS3, 0x12))
 	{
 		zygoLogWarn("setResetSourceClock failed !  \n");
 		return return_code;
 	}
-	if ((return_code = enableVmeGlobalInterrupt(AXIS3)) != RET_SUCCESS)
+	if (return_code = enableVmeGlobalInterrupt(AXIS3))
 	{
 		zygoLogWarn("setResetSourceClock failed !  \n");
 		return return_code;
 	}
-	if ((return_code = enableAllVmeInterrupts(AXIS3)) != RET_SUCCESS)
+	if (return_code = enableAllVmeInterrupts(AXIS3))
 	{
 		zygoLogWarn("setResetSourceClock failed !  \n");
 		return return_code;
 	}
-	for (int a = 1; a < 5; a++) {
+	for (const auto& a : AXES) {
 
-		//disableAllVmeInterrupts(  a);
-
-		if ((return_code = disable32BitsOverflow(a)) != RET_SUCCESS)
-		{
-			zygoLogWarn("disable32BitsOverflow failed !  \n");
-			return return_code;
-		}
-		if ((return_code = enable37BitsSignExtension(a)) != RET_SUCCESS)
-		{
-			zygoLogWarn("enable37BitsSignExtension failed !  \n");
-			return return_code;
-		}			// enable sign extension of 32 bits to match 37 bits register size 
-																			// when register data is written
-		if ((return_code = setPositionOffset37(a, 0)) != RET_SUCCESS)
-		{
-			zygoLogWarn("setPositionOffset37 failed !  \n");
-			return return_code;
-		}
-		if ((return_code = setKpAndKvCoeff(a, -3, -7)) != RET_SUCCESS)
-		{
-			zygoLogWarn("setKpAndKvCoeffr failed !  \n");
-			return return_code;
-		}				// Set Kp = -7 and Kv = -15		
-
-		if ((return_code = boardControlMode(a, bias_mode)) != RET_SUCCESS)
-		{
-			zygoLogWarn("boardControlMode failed !  \n");
-			return return_code;
-		}
-		resetAxis(a);
-	}
-
-	uint_vme_data = 0;
-	//Enable auxiliary registers by default as we don't use data age ram
-	// Enable 32bits by default
-	for (int axis = 1; axis < 5; axis++) {
-		if ((return_code = enableAuxRegisters(axis)) != RET_SUCCESS)
+		//Enable auxiliary registers by default as we don't use data age ram
+		if (return_code = enableAuxRegisters(a))
 		{
 			zygoLogWarn("enableDoublePassInterferometer failed !  \n");
 			return return_code;
 		}
+
+		//disableAllVmeInterrupts(  a);
+		if (return_code = disable32BitsOverflow(a))
+		{
+			zygoLogWarn("disable32BitsOverflow failed !  \n");
+			return return_code;
+		}
+		if (return_code = enable37BitsSignExtension(a))
+		{
+			zygoLogWarn("enable37BitsSignExtension failed !  \n");
+			return return_code;
+		}			
+		// enable sign extension of 32 bits to match 37 bits register size 
+																			// when register data is written
+		if (return_code = setPositionOffset37(a, &val))
+		{
+			zygoLogWarn("setPositionOffset37 failed !  \n");
+			return return_code;
+		}
+		if (return_code = setKpAndKvCoeff(a, defKp, defKv))
+		{
+			zygoLogWarn("setKpAndKvCoeffr failed !  \n");
+			return return_code;
+		}				// Set Kp = -6 and Kv = -15		
+
+		if (return_code = boardControlMode(a, bias_mode))
+		{
+			zygoLogWarn("boardControlMode failed !  \n");
+			return return_code;
+		}
+		if (return_code = setSsiSquelch(a, defaultSSISquelch))
+		{
+			zygoLogWarn("setSsiSquelch failed !  \n");
+			return return_code;
+		}
+		
 	}
-	if ((return_code = getSamplingFrequency(&currentSamplingFrequency)) != RET_SUCCESS)
+
+	if (return_code = getSamplingFrequency(Axes::Axis_3, currentSamplingFrequency))
 	{
 		zygoLogWarn("getSamplingFrequency failed !  \n");
 		return return_code;
 	}
-	setPrecision(0);// set prcision to 32bits;
+	setPrecision(0);// set precision to 32bits;
 	return RET_SUCCESS;
 }
-int disableAllVmeInterrupts(uint8_t axis) {
+int disableAllVmeInterrupts(Axes axis) {
 	uint32_t uint_vme_address = 0, uint_vme_data;
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEIntEnab0);				// Disable VME interrupts 0
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zVMEIntEnab0);				// Disable VME interrupts 0
 	uint_vme_data = 0;
 	zygoLogInfo("Disabling VME Interrupts\n");
-	if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 	{
 		{zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code; }
 	}
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEIntEnab1);				// Disable VME interrupts 1
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zVMEIntEnab1);				// Disable VME interrupts 1
 	uint_vme_data = 0x8000;
-	if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 	{
 		{zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code; }
 	}
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEIntEnab2);				// Disable VME interrupts 2
-	if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zVMEIntEnab2);				// Disable VME interrupts 2
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 	{
 		{zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code; }
 	}
 	return RET_SUCCESS;
 }
 
-int enableAllVmeInterrupts(uint8_t axis) {
+int enableAllVmeInterrupts(Axes axis) {
 	uint32_t uint_vme_address = 0, uint_vme_data = 0xFFFF;
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEIntEnab0);				// VME interrupts 0
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zVMEIntEnab0);				// VME interrupts 0
 
 	zygoLogInfo("Enabling VME Interrupts\n");
-	if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); 
 		return return_code; 
 	}
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEIntEnab1);				// VME interrupts 1
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zVMEIntEnab1);				// VME interrupts 1
 	uint_vme_data |= 0x811F;
-	if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); 
 		return return_code; 
 	}
 	uint_vme_data = 0xF0FF;
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEIntEnab2);				//  VME interrupts 2
-	if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zVMEIntEnab2);				//  VME interrupts 2
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); 
 		return return_code; 
 	}
 	return RET_SUCCESS;
 }
-int enableVmeGlobalInterrupt(uint8_t axis) {
+int enableVmeGlobalInterrupt(Axes axis) {
 	uint32_t uint_vme_address = 0, uint_vme_data;
 
 	zygoLogInfo("Enabling Global Interrupts\n");
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEIntEnab1);				// Disable VME interrupts 
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zVMEIntEnab1);				// Disable VME interrupts 
 	uint_vme_data = 0;
-	if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ)) != RET_SUCCESS)
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); 
 		return return_code; 
 	}
 	uint_vme_data |= 0x8000;
-	if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); 
 		return return_code; 
@@ -906,9 +917,9 @@ int processRamData(uint32_t nbrAxis, uint32_t* base_A24D32_axis1_ptr, uint32_t* 
 	static FILE* fd;
 	uint32_t val1 = 0, val2 = 0;
 	double pos1 = 0.0, pos2 = 0.0;
-	double mean[4] = { 0.0, 0.0, 0.0, 0.0, }, stdDev[4] = { 0.0, 0.0, 0.0, 0.0, };
+	double mean[4] = { 0.0, 0.0, 0.0, 0.0 }, stdDev[4] = { 0.0, 0.0, 0.0, 0.0};
 	double* localPos;
-	char path[2048];
+	char* path;
 	if (checkLimits(ramPagesNbr, 1, NBR_RAM_PAGES)) {
 		zygoLogWarn("ramPagesNbr is not in the requested range \n");
 		return BAD_ARG_VALUE;
@@ -925,70 +936,80 @@ int processRamData(uint32_t nbrAxis, uint32_t* base_A24D32_axis1_ptr, uint32_t* 
 	}
 	else {
 		if (!base_A24D32_axis1_ptr && !base_A24D32_axis3_ptr) {
-			zygoLogWarn("Based on the number of axis which is %d, both pointer arguments can not be NULL", nbrAxis); 
+			zygoLogWarn("Based on the number of axis which is %u, both pointer arguments can not be NULL", nbrAxis); 
 			return BAD_ARG_POINTER;
 		}
 	}
-	sprintf_s(path, sizeof(path), "%s\\Position_values.csv", folderName);
+	val1 = strlen(folderName) + strlen("\\Position_values.csv") + 2;
+	path = (char*)calloc( val1, sizeof(char));
+	zygoLogInfo("size of path is %d\n", val1);
+	sprintf_s(path, val1, "%s\\Position_values.csv", folderName);
 	zygoLogInfo("Opening file %s to store position values \n", path);
 	if (fopen_s(&fd, path, "a") != RET_SUCCESS) {
 		zygoLogWarn("Failed to open file %s\n", path);
+		free(path);
 		return FILE_OPEN_FAILED;
 	}
 	fprintf(fd, "[***********, %d/%d/%d at %d:%d] ,************\n", lt.wYear, lt.wMonth, lt.wDay, lt.wHour, lt.wMinute);
 	uint32_t nbrOfPts = (ramPagesNbr * NBR_SAMP_PER_PAGE);
-	localPos = (double*)calloc(nbrOfPts * 1.5, sizeof(double));
-	if (localPos == NULL) {
-		fclose(fd);
-		return ALLOC_MEM_ERROR;
-	}
 	switch (nbrAxis)
 	{
 	case 1:
 		fprintf(fd, "Axis3\n");
+		localPos = (double*)calloc(nbrOfPts , sizeof(double));
+		if (localPos == NULL) {
+			fclose(fd);
+			free(path);
+			perror("localPos calloc:");
+			return ALLOC_MEM_ERROR;
+		}
 		for (int i = 0; i < ramPagesNbr; i++) {
 			// Shift to the next page
 			for (int j = 0; j < NBR_SAMP_PER_PAGE; j++) {
 				val1 = (uint32_t)(base_A24D32_axis3_ptr[i * NBR_SAMP_PER_PAGE + j]);
-				pos1 = (double)(((int)val1) * positionScale);
-				pos1 /= 8.0;
-				fprintf(fd, "%lf, 0x%x \n", pos1, val1);
-				val1 = 0;
+				pos1 = static_cast<double>(((int)val1) * positionScale) / 8.0;
+				fprintf(fd, "%.12lf, 0x%x \n", pos1, val1);
 				localPos[i] = pos1;
 				*mean += pos1;
 			}
 
 		}
 		// working out the mean
-		meanVal[2] = (*mean) / nbrOfPts;
+		meanVal[2] = (*mean) / nbrOfPts; // meanval on main axis (axis 3)
 
 		//working out the standard deviation
 		for (uint32_t i = 0; i < nbrOfPts; i++) {
-			*stdDev += pow((*localPos++ - *meanVal), 2);
+			*stdDev += std::pow((localPos[i] - meanVal[2]), 2);
 		}
 		stdDevVal[2] = sqrt((*stdDev) / nbrOfPts);
 
 		fprintf(fd, "Mean\n");
-		fprintf(fd, "%lf\n", meanVal[2]);
+		fprintf(fd, "%.12lf\n", meanVal[2]);
 		fprintf(fd, "Std dev\n");
-		fprintf(fd, "%lf\n", stdDevVal[2]);
+		fprintf(fd, "%.12lf\n", stdDevVal[2]);
 		break;
 	case 2:
 		fprintf(fd, "Axis1, , Axis3\n");
+		zygoLogInfo("ramPage nbr is %d\n", ramPagesNbr);
+		localPos = (double*)calloc(2* nbrOfPts, sizeof(double));
+		if (localPos == NULL) {
+			fclose(fd);
+			free(path);
+			perror("localPos calloc:");
+			return ALLOC_MEM_ERROR;
+		}
 		for (int i = 0; i < ramPagesNbr; i++) {
 			// Shift to the next page
 			for (int j = 0; j < NBR_SAMP_PER_PAGE; j++) {
 				val1 = (uint32_t)(base_A24D32_axis1_ptr[i * NBR_SAMP_PER_PAGE + j]);
-				pos1 = (double)(((int)val1) * positionScale) / 8.0;
+				pos1 = static_cast<double>((((int)val1) * positionScale) / 8.0);
 				val2 = (uint32_t)(base_A24D32_axis3_ptr[i * NBR_SAMP_PER_PAGE + j]);
-				pos2 = (double)(((int)val2) * positionScale) / 8.0;
-				fprintf(fd, "%lf, 0x%x, %lf, 0x%x \n", pos1, val1, pos2, val2);
-				val1 = 0;
-				val2 = 0;
+				pos2 = static_cast<double>((((int)val2) * positionScale) / 8.0);
 				localPos[2 * i] = pos1;
 				localPos[2 * i + 1] = pos2;
 				*mean += pos1;
 				mean[1] += pos2;
+				fprintf(fd, "%.12lf, 0x%x, %.12lf, 0x%x \n", pos1, val1, pos2, val2);
 			}
 		}
 
@@ -997,17 +1018,16 @@ int processRamData(uint32_t nbrAxis, uint32_t* base_A24D32_axis1_ptr, uint32_t* 
 		meanVal[2] = (mean[1]) / nbrOfPts;
 		//working out the standard deviation
 		for (uint32_t i = 0; i < nbrOfPts; i++) {
-			*stdDev += pow((localPos[2 * i] - *meanVal), 2);
-			stdDev[1] += pow((localPos[2 * i + 1] - meanVal[1]), 2);
+			*stdDev += std::pow((localPos[2 * i] - *meanVal), 2);
+			stdDev[1] += std::pow((localPos[2 * i + 1] - meanVal[2]), 2);
 		}
 		stdDevVal[0] = sqrt((*stdDev) / (nbrOfPts));
 		stdDevVal[2] = sqrt((stdDev[1]) / (nbrOfPts));
 
 		fprintf(fd, "Mean\n");
-		fprintf(fd, "%lf,%lf\n", meanVal[0], stdDevVal[0]);
+		fprintf(fd, "%.12lf,%.12lf\n", meanVal[0], meanVal[2]);
 		fprintf(fd, "Std dev\n");
-		fprintf(fd, "%lf,%lf\n", stdDevVal[2], stdDevVal[2]);
-
+		fprintf(fd, "%.12lf,%.12lf\n", stdDevVal[0], stdDevVal[2]);
 		break;
 	default:
 		fprintf(fd, "Axis1, , Axis2, , Axis3, , Axis4\n");
@@ -1015,23 +1035,26 @@ int processRamData(uint32_t nbrAxis, uint32_t* base_A24D32_axis1_ptr, uint32_t* 
 		double pos11 = 0.0;
 		uint32_t val21 = 0;
 		double pos21 = 0.0;
+		localPos = (double*)calloc(4 * nbrOfPts, sizeof(double));
+		if (localPos == NULL) {
+			fclose(fd);
+			perror("localPos calloc:");
+			free(path);
+			return ALLOC_MEM_ERROR;
+		}
 		for (int i = 0; i < ramPagesNbr; i++) {
 			// Shift to the next page
 			for (int j = 0; j < NBR_SAMP_PER_PAGE / 2; j++) {
 				val1 = (uint32_t)(base_A24D32_axis1_ptr[i * NBR_SAMP_PER_PAGE + j * 2]);
 				val11 = (uint32_t)(base_A24D32_axis1_ptr[i * NBR_SAMP_PER_PAGE + j * 2 + 1]);
-				pos1 = (double)(((int)val1) * positionScale) / 8.0;
-				pos11 = (double)(((int)val11) * positionScale) / 8.0;
+				pos1 = static_cast<double>(((int)val1) * positionScale) / 8.0;
+				pos11 = static_cast<double>(((int)val11) * positionScale) / 8.0;
 
 				val2 = (uint32_t)(base_A24D32_axis3_ptr[i * NBR_SAMP_PER_PAGE + j * 2]);
 				val21 = (uint32_t)(base_A24D32_axis3_ptr[i * NBR_SAMP_PER_PAGE + j * 2 + 1]);
-				pos2 = (double)(((int)val2) * positionScale) / 8.0;
-				pos21 = (double)(((int)val21) * positionScale) / 8.0;
-				fprintf(fd, "%lf, 0x%x, %lf, 0x%x, %lf, 0x%x, %lf, 0x%x \n", pos1, val1, pos11, val11, pos2, val2, pos21, val21);
-				val1 = 0;
-				val11 = 0;
-				val2 = 0;
-				val21 = 0;
+				pos2 = static_cast<double>(((int)val2) * positionScale) / 8.0;
+				pos21 = static_cast<double>(((int)val21) * positionScale) / 8.0;
+				fprintf(fd, "%.12lf, 0x%x, %.12lf, 0x%x, %.12lf, 0x%x, %.12lf, 0x%x \n", pos1, val1, pos11, val11, pos2, val2, pos21, val21);
 				localPos[4 * i] = pos1;
 				localPos[4 * i + 1] = pos11;
 				localPos[4 * i + 2] = pos2;
@@ -1044,89 +1067,105 @@ int processRamData(uint32_t nbrAxis, uint32_t* base_A24D32_axis1_ptr, uint32_t* 
 			}
 
 		}
-
+		//taking into account the fact that one memory region store values of 2 axes
+		nbrOfPts = nbrOfPts / 2;
 		// working out the mean
 		for (int i = 0; i < 4; i++)
 			meanVal[i] = (mean[i]) / nbrOfPts;
 		//working out the standard deviation
 		for (uint32_t i = 0; i < nbrOfPts; i++) {
-			*stdDev += pow((localPos[4 * i] - *meanVal), 2);
-			stdDev[1] += pow((localPos[4 * i + 1] - meanVal[1]), 2);
-			stdDev[2] += pow((localPos[4 * i + 2] - meanVal[2]), 2);
-			stdDev[3] += pow((localPos[4 * i + 3] - meanVal[3]), 2);
+			*stdDev += std::pow((localPos[4 * i] - *meanVal), 2);
+			stdDev[1] += std::pow((localPos[4 * i + 1] - meanVal[1]), 2);
+			stdDev[2] += std::pow((localPos[4 * i + 2] - meanVal[2]), 2);
+			stdDev[3] += std::pow((localPos[4 * i + 3] - meanVal[3]), 2);
 		}
 		for (int i = 0; i < 4; i++)
 			stdDevVal[i] = sqrt((stdDev[i]) / nbrOfPts);
 
 		fprintf(fd, " ,Mean\n");
-		fprintf(fd, "%lf,%lf,%lf,%lf\n", meanVal[0], meanVal[1], meanVal[2], meanVal[3]);
+		fprintf(fd, "%.12lf,%.12lf,%.12lf,%.12lf\n", meanVal[0], meanVal[1], meanVal[2], meanVal[3]);
 		fprintf(fd, ", Std dev\n");
-		fprintf(fd, "%lf,%lf,%lf,%lf\n", stdDevVal[0], stdDevVal[1], stdDevVal[2], stdDevVal[3]);
+		fprintf(fd, "%.12lf,%.12lf,%.12lf,%.12lf\n", stdDevVal[0], stdDevVal[1], stdDevVal[2], stdDevVal[3]);
 		break;
 	}
+
+	zygoLogInfo("Processiong RAM Data Done\n");
 	free(localPos);
+	free(path);
 	fclose(fd);
 	return RET_SUCCESS;
 }
-int processFifoData(uint32_t nbrAxis, uint8_t* axisTab, uint32_t* memPtr, uint32_t nbrOfPts, uint8_t* folderName, double* meanVal, double* stdDevVal) {
+int processFifoData(uint32_t nbrAxis, uint8_t* axisTab, uint32_t* memPtr, uint32_t nbrOfPts, const char* folderName, double* meanVal, double* stdDevVal) {
 
 	GetLocalTime(&lt);
 	static FILE* fd;
-	uint32_t val1 = 0, val2 = 0; // a = 0;
+	uint32_t val1 = 0, val2 = 0, sLen; // a = 0;
 	double pos1 = 0.0, pos2 = 0.0, pos3 = 0.0, pos4 = 0.0;
 	double mean[4] = { 0.0, 0.0, 0.0, 0.0, }, stdDev[4] = { 0.0, 0.0, 0.0, 0.0, };
 	double* localPos;
-	char path[2048];
+	char *path;
 	zygoLogInfo("Processing Fifo data\n");
 	zygoLogInfo("Opening file to store position values \n");
-	sprintf_s(path, sizeof(path), "%s\\Fifo_position_values.csv", folderName);
+	sLen = strlen(folderName) + strlen("%s\\Fifo_position_values.csv") + 1;
+	path = (char*)calloc(sLen, sizeof(char));
+	sprintf_s(path, sLen, "%s\\Fifo_position_values.csv", folderName);
 	if (fopen_s(&fd, path, "a") != RET_SUCCESS) {
 		zygoLogWarn("Openning file %s failed\n", path);
+		free(path);
 		return FILE_OPEN_FAILED;
 	}
 	fprintf(fd, "[***********, %d/%d/%d at %d:%d] ,************\n", lt.wYear, lt.wMonth, lt.wDay, lt.wHour, lt.wMinute);
-	localPos = (double*)calloc(sizeof(double), nbrAxis * 1.5 * nbrOfPts);
-	if (localPos == NULL) {
-		fclose(fd);
-		zygoLogWarn("processFifoData::calloc failed\n");
-		return ALLOC_MEM_ERROR;
-	}
 	switch (nbrAxis)
 	{
 	case 1:
 		fprintf(fd, "Axis %d\n", axisTab[0]);
+		localPos = (double*)calloc(nbrOfPts, sizeof(double));
+		if (localPos == NULL) {
+			fclose(fd);
+			zygoLogWarn("processFifoData::calloc failed\n");
+			free(path);
+			return ALLOC_MEM_ERROR;
+		}
 		for (uint32_t i = 0; i < nbrOfPts; i++) {
-			pos1 = (double)((int)(memPtr[i])) * positionScale;
+			pos1 = static_cast<double>((int)(memPtr[i])) * positionScale;
 			localPos[i] = pos1;
 			*mean += pos1;
-			fprintf(fd, "%lf\n", pos1);
+			fprintf(fd, "%.12lf\n", pos1);
 		}
-
+		
 		// working out the mean
 		meanVal[axisTab[0] - 1] = (*mean) / nbrOfPts;
 
 		*mean = (*mean) / nbrOfPts;
 		//working out the standard deviation
 		for (uint32_t i = 0; i < nbrOfPts; i++) {
-			*stdDev += pow((*localPos++ - *mean), 2);
+			*stdDev += std::pow((localPos[i] - *mean), 2);
 		}
 		stdDevVal[axisTab[0] - 1] = sqrt((*stdDev) / (nbrOfPts));
-
+		
 		fprintf(fd, "Mean\n");
-		fprintf(fd, "%lf\n", meanVal[axisTab[0] - 1]);
+		fprintf(fd, "%.12lf\n", meanVal[axisTab[0] - 1]);
 		fprintf(fd, "Std dev\n");
-		fprintf(fd, "%lf\n", stdDevVal[axisTab[0] - 1]);
+		fprintf(fd, "%.12lf\n", stdDevVal[axisTab[0] - 1]);
+		
 		break;
 	case 2:
 		fprintf(fd, "Axis %d,Axis %d\n", axisTab[0], axisTab[1]);
+		localPos = (double*)calloc(2 * nbrOfPts, sizeof(double));
+		if (localPos == NULL) {
+			fclose(fd);
+			zygoLogWarn("processFifoData::calloc failed\n");
+			free(path);
+			return ALLOC_MEM_ERROR;
+		}
 		for (uint32_t i = 0; i < nbrOfPts; i++) {
-			pos1 = (double)((int)(memPtr[2 * i])) * positionScale;
-			pos2 = (double)((int)(memPtr[2 * i + 1])) * positionScale;
+			pos1 = static_cast<double>((int)(memPtr[2 * i])) * positionScale;
+			pos2 = static_cast<double>((int)(memPtr[2 * i + 1])) * positionScale;
 			localPos[2 * i] = pos1;
 			localPos[2 * i + 1] = pos2;
 			*mean += pos1;
 			mean[1] += pos2;
-			fprintf(fd, "%lf,%lf\n", pos1, pos2);
+			fprintf(fd, "%.12lf,%.12lf\n", pos1, pos2);
 		}
 		// working out the mean
 		meanVal[axisTab[0] - 1] = (*mean) / nbrOfPts;
@@ -1136,30 +1175,37 @@ int processFifoData(uint32_t nbrAxis, uint8_t* axisTab, uint32_t* memPtr, uint32
 		mean[1] = (mean[1]) / nbrOfPts;
 		//working out the standard deviation
 		for (uint32_t i = 0; i < nbrOfPts; i++) {
-			*stdDev += pow((localPos[2 * i] - *mean), 2);
-			stdDev[1] += pow((localPos[2 * i + 1] - mean[1]), 2);
+			*stdDev += std::pow((localPos[2 * i] - *mean), 2);
+			stdDev[1] += std::pow((localPos[2 * i + 1] - mean[1]), 2);
 		}
 		stdDevVal[axisTab[0] - 1] = sqrt((*stdDev) / (nbrOfPts));
 		stdDevVal[axisTab[1] - 1] = sqrt((stdDev[1]) / (nbrOfPts));
 
 		fprintf(fd, "Mean\n");
-		fprintf(fd, "%lf,%lf\n", meanVal[axisTab[0] - 1], meanVal[axisTab[1] - 1]);
+		fprintf(fd, "%.12lf,%.12lf\n", meanVal[axisTab[0] - 1], meanVal[axisTab[1] - 1]);
 		fprintf(fd, "Std dev\n");
-		fprintf(fd, "%lf,%lf\n", stdDevVal[axisTab[0] - 1], stdDevVal[axisTab[1] - 1]);
+		fprintf(fd, "%.12lf,%.12lf\n", stdDevVal[axisTab[0] - 1], stdDevVal[axisTab[1] - 1]);
 		break;
 	case 3:
 		fprintf(fd, "Axis %d,Axis %d,Axis %d\n", axisTab[0], axisTab[1], axisTab[2]);
+		localPos = (double*)calloc(3* nbrOfPts, sizeof(double));
+		if (localPos == NULL) {
+			fclose(fd);
+			zygoLogWarn("processFifoData::calloc failed\n");
+			free(path);
+			return ALLOC_MEM_ERROR;
+		}
 		for (uint32_t i = 0; i < nbrOfPts; i++) {
-			pos1 = (double)((int)(memPtr[3 * i])) * positionScale;
-			pos2 = (double)((int)(memPtr[3 * i + 1])) * positionScale;
-			pos3 = (double)((int)(memPtr[3 * i + 2])) * positionScale;
+			pos1 = static_cast<double>((int)(memPtr[3 * i])) * positionScale;
+			pos2 = static_cast<double>((int)(memPtr[3 * i + 1])) * positionScale;
+			pos3 = static_cast<double>((int)(memPtr[3 * i + 2])) * positionScale;
 			localPos[3 * i] = pos1;
 			localPos[3 * i + 1] = pos2;
 			localPos[3 * i + 2] = pos3;
 			*mean += pos1;
 			mean[1] += pos2;
 			mean[2] += pos3;
-			fprintf(fd, "%lf,%lf,%lf\n", pos1, pos2, pos3);
+			fprintf(fd, "%.12lf,%.12lf,%.12lf\n", pos1, pos2, pos3);
 		}
 		// working out the mean
 		meanVal[axisTab[0] - 1] = (*mean) / nbrOfPts;
@@ -1171,26 +1217,33 @@ int processFifoData(uint32_t nbrAxis, uint8_t* axisTab, uint32_t* memPtr, uint32
 		mean[2] = (mean[2]) / nbrOfPts;
 		//working out the standard deviation
 		for (uint32_t i = 0; i < nbrOfPts; i++) {
-			*stdDev += pow((localPos[3 * i] - *mean), 2);
-			stdDev[1] += pow((localPos[3 * i + 1] - mean[1]), 2);
-			stdDev[2] += pow((localPos[3 * i + 2] - mean[2]), 2);
+			*stdDev += std::pow((localPos[3 * i] - *mean), 2);
+			stdDev[1] += std::pow((localPos[3 * i + 1] - mean[1]), 2);
+			stdDev[2] += std::pow((localPos[3 * i + 2] - mean[2]), 2);
 		}
 		stdDevVal[axisTab[0] - 1] = sqrt((*stdDev) / (nbrOfPts));
 		stdDevVal[axisTab[1] - 1] = sqrt((stdDev[1]) / (nbrOfPts));
 		stdDevVal[axisTab[2] - 1] = sqrt((stdDev[2]) / (nbrOfPts));
 
 		fprintf(fd, " ,Mean\n");
-		fprintf(fd, "%lf,%lf,%lf\n", meanVal[axisTab[0] - 1], meanVal[axisTab[1] - 1], meanVal[axisTab[2] - 1]);
+		fprintf(fd, "%.12lf,%.12lf,%.12lf\n", meanVal[axisTab[0] - 1], meanVal[axisTab[1] - 1], meanVal[axisTab[2] - 1]);
 		fprintf(fd, " ,Std dev\n");
-		fprintf(fd, "%lf,%lf,%lf\n", stdDevVal[axisTab[0] - 1], stdDevVal[axisTab[1] - 1], stdDevVal[axisTab[2] - 1]);
+		fprintf(fd, "%.12lf,%.12lf,%.12lf\n", stdDevVal[axisTab[0] - 1], stdDevVal[axisTab[1] - 1], stdDevVal[axisTab[2] - 1]);
 		break;
 	case 4:
 		fprintf(fd, "Axis %d,Axis %d,Axis %d,Axis %d\n", axisTab[0], axisTab[1], axisTab[2], axisTab[3]);
+		localPos = (double*)calloc(4 * nbrOfPts, sizeof(double));
+		if (localPos == NULL) {
+			fclose(fd);
+			zygoLogWarn("processFifoData::calloc failed\n");
+			free(path);
+			return ALLOC_MEM_ERROR;
+		}
 		for (uint32_t i = 0; i < nbrOfPts; i++) {
-			pos1 = (double)((int)(memPtr[4 * i])) * positionScale;
-			pos2 = (double)((int)(memPtr[4 * i + 1])) * positionScale;
-			pos3 = (double)((int)(memPtr[4 * i + 2])) * positionScale;
-			pos4 = (double)((int)(memPtr[4 * i + 3])) * positionScale;
+			pos1 = static_cast<double>((int)(memPtr[4 * i])) * positionScale;
+			pos2 = static_cast<double>((int)(memPtr[4 * i + 1])) * positionScale;
+			pos3 = static_cast<double>((int)(memPtr[4 * i + 2])) * positionScale;
+			pos4 = static_cast<double>((int)(memPtr[4 * i + 3])) * positionScale;
 			localPos[4 * i] = pos1;
 			localPos[4 * i + 1] = pos2;
 			localPos[4 * i + 2] = pos3;
@@ -1199,7 +1252,7 @@ int processFifoData(uint32_t nbrAxis, uint8_t* axisTab, uint32_t* memPtr, uint32
 			mean[1] += pos2;
 			mean[2] += pos3;
 			mean[3] += pos4;
-			fprintf(fd, "%lf,%lf,%lf,%lf\n", pos1, pos2, pos3, pos4);
+			fprintf(fd, "%.12lf,%.12lf,%.12lf,%.12lf\n", pos1, pos2, pos3, pos4);
 		}
 		// working out the mean
 		meanVal[axisTab[0] - 1] = (*mean) / nbrOfPts;
@@ -1214,10 +1267,10 @@ int processFifoData(uint32_t nbrAxis, uint8_t* axisTab, uint32_t* memPtr, uint32
 		mean[3] = (mean[3]) / nbrOfPts;
 		//working out the standard deviation
 		for (uint32_t i = 0; i < nbrOfPts; i++) {
-			*stdDev += pow((localPos[4 * i] - *mean), 2);
-			stdDev[1] += pow((localPos[4 * i + 1] - mean[1]), 2);
-			stdDev[2] += pow((localPos[4 * i + 2] - mean[2]), 2);
-			stdDev[3] += pow((localPos[4 * i + 3] - mean[3]), 2);
+			*stdDev += std::pow((localPos[4 * i] - *mean), 2);
+			stdDev[1] += std::pow((localPos[4 * i + 1] - mean[1]), 2);
+			stdDev[2] += std::pow((localPos[4 * i + 2] - mean[2]), 2);
+			stdDev[3] += std::pow((localPos[4 * i + 3] - mean[3]), 2);
 		}
 		stdDevVal[axisTab[0] - 1] = sqrt((*stdDev) / (nbrOfPts));
 		stdDevVal[axisTab[1] - 1] = sqrt((stdDev[1]) / (nbrOfPts));
@@ -1225,30 +1278,36 @@ int processFifoData(uint32_t nbrAxis, uint8_t* axisTab, uint32_t* memPtr, uint32
 		stdDevVal[axisTab[3] - 1] = sqrt((stdDev[3]) / (nbrOfPts));
 
 		fprintf(fd, " ,Mean\n");
-		fprintf(fd, "%lf,%lf,%lf,%lf\n", meanVal[axisTab[0] - 1], meanVal[axisTab[1] - 1], meanVal[axisTab[2] - 1], meanVal[axisTab[3] - 1]);
+		fprintf(fd, "%.12lf,%.12lf,%.12lf,%.12lf\n", meanVal[axisTab[0] - 1], meanVal[axisTab[1] - 1], meanVal[axisTab[2] - 1], meanVal[axisTab[3] - 1]);
 		fprintf(fd, "; Std dev\n");
-		fprintf(fd, "%lf,%lf,%lf,%lf\n", stdDevVal[axisTab[0] - 1], stdDevVal[axisTab[1] - 1], stdDevVal[axisTab[2] - 1], stdDevVal[axisTab[3] - 1]);
+		fprintf(fd, "%.12lf,%.12lf,%.12lf,%.12lf\n", stdDevVal[axisTab[0] - 1], stdDevVal[axisTab[1] - 1], stdDevVal[axisTab[2] - 1], stdDevVal[axisTab[3] - 1]);
 		break;
 	default:
 		printf("Bad number of axis, exiting\n");
-		free(localPos);
+		free(path);
 		fclose(fd);
 		return BAD_ARG_VALUE;
 		break;
 	}
 
 	free(localPos);
+	free(path);
 	fclose(fd);
 	return RET_SUCCESS;
 }
-int configureFifoFlyscan(fifoParam* param, uint32_t* startAdress, uint8_t* axisTab, uint32_t* sizeOfTab, int32_t* ret_code, bool mode) {
-	CHAR nAxis = 0, ctr = 0, tab[4] = { -1,-2,-3,-4 }, ftab[4] = { 0,0,0,0 }, tablen = 4, k = 0;
+int configureFifoFlyscan(fifoParam &param, uint32_t* startAdress, uint8_t* axisTab, uint32_t* sizeOfTab, int32_t* ret_code, bool mode) {
+	int nAxis = 0, ctr = 0, tab[4] = { -1,-2,-3,-4 }, ftab[4] = { 0,0,0,0 }, tablen = 4, k = 0;
+	
+	if (checkLimits(*sizeOfTab, 1, 4)) {
+		zygoLogWarn("bad number of axes\n");
+		return BAD_AXIS_VALUE;
+	}
 	for (int i = 0; i < tablen; i++) {
 		zygoLogInfo("Checking if axis value %u in the tab is corrrect\n", i);
 		if (!checkLimits((uint32_t)axisTab[i], 1, 4)) {
 			tab[ctr] = axisTab[i];
 			ctr++;
-			for (char j = 0; j < i; j++)
+			for (uint8_t j = 0; j < i; j++)
 			{
 				if (tab[j] == tab[i]) {
 					zygoLogInfo("2 identical axis. Deleting one\n");
@@ -1259,7 +1318,7 @@ int configureFifoFlyscan(fifoParam* param, uint32_t* startAdress, uint8_t* axisT
 		}
 		else
 		{
-			zygoLogInfo("%d is not a correct axis value. Skiping this axis\n", axisTab[i]);
+			zygoLogWarn("%d is not a correct axis value. Skiping this axis\n", axisTab[i]);
 		}
 	}
 	*sizeOfTab = ctr;
@@ -1268,7 +1327,7 @@ int configureFifoFlyscan(fifoParam* param, uint32_t* startAdress, uint8_t* axisT
 	axisTab[1] = 0;
 	axisTab[2] = 0;
 	axisTab[3] = 0;
-	for (char j = 0; j < tablen; j++) {
+	for (int j = 0; j < tablen; j++) {
 		if (tab[j] > 0) {
 			zygoLogInfo("axis %d, \n", tab[j]);
 			ftab[k] = tab[j];
@@ -1285,31 +1344,31 @@ int configureFifoFlyscan(fifoParam* param, uint32_t* startAdress, uint8_t* axisT
 	if ((param->acqTime < 1e-6)) {
 		// this mean acquisition time has not been given so we need to infer it from
 		//other parameters
-		param->acqTime = (((double)(param->nbrPts)) / ((double)(param->freq))) * 1e3; // acquisition time in ms
+		param->acqTime = ((static_cast<double>(param->nbrPts)) / (static_cast<double>(param->freq))) * 1e3; // acquisition time in ms
 	}
 	if ((param->nbrPts < 0.1)) {
 		// this mean the number of points has not been given so we need to infer it from the
 		//other parameter
-		param->nbrPts = (uint32_t)(((double)(param->acqTime * 1e-3)) * ((double)(param->freq)));
+		param->nbrPts = (uint32_t)((static_cast<double>(param->acqTime * 1e-3)) * (static_cast<double>(param->freq)));
 	}
 	if ((param->freq < 0.1)) {
 		// this mean frequency has not been given so we need to infer it from the
 		//other parameter
-		param->freq = (((double)(param->nbrPts)) / ((double)(param->acqTime * 1e-3)));
+		param->freq = ((static_cast<double>(param->nbrPts)) / (static_cast<double>(param->acqTime * 1e-3)));
 	}
 	*/
 	if (!mode) {
-		zygoLogInfo("\n FIFO Flyscan configuration: Freq: %u Hz \t Nbr_of_points: %u \t acquisition_time: %f ms\n", param->freq, param->nbrPts, param->acqTime);
+		zygoLogInfo("\n FIFO Flyscan configuration: Freq: %u Hz \t Nbr_of_points: %u \t acquisition_time: %f ms\n", param.freq, param.nbrPts, param.acqTime);
 		zygoLogInfo("%u,%u,%u,%u is sent to fifo flyscan\n ", ftab[0], ftab[1], ftab[2], ftab[3]);
-		if ((return_code = fifoFlyscan(*param, startAdress, ctr, ret_code, ftab[0], ftab[1], ftab[2], ftab[3])) != RET_SUCCESS) {
+		if (return_code = fifoFlyscan(param, startAdress, ctr, ret_code, ftab[0], ftab[1], ftab[2], ftab[3])) {
 			zygoLogWarn("FIFO flyscan configuration failed\n");
 			return return_code;
 		}
 	}
 	else {
-		zygoLogInfo("\n FIFO Flyscan configuration: Freq: %f Hz \t Nbr_of_points: INFINITE \t acquisition_time: UNKNOW ms\n", param->freq);
+		zygoLogInfo("\n FIFO Flyscan configuration: Freq: %f Hz \t Nbr_of_points: INFINITE \t acquisition_time: UNKNOW ms\n", param.freq);
 		zygoLogInfo("%u,%u,%u,%u is sent to fifo flyscan\n ", ftab[0], ftab[1], ftab[2], ftab[3]);
-		if ((return_code = manualFifoFlyscan(param, startAdress, ctr, ret_code, ftab[0], ftab[1], ftab[2], ftab[3])) != RET_SUCCESS) {
+		if (return_code = manualFifoFlyscan(param, startAdress, ctr, ret_code, ftab[0], ftab[1], ftab[2], ftab[3])) {
 			zygoLogWarn("manual FIFO flyscan configuration failed\n");
 			return return_code;
 		}
@@ -1328,21 +1387,21 @@ int fifoFlyscan(fifoParam param, uint32_t* startAddress, uint8_t nbrAxis, int32_
 		axisPtr[i] = va_arg(argPtr, uint8_t);
 	}
 	//1- Disable SCLK Timer
-	if ((return_code = disableSampleTimer()) != RET_SUCCESS)
+	if (return_code = disableSampleTimer(Axes::Axis_3, SCLK::SCLK0))
 	{
 		zygoLogWarn("disableSampleTimer failed !  \n");
 		return return_code;
 	}
 	//2- Reset all axis and wait for reset to complete
 	for (uint8_t i = 0; i < nbrAxis; i++) {
-		if ((return_code = resetAxis(axisPtr[i])) != RET_SUCCESS)
+		if (return_code = resetAxis(static_cast<Axes>(axisPtr[i])))
 		{
 			zygoLogWarn("resetAxis failed !  \n");
 			return return_code;
 		}
 	}
 	// 3- enable sampling timer
-	if ((return_code = enableSampling((param.freq))) != RET_SUCCESS)
+	if (return_code = enableSampling(Axes::Axis_3, param.freq, SCLK::SCLK0))
 	{
 		zygoLogWarn("enableSampling failed !  \n");
 		return return_code;
@@ -1358,26 +1417,28 @@ int fifoFlyscan(fifoParam param, uint32_t* startAddress, uint8_t nbrAxis, int32_
 		
 		while (!(isFifoDavBitSet(AXIS3))) {
 			ctr++;
-			if (ctr > 1500)
+			if (ctr > 1500){
+				free(axisPtr);
 				return NO_FIFO_DATA_AV;
+			}
 
 		};
-		
+		ctr =0;
 		for (uint8_t j = 0; j < nbrAxis; j++) {
-			readFifoPosition(axisPtr[j], &pos);
+			readFifoPosition(static_cast<Axes>(axisPtr[j]), &pos);
 			startAddress[h] = pos;
 			h++;
 		}
 	}
 	// 5-disable sclk timer
-	if ((return_code = disableSampleTimer()) != RET_SUCCESS)
+	if (return_code = disableSampleTimer(Axes::Axis_3, SCLK::SCLK0))
 	{
 		zygoLogWarn("disableSampleTimer failed !  \n");
 		return return_code;
 	}
 	//6-verify the FIFO overflow bit
 	for (uint32_t i = 0; i < nbrAxis; i++) {
-		if (isFifoOvfBitSet(axisPtr[i])) {
+		if (isFifoOvfBitSet(static_cast<Axes>(axisPtr[i]))) {
 			zygoLogWarn("some data samples could have been missed on axis %d. The frequency must be decreased\n", axisPtr[i]);
 			//return return_code;
 			*ret_code = FIFO_OVERLAP_ERR_CODE;
@@ -1390,7 +1451,7 @@ int fifoFlyscan(fifoParam param, uint32_t* startAddress, uint8_t nbrAxis, int32_
 }
 
 //*/
-int manualFifoFlyscan(fifoParam *param, uint32_t* startAddress, uint8_t nbrAxis, int32_t* ret_code, ...) {
+int manualFifoFlyscan(fifoParam& param, uint32_t* startAddress, uint8_t nbrAxis, int32_t* ret_code, ...) {
 	uint32_t uint_vme_data = 0, uint_vme_address = 0, pos = 0;
 	uint8_t* axisPtr;
 	va_list argPtr;
@@ -1404,7 +1465,7 @@ int manualFifoFlyscan(fifoParam *param, uint32_t* startAddress, uint8_t nbrAxis,
 		axisPtr[i] = va_arg(argPtr, uint8_t);
 	}
 	//1- Disable SCLK Timer
-	if ((return_code = disableSampleTimer()) != RET_SUCCESS)
+	if (return_code = disableSampleTimer(Axes::Axis_3, SCLK::SCLK0))
 	{
 		zygoLogWarn("disableSampleTimer failed !  \n");
 		free(axisPtr);
@@ -1412,7 +1473,7 @@ int manualFifoFlyscan(fifoParam *param, uint32_t* startAddress, uint8_t nbrAxis,
 	}
 	//2- Reset all axis and wait for reset to complete
 	for (uint8_t i = 0; i < nbrAxis; i++) {
-		if ((return_code = resetAxis(axisPtr[i])) != RET_SUCCESS)
+		if (return_code = resetAxis(static_cast<Axes>(axisPtr[i])))
 		{
 			zygoLogWarn("resetAxis failed !  \n");
 			free(axisPtr);
@@ -1420,7 +1481,7 @@ int manualFifoFlyscan(fifoParam *param, uint32_t* startAddress, uint8_t nbrAxis,
 		}
 	}
 	// 3- enable sampling timer
-	if ((return_code = enableSampling((param->freq))) != RET_SUCCESS)
+	if (return_code = enableSampling(Axes::Axis_3, param.freq, SCLK::SCLK0))
 	{
 		zygoLogWarn("enableSampling failed !  \n");
 		free(axisPtr);
@@ -1430,7 +1491,7 @@ int manualFifoFlyscan(fifoParam *param, uint32_t* startAddress, uint8_t nbrAxis,
 	zygoLogInfo("size is unlimmited, axis number is %u\n", nbrAxis);
 	// 5-disable sclk timer
 	/*
-	if ((return_code = sampleVmePosition(AXIS3)) != RET_SUCCESS)
+	if (return_code = sampleVmePosition(AXIS3))
 	{
 		zygoLogWarn("sampleVmePosition failed !  \n");
 		return return_code;
@@ -1452,7 +1513,7 @@ int manualFifoFlyscan(fifoParam *param, uint32_t* startAddress, uint8_t nbrAxis,
 			//free(startAddress);
 			zygoLogInfo("stopReadPositionEvent received \n");
 			free(axisPtr);
-			param->nbrPts = h;
+			param.nbrPts = h;
 			return RET_SUCCESS;
 			// An error occurred
 		default:
@@ -1460,20 +1521,19 @@ int manualFifoFlyscan(fifoParam *param, uint32_t* startAddress, uint8_t nbrAxis,
 			while (!(isFifoDavBitSet(AXIS3))) {
 				ctr++;
 				if (ctr > 1500) {
-
 					free(axisPtr);
 					return NO_FIFO_DATA_AV;
 				}
-
-			};
+			}
+			ctr =0;
 			if (h > (MAX_HEAP_SIZE - 1)) {
-				return_code = 100;
-				param->nbrPts = h;
+				return_code = MAX_HEAP_SIZE_REACH	;
+				param.nbrPts = h;
 				free(axisPtr);
-				return RET_SUCCESS;
+				return return_code;
 			}
 			for (uint8_t j = 0; j < nbrAxis; j++) {
-				readFifoPosition(axisPtr[j], &pos);
+				readFifoPosition(static_cast<Axes>(axisPtr[j]), &pos);
 				startAddress[h] = pos;
 				h++;
 			}
@@ -1482,7 +1542,7 @@ int manualFifoFlyscan(fifoParam *param, uint32_t* startAddress, uint8_t nbrAxis,
 	}
 	//6-verify the FIFO overflow bit
 	for (uint32_t i = 0; i < nbrAxis; i++) {
-		if (isFifoOvfBitSet(axisPtr[i])) {
+		if (isFifoOvfBitSet(static_cast<Axes>(axisPtr[i]))) {
 			zygoLogWarn("some data samples could have been missed on axis %d. The frequency must be decreased\n", axisPtr[i]);
 			//return return_code;
 			*ret_code = FIFO_OVERLAP_ERR_CODE;
@@ -1494,10 +1554,10 @@ int manualFifoFlyscan(fifoParam *param, uint32_t* startAddress, uint8_t nbrAxis,
 	return RET_SUCCESS;
 }
 //*/
-bool isFifoDavBitSet(uint8_t axis) {
+bool isFifoDavBitSet(Axes axis) {
 	uint32_t uint_vme_data = 0, uint_vme_address = 0;
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zStat1);
-	if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ)) != RET_SUCCESS)
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zStat1);
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 		return return_code;
@@ -1506,10 +1566,10 @@ bool isFifoDavBitSet(uint8_t axis) {
 		return true;
 	return false;
 }
-bool isFifoOvfBitSet(uint8_t axis) {
+bool isFifoOvfBitSet(Axes axis) {
 	uint32_t uint_vme_data = 0, uint_vme_address = 0;
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zStat1);
-	if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ)) != RET_SUCCESS)
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zStat1);
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ))
 	{
 		{zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code; }
 	}
@@ -1522,16 +1582,15 @@ int deconfigureFlycsan(uint8_t axesNbr) {
 	uint32_t uint_vme_data = 0, uint_vme_address = 0;
 	uint_vme_address = ADD(BASE_ADDRESS[AXIS1 - 1], zDiagFFTCtrl);
 	if (axesNbr > 1) {
-		if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+		if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 		{
 			zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 			return return_code;
 		}
 	}
 
-	//Setup axis 3 and 4
 	uint_vme_address = ADD(BASE_ADDRESS[AXIS3 - 1], zDiagFFTCtrl);
-	if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 		return return_code;
@@ -1562,11 +1621,17 @@ int configureFlyscan(uint8_t nbrAxis, double freqHz, uint8_t trig) {
 		' returns false if unsuccessful
 		' sample freq in mHz 10MHZ is max
 		' trigger type: instant = 0
-		'               P2D_In = 1*/
+		'               P2D_In = 1
+		
+	*/
 	short rdVal = 0, sclkVal = 0;
 	uint32_t ctr = 0;
 	uint32_t uint_vme_data = 0, uint_vme_address = 0;
 	int ramAxisAddr = 0x0;
+	if (checkLimits(nbrAxis, 1, 4)){
+		zygoLogWarn("%s %s %d: bad number of axes\n");
+		return BAD_AXIS_VALUE;
+	}
 	if (freqHz < 300) {
 		zygoLogWarn("Frequency can not be lesser than 300Hz\n");
 		return LESSER_THAN_MIN_FREQUENCY;
@@ -1586,7 +1651,7 @@ int configureFlyscan(uint8_t nbrAxis, double freqHz, uint8_t trig) {
 		}
 	} while (isRamBusy());
 
-	if ((return_code = enableSampling(freqHz * 1e-6)) != RET_SUCCESS)
+	if (return_code = enableSampling(Axes::Axis_3, freqHz * 1e-6, SCLK::SCLK0))
 	{
 		zygoLogWarn("disableSampleTimer failed !  \n");
 		return return_code;
@@ -1600,14 +1665,14 @@ int configureFlyscan(uint8_t nbrAxis, double freqHz, uint8_t trig) {
 	{
 	case 1:
 		uint_vme_address = ADD(BASE_ADDRESS[AXIS3 - 1], zDiagFFTCtrl);
-		if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+		if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 		{
 			zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 			return return_code;
 		}
 		uint_vme_address = ADD(BASE_ADDRESS[AXIS1 - 1], zDiagFFTCtrl);
 		uint_vme_data = 0;
-		if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+		if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 		{
 			zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 			return return_code;
@@ -1615,14 +1680,14 @@ int configureFlyscan(uint8_t nbrAxis, double freqHz, uint8_t trig) {
 		break;
 	default:
 		uint_vme_address = ADD(BASE_ADDRESS[AXIS1 - 1], zDiagFFTCtrl);
-		if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+		if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 		{
 			zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 			return return_code;
 		}
 		//Setup axis 3 and 4
 		uint_vme_address = ADD(BASE_ADDRESS[AXIS3 - 1], zDiagFFTCtrl);
-		if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+		if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 		{
 			zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 			return return_code;
@@ -1634,7 +1699,7 @@ int configureFlyscan(uint8_t nbrAxis, double freqHz, uint8_t trig) {
 	//Option to start acquire immediately
 	if (trig) {
 		zygoLogInfo("Starting acquisition...\n");
-		if ((return_code = startAquisition(nbrAxis)) != RET_SUCCESS) {
+		if (return_code = startAquisition(nbrAxis)) {
 			zygoLogWarn("disableSampleTimer failed !  \n");
 			return return_code;
 		}
@@ -1654,14 +1719,14 @@ int startAquisition(uint8_t nbrAxis) {
 	zygoLogInfo("Starting RAM data acquisition...\n");
 
 	uint_vme_address = ADD(BASE_ADDRESS[AXIS3 - 1], zTestCmd1);
-	if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 	}
 	if (nbrAxis >= 2) {
 		//Start acquisition on axis 3
 		uint_vme_address = ADD(BASE_ADDRESS[AXIS1 - 1], zTestCmd1);
-		if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+		if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 		{
 			zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 		}
@@ -1692,14 +1757,14 @@ int stopAquisition(uint8_t nbrAxis) {
 	zygoLogInfo("Altering data acquisition...\n");
 
 	uint_vme_address = ADD(BASE_ADDRESS[AXIS3 - 1], zTestCmd1);
-	if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 	{
 		{zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code; }
 	}
 	if (nbrAxis >= 2) {
 		//Stop acquisition on axis 3 
 		uint_vme_address = ADD(BASE_ADDRESS[AXIS1 - 1], zTestCmd1);
-		if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+		if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 		{
 			{zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code; }
 		}
@@ -1750,7 +1815,7 @@ int readModifyWrite(const char* accessMode, uint32_t uint_vme_address,
 	uint32_t uint_vme_data, uint8_t opCode) {
 	uint32_t vme_data = 0;
 	zygoLogInfo("ReadModifyWrite function executing...\n");
-	if ((return_code = readWrite(accessMode, uint_vme_address, &vme_data, READ)) != RET_SUCCESS) {
+	if (return_code = readWrite(accessMode, uint_vme_address, &vme_data, READ)) {
 		{zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code; }
 	}
 	switch (opCode)
@@ -1767,7 +1832,7 @@ int readModifyWrite(const char* accessMode, uint32_t uint_vme_address,
 	default:
 		break;
 	}
-	if ((return_code = readWrite(accessMode, uint_vme_address, &vme_data, WRITE)) != RET_SUCCESS) {
+	if (return_code = readWrite(accessMode, uint_vme_address, &vme_data, WRITE)) {
 		{zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code; }
 	}
 	return RET_SUCCESS;
@@ -1811,7 +1876,7 @@ int getFlyscanData(uint32_t* startAddress_axis1, uint32_t* startAddress_axis3, u
 		return BAD_ARG_VALUE;
 	}
 	for (int k = 0; k < 2; k++) {
-		if ((return_code = readWrite("A24D16", uint_vme_address, &ramPageAddr, READ)) != RET_SUCCESS)
+		if (return_code = readWrite("A24D16", uint_vme_address, &ramPageAddr, READ))
 		{
 			{zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code; }
 		}
@@ -1853,7 +1918,7 @@ int getFlyscanData(uint32_t* startAddress_axis1, uint32_t* startAddress_axis3, u
 		nbrAxis = 1;
 	}
 	zygoLogInfo("Starting acquisition on %d axis \n", ctr);
-	if ((return_code = startAquisition(1)) != RET_SUCCESS)
+	if (return_code = startAquisition(1))
 	{
 		zygoLogWarn("startAquisition failed !  \n");
 		return return_code;
@@ -1876,15 +1941,17 @@ int getFlyscanData(uint32_t* startAddress_axis1, uint32_t* startAddress_axis3, u
 	for (uint32_t k = 0; k < nbrAxis; k++) {
 		for (int i = 0; i < ramPagesNbr; i++) {
 			zygoLogInfo("-----------------------Page %u: Start address 0x%p ------------------------ \n", i + 1, startAddress);
-			if ((return_code = vme_A24DMA_D32_read(dev, uint_vme_address, startAddress, NBR_SAMP_PER_PAGE, &nbr_of_read)) != RET_SUCCESS)
+			if (return_code = vme_A24DMA_D32_read(dev, uint_vme_address, startAddress, NBR_SAMP_PER_PAGE, &nbr_of_read))
 			{
-				{zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code; }
+				zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); 
+				return return_code; 
 			}
 			else zygoLogInfo("%d 32bits words read from 0x%x  \n", nbr_of_read, uint_vme_address);
 			//request the next page
-			if ((return_code = readWrite("A24D16", ramPageAddr, &ctr, WRITE)) != RET_SUCCESS)
+			if (return_code = readWrite("A24D16", ramPageAddr, &ctr, WRITE))
 			{
-				{zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code; }
+				zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); 
+				return return_code; 
 			}
 			// Shift to the next page
 			startAddress += nbr_of_read;
@@ -1913,7 +1980,7 @@ bool isRamBusy() {
 	/* Check if RAM is busy*/
 	zygoLogInfo("Checking whether or not the RAM is busy...\n");
 	uint_vme_address = BASE_ADDRESS[AXIS3 - 1] + zTestStat1;
-	if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ)) != RET_SUCCESS)
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ))
 	{
 		zygoLogInfo("Register %6X access Faillure !  \n", uint_vme_address);
 		return TRUE;
@@ -1940,13 +2007,13 @@ bool isRamBusy() {
 /// 0 if success
 /// -1 if failed 
 /// </returns>
-int setVmeIntVector(uint8_t axis, uint8_t IntVect) {
+int setVmeIntVector(Axes axis, uint8_t IntVect) {
 	uint32_t uint_vme_address = 0;
 	zygoLogInfo("Setting VME interrupt vector %d...\n", IntVect);
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zIntVector);				// Disable VME interrupts 
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zIntVector);				// Disable VME interrupts 
 	if (checkLimits(IntVect, 0, 255) < 0)
 		return BAD_ARG_VALUE;
-	if ((return_code = readModifyWrite("A24D16", uint_vme_address, IntVect, 1)) != RET_SUCCESS)
+	if (return_code = readModifyWrite("A24D16", uint_vme_address, IntVect, 1))
 	{
 		zygoLogWarn("readModifyWrite failed !  \n");
 		return return_code;
@@ -1998,14 +2065,14 @@ int checkLimits(int num2check, int minVal, int maxVal) {
 /// 0 if success
 /// -1 else
 /// </returns>
-int setVmeIntLevel(uint8_t axis, uint8_t IntLevel) {
+int setVmeIntLevel(Axes axis, uint8_t IntLevel) {
 	uint32_t uint_vme_address = 0, uint_vme_data = 0;
 	zygoLogInfo("Setting VME interrupt level %d...\n", IntLevel);
 	if (checkLimits(IntLevel, INT_LEVEL0, INT_LEVEL7) < 0)
 		return BAD_ARG_VALUE;
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zIntVector);				// Disable VME interrupts 
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zIntVector);				// Disable VME interrupts 
 	uint_vme_data = ((uint32_t)IntLevel) << 8;
-	if ((return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, 1)) != RET_SUCCESS)
+	if (return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, 1))
 	{
 		zygoLogWarn("readModifyWrite failed !  \n");
 		return return_code;
@@ -2024,12 +2091,12 @@ int setVmeIntLevel(uint8_t axis, uint8_t IntLevel) {
 /// 0 if success
 /// -1 else
 /// </returns>
-int disableGlobalInterrupt(uint8_t axis) {
+int disableGlobalInterrupt(Axes axis) {
 	uint32_t uint_vme_address = 0;
 	zygoLogInfo("Disabling VME global interrupt...\n");
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEIntEnab1);
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zVMEIntEnab1);
 	// Disable VME interrupts 
-	if ((return_code = readModifyWrite("A24D16", uint_vme_address, 0x7FFF, 0)) != RET_SUCCESS)
+	if (return_code = readModifyWrite("A24D16", uint_vme_address, 0x7FFF, 0))
 	{
 		zygoLogWarn("readModifyWrite failed !  \n");
 		return return_code;
@@ -2051,15 +2118,15 @@ int disableGlobalInterrupt(uint8_t axis) {
 /// 0 if success
 /// -1 else
 /// </returns>
-int enableVmeInterruptBit(uint8_t axis, uint16_t intNumber) {
+int enableVmeInterruptBit(Axes axis, uint16_t intNumber) {
 	uint32_t uint_vme_address = 0, uint_vme_data = 0;
 	zygoLogInfo("Enabling VME interrupt bit %d...\n", intNumber);
 	if (checkLimits(intNumber, MIN_INT_NBR, MAX_INT_NBR) < 0)
 		return BAD_ARG_VALUE;
 	if (intNumber < VME_EXT_FLAG_SAMPLE_ERR_INT)
 	{
-		uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEIntEnab0);
-		if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ)) != RET_SUCCESS)
+		uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zVMEIntEnab0);
+		if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ))
 		{
 			zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 			return return_code;
@@ -2068,7 +2135,7 @@ int enableVmeInterruptBit(uint8_t axis, uint16_t intNumber) {
 		{
 		case CEC_ERR_INT:
 			uint_vme_data |= 0x8000;
-			if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+			if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 			{
 				zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 				return return_code;
@@ -2076,7 +2143,7 @@ int enableVmeInterruptBit(uint8_t axis, uint16_t intNumber) {
 			break;
 		case PHASE_NOISE_ERR_INT:
 			uint_vme_data |= 0x4000;
-			if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+			if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 			{
 				zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 				return return_code;
@@ -2084,7 +2151,7 @@ int enableVmeInterruptBit(uint8_t axis, uint16_t intNumber) {
 			break;
 		case ACCELERATION_ERR_INT:
 			uint_vme_data |= 0x2000;
-			if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+			if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 			{
 				zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 				return return_code;
@@ -2092,7 +2159,7 @@ int enableVmeInterruptBit(uint8_t axis, uint16_t intNumber) {
 			break;
 		case MEAS_SIG_GLITCH_ERR_INT:
 			uint_vme_data |= 0x1000;
-			if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+			if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 			{
 				zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 				return return_code;
@@ -2100,7 +2167,7 @@ int enableVmeInterruptBit(uint8_t axis, uint16_t intNumber) {
 			break;
 		case MEAS_SIG_DROP_ERR_INT:
 			uint_vme_data |= 0x800;
-			if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+			if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 			{
 				zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 				return return_code;
@@ -2108,7 +2175,7 @@ int enableVmeInterruptBit(uint8_t axis, uint16_t intNumber) {
 			break;
 		case SSI_MAX_LIM_ERR_INT:
 			uint_vme_data |= 0x400;
-			if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+			if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 			{
 				zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 				return return_code;
@@ -2116,7 +2183,7 @@ int enableVmeInterruptBit(uint8_t axis, uint16_t intNumber) {
 			break;
 		case MEAS_SIG_SAT_ERR_INT:
 			uint_vme_data |= 0x200;
-			if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+			if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 			{
 				zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 				return return_code;
@@ -2124,7 +2191,7 @@ int enableVmeInterruptBit(uint8_t axis, uint16_t intNumber) {
 			break;
 		case MEAS_SIG_MIS_ERR_INT:
 			uint_vme_data |= 0x100;
-			if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+			if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 			{
 				zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 				return return_code;
@@ -2132,7 +2199,7 @@ int enableVmeInterruptBit(uint8_t axis, uint16_t intNumber) {
 			break;
 		case OV_TMP_ERR_INT:
 			uint_vme_data |= 0x80;
-			if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+			if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 			{
 				zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 				return return_code;
@@ -2140,7 +2207,7 @@ int enableVmeInterruptBit(uint8_t axis, uint16_t intNumber) {
 			break;
 		case FPGA_SYNC_ERR_INT:
 			uint_vme_data |= 0x40;
-			if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+			if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 			{
 				zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 				return return_code;
@@ -2148,7 +2215,7 @@ int enableVmeInterruptBit(uint8_t axis, uint16_t intNumber) {
 			break;
 		case RES_FAIL_ERR_INT:
 			uint_vme_data |= 0x20;
-			if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+			if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 			{
 				zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 				return return_code;
@@ -2156,7 +2223,7 @@ int enableVmeInterruptBit(uint8_t axis, uint16_t intNumber) {
 			break;
 		case RES_COMP_ERR_INT:
 			uint_vme_data |= 0x10;
-			if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+			if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 			{
 				zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 				return return_code;
@@ -2164,7 +2231,7 @@ int enableVmeInterruptBit(uint8_t axis, uint16_t intNumber) {
 			break;
 		case REF_PLL_ERR_INT:
 			uint_vme_data |= 0x8;
-			if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+			if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 			{
 				zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 				return return_code;
@@ -2172,7 +2239,7 @@ int enableVmeInterruptBit(uint8_t axis, uint16_t intNumber) {
 			break;
 		case REF_SIG_MIS_ERR_INT:
 			uint_vme_data |= 0x4;
-			if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+			if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 			{
 				zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 				return return_code;
@@ -2180,7 +2247,7 @@ int enableVmeInterruptBit(uint8_t axis, uint16_t intNumber) {
 			break;
 		case WRT_ERR_INT:
 			uint_vme_data |= 0x2;
-			if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+			if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 			{
 				zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 				return return_code;
@@ -2188,7 +2255,7 @@ int enableVmeInterruptBit(uint8_t axis, uint16_t intNumber) {
 			break;
 		case PWR_ERR_INT:
 			uint_vme_data |= 0x1;
-			if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+			if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 			{
 				zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 				return return_code;
@@ -2200,8 +2267,8 @@ int enableVmeInterruptBit(uint8_t axis, uint16_t intNumber) {
 	}
 	else if ((intNumber >= VME_EXT_FLAG_SAMPLE_ERR_INT) && (intNumber < PROC_INIT_BSY_ERR_INT))
 	{
-		uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEIntEnab1);
-		if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ)) != RET_SUCCESS)
+		uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zVMEIntEnab1);
+		if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ))
 		{
 			zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 			return return_code;
@@ -2210,7 +2277,7 @@ int enableVmeInterruptBit(uint8_t axis, uint16_t intNumber) {
 		{
 		case VME_EXT_FLAG_SAMPLE_ERR_INT:
 			uint_vme_data |= 0x100;
-			if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+			if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 			{
 				zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 				return return_code;
@@ -2218,7 +2285,7 @@ int enableVmeInterruptBit(uint8_t axis, uint16_t intNumber) {
 			break;
 		case P32_POS_OV_ERR_INT:
 			uint_vme_data |= 0x10;
-			if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+			if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 			{
 				zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 				return return_code;
@@ -2226,7 +2293,7 @@ int enableVmeInterruptBit(uint8_t axis, uint16_t intNumber) {
 			break;
 		case VME32_POS_OV_ERR_INT:
 			uint_vme_data |= 0x8;
-			if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+			if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 			{
 				zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 				return return_code;
@@ -2234,7 +2301,7 @@ int enableVmeInterruptBit(uint8_t axis, uint16_t intNumber) {
 			break;
 		case VME37_POS_OV_ERR_INT:
 			uint_vme_data |= 0x4;
-			if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+			if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 			{
 				zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 				return return_code;
@@ -2242,7 +2309,7 @@ int enableVmeInterruptBit(uint8_t axis, uint16_t intNumber) {
 			break;
 		case USR_VEL_ERR_INT:
 			uint_vme_data |= 0x2;
-			if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+			if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 			{
 				zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 				return return_code;
@@ -2250,7 +2317,7 @@ int enableVmeInterruptBit(uint8_t axis, uint16_t intNumber) {
 			break;
 		case VEL_ERR_INT:
 			uint_vme_data |= 0x1;
-			if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+			if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 			{
 				zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 				return return_code;
@@ -2263,8 +2330,8 @@ int enableVmeInterruptBit(uint8_t axis, uint16_t intNumber) {
 	}
 	else
 	{
-		uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEIntEnab2);
-		if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ)) != RET_SUCCESS)
+		uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zVMEIntEnab2);
+		if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ))
 		{
 			zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 			return return_code;
@@ -2273,7 +2340,7 @@ int enableVmeInterruptBit(uint8_t axis, uint16_t intNumber) {
 		{
 		case PROC_INIT_BSY_ERR_INT:
 			uint_vme_data |= 0x8000;
-			if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+			if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 			{
 				zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 				return return_code;
@@ -2281,7 +2348,7 @@ int enableVmeInterruptBit(uint8_t axis, uint16_t intNumber) {
 			break;
 		case PROC_FAIL_ERR_INT:
 			uint_vme_data |= 0x4000;
-			if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+			if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 			{
 				zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 				return return_code;
@@ -2289,7 +2356,7 @@ int enableVmeInterruptBit(uint8_t axis, uint16_t intNumber) {
 			break;
 		case BIAS_SUPPLY_ERR_INT:
 			uint_vme_data |= 0x2000;
-			if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+			if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 			{
 				zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 				return return_code;
@@ -2297,7 +2364,7 @@ int enableVmeInterruptBit(uint8_t axis, uint16_t intNumber) {
 			break;
 		case WRT_PROTECT_ERR_INT:
 			uint_vme_data |= 0x1000;
-			if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+			if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 			{
 				zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 				return return_code;
@@ -2305,7 +2372,7 @@ int enableVmeInterruptBit(uint8_t axis, uint16_t intNumber) {
 			break;
 		case SIG_MAX_ERR_INT:
 			uint_vme_data |= 0x80;
-			if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+			if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 			{
 				zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 				return return_code;
@@ -2313,7 +2380,7 @@ int enableVmeInterruptBit(uint8_t axis, uint16_t intNumber) {
 			break;
 		case SIG_MIN_ERR_INT:
 			uint_vme_data |= 0x40;
-			if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+			if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 			{
 				zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 				return return_code;
@@ -2321,7 +2388,7 @@ int enableVmeInterruptBit(uint8_t axis, uint16_t intNumber) {
 			break;
 		case BIAS_CALC_COMP_INT:
 			uint_vme_data |= 0x20;
-			if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+			if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 			{
 				zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 				return return_code;
@@ -2329,7 +2396,7 @@ int enableVmeInterruptBit(uint8_t axis, uint16_t intNumber) {
 			break;
 		case BIAS_ERR_INT:
 			uint_vme_data |= 0x10;
-			if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+			if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 			{
 				zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 				return return_code;
@@ -2337,7 +2404,7 @@ int enableVmeInterruptBit(uint8_t axis, uint16_t intNumber) {
 			break;
 		case APD_DC_ERR_INT:
 			uint_vme_data |= 0x8;
-			if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+			if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 			{
 				zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 				return return_code;
@@ -2345,7 +2412,7 @@ int enableVmeInterruptBit(uint8_t axis, uint16_t intNumber) {
 			break;
 		case BIAS_SET_ERR_INT:
 			uint_vme_data |= 0x4;
-			if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+			if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 			{
 				zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 				return return_code;
@@ -2353,7 +2420,7 @@ int enableVmeInterruptBit(uint8_t axis, uint16_t intNumber) {
 			break;
 		case APD_FAIL_ERR_INT:
 			uint_vme_data |= 0x2;
-			if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+			if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 			{
 				zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 				return return_code;
@@ -2361,7 +2428,7 @@ int enableVmeInterruptBit(uint8_t axis, uint16_t intNumber) {
 			break;
 		case APD_TMP_ERR_INT:
 			uint_vme_data |= 0x1;
-			if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+			if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 			{
 				zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 				return return_code;
@@ -2388,13 +2455,13 @@ int enableVmeInterruptBit(uint8_t axis, uint16_t intNumber) {
 /// 0 if success
 /// -1 else
 /// </returns>
-int disableVmeInterruptBit(uint8_t axis, uint16_t intNumber) {
+int disableVmeInterruptBit(Axes axis, uint16_t intNumber) {
 	uint32_t uint_vme_address = 0, uint_vme_data;
 	zygoLogInfo("Disabling VME interrupt bit %d...\n", intNumber);
 	if (intNumber < VME_EXT_FLAG_SAMPLE_ERR_INT)
 	{
-		uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEIntEnab0);
-		if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ)) != RET_SUCCESS)
+		uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zVMEIntEnab0);
+		if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ))
 		{
 			zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 		}
@@ -2402,112 +2469,112 @@ int disableVmeInterruptBit(uint8_t axis, uint16_t intNumber) {
 		{
 		case CEC_ERR_INT:
 			uint_vme_data &= 0x7FFF;
-			if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+			if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 			{
 				zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 			}
 			break;
 		case PHASE_NOISE_ERR_INT:
 			uint_vme_data &= 0xBFFF;
-			if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+			if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 			{
 				zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 			}
 			break;
 		case ACCELERATION_ERR_INT:
 			uint_vme_data &= 0xDFFF;
-			if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+			if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 			{
 				zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 			}
 			break;
 		case MEAS_SIG_GLITCH_ERR_INT:
 			uint_vme_data &= 0xEFFF;
-			if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+			if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 			{
 				zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 			}
 			break;
 		case MEAS_SIG_DROP_ERR_INT:
 			uint_vme_data &= 0xF7FF;
-			if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+			if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 			{
 				zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 			}
 			break;
 		case SSI_MAX_LIM_ERR_INT:
 			uint_vme_data &= 0xFBFF;
-			if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+			if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 			{
 				zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 			}
 			break;
 		case MEAS_SIG_SAT_ERR_INT:
 			uint_vme_data &= 0xFDFF;
-			if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+			if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 			{
 				zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 			}
 			break;
 		case MEAS_SIG_MIS_ERR_INT:
 			uint_vme_data &= 0xFEFF;
-			if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+			if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 			{
 				zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 			}
 			break;
 		case OV_TMP_ERR_INT:
 			uint_vme_data &= 0xFF7F;
-			if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+			if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 			{
 				zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 			}
 			break;
 		case FPGA_SYNC_ERR_INT:
 			uint_vme_data &= 0xFFBF;
-			if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+			if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 			{
 				zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 			}
 			break;
 		case RES_FAIL_ERR_INT:
 			uint_vme_data &= 0xFFDF;
-			if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+			if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 			{
 				zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 			}
 			break;
 		case RES_COMP_ERR_INT:
 			uint_vme_data &= 0xFFEF;
-			if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+			if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 			{
 				zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 			}
 			break;
 		case REF_PLL_ERR_INT:
 			uint_vme_data &= 0xFFF7;
-			if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+			if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 			{
 				zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 			}
 			break;
 		case REF_SIG_MIS_ERR_INT:
 			uint_vme_data &= 0xFFFB;
-			if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+			if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 			{
 				zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 			}
 			break;
 		case WRT_ERR_INT:
 			uint_vme_data &= 0xFFFD;
-			if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+			if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 			{
 				zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 			}
 			break;
 		case PWR_ERR_INT:
 			uint_vme_data &= 0xFFFE;
-			if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+			if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 			{
 				zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 			}
@@ -2518,8 +2585,8 @@ int disableVmeInterruptBit(uint8_t axis, uint16_t intNumber) {
 	}
 	else if ((intNumber >= VME_EXT_FLAG_SAMPLE_ERR_INT) && (intNumber < PROC_INIT_BSY_ERR_INT))
 	{
-		uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEIntEnab1);
-		if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ)) != RET_SUCCESS)
+		uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zVMEIntEnab1);
+		if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ))
 		{
 			zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 		}
@@ -2527,42 +2594,42 @@ int disableVmeInterruptBit(uint8_t axis, uint16_t intNumber) {
 		{
 		case VME_EXT_FLAG_SAMPLE_ERR_INT:
 			uint_vme_data &= 0xFEFF;
-			if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+			if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 			{
 				zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 			}
 			break;
 		case P32_POS_OV_ERR_INT:
 			uint_vme_data &= 0xFFEF;
-			if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+			if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 			{
 				zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 			}
 			break;
 		case VME32_POS_OV_ERR_INT:
 			uint_vme_data &= 0xFFF7;
-			if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+			if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 			{
 				zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 			}
 			break;
 		case VME37_POS_OV_ERR_INT:
 			uint_vme_data &= 0xFFFB;
-			if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+			if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 			{
 				zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 			}
 			break;
 		case USR_VEL_ERR_INT:
 			uint_vme_data &= 0xFFFD;
-			if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+			if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 			{
 				zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 			}
 			break;
 		case VEL_ERR_INT:
 			uint_vme_data &= 0xFFFE;
-			if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+			if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 			{
 				zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 			}
@@ -2574,8 +2641,8 @@ int disableVmeInterruptBit(uint8_t axis, uint16_t intNumber) {
 	}
 	else
 	{
-		uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEIntEnab2);
-		if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ)) != RET_SUCCESS)
+		uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zVMEIntEnab2);
+		if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ))
 		{
 			zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 		}
@@ -2583,84 +2650,84 @@ int disableVmeInterruptBit(uint8_t axis, uint16_t intNumber) {
 		{
 		case PROC_INIT_BSY_ERR_INT:
 			uint_vme_data &= 0x7FFF;
-			if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+			if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 			{
 				zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 			}
 			break;
 		case PROC_FAIL_ERR_INT:
 			uint_vme_data &= 0xBFFF;
-			if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+			if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 			{
 				zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 			}
 			break;
 		case BIAS_SUPPLY_ERR_INT:
 			uint_vme_data &= 0xDFFF;
-			if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+			if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 			{
 				zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 			}
 			break;
 		case WRT_PROTECT_ERR_INT:
 			uint_vme_data &= 0xEFFF;
-			if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+			if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 			{
 				zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 			}
 			break;
 		case SIG_MAX_ERR_INT:
 			uint_vme_data &= 0xFF7F;
-			if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+			if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 			{
 				zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 			}
 			break;
 		case SIG_MIN_ERR_INT:
 			uint_vme_data &= 0xFFBF;
-			if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+			if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 			{
 				zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 			}
 			break;
 		case BIAS_CALC_COMP_INT:
 			uint_vme_data &= 0xFFDF;
-			if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+			if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 			{
 				zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 			}
 			break;
 		case BIAS_ERR_INT:
 			uint_vme_data &= 0xFFEF;
-			if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+			if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 			{
 				zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 			}
 			break;
 		case APD_DC_ERR_INT:
 			uint_vme_data &= 0xFFF7;
-			if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+			if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 			{
 				zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 			}
 			break;
 		case BIAS_SET_ERR_INT:
 			uint_vme_data &= 0xFFFB;
-			if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+			if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 			{
 				zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 			}
 			break;
 		case APD_FAIL_ERR_INT:
 			uint_vme_data &= 0xFFFD;
-			if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+			if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 			{
 				zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 			}
 			break;
 		case APD_TMP_ERR_INT:
 			uint_vme_data &= 0xFFFE;
-			if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+			if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 			{
 				zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 			}
@@ -2682,21 +2749,17 @@ int disableVmeInterruptBit(uint8_t axis, uint16_t intNumber) {
 /// 0 if success
 /// -1 else
 /// </returns>
-int resetAxis(uint8_t axis) {
+int resetAxis(Axes axis) {
 	uint32_t uint_vme_address = 0, uint_vme_data = 0;
-	if (checkLimits(axis, 1, 4) != RET_SUCCESS) {
-		zygoLogInfo("BAD AXIS VALUE\n");
-		return BAD_ARG_VALUE;
-	}
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCmd);
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCmd);
 	uint_vme_data = 0x20;
 	zygoLogInfo("Reseting axis %u...\n", axis);
-	if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 	{
 		zygoLogInfo("Register 0x%6X access Faillure !  \n", uint_vme_address);
 		return return_code;
 	}
-	if ((return_code = waitResetComplete(axis)) != RET_SUCCESS)
+	if (return_code = waitResetComplete(axis))
 	{
 		zygoLogWarn("waitResetComplete failed !  \n");
 		return return_code;
@@ -2714,13 +2777,13 @@ int resetAxis(uint8_t axis) {
 /// 0 if success
 /// -1 else
 /// </returns>
-int waitResetComplete(uint8_t axis) {
+int waitResetComplete(Axes axis) {
 	uint32_t uint_vme_address = 0, uint_vme_data = 0, ct = 0;
 	zygoLogInfo("Waiting for reset to complete on axis %u...\n", axis);
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zStat1);
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zStat1);
 	while (!(uint_vme_data & 0x0001))	// Wait for reset complete 
 	{
-		if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ)) != RET_SUCCESS)
+		if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ))
 		{
 			zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 		}
@@ -2743,7 +2806,7 @@ int waitResetComplete(uint8_t axis) {
 /// 0 if success
 /// -1 else
 /// </returns>
-int initSisBoards() {
+int initSisBoards(bool verboseLevel) {
 
 	/******************************************************************************************************************************/
 	/* VME Master Create, Open and Setup                                                                                          */
@@ -2756,6 +2819,10 @@ int initSisBoards() {
 	short sis3100_add = 0;
 	SIS1100W_STATUS stat;
 	
+	if(verboseLevel)
+		INFO_LEVEL = 1;
+	else
+		INFO_LEVEL = 0;
 
 	zygoLogFatal_key = CreateMutex(NULL, FALSE, NULL);
 	if (!zygoLogFatal_key)
@@ -2763,15 +2830,13 @@ int initSisBoards() {
 		fprintf(stderr, "failed to create zygoLogFatal mutex key %d\n", GetLastError());
 		perror("zygoLogFatal_key: ");
 		exit(-1);
-
 	}
-	zygoLogInfo_key = CreateMutex(NULL, FALSE, NULL);
+	zygoLogInfo_key = CreateSemaphore(NULL, 1,1, NULL);
 	if (!zygoLogInfo_key)
 	{
-		fprintf(stderr, "failed to create zygoLogInfo mutex key %d\n", GetLastError());
+		fprintf(stderr, "failed to create zygoLogInfo semaphore key %d\n", GetLastError());
 		perror("zygoLogInfo_key: ");
 		exit(-1);
-
 	}
 	zygoLogWarn_key = CreateMutex(NULL, FALSE, NULL);
 	if (!zygoLogWarn_key)
@@ -2779,7 +2844,6 @@ int initSisBoards() {
 		fprintf(stderr, "failed to create zygoLogWarn mutex key %d\n", GetLastError());
 		perror("zygoLogWarn_key: ");
 		exit(-1);
-
 	}
 	rw_key = CreateMutex(NULL, FALSE, NULL);
 	if (!rw_key)
@@ -2787,8 +2851,11 @@ int initSisBoards() {
 		fprintf(stderr, "failed to create rw mutex key %d\n", GetLastError());
 		perror("rw_key: ");
 		exit(-1);
-
 	}
+
+	ReleaseSemaphore(zygoLogInfo_key, 1, NULL);
+	ReleaseMutex(zygoLogWarn_key);
+	ReleaseMutex(zygoLogFatal_key);
 
 	sprintf_s(PCI_VME_GATEWAY_FIRMWARE_VERSION, 10, "UNKNOW\0");
 	sprintf_s(PCI_VME_GATEWAY_BOARD_VERSION, 10,"UNKNOW\0");
@@ -2897,6 +2964,9 @@ int initSisBoards() {
 	short_data = sis3100_data >> 16; // error to be reviewed
 	zygoLogInfo("\t Board version: %d\n", (int)short_data);
 	sprintf_s(PCI_VME_GATEWAY_BOARD_VERSION, tabLen, "v%d", short_data);
+
+	curPrecision = getPrecision();
+	enableDoublePassInterferometer();// default to doublepass interferometer
 	return RET_SUCCESS;
 }
 
@@ -2919,8 +2989,8 @@ int initZmiBoards() {
 	uint32_t  uint_vme_data_buf[20];
 
 	int return_code = 0;
-	static bool enableResetFindsVelocity[] = { false, false, false, false };
-	if ((return_code = vmeSysReset()) != RET_SUCCESS)
+	static bool enableResetFindsVelocity[] = { true, true, true, true };
+	if (return_code = vmeSysReset())
 	{
 		zygoLogWarn("vmeSysReset failed !  \n");
 		return RESET_ZYGO_FAILED;
@@ -2933,7 +3003,7 @@ int initZmiBoards() {
 
 	zygoLogInfo("\n \n Base ADDRESS is 0x%06X\n\n", BASE_ADDRESS[0]);
 
-	if ((return_code = readWrite(ch_access_mode, BASE_ADDRESS[2], &uint_vme_data, READ)) != RET_SUCCESS)
+	if (return_code = readWrite(ch_access_mode, BASE_ADDRESS[AXIS3 - 1], &uint_vme_data, READ))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 	}
@@ -3017,18 +3087,18 @@ int initZmiBoards() {
 		zygoLogInfo("\t[VME_IRQ_PENDING] An error is asserted in the VME Error Status register\n");
 
 	uint_vme_data = 0;
-	if ((return_code = eepromRead(ADD(BASE_ADDRESS[2], zBdAxInf), &uint_vme_data, WRITE)) != RET_SUCCESS) {
+	if (return_code = eepromRead(ADD(BASE_ADDRESS[AXIS3 - 1], zBdAxInf), &uint_vme_data, WRITE)) {
 		zygoLogWarn("Faillure when running eepromRead\n");
 		return EEPROM_READ_FAILED;
 	}
 	zygoLogInfo("The number of axes is %d \n", uint_vme_data);
 
-	memset(uint_vme_data_buf, 0, _countof(uint_vme_data_buf));
+	memset(uint_vme_data_buf, 0, sizeof(uint_vme_data_buf));
 	ledsStatus = (bool*)calloc(5, sizeof(bool));
 	if (ledsStatus == NULL) {
 		return BAD_ARG_POINTER;
 	}
-	if ((return_code = getLedsStatus(ledsStatus)) != RET_SUCCESS) {
+	if (return_code = getLedsStatus(ledsStatus)) {
 		zygoLogWarn("Faillure when running getLedsStatus\n");
 		free(ledsStatus);
 		return RET_FAILED;
@@ -3048,7 +3118,7 @@ int initZmiBoards() {
 	for (int i = 0; i < 19; i++)
 	{
 		uint_vme_data = 0;
-		if ((return_code = eepromRead(i, &uint_vme_data, 2)) != RET_SUCCESS) {
+		if (return_code = eepromRead(i, &uint_vme_data, 2)) {
 			zygoLogWarn("Faillure when running getLedsStatus\n");
 			free(ledsStatus);
 			return return_code;
@@ -3075,7 +3145,7 @@ int initZmiBoards() {
 
 	zygoLogInfo("\tBoard serial Number: %s \n", ZYGO_BOARD_SN);
 	strcpy_s(ch_access_mode, sizeof(ch_access_mode), access_mode_Selection[6]);
-	if ((return_code = readWrite(ch_access_mode, ADD(BASE_ADDRESS[2], zFWVer), &vme_data, 0)) != RET_SUCCESS) {
+	if (return_code = readWrite(ch_access_mode, ADD(BASE_ADDRESS[AXIS3 - 1], zFWVer), &vme_data, 0)) {
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 		free(ledsStatus);
 		return return_code;
@@ -3083,7 +3153,7 @@ int initZmiBoards() {
 	zygoLogInfo("\tFirmware Version: %d \n", uint_vme_data);
 	sprintf_s(ZYGO_FIRMWARE_VERSION, tabLen, "%u", uint_vme_data);
 
-	if ((return_code = readWrite(ch_access_mode, ADD(BASE_ADDRESS[2], zFWRev), &vme_data, 0)) != RET_SUCCESS)
+	if (return_code = readWrite(ch_access_mode, ADD(BASE_ADDRESS[AXIS3 - 1], zFWRev), &vme_data, 0))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 		free(ledsStatus);
@@ -3108,19 +3178,13 @@ int initZmiBoards() {
 	/*Enable reset finds velocity*/
 	//EnableResetFindsVelocity(  axis);
 	//Enable preset
-/*
-vme_data = 0x100;
-if (readWrite(ch_access_mode,   ADD(BASE_ADDRESS[i], zCtrl3), &vme_data, 1) != RET_SUCCESS)
-	zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
-
-*/
 //Enable test mode
 	for (int i = 0; i < 4; i++)
 	{
 		if (enableResetFindsVelocity[i])
 		{
 			vme_data = 0x10;
-			if ((return_code = readWrite(ch_access_mode, ADD(BASE_ADDRESS[i], zTestCtrl0), &vme_data, 1)) != RET_SUCCESS)
+			if (return_code = readWrite(ch_access_mode, ADD(BASE_ADDRESS[i], zTestCtrl0), &vme_data, 1))
 			{
 				zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 				free(ledsStatus);
@@ -3130,7 +3194,7 @@ if (readWrite(ch_access_mode,   ADD(BASE_ADDRESS[i], zCtrl3), &vme_data, 1) != R
 		else
 		{
 			vme_data = 0;
-			if ((return_code = readWrite(ch_access_mode, ADD(BASE_ADDRESS[i], zTestCtrl0), &vme_data, 1)) != RET_SUCCESS)
+			if (return_code = readWrite(ch_access_mode, ADD(BASE_ADDRESS[i], zTestCtrl0), &vme_data, 1))
 			{
 				zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 				free(ledsStatus);
@@ -3142,7 +3206,7 @@ if (readWrite(ch_access_mode,   ADD(BASE_ADDRESS[i], zCtrl3), &vme_data, 1) != R
 	return RET_SUCCESS;
 }
 
-int readSsiCalibrationData(uint8_t axis, double* SSIVals, double* OptPwrVals) {
+int readSsiCalibrationData(Axes axis, double* SSIVals, double* OptPwrVals) {
 	uint32_t temp32 = 0,
 		offset = 0;
 	double m = 0.0, b = 0.0;
@@ -3152,107 +3216,64 @@ int readSsiCalibrationData(uint8_t axis, double* SSIVals, double* OptPwrVals) {
 
 	if ((SSIVals == NULL) || (OptPwrVals == NULL))
 		return 	BAD_ARG_POINTER;
-	offset = 50 + 9 + (100 * (axis - 1));
 	/*SSI reading with minimum signal*/
-	if ((return_code = eepromRead(offset, &uint_vme_data, WRITE)) != RET_SUCCESS) {
+	offset = EEPROM_AXIS_DATA_BASE_OFFSET + EEPROM_MIN_SSI_OFFSET + (SIZE_WORDS * (axis - 1));
+	if (return_code = eepromRead(offset, &uint_vme_data, 1)) {
 		zygoLogWarn("EEPROM Offset %d access Faillure !  \n", offset);
 		return return_code;
 	}
 	SSIVals[0] = uint_vme_data;
 
-	offset = 50 + 16 + (100 * (axis - 1));
+	/*SSI reading with nominal signal*/
+	offset = EEPROM_AXIS_DATA_BASE_OFFSET + EEPROM_NOM_SSI_OFFSET + (SIZE_WORDS * (axis - 1));
 	uint_vme_data = 0;
-	/*SSI reading with minimum signal*/
-	if ((return_code = eepromRead(offset, &uint_vme_data, WRITE)) != RET_SUCCESS) {
+	if (return_code = eepromRead(offset, &uint_vme_data, WRITE)) {
 		zygoLogWarn("EEPROM Offset %d access Faillure !  \n", offset);
 		return return_code;
 	}
 	SSIVals[1] = uint_vme_data;
 
-	offset = 50 + 23 + (100 * (axis - 1));
+	/*SSI reading with maximum signal*/
+	offset = EEPROM_AXIS_DATA_BASE_OFFSET + EEPROM_MAX_SSI_OFFSET + (SIZE_WORDS * (axis - 1));
 	uint_vme_data = 0;
-	/*SSI reading with minimum signal*/
-	if ((return_code = eepromRead(offset, &uint_vme_data, WRITE)) != RET_SUCCESS) {
+	if (return_code = eepromRead(offset, &uint_vme_data, WRITE)) {
 		zygoLogWarn("EEPROM Offset %d access Faillure !  \n", offset);
 		return return_code;
 	}
 	SSIVals[2] = uint_vme_data;
 
-	offset = 50 + 5 + (100 * (axis - 1));
+	/*opt pwr l2 reading with minimum signal*/
+	offset = EEPROM_AXIS_DATA_BASE_OFFSET + EEPROM_OPT_PWR_L2_MIN_OFFSET + (SIZE_WORDS * (axis - 1));
 	uint_vme_data = 0;
-	if ((return_code = eepromRead(offset, &uint_vme_data, WRITE)) != RET_SUCCESS) /*Read optical power L2*/
+	if (return_code = eepromRead(offset, &uint_vme_data, WRITE)) /*Read optical power L2*/
 	{
 		zygoLogWarn("EEPROM Offset %d access Faillure !  \n", offset);
 		return return_code;
 	}
-	OptPwrVals[0] = pow(2, (double)uint_vme_data / (double)1024);
+	OptPwrVals[0] = std::pow(2, uint_vme_data / 1024.0);
 
-	offset = 50 + 12 + (100 * (axis - 1));
+	/*opt pwr l2 reading with nominal signal*/
+	offset = EEPROM_AXIS_DATA_BASE_OFFSET + EEPROM_OPT_PWR_L2_NOM_OFFSET + (SIZE_WORDS * (axis - 1));
 	uint_vme_data = 0;
-	if ((return_code = eepromRead(offset, &uint_vme_data, WRITE)) != RET_SUCCESS) {
+	if (return_code = eepromRead(offset, &uint_vme_data, WRITE)) {
 		zygoLogWarn("EEPROM Offset %d access Faillure !  \n", offset);
 		return return_code;
 	}
-	OptPwrVals[1] = pow(2, (double)uint_vme_data / (double)1024);
+	OptPwrVals[1] = std::pow(2, uint_vme_data / 1024.0);
 
-	offset = 50 + 19 + (100 * (axis - 1));
+	/*opt pwr l2 reading with maximum signal*/
+	offset = EEPROM_AXIS_DATA_BASE_OFFSET + EEPROM_OPT_PWR_L2_MAX_OFFSET + (SIZE_WORDS * (axis - 1));
 	uint_vme_data = 0;
-	if ((return_code = eepromRead(offset, &uint_vme_data, WRITE)) != RET_SUCCESS) {
+	if (return_code = eepromRead(offset, &uint_vme_data, WRITE)) {
 		zygoLogWarn("EEPROM Offset %d access Faillure !  \n", offset);
 		return return_code;
 	}
-	OptPwrVals[2] = pow(2, (double)uint_vme_data / (double)1024);
+	OptPwrVals[2] = std::pow(2, uint_vme_data / 1024.0);
 
 	zygoLogInfo("SSIVals:  [%lf,%lf,%lf]; OptPwrVals: [%lf,%lf,%lf] \n", SSIVals[0], SSIVals[1], SSIVals[2], OptPwrVals[0], OptPwrVals[1], OptPwrVals[2]);
 	return RET_SUCCESS;
 }
 
-/// <summary>
-/// This function gets the position offset on a specific axis.
-/// </summary>
-/// <param name="dev">device</param>
-/// <param name="axis">the axis' number</param>
-/// <param name="offsetPos">the value return parameter</param>
-/// <returns>
-/// 0 if success
-/// -1 else
-/// </returns>
-int getPositionOffset(uint8_t axis, double* offsetPos) {
-	uint32_t uint_vme_address = 0, uint_vme_data;
-	zygoLogInfo("Getting offset position value on axis %u...\n", axis);
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zOffsetMSB);
-	if ((return_code = readWrite("A24D32", uint_vme_address, &uint_vme_data, READ)) != RET_SUCCESS)
-	{
-		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
-		return return_code;
-	}
-	*offsetPos = (double)((int)uint_vme_data);
-	return RET_SUCCESS;
-}
-
-/// <summary>
-/// This function sets the 32 bits position offset on a specific axis.
-/// </summary>
-/// <param name="dev">device</param>
-/// <param name="axis">the axis' number</param>
-/// <param name="offsetPos">the value of the offset on 32bits</param>
-/// <returns>
-/// 0 if success
-/// -1 else
-/// </returns>
-int setPositionOffset32(uint8_t axis, double offsetPos) {
-	uint32_t uint_vme_address = 0, uint_vme_data;
-
-	zygoLogInfo("Setting position offset 32bits value to 0x%08x on axis %u....\n", offsetPos, axis);
-	uint_vme_data = (uint32_t)offsetPos;
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zOffsetMSB);
-	if ((return_code = readWrite("A24D32", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
-	{
-		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
-		return return_code;
-	}
-	return RET_SUCCESS;
-}
 /// <summary>
 /// This function enable the C0 and CN compensation
 /// </summary>
@@ -3262,13 +3283,13 @@ int setPositionOffset32(uint8_t axis, double offsetPos) {
 /// 0 if success
 /// -1 else
 /// </returns>
-int enableCecCompensation(uint8_t axis) {
+int enableCecCompensation(Axes axis) {
 	uint32_t uint_vme_address = 0, uint_vme_data;
 	zygoLogInfo("Enabling CEC compensation on axis %u...\n", axis);
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCECCtl);
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCECCtl);
 	uint_vme_data = 0x3;// C0 and CN compensation
 	//enableAuxRegisters(  3);
-	if ((return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, 1)) != RET_SUCCESS)
+	if (return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, 1))
 	{
 		zygoLogInfo("readWriteModify failed!!!!!!\n");
 		zygoLogWarn("Enabling CE compensation failed\n");
@@ -3289,13 +3310,13 @@ int enableCecCompensation(uint8_t axis) {
 /// 0 if success
 /// -1 else
 /// </returns>
-int disableCecCompensation(uint8_t axis) {
+int disableCecCompensation(Axes axis) {
 	uint32_t uint_vme_address = 0, uint_vme_data;
 	zygoLogInfo("Disabling CEC compensation on axis %u...\n", axis);
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCECCtl);
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCECCtl);
 	uint_vme_data = 0x0;// disable C0 and CN compensation
 	//enableAuxRegisters(  3);
-	if ((return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, 0)) != RET_SUCCESS)
+	if (return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, 0))
 	{
 		zygoLogInfo("readWriteModify failed!!!!!!\n");
 		zygoLogWarn("Disabling CE compensation failed\n");
@@ -3316,13 +3337,13 @@ int disableCecCompensation(uint8_t axis) {
 /// 0 if success
 /// -1 else
 /// </returns>
-int useCeuserSuppliedCoef(uint8_t axis) {
+int useCeuserSuppliedCoef(Axes axis) {
 	uint32_t uint_vme_address = 0, uint_vme_data;
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCECCtl);
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCECCtl);
 	uint_vme_data = 0x1C;// C0 and CN compensation
 	zygoLogInfo("Enabling the use of CE user supplied coefficients on axis %u during compensation...\n", axis);
 	//enableAuxRegisters(  3);
-	if ((return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, 1)) != RET_SUCCESS)
+	if (return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, 1))
 	{
 		zygoLogWarn("readWriteModify failed!!!!!!\n");
 		return return_code;
@@ -3342,13 +3363,13 @@ int useCeuserSuppliedCoef(uint8_t axis) {
 /// 0 if success
 /// -1 else
 /// </returns>
-int useCeuserSupplyCoefAtStartup(uint8_t axis) {
+int useCeuserSupplyCoefAtStartup(Axes axis) {
 	uint32_t uint_vme_address = 0, uint_vme_data;
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCECCtl);
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCECCtl);
 	uint_vme_data = 0x40;
 	zygoLogInfo("Enabling the use of CE user supplied coefficients on axis %u at the Startup...\n", axis);
 	//enableAuxRegisters(  3);
-	if ((return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, 1)) != RET_SUCCESS)
+	if (return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, 1))
 	{
 		zygoLogWarn("readWriteModify failed!!!!!!\n");
 		return return_code;
@@ -3365,13 +3386,13 @@ int useCeuserSupplyCoefAtStartup(uint8_t axis) {
 /// 0 if success
 /// -1 else
 /// </returns>
-int resetCecErrors(uint8_t axis) {
+int resetCecErrors(Axes axis) {
 	uint32_t uint_vme_address = 0, uint_vme_data;
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCEcmd);
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCEcmd);
 	uint_vme_data = 0x1;
 	zygoLogInfo("Reseting compensation errors on axis %u...\n", axis);
 	//enableAuxRegisters(  3);
-	if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 		return return_code;
@@ -3389,15 +3410,15 @@ int resetCecErrors(uint8_t axis) {
 /// 0 if success
 /// -1 else
 /// </returns>
-int waitCeinit2Complete(uint8_t axis) {
+int waitCeinit2Complete(Axes axis) {
 	uint32_t uint_vme_address = 0, ct = 0, uint_vme_data;
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCEstat);
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCEstat);
 	uint_vme_data = 0;
 	zygoLogInfo("Waiting for CEC hardware initialization to complete on axis %u...\n", axis);
 	//enableAuxRegisters(  3);
 	while (!(uint_vme_data & 0x20)) {
 		zygoLogInfo("Initializing CE coefficients...\n");
-		if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ)) != RET_SUCCESS)
+		if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ))
 		{
 			zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 		}
@@ -3421,12 +3442,12 @@ int getLedsStatus(bool* ledsStatus) {
 	for (int i = 0; i < 4; i++) {
 		uint_vme_address = ADD(BASE_ADDRESS[i], zStat1);
 		uint_vme_data = 0;
-		if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ)) != RET_SUCCESS)
+		if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ))
 		{
 			zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 			return return_code;
 		}
-		if (uint_vme_data & 0x00000002) {
+		if (uint_vme_data & 0x2) {
 			//zygoLogInfo("\t[Meas_Sig OK] The measurement signal is present on Axis %d\n", i + 1);
 			ledsStatus[i] = true;
 		}
@@ -3437,18 +3458,18 @@ int getLedsStatus(bool* ledsStatus) {
 
 	}
 	uint_vme_data = 0;
-	uint_vme_address = ADD(BASE_ADDRESS[2], zStat0);
-	if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ)) != RET_SUCCESS)
+	uint_vme_address = ADD(BASE_ADDRESS[AXIS3 - 1], zStat0);
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 		return return_code;
 	}
-	if (uint_vme_data & 0x00000002) {
-		//zygoLogInfo("\t[Meas_Sig OK] The measurement signal is present on Axis %d\n", i + 1);
+	if (uint_vme_data & 0x2) {
+		//The reference signal is present
 		ledsStatus[4] = true;
 	}
 	else {
-		//zygoLogInfo("\t[Meas_Sig Warning] The measurement signal is missing on Axis %d\n", i + 1);
+		//The reference signal is absent
 		ledsStatus[4] = false;
 	}
 	return RET_SUCCESS;
@@ -3465,13 +3486,13 @@ int getLedsStatus(bool* ledsStatus) {
 /// 0 if success
 /// -1 else
 /// </returns>
-int setCemaxVel(uint8_t axis, uint32_t CEMaxVelValue) {
+int setCemaxVel(Axes axis, uint32_t CEMaxVelValue) {
 	uint32_t uint_vme_address = 0, uint_vme_data;
 	zygoLogInfo("Setting cyclic error max velocity on axis %u...\n", axis);
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCEMaxVel);
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCEMaxVel);
 	uint_vme_data = CEMaxVelValue;
 	//enableAuxRegisters(  3);
-	if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 		return return_code;
@@ -3492,13 +3513,13 @@ int setCemaxVel(uint8_t axis, uint32_t CEMaxVelValue) {
 /// 0 if success
 /// -1 else
 /// </returns>
-int setCeminVel(uint8_t axis, uint32_t CEMinVelValue) {
+int setCeminVel(Axes axis, uint32_t CEMinVelValue) {
 	uint32_t uint_vme_address = 0, uint_vme_data;
 	zygoLogInfo("Setting cyclic error min velocity on axis %u...\n", axis);
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCEMinVel);
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCEMinVel);
 	uint_vme_data = CEMinVelValue;
 	//enableAuxRegisters(  axis);
-	if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 		return return_code;
@@ -3517,37 +3538,33 @@ int setCeminVel(uint8_t axis, uint32_t CEMinVelValue) {
 /// 0 if success
 /// -1 else
 /// </returns>
-int readCalcCecoeffs(uint8_t axis, CECoeffs* CECalcCoeffs) {
+int readCalcCecoeffs(Axes axis, CECoeffs& CECalcCoeffs) {
 	uint32_t uint_vme_address = 0, uint_vme_data = 0;
 	zygoLogInfo("Reading cyclic error calculated coefficients on axis %u...\n", axis);
-	if (!CECalcCoeffs) {
-		zygoLogWarn("None of the pointer passed as argument should be NULL\n");
-		return BAD_ARG_POINTER;
-	}
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCEC0CalcCoeff);
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCEC0CalcCoeff);
 
 	//enableAuxRegisters(  3);
-	if ((return_code = readWrite("A24D32", uint_vme_address, &uint_vme_data, READ)) != RET_SUCCESS)
+	if (return_code = readWrite("A24D32", uint_vme_address, &uint_vme_data, READ))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 		return RET_FAILED;
 	}
 	// CE0 val is stored in zygo register as a complex Int16 value so we should 
 	// convert it to a complex number
-	convertCint162Complex(uint_vme_data, &(CECalcCoeffs->CEC0coeff));  //coeffs[0] = uint_vme_data;
+	convertCint162Complex(uint_vme_data, CECalcCoeffs.CEC0coeff);  //coeffs[0] = uint_vme_data;
 
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCEC1CalcCoeff);
-	if ((return_code = readWrite("A24D32", uint_vme_address, &uint_vme_data, READ)) != RET_SUCCESS)
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCEC1CalcCoeff);
+	if (return_code = readWrite("A24D32", uint_vme_address, &uint_vme_data, READ))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 		return return_code;
 	}
 	// CE1 val is stored in zygo register as a float value so we should 
 // convert it to double
-	convertFloat2Double(uint_vme_data, &(CECalcCoeffs->CEC1coeff));// coeffs[1] = uint_vme_data;
+	convertFloat2Decimal(uint_vme_data, &(CECalcCoeffs.CEC1coeff));// coeffs[1] = uint_vme_data;
 
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCECNCalcCoeff);
-	if ((return_code = readWrite("A24D32", uint_vme_address, &uint_vme_data, READ)) != RET_SUCCESS)
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCECNCalcCoeff);
+	if (return_code = readWrite("A24D32", uint_vme_address, &uint_vme_data, READ))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 		return return_code;
@@ -3555,7 +3572,7 @@ int readCalcCecoeffs(uint8_t axis, CECoeffs* CECalcCoeffs) {
 	//disableAuxRegisters(  3);
 	// CEN val is stored in zygo register as a complex float value so we should 
 // convert it to a complex number
-	convertCfloat2Complex(uint_vme_data, &(CECalcCoeffs->CECNcoeff));//coeffs[2] = uint_vme_data;
+	convertCfloat2Complex(uint_vme_data, CECalcCoeffs.CECNcoeff);//coeffs[2] = uint_vme_data;
 	return RET_SUCCESS;
 }
 /// <summary>
@@ -3569,21 +3586,16 @@ int readCalcCecoeffs(uint8_t axis, CECoeffs* CECalcCoeffs) {
 /// 0 if success
 /// -1 else
 /// </returns>
-int readCecoefBoundaries(uint8_t axis, CECoeffBoundaries* CE0CoeffBound, CECoeffBoundaries* CENCoeffBound) {
+int readCecoefBoundaries(Axes axis, CECoeffBoundaries& CE0CoeffBound, CECoeffBoundaries& CENCoeffBound) {
 	uint32_t uint_vme_address = 0, uint_vme_data = 0
 		, uint_vme_data1 = 0;
 	USHORT tmp1 = 0, tmp2 = 0;
-	if (!CE0CoeffBound || !CENCoeffBound) {
-		zygoLogWarn("None of the pointer passed as argument should be NULL\n");
-		return BAD_ARG_POINTER;
-	}
-
 	//enableAuxRegisters(  3);
 	for (int i = 0; i < 2; i++) {
 		// Read CE mag coefficient
-		uint_vme_address = ADD(BASE_ADDRESS[axis - 1], (i == 0 ? zCE0Mag : zCENMag));
+		uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], (i == 0 ? zCE0Mag : zCENMag));
 		zygoLogInfo("Reading cyclic error %s Mag coefficients on axis %u...\n", (i == 0 ? "0" : "N"), axis);
-		if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ)) != RET_SUCCESS)
+		if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ))
 		{
 			zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 			return return_code;
@@ -3592,9 +3604,9 @@ int readCecoefBoundaries(uint8_t axis, CECoeffBoundaries* CE0CoeffBound, CECoeff
 		uint_vme_data1 = uint_vme_data;
 		// Read CE min and max coefficients
 		zygoLogInfo("Reading cyclic error %s Min and Max coefficients on axis %u...\n", (i == 0 ? "0" : "N"), axis);
-		uint_vme_address = ADD(BASE_ADDRESS[axis - 1], (i == 0 ? zCE0Min : zCENMin));
+		uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], (i == 0 ? zCE0Min : zCENMin));
 		uint_vme_data = 0;
-		if ((return_code = readWrite("A24D32", uint_vme_address, &uint_vme_data, READ)) != RET_SUCCESS)
+		if (return_code = readWrite("A24D32", uint_vme_address, &uint_vme_data, READ))
 		{
 			zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 			return return_code;
@@ -3602,16 +3614,16 @@ int readCecoefBoundaries(uint8_t axis, CECoeffBoundaries* CE0CoeffBound, CECoeff
 
 		//disableAuxRegisters(  axis);
 		// CE Mag val is stored in zygo register as an uint16_t value so we should 
-		// convert it to a real number
-		convertUsfloat2Double(uint_vme_data1, (i == 0 ? &(CE0CoeffBound->CEMagcoeff) : &(CENCoeffBound->CEMagcoeff)));
+		// convert it to a real() number
+		convertUsfloat2Double(uint_vme_data1, (i == 0 ? &(CE0CoeffBound.CEMagcoeff) : &(CENCoeffBound.CEMagcoeff)));
 
 		//split data to get CE min and CE max value
 		tmp1 = uint_vme_data & 0xFFFF; // CE Min
 		tmp2 = (uint_vme_data >> 16) & 0xFFFF; //  CE max
 		// CE1 val is stored in zygo register as a float value so we should 
 	// convert it to double
-		convertUsfloat2Double(tmp1, (i == 0 ? &(CE0CoeffBound->CEMincoeff) : &(CENCoeffBound->CEMincoeff)));
-		convertUsfloat2Double(tmp2, (i == 0 ? &(CE0CoeffBound->CEMaxcoeff) : &(CENCoeffBound->CEMaxcoeff)));
+		convertUsfloat2Double(tmp1, (i == 0 ? &(CE0CoeffBound.CEMincoeff) : &(CENCoeffBound.CEMincoeff)));
+		convertUsfloat2Double(tmp2, (i == 0 ? &(CE0CoeffBound.CEMaxcoeff) : &(CENCoeffBound.CEMaxcoeff)));
 		uint_vme_data = 0;
 	}
 	return RET_SUCCESS;
@@ -3628,35 +3640,35 @@ int readCecoefBoundaries(uint8_t axis, CECoeffBoundaries* CE0CoeffBound, CECoeff
 /// 0 if success
 /// -1 else
 /// </returns>
-int calculateCeratio(uint8_t axis, CEratios* ceRatios, CEratioUnits units) {
+int calculateCeratio(Axes axis, CEratios& ceRatios, CEratioUnits units) {
 	CECoeffs ceCoeffs;
 	CEratios ceRatiotmp;
 	double temp = 0.0;
-	if ((return_code=readCalcCecoeffs(axis, &ceCoeffs)) != RET_SUCCESS)
+	if (return_code=readCalcCecoeffs(axis, ceCoeffs))
 		return return_code;
 	ceRatiotmp.measSignal = temp;
-	ceRatiotmp.CE0ratio = sqrt(pow(ceCoeffs.CEC0coeff.rpart, 2) + pow(ceCoeffs.CEC0coeff.ipart, 2)) / temp;
-	ceRatiotmp.CENratio = sqrt(pow(ceCoeffs.CECNcoeff.rpart, 2) + pow(ceCoeffs.CECNcoeff.ipart, 2)) / pow(temp, 2);
-	ceRatios->measSignal = temp;
+	ceRatiotmp.CE0ratio = sqrt(std::pow(ceCoeffs.CEC0coeff.real(), 2) + std::pow(ceCoeffs.CEC0coeff.real(), 2)) / temp;
+	ceRatiotmp.CENratio = sqrt(std::pow(ceCoeffs.CECNcoeff.real(), 2) + std::pow(ceCoeffs.CECNcoeff.imag(), 2)) / std::pow(temp, 2);
+	ceRatios.measSignal = temp;
 	switch (units)
 	{
-	case ratio_in_dB:
+	case CEratioUnits::ratio_in_dB:
 		zygoLogInfo("Performing CE ratio calculation in dB on axis %u...\n", axis);
-		//ceRatios->measSignal = 20 * log10(ceRatiotmp.measSignal);
-		ceRatios->CE0ratio = 20 * log10(ceRatiotmp.CE0ratio);
-		ceRatios->CENratio = 20 * log10(ceRatiotmp.CENratio);
+		//ceRatios.measSignal = 20 * log10(ceRatiotmp.measSignal);
+		ceRatios.CE0ratio = 20 * log10(ceRatiotmp.CE0ratio);
+		ceRatios.CENratio = 20 * log10(ceRatiotmp.CENratio);
 		break;
-	case ratio_in_percent:
+	case CEratioUnits::ratio_in_percent:
 		zygoLogInfo("Performing CE ratio calculation in percent on axis %u...\n", axis);
-		//ceRatios->measSignal = 100*ceRatiotmp.measSignal;
-		ceRatios->CE0ratio = 100 * ceRatiotmp.CE0ratio;
-		ceRatios->CENratio = 100 * ceRatiotmp.CENratio;
+		//ceRatios.measSignal = 100*ceRatiotmp.measSignal;
+		ceRatios.CE0ratio = 100 * ceRatiotmp.CE0ratio;
+		ceRatios.CENratio = 100 * ceRatiotmp.CENratio;
 		break;
-	case ratio_in_nmRMS:
+	case CEratioUnits::ratio_in_nmRMS:
 		zygoLogInfo("Performing CE ratio calculation in nmRMS on axis %u...\n", axis);
-		//ceRatios->measSignal =  ceRatiotmp.measSignal *(1/(2*PI))*(LAMBDA/(2*(double)(curInterferoConfig)))* 0.70710678118654;
-		ceRatios->CE0ratio = ceRatiotmp.CE0ratio * (1 / (2 * PI)) * (LAMBDA / (2 * (double)(curInterferoConfig))) * 0.70710678118654;
-		ceRatios->CENratio = ceRatiotmp.CENratio * (1 / (2 * PI)) * (LAMBDA / (2 * (double)(curInterferoConfig))) * 0.70710678118654;
+		//ceRatios.measSignal =  ceRatiotmp.measSignal *(1/(2*PI))*(LAMBDA/(2*static_cast<double>(curInterferoConfig)))* 0.70710678118654;
+		ceRatios.CE0ratio = ceRatiotmp.CE0ratio * (1 / (2 * PI)) * (LAMBDA / (2 * static_cast<double>(curInterferoConfig))) * 0.70710678118654;
+		ceRatios.CENratio = ceRatiotmp.CENratio * (1 / (2 * PI)) * (LAMBDA / (2 * static_cast<double>(curInterferoConfig))) * 0.70710678118654;
 		break;
 	default:
 		break;
@@ -3675,31 +3687,31 @@ int calculateCeratio(uint8_t axis, CEratios* ceRatios, CEratioUnits units) {
 /// 0 if success
 /// -1 else
 /// </returns>
-int getAproximateCeratio(uint8_t axis, CEratios* ceRatios, CEratioUnits units) {
+int getAproximateCeratio(Axes axis, CEratios& ceRatios, CEratioUnits units) {
 	CECoeffs ceCoeffs;
 	CECoeffBoundaries CE0bound = { 0,0,0 }, CENbound = { 0,0,0 };
 	double tmp;
-	if ((return_code = readCalcCecoeffs(axis, &ceCoeffs)) != RET_SUCCESS)
+	if (return_code = readCalcCecoeffs(axis, ceCoeffs))
 		return return_code;
-	if ((return_code=readCecoefBoundaries(axis, &CE0bound, &CENbound)) != RET_SUCCESS)
+	if (return_code=readCecoefBoundaries(axis, CE0bound, CENbound))
 		return return_code;
 	tmp = sqrt(ceCoeffs.CEC1coeff);
 	switch (units)
 	{
-	case ratio_in_dB:
+	case CEratioUnits::ratio_in_dB:
 		zygoLogInfo("Calculating estimate CE ratio  in dB on axis %u...\n", axis);
-		ceRatios->CE0ratio = 20 * log10(CE0bound.CEMagcoeff);
-		ceRatios->CENratio = 20 * log10(CENbound.CEMagcoeff);
+		ceRatios.CE0ratio = 20 * log10(CE0bound.CEMagcoeff);
+		ceRatios.CENratio = 20 * log10(CENbound.CEMagcoeff);
 		break;
-	case ratio_in_percent:
+	case CEratioUnits::ratio_in_percent:
 		zygoLogInfo("Calculating estimate CE ratio  in percent on axis %u...\n", axis);
-		ceRatios->CE0ratio = 100 * ((double)(CE0bound.CEMagcoeff)) / tmp;
-		ceRatios->CENratio = 100 * ((double)(CENbound.CEMagcoeff));
+		ceRatios.CE0ratio = 100 * (static_cast<double>(CE0bound.CEMagcoeff)) / tmp;
+		ceRatios.CENratio = 100 * (static_cast<double>(CENbound.CEMagcoeff));
 		break;
-	case ratio_in_nmRMS:
+	case CEratioUnits::ratio_in_nmRMS:
 		zygoLogInfo("Calculating estimate CE ratio  in nmRMS on axis %u...\n", axis);
-		ceRatios->CE0ratio = CE0bound.CEMagcoeff * (1 / (2 * PI)) * (LAMBDA / (2 * (double)(curInterferoConfig))) * 0.70710678118654;
-		ceRatios->CENratio = CENbound.CEMagcoeff * (1 / (2 * PI)) * (LAMBDA / (2 * (double)(curInterferoConfig))) * 0.70710678118654;
+		ceRatios.CE0ratio = CE0bound.CEMagcoeff * (1 / (2 * PI)) * (LAMBDA / (2 * static_cast<double>(curInterferoConfig))) * 0.70710678118654;
+		ceRatios.CENratio = CENbound.CEMagcoeff * (1 / (2 * PI)) * (LAMBDA / (2 * static_cast<double>(curInterferoConfig))) * 0.70710678118654;
 		break;
 	default:
 		break;
@@ -3720,20 +3732,20 @@ int getAproximateCeratio(uint8_t axis, CEratios* ceRatios, CEratioUnits units) {
 /// 0 if success
 /// -1 else
 /// </returns>
-int getCeratioLimits(uint8_t axis, CEratios* ceRatioLimits, CEratioUnits units) {
+int getCeratioLimits(Axes axis, CEratios& ceRatioLimits, CEratioUnits units) {
 	CECoeffs ceCoeffs;
 	CEratios ceRatiotmp;
 	CECoeffBoundaries CE0bound = { 0.0,0.0,0.0 }, CENbound = { 0.0,0.0,0.0 };
 	double tmp;
 	zygoLogInfo("Performing CE ratio limits calculation on axis %u...\n", axis);
-	if ((return_code = readCalcCecoeffs(axis, &ceCoeffs)) != RET_SUCCESS)
+	if (return_code = readCalcCecoeffs(axis, ceCoeffs))
 		return return_code;
-	if ((return_code = calculateCeratio(axis, &ceRatiotmp, units)) != RET_SUCCESS)
+	if (return_code = calculateCeratio(axis, ceRatiotmp, units))
 		return return_code;
 	tmp = sqrt(ceCoeffs.CEC1coeff);
 
-	ceRatioLimits->CE0ratio = tmp * (ceRatiotmp.CE0ratio) / 100;
-	ceRatioLimits->CENratio = (ceRatiotmp.CE0ratio) / 100;
+	ceRatioLimits.CE0ratio = tmp * (ceRatiotmp.CE0ratio) / 100;
+	ceRatioLimits.CENratio = (ceRatiotmp.CE0ratio) / 100;
 
 	return RET_SUCCESS;
 }
@@ -3749,41 +3761,41 @@ int getCeratioLimits(uint8_t axis, CEratios* ceRatioLimits, CEratioUnits units) 
 /// 0 if success
 /// -1 else
 /// </returns>
-int getAproximateCeratioBoundaries(uint8_t axis,
-	CEratiosBoundaries* ce0RatiosBoundaries, CEratiosBoundaries* ceNRatiosBoundaries, CEratioUnits units) {
-	CECoeffs ceCoeffs = { 0.0,0.0,0.0 };
-	CECoeffBoundaries CE0bound = { 0.0,0.0,0.0 }, CENbound = { 0.0,0.0,0.0 };
+int getAproximateCeratioBoundaries(Axes axis,
+	CEratiosBoundaries& ce0RatiosBoundaries, CEratiosBoundaries& ceNRatiosBoundaries, CEratioUnits units) {
+	CECoeffs ceCoeffs = { 0.0 };
+	CECoeffBoundaries CE0bound = { 0.0 }, CENbound = { 0.0};
 	double tmp;
-	if ((return_code = readCalcCecoeffs(axis, &ceCoeffs)) != RET_SUCCESS)
+	if (return_code = readCalcCecoeffs(axis, ceCoeffs))
 		return return_code;
-	if ((return_code = readCecoefBoundaries(axis, &CE0bound, &CENbound)) != RET_SUCCESS)
+	if (return_code = readCecoefBoundaries(axis, CE0bound, CENbound))
 		return return_code;
 	tmp = sqrt(ceCoeffs.CEC1coeff);
 	switch (units)
 	{
-	case ratio_in_dB:
+	case CEratioUnits::ratio_in_dB:
 		zygoLogInfo(" Estimation of CE ratio limits in dB on axis %u...\n", axis);
-		ce0RatiosBoundaries->CEMinratio = 20 * log10(((double)CE0bound.CEMincoeff)) / tmp;
-		ce0RatiosBoundaries->CEMaxratio = 20 * log10(((double)CE0bound.CEMaxcoeff)) / tmp;
+		ce0RatiosBoundaries.CEMinratio = 20 * log10((static_cast<double>(CE0bound.CEMincoeff))) / tmp;
+		ce0RatiosBoundaries.CEMaxratio = 20 * log10((static_cast<double>(CE0bound.CEMaxcoeff))) / tmp;
 
-		ceNRatiosBoundaries->CEMinratio = 20 * log10(((double)CENbound.CEMincoeff));
-		ceNRatiosBoundaries->CEMaxratio = 20 * log10(((double)CENbound.CEMaxcoeff));
+		ceNRatiosBoundaries.CEMinratio = 20 * log10((static_cast<double>(CENbound.CEMincoeff)));
+		ceNRatiosBoundaries.CEMaxratio = 20 * log10((static_cast<double>(CENbound.CEMaxcoeff)));
 		break;
-	case ratio_in_percent:
+	case CEratioUnits::ratio_in_percent:
 		zygoLogInfo(" Estimation of CE ratio limits in percent on axis %u...\n", axis);
-		ce0RatiosBoundaries->CEMinratio = 100 * ((double)(CE0bound.CEMincoeff)) / tmp;
-		ce0RatiosBoundaries->CEMaxratio = 100 * ((double)(CE0bound.CEMaxcoeff)) / tmp;
+		ce0RatiosBoundaries.CEMinratio = 100 * (static_cast<double>(CE0bound.CEMincoeff)) / tmp;
+		ce0RatiosBoundaries.CEMaxratio = 100 * (static_cast<double>(CE0bound.CEMaxcoeff)) / tmp;
 
-		ceNRatiosBoundaries->CEMinratio = 100 * ((double)(CENbound.CEMincoeff));
-		ceNRatiosBoundaries->CEMaxratio = 100 * ((double)(CENbound.CEMaxcoeff));
+		ceNRatiosBoundaries.CEMinratio = 100 * (static_cast<double>(CENbound.CEMincoeff));
+		ceNRatiosBoundaries.CEMaxratio = 100 * (static_cast<double>(CENbound.CEMaxcoeff));
 		break;
-	case ratio_in_nmRMS:
+	case CEratioUnits::ratio_in_nmRMS:
 		zygoLogInfo(" Estimation of CE ratio limits in nmRMS on axis %u...\n", axis);
-		ce0RatiosBoundaries->CEMinratio = CE0bound.CEMincoeff * (1 / (2 * PI)) * (LAMBDA / (2 * (double)(curInterferoConfig))) * 0.70710678118654;
-		ce0RatiosBoundaries->CEMaxratio = CE0bound.CEMaxcoeff * (1 / (2 * PI)) * (LAMBDA / (2 * (double)(curInterferoConfig))) * 0.70710678118654;
+		ce0RatiosBoundaries.CEMinratio = CE0bound.CEMincoeff * (1 / (2 * PI)) * (LAMBDA / (2 * static_cast<double>(curInterferoConfig))) * 0.70710678118654;
+		ce0RatiosBoundaries.CEMaxratio = CE0bound.CEMaxcoeff * (1 / (2 * PI)) * (LAMBDA / (2 * static_cast<double>(curInterferoConfig))) * 0.70710678118654;
 
-		ceNRatiosBoundaries->CEMinratio = CENbound.CEMincoeff * (1 / (2 * PI)) * (LAMBDA / (2 * (double)(curInterferoConfig))) * 0.70710678118654;
-		ceNRatiosBoundaries->CEMaxratio = CENbound.CEMaxcoeff * (1 / (2 * PI)) * (LAMBDA / (2 * (double)(curInterferoConfig))) * 0.70710678118654;
+		ceNRatiosBoundaries.CEMinratio = CENbound.CEMincoeff * (1 / (2 * PI)) * (LAMBDA / (2 * static_cast<double>(curInterferoConfig))) * 0.70710678118654;
+		ceNRatiosBoundaries.CEMaxratio = CENbound.CEMaxcoeff * (1 / (2 * PI)) * (LAMBDA / (2 * static_cast<double>(curInterferoConfig))) * 0.70710678118654;
 		break;
 	default:
 		break;
@@ -3804,35 +3816,35 @@ int getAproximateCeratioBoundaries(uint8_t axis,
 /// 0 if success
 /// -1 else
 /// </returns>
-int getCeRatioBoundaries(uint8_t axis, CEratios* ceRatios, CEratioUnits units) {
+int getCeRatioBoundaries(Axes axis, CEratios& ceRatios, CEratioUnits units) {
 	CECoeffs ceCoeffs;
 	CEratios ceRatiotmp;
 	double temp;
-	if ((return_code = readCalcCecoeffs(axis, &ceCoeffs)) != RET_SUCCESS)
+	if (return_code = readCalcCecoeffs(axis, ceCoeffs))
 		return return_code;
 	temp = sqrt(ceCoeffs.CEC1coeff);
 	ceRatiotmp.measSignal = temp;
-	ceRatiotmp.CE0ratio = (sqrt(pow(ceCoeffs.CEC0coeff.rpart, 2) + pow(ceCoeffs.CEC0coeff.ipart, 2))) / temp;
-	ceRatiotmp.CENratio = (sqrt(pow(ceCoeffs.CECNcoeff.rpart, 2) + pow(ceCoeffs.CECNcoeff.ipart, 2))) / pow(temp, 2);
+	ceRatiotmp.CE0ratio = (sqrt(std::pow(ceCoeffs.CEC0coeff.real(), 2) + std::pow(ceCoeffs.CEC0coeff.imag(), 2))) / temp;
+	ceRatiotmp.CENratio = (sqrt(std::pow(ceCoeffs.CECNcoeff.imag(), 2) + std::pow(ceCoeffs.CECNcoeff.imag(), 2))) / std::pow(temp, 2);
 	switch (units)
 	{
-	case ratio_in_dB:
+	case CEratioUnits::ratio_in_dB:
 		zygoLogInfo("Performing CE ratio limits calculation in dB on axis %u...\n", axis);
-		ceRatios->measSignal = 20 * log10(ceRatiotmp.measSignal);
-		ceRatios->CE0ratio = 20 * log10(ceRatiotmp.CE0ratio);
-		ceRatios->CENratio = 20 * log10(ceRatiotmp.CENratio);
+		ceRatios.measSignal = 20 * log10(ceRatiotmp.measSignal);
+		ceRatios.CE0ratio = 20 * log10(ceRatiotmp.CE0ratio);
+		ceRatios.CENratio = 20 * log10(ceRatiotmp.CENratio);
 		break;
-	case ratio_in_percent:
+	case CEratioUnits::ratio_in_percent:
 		zygoLogInfo("Performing CE ratio limits calculation in pecent on axis %u...\n", axis);
-		ceRatios->measSignal = 100 * ceRatiotmp.measSignal;
-		ceRatios->CE0ratio = 100 * ceRatiotmp.CE0ratio;
-		ceRatios->CENratio = 100 * ceRatiotmp.CENratio;
+		ceRatios.measSignal = 100 * ceRatiotmp.measSignal;
+		ceRatios.CE0ratio = 100 * ceRatiotmp.CE0ratio;
+		ceRatios.CENratio = 100 * ceRatiotmp.CENratio;
 		break;
-	case ratio_in_nmRMS:
+	case CEratioUnits::ratio_in_nmRMS:
 		zygoLogInfo("Performing CE ratio limits calculation in nmRMS on axis %u...\n", axis);
-		ceRatios->measSignal = ceRatiotmp.measSignal * (1 / (2 * PI)) * (LAMBDA / (2 * (double)(curInterferoConfig))) * 0.70710678118654;
-		ceRatios->CE0ratio = ceRatiotmp.CE0ratio * (1 / (2 * PI)) * (LAMBDA / (2 * (double)(curInterferoConfig))) * 0.70710678118654;
-		ceRatios->CENratio = ceRatiotmp.CENratio * (1 / (2 * PI)) * (LAMBDA / (2 * (double)(curInterferoConfig))) * 0.70710678118654;
+		ceRatios.measSignal = ceRatiotmp.measSignal * (1 / (2 * PI)) * (LAMBDA / (2 * static_cast<double>(curInterferoConfig))) * 0.70710678118654;
+		ceRatios.CE0ratio = ceRatiotmp.CE0ratio * (1 / (2 * PI)) * (LAMBDA / (2 * static_cast<double>(curInterferoConfig))) * 0.70710678118654;
+		ceRatios.CENratio = ceRatiotmp.CENratio * (1 / (2 * PI)) * (LAMBDA / (2 * static_cast<double>(curInterferoConfig))) * 0.70710678118654;
 		break;
 	default:
 		break;
@@ -3845,11 +3857,10 @@ int getCeRatioBoundaries(uint8_t axis, CEratios* ceRatios, CEratioUnits units) {
 /// <param name="nbr">register value</param>
 /// <param name=" val">a complex variable to store the converted value in</param>
 /// <returns></returns>
-int convertCint162Complex(uint32_t nbr, complex* val) {
+int convertCint162Complex(uint32_t nbr, std::complex<double>& val) {
 
 	zygoLogInfo("Conversion from complex int16 to double...\n");
-	val->ipart = (double)((short)(nbr & 0xFFFF));
-	val->rpart = (double)((short)(nbr & 0xFFFF0000) >> 16);
+	val = std::complex<double>(static_cast<double>((short)(nbr & 0xFFFF)),static_cast<double>((short)((nbr & 0xFFFF0000) >> 16)));
 	return RET_SUCCESS;
 }
 /// <summary>
@@ -3859,9 +3870,9 @@ int convertCint162Complex(uint32_t nbr, complex* val) {
 /// <param name="nbr">the complex number </param>
 /// <param name="val"> a pointer on a variable to store the result</param>
 /// <returns> 0 </returns>
-int convertComplex2Uint(complex nbr, uint32_t* val) {
+int convertComplex2Uint(std::complex<double> nbr, uint32_t* val) {
 	zygoLogInfo("Conversion from complex  to uint32_t...\n");
-	*val = (((uint32_t)(nbr.rpart) & 0xFFFF) << 16) | (uint32_t)(nbr.ipart) & (uint32_t)0xFFFF;
+	*val = (((uint32_t)(nbr.real()) & 0xFFFF) << 16) | (uint32_t)(nbr.imag()) & (uint32_t)0xFFFF;
 	return RET_SUCCESS;
 }
 
@@ -3871,10 +3882,9 @@ int convertComplex2Uint(complex nbr, uint32_t* val) {
 /// <param name="cfloatNbr">the complex float value</param>
 /// <param name="complexVal"> the complex pointer to store the result</param>
 /// <returns>0 </returns>
-int convertCfloat2Complex(uint32_t cfloatNbr, complex* complexVal) {
+int convertCfloat2Complex(uint32_t cfloatNbr, std::complex<double>& complexVal) {
 
 	zygoLogInfo("Conversion from complex float to complex...\n");
-	uint32_t rpart = 0, ipart = 0;
 	USHORT exp = 0, Rsign = 0, Isign = 0, Imant = 0, Rmant = 0, temp = 0;
 	temp = (cfloatNbr & 0xFF000000) >> 23;
 	Rsign = temp & 0x1;
@@ -3883,8 +3893,7 @@ int convertCfloat2Complex(uint32_t cfloatNbr, complex* complexVal) {
 	temp = ((cfloatNbr >> 11) & 0xFFF);
 	Isign = temp & 0x1;
 	Rmant = temp >> 1;
-	complexVal->ipart = (1 - 2 * (double)Isign) * Imant * pow(2, (double)exp - 127 - 10);
-	complexVal->rpart = (1 - 2 * (double)Rsign) * Rmant * pow(2, (double)exp - 127 - 10);
+	complexVal = std::complex<double>((1 - 2 * static_cast<double>(Isign)) * Imant * std::pow(2, static_cast<double>(exp) - 127 - 10), (1 - 2 * static_cast<double>(Rsign)) * Rmant * std::pow(2, static_cast<double>(exp) - 127 - 10));
 	return RET_SUCCESS;
 }
 
@@ -3894,39 +3903,39 @@ int convertCfloat2Complex(uint32_t cfloatNbr, complex* complexVal) {
 /// <param name="complexNbr"> the complex value </param>
 /// <param name="cfloatVal">the complex float pointer to store the result </param>
 /// <returns>0 </returns>
-int convertComplex2Cfloat(complex complexNbr, uint32_t* cfloatVal) {
+int convertComplex2Cfloat(std::complex<double> complexNbr, uint32_t* cfloatVal) {
 
 	zygoLogInfo("Conversion from complex to complex float...\n");
 	uint32_t rexp = 0, iexp = 0, exp = 0;
-	rexp = (uint32_t)floor(log2(complexNbr.rpart));
-	iexp = (uint32_t)floor(log2(complexNbr.ipart));
+	rexp = (uint32_t)floor(log2(complexNbr.real()));
+	iexp = (uint32_t)floor(log2(complexNbr.imag()));
 	exp = max(rexp, iexp);
-	*cfloatVal = (exp + 127) * 0x1000000 + (complexNbr.rpart < 0 ? 0x8000000 : 0)
-		+ (uint32_t)(round(sqrt(pow(complexNbr.rpart, 2)) * pow(2, -(double)exp + 10))) * 0x1000
-		+ (uint32_t)((complexNbr.ipart < 0 ? 0x800 : 0) + round(sqrt(pow((complexNbr.ipart), 2)) * pow(2, -(double)exp + 10)));//use sqrt bcuz abs() does take only integer
+	*cfloatVal = (exp + 127) * 0x1000000 + (complexNbr.real() < 0 ? 0x8000000 : 0)
+		+ (uint32_t)(round(sqrt(std::pow(complexNbr.real(), 2)) * std::pow(2, -static_cast<double>(exp) + 10))) * 0x1000
+		+ (uint32_t)((complexNbr.imag() < 0 ? 0x800 : 0) + round(sqrt(std::pow((complexNbr.imag()), 2)) * std::pow(2, -static_cast<double>(exp) + 10)));//use sqrt bcuz abs() does take only integer
 	return RET_SUCCESS;
 }
 /// <summary>
-/// The function convert a given float number to a real number 
+/// The function convert a given float number to a real() number 
 /// </summary>
 /// <param name="floatNbr"> the float value</param>
-/// <param name="doubleVal">the real pointer to store the result</param>
+/// <param name="doubleVal">the real() pointer to store the result</param>
 /// <returns>0 </returns>
-int convertFloat2Double(uint32_t floatNbr, double* doubleVal) {
+int convertFloat2Decimal(uint32_t floatNbr, double* doubleVal) {
 	zygoLogInfo("Conversion from float to double...\n");
 	uint32_t sign = 0, exp = 0, mant = 0, temp = 0;
 	temp = floatNbr & (uint32_t)0x1FFFFFF;
 	sign = temp >> 24;
 	exp = (temp >> 16) & (uint32_t)0xFF;
 	mant = temp & (uint32_t)0xFFFF;
-	*doubleVal = (1 - 2 * (double)sign) * ((double)mant + (double)((uint32_t)0x10000)) * pow(2, (double)exp - 127 - 16);
+	*doubleVal = (1 - 2 * static_cast<double>(sign)) * (static_cast<double>(mant + 0x10000)) * std::pow(2, exp - 127 - 16);
 	zygoLogInfo("doubleVal is %lf\n", *doubleVal);
 	return RET_SUCCESS;
 }
 /// <summary>
-/// The function convert a given real number to a float number 
+/// The function convert a given real() number to a float number 
 /// </summary>
-/// <param name="doubleNbr"> the real value</param>
+/// <param name="doubleNbr"> the real() value</param>
 /// <param name="floatVal">the float pointer to store the result</param>
 /// <returns>0 </returns>
 int convertDouble2Float(double doubleNbr, uint32_t* floatVal) {
@@ -3934,34 +3943,34 @@ int convertDouble2Float(double doubleNbr, uint32_t* floatVal) {
 	USHORT exp = 0;
 	exp = (USHORT)floor(log2(doubleNbr));
 	*floatVal = (doubleNbr < 0 ? 0x1000000 : 0) + (exp + 127) * 0x10000
-		+ (uint32_t)(round(sqrt(pow(doubleNbr, 2)) * pow(2, 16 - (double)exp))) & 0xFFFF;//sqrt(pow(doubleNbr,2))=abs(doubleNbr)
+		+ (uint32_t)(round(sqrt(std::pow(doubleNbr, 2)) * std::pow(2, 16 - static_cast<double>(exp)))) & 0xFFFF;//sqrt(std::pow(doubleNbr,2))=abs(doubleNbr)
 	return RET_SUCCESS;
 }
 /// <summary>
-/// The function convert a given uint16_t float number to a real number 
+/// The function convert a given uint16_t float number to a real() number 
 /// </summary>
 /// <param name="USFloatNbr"> the uint16_t float value</param>
-/// <param name="doubleVal">the real pointer to store the result</param>
+/// <param name="doubleVal">the real() pointer to store the result</param>
 /// <returns>0 </returns>
 int convertUsfloat2Double(uint16_t USFloatNbr, double* doubleVal) {
 	USHORT exp = 0, mant = 0;
 	zygoLogInfo("Conversion from uint16_t float to double...\n");
 	exp = (USHORT)(USFloatNbr >> 8) & (USHORT)0xFF;
 	mant = (USHORT)USFloatNbr & (USHORT)0xFF;
-	*doubleVal = ((double)mant + (double)((USHORT)0x100)) * pow(2, (double)exp - 127 - 8);
+	*doubleVal = (static_cast<double>(mant) + static_cast<double>((USHORT)0x100)) * std::pow(2, static_cast<double>(exp) - 127 - 8);
 	return RET_SUCCESS;
 }
 /// <summary>
-/// The function convert a given real number to an uint16_t float number  
+/// The function convert a given real() number to an uint16_t float number  
 /// </summary>
-/// <param name="doubleNbr"> the real value</param>
+/// <param name="doubleNbr"> the real() value</param>
 /// <param name="USFloatVal">the float pointer to store the result</param>
 /// <returns>0 </returns>
 int convertDouble2Usfloat(double doubleNbr, PUSHORT USFloatVal) {
 	USHORT exp = 0;
 	zygoLogInfo("Conversion from double to uint16_t float...\n");
 	exp = (USHORT)floor(log2(doubleNbr));
-	*USFloatVal = (exp + 127) * 0x100 + (uint32_t)(round((doubleNbr)*pow(2, 8 - (double)exp))) & 0x00FF;
+	*USFloatVal = (exp + 127) * 0x100 + (uint32_t)(round((doubleNbr)*std::pow(2, 8 - static_cast<double>(exp)))) & 0x00FF;
 	return RET_SUCCESS;
 }
 /// <summary>
@@ -3974,12 +3983,12 @@ int convertDouble2Usfloat(double doubleNbr, PUSHORT USFloatVal) {
 /// 0 if success
 /// -1 else
 /// </returns>
-int setCompARegVal32(uint8_t axis, uint32_t compAval32) {
+int setCompARegVal32(Axes axis, uint32_t compAval32) {
 	uint32_t uint_vme_address = 0, uint_vme_data;
 	zygoLogInfo("Setting comparator A register 32bits value to 0x%08x on axis %u...\n", compAval32, axis);
 	uint_vme_data = compAval32;
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCompAMSB);
-	if ((return_code = readWrite("A24D32", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCompAMSB);
+	if (return_code = readWrite("A24D32", uint_vme_address, &uint_vme_data, WRITE))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 		return return_code;
@@ -3995,23 +4004,19 @@ int setCompARegVal32(uint8_t axis, uint32_t compAval32) {
 /// 0 if success
 /// -1 else
 /// </returns>
-int enable37BitsSignExtension(uint8_t axis) {
+int enable37BitsSignExtension(Axes axis) {
 	uint32_t uint_vme_address = 0, uint_vme_data;
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCtrl0);
-	uint_vme_data = 0;
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCtrl0);
+	uint_vme_data = 0x40;
 
 	zygoLogInfo("Enabling 37 bits sign extension on axis %u...\n", axis);
-	if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ)) != RET_SUCCESS)
+	if (return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_OR_OP_CODE))
 	{
-		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
+		zygoLogWarn("Read write modify failed!  \n");
 		return return_code;
 	}
-	uint_vme_data |= 0x40;
-	if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
-	{
-		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
-		return return_code;
-	}
+
+
 	return RET_SUCCESS;
 }
 /// <summary>
@@ -4023,22 +4028,18 @@ int enable37BitsSignExtension(uint8_t axis) {
 /// 0 if success
 /// -1 else
 /// </returns>
-int disable37bitsSignExtension(uint8_t axis) {
-	uint32_t uint_vme_address = 0, uint_vme_data;
+int disable37bitsSignExtension(Axes axis) {
+	uint32_t uint_vme_address = 0, uint_vme_data = 0xFFBF;
 	zygoLogInfo("Disabling 37 bits sign extension on axis %u...\n", axis);
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCtrl0);
-	uint_vme_data = 0;
-	if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ)) != RET_SUCCESS)
+
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCtrl0);
+
+	if (return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_AND_OP_CODE))
 	{
-		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
+		zygoLogWarn("Read write modify failed!  \n");
 		return return_code;
 	}
-	uint_vme_data &= 0xFFBF;
-	if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
-	{
-		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
-		return return_code;
-	}
+
 	return RET_SUCCESS;
 }
 /// <summary>
@@ -4052,24 +4053,24 @@ int disable37bitsSignExtension(uint8_t axis) {
 /// 0 if success
 /// -1 else
 /// </returns>
-int setKpAndKvCoeff(uint8_t axis, int Kp, int Kv) {
+int setKpAndKvCoeff(Axes axis, int Kp, int Kv) {
 
 	zygoLogInfo("Setting digital filter coefficient to (Kp=%d, Kv=%d)on axis %u...\n", Kp, Kv, axis);
-	if ((checkLimits(Kp, KPMIN, KPMAX) != RET_SUCCESS) || (checkLimits(Kv, KVMIN, KVMAX) != RET_SUCCESS)) {
+	if ((checkLimits(Kp, KPMIN, KPMAX) || checkLimits(Kv, KVMIN, KVMAX)) != RET_SUCCESS){
 
 		zygoLogWarn("Bad Kp or Kv value. Kp range is -2 to -9 and Kv range is -7 to -21\n");
 		return BAD_ARG_VALUE;
 	}
 	uint32_t uint_vme_address = 0, uint_vme_data;
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCtrl1);
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCtrl1);
 	uint_vme_data = 0;
-	if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ)) != RET_SUCCESS)
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 		return return_code;
 	}
 	uint_vme_data |= ((-Kp - 2) << 4) + (-(Kv + 7) / 2);
-	if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 		return return_code;
@@ -4088,7 +4089,7 @@ int setKpAndKvCoeff(uint8_t axis, int Kp, int Kv) {
 /// 0 if success
 /// -1 else
 /// </returns>
-int getKpAndKvCoeff(uint8_t axis, int* coeff) {
+int getKpAndKvCoeff(Axes axis, int* coeff) {
 
 	zygoLogInfo("Getting digital filter coefficient(Kp,Kv) on axis %u...\n", axis);
 	if (coeff == NULL)
@@ -4097,9 +4098,9 @@ int getKpAndKvCoeff(uint8_t axis, int* coeff) {
 		return BAD_ARG_POINTER;
 	}
 	uint32_t uint_vme_address = 0, uint_vme_data;
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCtrl1);
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCtrl1);
 	uint_vme_data = 0;
-	if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ)) != RET_SUCCESS)
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 		return return_code;
@@ -4123,14 +4124,14 @@ int getKpAndKvCoeff(uint8_t axis, int* coeff) {
 /// 0 if success
 /// -1 else
 /// </returns>
-int setCompARegVal37(uint8_t axis, uint32_t compAval32, uint32_t compAvalExt) {
+int setCompARegVal37(Axes axis, uint32_t compAval32, uint32_t compAvalExt) {
 	uint32_t uint_vme_address = 0, uint_vme_data;
 	zygoLogInfo("Setting comparator A 37bits value to 0x%09x on axis %u...\n", compAval32, axis);
 	setCompARegVal32(axis, compAval32);
 	zygoLogInfo("Setting comparator A ext value to 0x%02x on axis %u...\n", compAvalExt, axis);
 	uint_vme_data = compAvalExt;
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCompAExt);
-	if ((return_code = readWrite("A24D8", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCompAExt);
+	if (return_code = readWrite("A24D8", uint_vme_address, &uint_vme_data, WRITE))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 		return return_code;
@@ -4147,12 +4148,12 @@ int setCompARegVal37(uint8_t axis, uint32_t compAval32, uint32_t compAvalExt) {
 /// 0 if success
 /// -1 else
 /// </returns>
-int setCompBRegVal32(uint8_t axis, uint32_t compBval32) {
+int setCompBRegVal32(Axes axis, uint32_t compBval32) {
 	uint32_t uint_vme_address = 0, uint_vme_data;
 	zygoLogInfo("Setting comparator B 32bits value to 0x%08x on axis %u...\n", compBval32, axis);
 	uint_vme_data = compBval32;
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCompBMSB);
-	if ((return_code = readWrite("A24D32", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCompBMSB);
+	if (return_code = readWrite("A24D32", uint_vme_address, &uint_vme_data, WRITE))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 		return return_code;
@@ -4170,18 +4171,18 @@ int setCompBRegVal32(uint8_t axis, uint32_t compBval32) {
 /// 0 if success
 /// -1 else
 /// </returns>
-int setCompBRegVal37(uint8_t axis, uint32_t compBval32, uint32_t compBvalExt) {
+int setCompBRegVal37(Axes axis, uint32_t compBval32, uint32_t compBvalExt) {
 	uint32_t uint_vme_address = 0, uint_vme_data;
 	zygoLogInfo("Setting comparator B 32bits value to 0x%08x on axis %u...\n", compBval32, axis);
-	if ((return_code = setCompBRegVal32(axis, compBval32)) != RET_SUCCESS)
+	if (return_code = setCompBRegVal32(axis, compBval32))
 	{
-		zygoLogWarn("setPositionOffset37 failed !  \n");
+		zygoLogWarn("setCompBRegVal32 failed !  \n");
 		return return_code;
 	}
 	zygoLogInfo("Setting comparator B ext value to 0x%02x on axis %u...\n", compBvalExt, axis);
 	uint_vme_data = compBvalExt;
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCompBExt);
-	if ((return_code = readWrite("A24D8", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCompBExt);
+	if (return_code = readWrite("A24D8", uint_vme_address, &uint_vme_data, WRITE))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 		return return_code;
@@ -4199,19 +4200,34 @@ int setCompBRegVal37(uint8_t axis, uint32_t compBval32, uint32_t compBvalExt) {
 /// 0 if success
 /// -1 else
 /// </returns>
-int setPositionOffset37(uint8_t axis, double offsetPos) {
-	uint32_t uint_vme_address = 0, uint_vme_data;
-	uint32_t offsetPos32 = (uint32_t)offsetPos;
-	uint32_t offsetPosExt = ((uint32_t)offsetPos >> 32);
-	if ((return_code = setPositionOffset32(axis, offsetPos32)) != RET_SUCCESS)
+
+int setPositionOffset37(Axes axis, double* offsetPos) {
+
+	uint32_t uint_vme_address = 0, uint_vme_data, mem[2];
+	uint8_t offsetPosExt;
+	uint64_t ptr[1];
+	my_int64_t val[1];
+	if (offsetPos == NULL) {
+		zygoLogWarn("Can not accept Null pointer in setPositionOffset37 function\n");
+		return BAD_ARG_POINTER;
+	}
+	*val = (my_int64_t)(*offsetPos / positionScale);
+	*ptr = (uint64_t)(*val);
+	memcpy(mem, ptr, sizeof(my_int64_t));
+	uint_vme_data = mem[0];
+	offsetPosExt = (uint8_t)(mem[1] & 0xFF);
+	zygoLogInfo("Setting offset position 32bits value to 0x%08x on axis %u...\n", uint_vme_data, axis);
+	zygoLogInfo("Setting offset position ext value to 0x%8x on axis %u...\n", offsetPosExt, axis);
+
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zOffsetMSB);
+	if (return_code = readWrite("A24D32", uint_vme_address, &uint_vme_data, WRITE))
 	{
-		zygoLogWarn("setPositionOffset32 failed !  \n");
+		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 		return return_code;
 	}
-	zygoLogInfo("Setting offset position ext value to 0x%02x on axis %u...\n", offsetPosExt, axis);
 	uint_vme_data = offsetPosExt;
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zOffsetExt);
-	if ((return_code = readWrite("A24D8", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zOffsetExt);
+	if (return_code = readWrite("A24D8", uint_vme_address, &uint_vme_data, WRITE))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 		return return_code;
@@ -4219,6 +4235,41 @@ int setPositionOffset37(uint8_t axis, double offsetPos) {
 	return RET_SUCCESS;
 }
 
+/// <summary>
+/// This function sets the 32 bits position offset on a specific axis.
+/// </summary>
+/// <param name="dev">device</param>
+/// <param name="axis">the axis' number</param>
+/// <param name="offsetPos">the value of the offset on 32bits</param>
+/// <returns>
+/// 0 if success
+/// -1 else
+/// </returns>
+int setPositionOffset32(Axes axis, double* offsetPos) {
+	if (offsetPos == NULL) {
+		zygoLogWarn("Can not accept Null pointer in setPositionOffset32 function\n");
+		return BAD_ARG_POINTER;
+	}
+	uint32_t uint_vme_address = 0, uint_vme_data;
+	int32_t tmp = 0;
+	tmp = (int32_t)((*offsetPos) / positionScale);
+	uint_vme_data = (uint32_t)(tmp);
+	zygoLogInfo("Setting position offset 32bits value to 0x%08x on axis %u....\n", tmp, axis);
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zOffsetMSB);
+	if (return_code = readWrite("A24D32", uint_vme_address, &uint_vme_data, WRITE))
+	{
+		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
+		return return_code;
+	}
+	uint_vme_data = 0;
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zOffsetExt);
+	if (return_code = readWrite("A24D8", uint_vme_address, &uint_vme_data, WRITE))
+	{
+		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
+		return return_code;
+	}
+	return RET_SUCCESS;
+}
 
 /// <summary>
 /// The function sets the  value of the offset position register on a specific axis
@@ -4230,10 +4281,15 @@ int setPositionOffset37(uint8_t axis, double offsetPos) {
 /// 0 if success
 /// -1 else
 /// </returns>
-int setPositionOffset(uint8_t axis, double offsetPos) {
+
+int setPositionOffset(Axes axis, double* offsetPos) {
+	if (offsetPos == NULL) {
+		zygoLogWarn("Can not accept Null pointer in setPositionOffset function\n");
+		return BAD_ARG_POINTER;
+	}
 	if(!curPrecision)
 	{
-		if ((return_code = setPositionOffset32(axis, offsetPos)) != RET_SUCCESS)
+		if (return_code = setPositionOffset32(axis, offsetPos))
 		{
 			zygoLogWarn("setPositionOffset32 failed !  \n");
 			return return_code;
@@ -4241,12 +4297,69 @@ int setPositionOffset(uint8_t axis, double offsetPos) {
 	}
 	else
 	{
-		if ((return_code = setPositionOffset37(axis, offsetPos)) != RET_SUCCESS)
+		if (return_code = setPositionOffset37(axis, offsetPos))
 		{
 			zygoLogWarn("setPositionOffset37 failed !  \n");
 			return return_code;
 		}
 		
+	}
+	resetAxis(axis);
+	return RET_SUCCESS;
+}
+
+
+/// <summary>
+/// This function gets the position offset on a specific axis.
+/// </summary>
+/// <param name="dev">device</param>
+/// <param name="axis">the axis' number</param>
+/// <param name="offsetPos">the value return parameter</param>
+/// <returns>
+/// 0 if success
+/// -1 else
+/// </returns>
+int getPositionOffset(Axes axis, double* offsetPos) {
+	zygoLogInfo("Getting offset position value on axis %u...\n", axis);
+	if (offsetPos == NULL) {
+		zygoLogWarn("Can not accept Null pointer in getPositionOffset function\n");
+		return BAD_ARG_POINTER;
+	}
+	short val = 0;
+	uint32_t uint_vme_data = 0,
+		uint_vme_address = 0, temp32 = 0;
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zOffsetMSB);
+	if (return_code = readWrite("A24D32", uint_vme_address, &uint_vme_data, READ))
+	{
+		zygoLogWarn("getPositionOffset: Register %6X access Faillure !  \n", uint_vme_address);
+		return return_code;
+	}
+	if (curPrecision) {//37 bits read
+
+		temp32 = (uint32_t)uint_vme_data;
+		uint_vme_data = 0;
+		uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zOffsetExt);		//Read the Ext
+		if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ))
+		{
+			zygoLogWarn("getPositionOffset: Register %6X access Faillure !  \n", uint_vme_address);
+			return return_code;
+		}
+		val = (short)uint_vme_data;
+		//*
+		if ((val & 0x10) != 0) { // check if the ext value is negative
+
+			*offsetPos = static_cast<double>((short)(0xffe0 + (val & 0x001f)));
+
+			*offsetPos = (((*offsetPos) * (TMP32)) + temp32) * positionScale;
+
+		}
+		else {
+			*offsetPos = (((val & 0x1F) * (TMP32)) + temp32) * positionScale;
+		}
+		//*/
+	}
+	else {//32 bits read
+		*offsetPos = (static_cast<double>((int)uint_vme_data)) * positionScale;
 	}
 	return RET_SUCCESS;
 }
@@ -4261,16 +4374,48 @@ int setPositionOffset(uint8_t axis, double offsetPos) {
 /// 0 if success
 /// -1 else
 /// </returns>
-int getPresetPosition(uint8_t axis, double* presetPos) {
-	uint32_t uint_vme_address = 0, uint_vme_data;
+int getPresetPosition(Axes axis, double* presetPos) {
+
 	zygoLogInfo("Getting preset position value on axis %u...\n", axis);
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zPresPosMSB);
-	if ((return_code = readWrite("A24D32", uint_vme_address, &uint_vme_data, READ)) != RET_SUCCESS)
+	if (presetPos == NULL) {
+		zygoLogWarn("Can not accept Null pointer in getPositionOffset function\n");
+		return BAD_ARG_POINTER;
+	}
+	short val = 0;
+	uint32_t uint_vme_data = 0,
+		uint_vme_address = 0, temp32 = 0;
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zPresPosMSB);
+	if (return_code = readWrite("A24D32", uint_vme_address, &uint_vme_data, READ))
 	{
-		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
+		zygoLogWarn("getPresetPosition: Register %6X access Faillure !  \n", uint_vme_address);
 		return return_code;
 	}
-	*presetPos = (double)((int)uint_vme_data);
+	if (curPrecision) {//37 bits read
+
+		temp32 = (uint32_t)uint_vme_data;
+		uint_vme_data = 0;
+		uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zPresPosExt);		//Read the Ext
+		if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ))
+		{
+			zygoLogWarn("getPresetPosition: Register %6X access Faillure !  \n", uint_vme_address);
+			return return_code;
+		}
+		val = (short)uint_vme_data;
+		//*
+		if ((val & 0x10) != 0) { // check if the ext value is negative
+
+			*presetPos = static_cast<double>((short)(0xffe0 + static_cast<short>(val & 0x1f)));
+			*presetPos = (((*presetPos) * (TMP32)) + temp32) * positionScale;
+
+		}
+		else {
+			*presetPos = (((val & 0x1F) * (TMP32)) + temp32) * positionScale;
+		}
+		//*/
+	}
+	else {//32 bits read
+		*presetPos = (static_cast<double>((int)uint_vme_data)) * positionScale;
+	}
 	return RET_SUCCESS;
 }
 
@@ -4284,16 +4429,28 @@ int getPresetPosition(uint8_t axis, double* presetPos) {
 /// 0 if success
 /// -1 else
 /// </returns>
-int setPresetPosition32(uint8_t axis, double presetPos32) {
+int setPresetPosition32(Axes axis, double* presetPos) {
 	uint32_t uint_vme_address = 0, uint_vme_data;
-	zygoLogInfo("Setting preset position 32bits value to 0x%08x on axis %u...\n", presetPos32, axis);
-	uint_vme_data = (uint32_t)presetPos32;
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zPresPosMSB);
-	if ((return_code = enablePreset(axis)) != RET_SUCCESS) {
+
+	uint_vme_data = (uint32_t)((int32_t)((*presetPos) / positionScale));
+	if (presetPos == NULL) {
+		zygoLogWarn("Can not accept Null pointer in setPresetPosition32 function\n");
+		return BAD_ARG_POINTER;
+	}
+	zygoLogInfo("Setting preset position 32bits value to 0x%08x on axis %u...\n", uint_vme_data, axis);	
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zPresPosMSB);
+	if (return_code = enablePreset(axis)) {
 		zygoLogWarn("enablePreset failed !  \n");
 		return return_code;
 	}
-	if ((return_code = readWrite("A24D32", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+	if (return_code = readWrite("A24D32", uint_vme_address, &uint_vme_data, WRITE))
+	{
+		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
+		return return_code;
+	}
+	uint_vme_data = 0;
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zPresPosExt);
+	if (return_code = readWrite("A24D8", uint_vme_address, &uint_vme_data, WRITE))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 		return return_code;
@@ -4301,7 +4458,7 @@ int setPresetPosition32(uint8_t axis, double presetPos32) {
 	return RET_SUCCESS;
 }
 /// <summary>
-/// The function sets the 32bits value of the offset position register on a specific axis
+/// The function sets the 37bits value of the offset position register on a specific axis
 /// </summary>
 /// <param name="dev">device</param>
 /// <param name="axis">the axis' number</param>
@@ -4310,19 +4467,44 @@ int setPresetPosition32(uint8_t axis, double presetPos32) {
 /// 0 if success
 /// -1 else
 /// </returns>
-int setPresetPosition37(uint8_t axis, double presetPos) {
-	uint32_t uint_vme_address = 0, uint_vme_data;
-	uint32_t presetPos32 = (uint32_t)presetPos;
-	uint32_t presetPosExt = ((uint32_t)presetPos >> 32);
-	if ((return_code = setPositionOffset32(axis, presetPos32)) != RET_SUCCESS)
-	{
-		zygoLogWarn("setPositionOffset32 failed !  \n");
+int setPresetPosition37(Axes axis, double* presetPos) {
+	uint32_t uint_vme_address = 0, uint_vme_data, mem[2];
+	uint8_t presetPosExt;
+	uint64_t ptr[1];
+	uint64_t val[1];
+
+	if (presetPos == NULL) {
+		zygoLogWarn("Can not accept Null pointer in setPresetPosition37 function\n");
+		return BAD_ARG_POINTER;
+	}
+	*val = (uint64_t)(*presetPos / positionScale);
+	*ptr = (uint64_t)(*val);
+	memcpy(mem, ptr, sizeof(my_int64_t));
+	uint_vme_data = mem[0];
+	presetPosExt = (uint8_t)(mem[1] & 0xFF);
+	/*
+	uint_vme_data = (uint32_t)(*ptr & (uint32_t)0xFFFFFFFF);
+	presetPosExt = (uint8_t)((((*ptr >> 31) >> 1)) & (uint32_t)0x1F);
+	*/
+	if (*presetPos < 0) {
+
+	}
+	zygoLogInfo("Setting preset position 32bits value to 0x%08x on axis %u...\n", uint_vme_data, axis);
+	zygoLogInfo("Setting preset position ext value to 0x%x on axis %u...\n", presetPosExt, axis);
+
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zPresPosMSB);
+	if (return_code = enablePreset(axis)) {
+		zygoLogWarn("enablePreset failed !  \n");
 		return return_code;
 	}
-	zygoLogInfo("Setting preset position ext value to 0x%x on axis %u...\n", presetPosExt, axis);
+	if (return_code = readWrite("A24D32", uint_vme_address, &uint_vme_data, WRITE))
+	{
+		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
+		return return_code;
+	}
 	uint_vme_data = presetPosExt;
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zPresPosExt);
-	if ((return_code = readWrite("A24D8", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zPresPosExt);
+	if (return_code = readWrite("A24D8", uint_vme_address, &uint_vme_data, WRITE))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 		return return_code;
@@ -4339,24 +4521,28 @@ int setPresetPosition37(uint8_t axis, double presetPos) {
 /// 0 if success
 /// -1 else
 /// </returns>
-int setPresetPosition(uint8_t axis, double presetPos) {
-	if(!curPrecision)
-	{
-		if ((return_code = setPresetPosition32(axis, presetPos)) != RET_SUCCESS)
-		{
-			zygoLogWarn("setPresetPosition32 failed !  \n");
-			return return_code;
-		}
+int setPresetPosition(Axes axis, double* presetPos) {	
+
+	if (presetPos == NULL) {
+		zygoLogWarn("Can not accept Null pointer in setPresetPosition function\n");
+		return BAD_ARG_POINTER;
 	}
-	else
-	{
-		if ((return_code = setPresetPosition37(axis, presetPos)) != RET_SUCCESS)
+	if (curPrecision) {
+		if (return_code = setPresetPosition37(axis, presetPos))
 		{
 			zygoLogWarn("setPresetPosition37 failed !  \n");
 			return return_code;
 		}
-		
 	}
+	else {
+		if (return_code = setPresetPosition32(axis, presetPos))
+		{
+			zygoLogWarn("setPresetPosition32 failed !  \n");
+			return return_code;
+		}
+
+	}
+	resetAxis(axis);
 	return RET_SUCCESS;
 }
 /// <summary>
@@ -4368,7 +4554,7 @@ int setPresetPosition(uint8_t axis, double presetPos) {
 /// 0 if success
 /// -1 else
 /// </returns>
-int readVmeErrs(uint8_t axis) {
+int readVmeErrs(Axes axis) {
 	uint32_t
 		uint_vme_address = 0,
 		VMEErrorStatus0 = 0,
@@ -4378,10 +4564,10 @@ int readVmeErrs(uint8_t axis) {
 		APDError = 0,
 		VMEPosError = 0,
 		uint_vme_data = 0;
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEErrStat1);		//Read VME errors
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zVMEErrStat1);		//Read VME errors
 	zygoLogInfo("Reading VME errors on axis %u ...\n", axis);
 	zygoLogInfo("***************************VME Errors*******************************\n");
-	if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ)) != RET_SUCCESS)
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 		return return_code;
@@ -4389,27 +4575,27 @@ int readVmeErrs(uint8_t axis) {
 	TestStat1 = uint_vme_data;
 	if (TestStat1 & 0x800)
 		zygoLogInfo("EEPROM Error has been detected\n");
-	if ((return_code = parseVmeErrorStatus0(axis, &VMEErrorStatus0)) != RET_SUCCESS)
+	if (return_code = parseVmeErrorStatus0(axis, &VMEErrorStatus0))
 	{
 		zygoLogWarn("parseVmeErrorStatus0 failed !  \n");
 		return return_code;
 	}
-	if ((return_code = parseVmeErrorStatus1(axis, &VMEErrorStatus1)) != RET_SUCCESS)
+	if (return_code = parseVmeErrorStatus1(axis, &VMEErrorStatus1))
 	{
 		zygoLogWarn("parseVmeErrorStatus1 failed !  \n");
 		return return_code;
 	}
-	if ((return_code = parseVmeErrorStatus2(axis, &VMEErrorStatus2)) != RET_SUCCESS)
+	if (return_code = parseVmeErrorStatus2(axis, &VMEErrorStatus2))
 	{
 		zygoLogWarn("parseVmeErrorStatus2 failed !  \n");
 		return return_code;
 	}
-	if ((return_code = parseVmePosErrs(axis, &VMEPosError)) != RET_SUCCESS)
+	if (return_code = parseVmePosErrs(axis, &VMEPosError))
 	{
 		zygoLogWarn("parseVmePosErrs failed !  \n");
 		return return_code;
 	}
-	if ((return_code = parseApdErrCode(axis, &APDError)) != RET_SUCCESS)
+	if (return_code = parseApdErrCode(axis, &APDError))
 	{
 		zygoLogWarn("parseApdErrCode failed !  \n");
 		return return_code;
@@ -4425,13 +4611,13 @@ int readVmeErrs(uint8_t axis) {
 /// 0 if success
 /// -1 else
 /// </returns>
-int readAllErrs(uint8_t axis) {
-	if ((return_code = readVmeErrs(axis)) != RET_SUCCESS)
+int readAllErrs(Axes axis) {
+	if (return_code = readVmeErrs(axis))
 	{
 		zygoLogWarn("readVmeErrs failed !  \n");
 		return return_code;
 	}
-	if ((return_code = readApdCtrlSoftErrs(axis)) != RET_SUCCESS)
+	if (return_code = readApdCtrlSoftErrs(axis))
 	{
 		zygoLogWarn("readApdCtrlSoftErrs !  \n");
 		return return_code;
@@ -4448,9 +4634,9 @@ int readAllErrs(uint8_t axis) {
 /// </returns>
 int ClearEEPROMErrs() {
 	uint32_t uint_vme_address = 0, uint_vme_data = 0;
-	uint_vme_address = ADD(BASE_ADDRESS[2], zTestCmd1);
+	uint_vme_address = ADD(BASE_ADDRESS[AXIS3 - 1], zTestCmd1);
 	uint_vme_data = 0x4;
-	if ((return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_OR_OP_CODE)) != RET_SUCCESS)
+	if (return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_OR_OP_CODE))
 	{
 		zygoLogWarn("readModifyWrite failed !  \n");
 		return return_code;
@@ -4467,26 +4653,38 @@ int ClearEEPROMErrs() {
 /// 0 if success
 /// -1 else
 /// </returns>
-int boardControlMode(uint8_t axis, uint32_t biasMode) {
+int boardControlMode(Axes axis, BIAS_MODE biasMode) {
 	/*Activate APD Constant voltage mode*/
 
-	if ((return_code = setBiasMode(axis, biasMode)) != RET_SUCCESS) {
+	if (return_code = setBiasMode(axis, biasMode)) {
 		return return_code;
 	}
 	switch (biasMode)
 	{
 
-	case BIAS_CONSTANT_VOLT_MODE:
+	case BIAS_MODE::BIAS_CONSTANT_VOLT_MODE:
 		break;
-	case BIAS_CONSTANT_GAIN_MODE:
-		setApdL2Gain(axis, defaultAPDGAinL2Set);
+	case BIAS_MODE::BIAS_CONSTANT_GAIN_MODE:
+		if (return_code = setApdL2GainSet(axis, defaultAPDGAinL2Set)) {
+			zygoLogWarn("setApdL2GainSet failed with error code %d\n", return_code);
+			return return_code;
+		}
 		break;
-	case BIAS_SIG_RMS_ADJUST_MODE:
-		setApdL2SigRms(axis, defaultAPDSigRMSL2Set);
+	case BIAS_MODE::BIAS_SIG_RMS_ADJUST_MODE:
+		if (return_code = setApdL2SigRmsSet(axis, defaultAPDSigRMSL2Set)) {
+			zygoLogWarn("setApdL2SigRms failed!\n");
+			return return_code;
+		}
 		break;
-	case BIAS_CONSTANT_OPT_PWR_MODE:
-		setApdL2OptPwr(axis, defaultAPDOptPwrL2Set);
-		setApdL2SigRms(axis, defaultAPDSigRMSL2Set);
+	case BIAS_MODE::BIAS_CONSTANT_OPT_PWR_MODE:
+		if (return_code = setApdL2OptPwrSet(axis, defaultAPDOptPwrL2Set)) {
+			zygoLogWarn("setApdL2OptPwr failed!\n");
+			return return_code;
+		}
+		if (return_code = setApdL2SigRmsSet(axis, defaultAPDSigRMSL2Set)) {
+			zygoLogWarn("setApdL2SigRms failed!\n");
+			return return_code;
+		}
 		break;
 	default:
 		break;
@@ -4494,7 +4692,7 @@ int boardControlMode(uint8_t axis, uint32_t biasMode) {
 	/*Set APD GAIN L2 to 892*/
 	//setApdL2Gain(  axis,APDGain);
 	/* Start bias calculation */
-	if ((return_code = startBiasCalculation(axis)) != RET_SUCCESS) {
+	if (return_code = startBiasCalculation(axis)) {
 		zygoLogWarn("Can not perform bias calculation");
 		return return_code;
 	}
@@ -4517,41 +4715,36 @@ int boardControlMode(uint8_t axis, uint32_t biasMode) {
 /// 0 if success
 /// -1 else
 /// </returns>
-int setBiasMode(uint8_t axis, uint32_t mode) {
+int setBiasMode(Axes axis, BIAS_MODE mode) {
 	uint32_t uint_vme_address = 0, uint_vme_data = 0;
 
-	if (mode > 4)
-	{
-		zygoLogWarn("Unknow mode: mode is ranged 0 to 4 \n");
-		return BAD_ARG_VALUE;
-	}
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCtrl5);//rw
-	if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ)) != RET_SUCCESS)
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCtrl5);//rw
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 		return return_code;
 	}
 	uint_vme_data &= ~(7);
-	uint_vme_data |= mode;
-	if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+	uint_vme_data |= static_cast<uint32_t>(mode);
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); 
 		return return_code;
 	}
-	zygoLogInfo("Board switched to  %s\n", biasControlModeString[mode]);
+	zygoLogInfo("Board switched to  %s\n", biasControlModeString[static_cast<uint32_t>(mode)]);
 	return RET_SUCCESS;
 }
 
-int getBiasMode(uint8_t axis, uint32_t* biasMode) {
+int getBiasMode(Axes axis, BIAS_MODE& biasMode) {
 	uint32_t uint_vme_address = 0, uint_vme_data = 0;
 
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCtrl5);//rw
-	if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ)) != RET_SUCCESS)
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCtrl5);//rw
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 		return return_code;
 	}
-	*biasMode = uint_vme_data & 7;
+	biasMode = static_cast<BIAS_MODE>(uint_vme_data & 0x7);
 	return RET_SUCCESS;
 }
 
@@ -4564,27 +4757,27 @@ int getBiasMode(uint8_t axis, uint32_t* biasMode) {
 /// 0 if success
 /// -1 else
 /// </returns>
-int startBiasCalculation(uint8_t axis) {
+int startBiasCalculation(Axes axis) {
 	uint32_t uint_vme_address = 0, uint_vme_data = 0, ctr = 0;
 	zygoLogInfo("Starting Bias calculation on axis %u...\n", axis);
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCmd);
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCmd);
 	uint_vme_data = (1 << 6);
-	if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); 
 		return return_code;
 	}
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEErrStat2);
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zVMEErrStat2);
 	uint_vme_data = 0;
 	while (!(uint_vme_data & (1 << 5)))
 	{
 		// wait for Bias calc complete to be asserted
-		if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ)) != RET_SUCCESS)
+		if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ))
 		{
 			zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 			return return_code;
 		}
-		Sleep(1000);
+		Sleep(1000);// 
 		ctr++;
 		if (ctr > 10) {
 			zygoLogInfo("Can not start bias calculation after 10seconds, aborting...");
@@ -4595,8 +4788,9 @@ int startBiasCalculation(uint8_t axis) {
 	zygoLogInfo("Bias calculation complete \n");
 	return RET_SUCCESS;
 }
+
 /// <summary>
-/// This function sets the value of APDGainL2 register.
+/// This function sets the value of APD Gain L2 set register.
 /// </summary>
 /// <param name="dev">device</param>
 /// <param name="axis">the axis number</param>
@@ -4605,16 +4799,16 @@ int startBiasCalculation(uint8_t axis) {
 /// 0 if success
 /// -1 else
 /// </returns>
-int setApdL2Gain(uint8_t axis, uint32_t APDGainL2) {
+int setApdL2GainSet(Axes axis, double APDGainL2) {
 	uint32_t uint_vme_address = 0, uint_vme_data = 0;
 	//APDGain: the default val is 7(2875 L2); range: 4(2048 L2) to 32(5120 L2)
-	zygoLogInfo("Setting APD Gain L2 to 0x%04x on axis %u...\n", APDGainL2, axis);
-	if (!checkLimits(APDGainL2, 0, 0xFFFF))
+	if (checkLimits(APDGainL2, 4, 32))
 		return BAD_ARG_VALUE;
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zAPDGainL2Set);
-	uint_vme_data = APDGainL2;
+	zygoLogInfo("Setting APD Gain L2 to %lf on axis %u...\n", APDGainL2, axis);
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zAPDGainL2Set);
+	uint_vme_data = static_cast<uint32_t>((std::log2(APDGainL2)) * 1024);
 	//enableAuxRegisters(  axis);
-	if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); 
 		return return_code;
@@ -4624,7 +4818,7 @@ int setApdL2Gain(uint8_t axis, uint32_t APDGainL2) {
 }
 
 /// <summary>
-/// This function gets the value of APDGainL2 register.
+/// This function gets the value of APD Gain L2 Set register.
 /// </summary>
 /// <param name="dev">device</param>
 /// <param name="axis">the axis number</param>
@@ -4633,21 +4827,22 @@ int setApdL2Gain(uint8_t axis, uint32_t APDGainL2) {
 /// 0 if success
 /// -1 else
 /// </returns>
-int getApdL2Gain(uint8_t axis, uint32_t* APDGainL2) {
-	uint32_t uint_vme_address = 0;
+int getApdL2GainSet(Axes axis, double* APDGainL2) {
+	uint32_t uint_vme_address = 0, uint_vme_data = 0;
 	//APDGain: the default val is 7(2875 L2); range: 4(2048 L2) to 32(5120 L2)
 	zygoLogInfo("Getting APD Gain L2 on axis %u...\n", axis);
 	if (APDGainL2 == NULL) {
 		zygoLogWarn("APDGainL2 pointer can not be NULL \n");
 		return BAD_ARG_POINTER;
 	}
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zAPDGainL2Set);
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zAPDGainL2Set);
 	//enableAuxRegisters(axis);
-	if ((return_code = readWrite("A24D16", uint_vme_address, APDGainL2, READ)) != RET_SUCCESS)
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); 
 		return return_code;
 	}
+	*APDGainL2 = std::pow(2,(uint_vme_data/1024.0));
 	//disableAuxRegisters(axis);
 	return RET_SUCCESS;
 }
@@ -4662,17 +4857,17 @@ int getApdL2Gain(uint8_t axis, uint32_t* APDGainL2) {
 /// 0 if success
 /// -1 else
 /// </returns>
-int setApdL2SigRms(uint8_t axis, uint32_t APDSigRMSL2) {
+int setApdL2SigRmsSet(Axes axis, double APDSigRMSL2) {
 	uint32_t uint_vme_address = 0, uint_vme_data = 0;
 	zygoLogInfo("Setting APD Sig RMS L2 to 0x%04x on axis %u...\n", APDSigRMSL2, axis);
-	if (checkLimits(APDSigRMSL2, 0, 0xFFFF)) {
+	uint_vme_data = static_cast<uint32_t>(std::log2(APDSigRMSL2) * 1024);
+	if (checkLimits(uint_vme_data, 0, 0xFFFF)) {
 		zygoLogWarn("Inapropriate value. range is 0 to 0xFFFF \n");
 		return BAD_ARG_VALUE;
 	}
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zAPDSigRMSL2);
-	uint_vme_data = APDSigRMSL2;
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zAPDSigRMSL2);
 	//enableAuxRegisters(  axis);
-	if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); 
 		return return_code;
@@ -4691,24 +4886,101 @@ int setApdL2SigRms(uint8_t axis, uint32_t APDSigRMSL2) {
 /// 0 if success
 /// -1 else
 /// </returns>
-int getApdL2SigRms(uint8_t axis, uint32_t* APDSigRMSL2) {
+int getApdL2SigRmsSet(Axes axis, double* APDSigRMSL2) {
 	uint32_t uint_vme_address = 0, uint_vme_data = 0;
 	zygoLogInfo("getting APD Sig RMS L2 on axis %u...\n", axis);
 	if (APDSigRMSL2 == NULL) {
 		zygoLogWarn("APDSigRMSL2 pointer can not be NULL \n");
 		return BAD_ARG_POINTER;
 	}
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zAPDSigRMSL2);
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zAPDSigRMSL2);
 	//enableAuxRegisters(axis);
-	if ((return_code = readWrite("A24D16", uint_vme_address, APDSigRMSL2, READ)) != RET_SUCCESS)
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); 
 		return return_code;
 	}
-	//disableAuxRegisters(axis);
+
+	*APDSigRMSL2 = std::pow(2, uint_vme_data / 1024.0);
 	return RET_SUCCESS;
 }
 
+int setApdL2SigRmsMaxLim(Axes axis, double maxLim) {
+	uint32_t uint_vme_address = 0, uint_vme_data = 0;
+	zygoLogInfo("Setting APD Sig RMS L2 Max Lim to 0x%04x on axis %u...\n", maxLim, axis);
+	uint_vme_data = static_cast<uint32_t>(std::log2(maxLim) * 1024);
+	if (checkLimits(uint_vme_data, 0, 0xFFFF)) {
+		zygoLogWarn("Inapropriate value. range is 0 to 0xFFFF \n");
+		return BAD_ARG_VALUE;
+	}
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zAPDSigRMSL2MaxLim);
+	//enableAuxRegisters(  axis);
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
+	{
+		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
+		return return_code;
+	}
+	//disableAuxRegisters(  axis);
+	return RET_SUCCESS;
+}
+
+int getApdL2SigRmsMaxLim(Axes axis, double* maxLim) {
+	uint32_t uint_vme_address = 0, uint_vme_data = 0;
+	zygoLogInfo("getting APD Sig RMS L2 Max Lim on axis %u...\n", axis);
+	if (maxLim == NULL) {
+		zygoLogWarn("APDSigRMSL2 pointer can not be NULL \n");
+		return BAD_ARG_POINTER;
+	}
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zAPDSigRMSL2MaxLim);
+	//enableAuxRegisters(axis);
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ))
+	{
+		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
+		return return_code;
+	}
+
+	*maxLim = std::pow(2, uint_vme_data / 1024.0);
+	return RET_SUCCESS;
+}
+
+
+int setApdL2SigRmsMinLim(Axes axis, double minLim) {
+	uint32_t uint_vme_address = 0, uint_vme_data = 0;
+	zygoLogInfo("Setting APD Sig RMS L2 Min Lim to 0x%04x on axis %u...\n", minLim, axis);
+	uint_vme_data = static_cast<uint32_t>(std::log2(minLim) * 1024);
+	if (checkLimits(uint_vme_data, 0, 0xFFFF)) {
+		zygoLogWarn("Inapropriate value. range is 0 to 0xFFFF \n");
+		return BAD_ARG_VALUE;
+	}
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zAPDSigRMSL2MinLim);
+	//enableAuxRegisters(  axis);
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
+	{
+		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
+		return return_code;
+	}
+	//disableAuxRegisters(  axis);
+	return RET_SUCCESS;
+}
+
+int getApdL2SigRmsMinLim(Axes axis, double* minLim) {
+	uint32_t uint_vme_address = 0, uint_vme_data = 0;
+	zygoLogInfo("getting APD Sig RMS L2 Min Limon axis %u...\n", axis);
+	if (minLim == NULL) {
+		zygoLogWarn("APDSigRMSL2 pointer can not be NULL \n");
+		return BAD_ARG_POINTER;
+	}
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zAPDSigRMSL2MinLim);
+	//enableAuxRegisters(axis);
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ))
+	{
+		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
+		return return_code;
+	}
+
+	*minLim = std::pow(2, uint_vme_data / 1024.0);
+	return RET_SUCCESS;
+}
 /// <summary>
 /// This function sets the value of APD Opt Pwr L2 set register.
 /// </summary>
@@ -4719,7 +4991,7 @@ int getApdL2SigRms(uint8_t axis, uint32_t* APDSigRMSL2) {
 /// 0 if success
 /// -1 else
 /// </returns>
-int setApdL2OptPwr(uint8_t axis, uint32_t APDOptPwrL2) {
+int setApdL2OptPwrSet(Axes axis, double APDOptPwrL2) {
 	uint32_t uint_vme_address = 0, uint_vme_data = 0;
 	// the default value is 1uw(0 L2); range: 70nW(-3930 L2) to 10uW(3402 L2)
 	zygoLogInfo("Setting APD optical power L2 to 0x%04x on axis %u...\n", APDOptPwrL2, axis);
@@ -4728,17 +5000,16 @@ int setApdL2OptPwr(uint8_t axis, uint32_t APDOptPwrL2) {
 		zygoLogWarn("Inapropriate value. range is 0 to 0xFFFF \n");
 		return BAD_ARG_VALUE;
 	}
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zAPDOptPwrL2);
-	uint_vme_data = APDOptPwrL2;
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zAPDOptPwrL2Set);
+	uint_vme_data = static_cast<uint32_t>(std::log2(APDOptPwrL2) * 1024);
 	//enableAuxRegisters(  axis);
-	if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 	}
 	//disableAuxRegisters(  axis);
 	return RET_SUCCESS;
 }
-
 
 /// <summary>
 /// This function gets the value of APD Opt Pwr L2 set register.
@@ -4750,7 +5021,7 @@ int setApdL2OptPwr(uint8_t axis, uint32_t APDOptPwrL2) {
 /// 0 if success
 /// -1 else
 /// </returns>
-int getApdL2OptPwr(uint8_t axis, uint32_t* APDOptPwrL2) {
+int getApdL2OptPwrSet(Axes axis, double* APDOptPwrL2) {
 	uint32_t uint_vme_address = 0, uint_vme_data = 0;
 	// the default value is 1uw(0 L2); range: 70nW(-3930 L2) to 10uW(3402 L2)
 	zygoLogInfo("getting APD optical power L2 on axis %u...\n", axis);
@@ -4758,12 +5029,82 @@ int getApdL2OptPwr(uint8_t axis, uint32_t* APDOptPwrL2) {
 		zygoLogWarn("APDOptPwrL2 pointer can not be NULL \n");
 		return BAD_ARG_POINTER;
 	}
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zAPDOptPwrL2);
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zAPDOptPwrL2Set);
 	//enableAuxRegisters(axis);
-	if ((return_code = readWrite("A24D16", uint_vme_address, APDOptPwrL2, READ)) != RET_SUCCESS)
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 	}
+	*APDOptPwrL2 = std::pow(2, uint_vme_data / 1024.0);
+	return RET_SUCCESS;
+}
+
+/*
+int readMixingFrequencyForAllAxis(std::array<double, 4>& mxFreq) {
+	double opt = 0.0;
+	zygoLogInfo("Reading mixing frequency value on all axis...  \n");
+	for (int i = 1; i < 5; i++)
+	{
+		if (return_code = readMixingFrequency(i, opt))
+		{
+			zygoLogWarn(" readMixingFrequency Failled !  \n"); return return_code;
+		}
+		mxFreq.at(i - 1) = opt;
+		opt = 0.0;
+	}
+}
+int readMixingFrequency(Axes axis, double& mxFreq) {
+	double dcoptpwr;
+	double acoptpwr;
+	if (return_code = readOptPwrDC(axis, dcoptpwr))
+	{
+		zygoLogWarn(" readOptPwrDC Failled !  \n"); return return_code;
+	}
+	if (return_code = readOpticalPowerUsingSsiAv(axis, &acoptpwr))
+	{
+		zygoLogWarn(" readOptPwrDC Failled !  \n"); return return_code;
+	}
+	mxFreq = acoptpwr / dcoptpwr;
+	return RET_SUCCESS;
+}
+*/
+int readOptPwrDCForAllAxis(std::array<double, 4>& OptPwrDC) {
+
+	double opt = 0.0;
+	zygoLogInfo("Reading optical power DC value on all axis...  \n");
+	for (const auto& i : AXES)
+	{
+		if (return_code = readOptPwrDC(i, opt))
+		{
+			zygoLogWarn(" readOptPwrDC Failled !  \n"); return return_code;
+		}
+		OptPwrDC.at(i - 1) = opt;
+		opt = 0.0;
+	}
+}
+int readOptPwrDC(Axes axis, double& OptPwrDC) {
+	//The maximum signal level for this register is roughly 10 to 30 µm depending on the APD gain
+	//Above this value, 100µW is set to the register
+	// The minimum signal level for this register is 0.1 to 1µW. below this level, the measurement is not accuarate
+	uint32_t uint_vme_address = 0, uint_vme_data = 0;
+	OptPwrDC = 0.0;
+	zygoLogInfo("getting APD optical power L2 on axis %u...\n", axis);
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zOptPwrDCL2);
+	//enableAuxRegisters(axis);
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ))
+	{
+		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
+	}
+	if (uint_vme_data == maxOptPwrDC_hex) {
+		//zygoLogWarn("The value of optical power DC on axis %u  is above the maximum authorized, setting it to the constant value 100µW\n", axis);
+		OptPwrDC = maxOptPwrDC;
+	}
+	else if (uint_vme_data == minOptPwrDC_hex) {
+		zygoLogWarn("The value of optical power DC on axis %u is below the minimum authorized, setting it to the constant value 0.01µW\n",axis);
+		OptPwrDC = minOptPwrDC;
+	}
+	else
+		OptPwrDC = std::pow(2, uint_vme_data / 1024.0);
 	//disableAuxRegisters(axis);
 	return RET_SUCCESS;
 }
@@ -4773,22 +5114,18 @@ int getApdL2OptPwr(uint8_t axis, uint32_t* APDOptPwrL2) {
 /// </summary>
 /// <param name="dev">device</param>
 /// <param name="axis">the axis number</param>
-/// <param name="APDBiasDac">The APDBiasDAC value</param>
+/// <param name="ApdBiasVoltage_mV">The ApdBiasVoltage value in mV</param>
 /// <returns>
 /// 0 if success
 /// -1 else
 /// </returns>
-int setApdBiasDac(uint8_t axis, uint32_t APDBiasDac) {
+int setApdBiasVoltage(Axes axis, double ApdBiasVoltage_mV) {
 	uint32_t uint_vme_address = 0, uint_vme_data = 0;
-	zygoLogInfo("Setting APD BIAS DAC L2 to 0x%04x on axis %u...\n", APDBiasDac, axis);
-	if (APDBiasDac > 0xFFFF)
-	{
-		zygoLogWarn("Inapropriate value. range is 0 to 0xFFFF \n");
-		return BAD_ARG_VALUE;
-	}
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zAPDBiasDAC);
-	uint_vme_data = APDBiasDac;
-	if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+	zygoLogInfo("Setting APD BIAS DAC L2 to 0x%04x on axis %lf mV...\n", ApdBiasVoltage_mV, axis);
+
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zAPDBiasDAC);
+	uint_vme_data = static_cast<uint32_t>(ApdBiasVoltage_mV/ ApdBiasVoltageCoeff);
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 	}
@@ -4801,23 +5138,24 @@ int setApdBiasDac(uint8_t axis, uint32_t APDBiasDac) {
 /// </summary>
 /// <param name="dev">device</param>
 /// <param name="axis">the axis number</param>
-/// <param name="APDBiasDac">the pointer to APDBiasDAC value</param>
+/// <param name="ApdBiasVoltage_mV">the pointer to ApdBiasVoltage value in mV</param>
 /// <returns>
 /// 0 if success
 /// -1 else
 /// </returns>
-int getApdBiasDac(uint8_t axis, uint32_t* APDBiasDac) {
-	uint32_t uint_vme_address = 0;
+int getApdBiasVoltage(Axes axis, double* ApdBiasVoltage_mV) {
+	uint32_t uint_vme_address = 0, uint_vme_data = 0;
 	zygoLogInfo("getting APD BIAS DAC L2 on axis %u...\n", axis);
-	if (APDBiasDac == NULL) {
-		zygoLogWarn("APDBiasDac pointer can not be NULL \n");
+	if (ApdBiasVoltage_mV == NULL) {
+		zygoLogWarn("ApdBiasVoltage pointer can not be NULL \n");
 		return BAD_ARG_POINTER;
 	}
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zAPDBiasDAC);
-	if ((return_code = readWrite("A24D16", uint_vme_address, APDBiasDac, READ)) != RET_SUCCESS)
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zAPDBiasDAC);
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 	}
+	*ApdBiasVoltage_mV = uint_vme_data * ApdBiasVoltageCoeff;
 	return RET_SUCCESS;
 }
 
@@ -4832,12 +5170,12 @@ int getApdBiasDac(uint8_t axis, uint32_t* APDBiasDac) {
 /// 0 if success
 /// -1 else
 /// </returns>
-int parseVmeErrorStatus2(uint8_t axis, uint32_t* VMEErrorStatus2Reg) {
+int parseVmeErrorStatus2(Axes axis, uint32_t* VMEErrorStatus2Reg) {
 	uint32_t uint_vme_address = 0, uint_vme_data = 0;
 	zygoLogInfo("Parsing VME Error Status 2 on axis %u...\n", axis);
 	zygoLogInfo("-------------------------------------------------------------------");
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEErrStat2);		//Read VME errors
-	if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ)) != RET_SUCCESS)
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zVMEErrStat2);		//Read VME errors
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 	}
@@ -4884,12 +5222,12 @@ int parseVmeErrorStatus2(uint8_t axis, uint32_t* VMEErrorStatus2Reg) {
 /// 0 if success
 /// -1 else
 /// </returns>
-int parseVmePosErrs(uint8_t axis, uint32_t* VMEPosErrReg) {
+int parseVmePosErrs(Axes axis, uint32_t* VMEPosErrReg) {
 	uint32_t uint_vme_address = 0, uint_vme_data = 0;
 	zygoLogInfo("Parsing VME Error position errors on axis %u...\n", axis);
 	zygoLogInfo("-------------------------------------------------------------------");
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEPosErr);		//Read VME errors
-	if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ)) != RET_SUCCESS)
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zVMEPosErr);		//Read VME errors
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 	}
@@ -4912,12 +5250,12 @@ int parseVmePosErrs(uint8_t axis, uint32_t* VMEPosErrReg) {
 /// 0 if success
 /// -1 else
 /// </returns>
-int parseVmeErrorStatus1(uint8_t axis, uint32_t* VMEErrorStatus1Reg) {
+int parseVmeErrorStatus1(Axes axis, uint32_t* VMEErrorStatus1Reg) {
 	uint32_t uint_vme_address = 0, uint_vme_data = 0;
 	zygoLogInfo("Parsing VME Error Status 1 on axis %u...\n", axis);
 	zygoLogInfo("-------------------------------------------------------------------");
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEErrStat1);		//Read VME errors
-	if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ)) != RET_SUCCESS)
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zVMEErrStat1);		//Read VME errors
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 	}
@@ -4940,8 +5278,8 @@ int getLedsErrorStatus(bool* ledsErrorStatus) {
 
 	zygoLogInfo("running getLedsErrorStatus\n");
 	for (int axis = 0; axis < 4; axis++) {
-		uint_vme_address = ADD(BASE_ADDRESS[axis], zVMEErrStat0);		//Read VME errors
-		if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ)) != RET_SUCCESS)
+		uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis)], zVMEErrStat0);
+		if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ))
 		{
 			zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 		}
@@ -4952,8 +5290,8 @@ int getLedsErrorStatus(bool* ledsErrorStatus) {
 		{
 			ledsErrorStatus[axis] = false;
 		}
-		uint_vme_address = ADD(BASE_ADDRESS[axis], zVMEErrStat2);		//Read VME errors
-		if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ)) != RET_SUCCESS)
+		uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis)], zVMEErrStat2);		
+		if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ))
 		{
 			zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 		}
@@ -4966,8 +5304,8 @@ int getLedsErrorStatus(bool* ledsErrorStatus) {
 		}
 	}
 
-	/*uint_vme_address = ADD(BASE_ADDRESS[2], zVMEErrStat2);		//Read VME errors
-	if ((return_code=readWrite("A24D16",   uint_vme_address, &uint_vme_data, READ)) != RET_SUCCESS)
+	/*uint_vme_address = ADD(BASE_ADDRESS[AXIS3 - 1], zVMEErrStat2);		//Read VME errors
+	if (return_code=readWrite("A24D16",   uint_vme_address, &uint_vme_data, READ))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 	}*/
@@ -4979,8 +5317,8 @@ int getLedsErrorStatus(bool* ledsErrorStatus) {
 		ledsErrorStatus[4] = false;
 	}
 
-	uint_vme_address = ADD(BASE_ADDRESS[2], zVMEErrStat0);
-	if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ)) != RET_SUCCESS)
+	uint_vme_address = ADD(BASE_ADDRESS[AXIS3 - 1], zVMEErrStat0);
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 	}
@@ -5004,12 +5342,12 @@ int getLedsErrorStatus(bool* ledsErrorStatus) {
 /// 0 if success
 /// -1 else
 /// </returns>
-int parseVmeErrorStatus0(uint8_t axis, uint32_t* VMEErrorStatus0Reg) {
+int parseVmeErrorStatus0(Axes axis, uint32_t* VMEErrorStatus0Reg) {
 	uint32_t uint_vme_address = 0, uint_vme_data = 0;
 	zygoLogInfo("Parsing VME Error Status 0 on axis %u...\n", axis);
 	zygoLogInfo("-------------------------------------------------------------------");
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEErrStat0);		//Read VME errors
-	if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ)) != RET_SUCCESS)
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zVMEErrStat0);		//Read VME errors
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 	}
@@ -5059,13 +5397,13 @@ int parseVmeErrorStatus0(uint8_t axis, uint32_t* VMEErrorStatus0Reg) {
 /// 0 if success
 /// -1 else
 /// </returns>
-int parseApdErrCode(uint8_t axis, uint32_t* APDErrCode) {
+int parseApdErrCode(Axes axis, uint32_t* APDErrCode) {
 	uint32_t uint_vme_address = 0, uint_vme_data = 0;
 	zygoLogInfo("Parsing APD Error code on axis %u...\n", axis);
 	zygoLogInfo("-------------------------------------------------------------------");
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zAPDErr);		//Read APD errors
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zAPDErr);		//Read APD errors
 	//enableAuxRegisters(  axis);
-	if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ)) != RET_SUCCESS)
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 	}
@@ -5225,30 +5563,37 @@ int parseApdErrCode(uint8_t axis, uint32_t* APDErrCode) {
 /// 0 if success | 
 /// -1 else
 /// </returns>
-int readSamplePosition37(uint8_t axis, double* position) {
-	int val;
+int readSamplePosition37(Axes axis, double* position) {
+	short val;
 	uint32_t uint_vme_data = 0,
 		uint_vme_address = 0;
 	int temp32 = 0;
 	//zygoLogInfo("Reading the 37bits sample Position value on Axis %d...  \n", axis);
 
 	//Read the MSB and LSB
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMESampPosMSB);
-	if ((return_code = readWrite("A24D32", uint_vme_address, &uint_vme_data, READ)) != RET_SUCCESS)
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zVMESampPosMSB);
+	if (return_code = readWrite("A24D32", uint_vme_address, &uint_vme_data, READ))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 	}
 
-	temp32 = (int)uint_vme_data;
+	temp32 = (uint32_t)uint_vme_data;
 	uint_vme_data = 0;
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMESampPosExt);		//Read the Ext
-	if ((return_code = readWrite("A24D8", uint_vme_address, &uint_vme_data, READ)) != RET_SUCCESS)
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zVMESampPosExt);		//Read the Ext
+	if (return_code = readWrite("A24D8", uint_vme_address, &uint_vme_data, READ))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 		return return_code;
 	}
-	val = (int)((short)uint_vme_data);
-	*position = ((double)(val)) * (2 ^ 32) + (double)((uint32_t)temp32) * positionScale;
+	val = (short)uint_vme_data;
+	if ((val & 0x80) != 0) { // check if the ext value is negative
+		*position = static_cast<double>((short)(0xff00 + static_cast<uint32_t>(val & 0xff)));
+		*position = ((*position) * (TMP32)) + temp32;
+	}
+	else {
+		*position = ((val & 0xFF) * (TMP32)) + temp32;
+	}
+	zygoLogInfo("37 bits position is %lf\n", *position);
 	return RET_SUCCESS;
 }
 /// <summary>
@@ -5261,53 +5606,79 @@ int readSamplePosition37(uint8_t axis, double* position) {
 /// 0 if success
 /// -1 else
 /// </returns>
-int readSamplePosition32(uint8_t axis, double* position) {
+int readSamplePosition32(Axes axis, double* position) {
 
 	uint32_t uint_vme_data = 0,
 		uint_vme_address = 0;
 	//zygoLogInfo("Reading the 32bits sample Position value on Axis %d...  \n", axis);
 
 	//Read the MSB and LSB
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMESampPosMSB);
-	if ((return_code = readWrite("A24D32", uint_vme_address, &uint_vme_data, READ)) != RET_SUCCESS)
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zVMESampPosMSB);
+	if (return_code = readWrite("A24D32", uint_vme_address, &uint_vme_data, READ))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 		return return_code;
 	}
 
-	*position = (double)((int)(uint_vme_data) * (positionScale));
+	*position = static_cast<double>((int)(uint_vme_data) * (positionScale));
 	return RET_SUCCESS;
 }
 
 int setPrecision(bool prec) {
+	zygoLogInfo("Modifying register position from %s to %s\n", curPrecision ? "37 bits" : "32 bits", prec ? "37 bits" : "32 bits");
+	double pres[4];
+	double off[4];
+	for (const auto& axis : AXES) {
+		getPresetPosition(axis, pres + (static_cast<int>(axis) - 1));
+		getPositionOffset(axis, off + (static_cast<int>(axis) - 1));
+	}
+	zygoLogInfo("Preset position values: %lf, %lf, %lf, %lf\n", pres[0], pres[1], pres[2], pres[3]);
 	if (prec) { //37 bits
 
-		for (int axis = 1; axis < 5; axis++) {
-			if ((return_code = disable32BitsOverflow(axis)) != RET_SUCCESS)
+		for (const auto& axis : AXES) {
+			if (return_code = disable32BitsOverflow(axis))
 			{
 				zygoLogWarn(" Disable32bitsSignExtension Failled !  \n"); return return_code;
 			}
-			if ((return_code = enable37BitsSignExtension(axis)) != RET_SUCCESS)
+			if (return_code = enable37BitsSignExtension(axis))
 			{
 				zygoLogWarn(" enable37BitsSignExtension Failled !  \n"); return return_code;
 			}
 		}
 	}
 	else { //32 bits
-		for (int axis = 1; axis < 5; axis++) {
-			if ((return_code = enable32BitsOverflow(axis)) != RET_SUCCESS)
+		for (const auto& axis : AXES) {
+			if (return_code = enable32BitsOverflow(axis))
 			{
 				zygoLogWarn(" enable32BitsOverflow Failled !  \n"); return return_code;
 			}
-			if ((return_code = disable37bitsSignExtension(axis)) != RET_SUCCESS)
+			if (return_code = disable37bitsSignExtension(axis))
 			{
 				zygoLogWarn(" disable37bitsSignExtension Failled !  \n"); return return_code;
 			}
 		}
 	}
 	curPrecision = prec;
+	for (const auto& axis : AXES) {
+		//convert 32bits preset position
+		setPresetPosition(axis, pres + (static_cast<int>(axis) - 1));
+		setPositionOffset(axis, off + (static_cast<int>(axis) - 1));
+	}
+	return RET_SUCCESS;
 }
 bool getPrecision() {
+
+	uint32_t uint_vme_data = 0, uint_vme_address = 0;
+	// Enable auxiliary registers
+	zygoLogInfo("Getting axes precision\n");
+	uint_vme_address = ADD(BASE_ADDRESS[AXIS3 - 1], zCtrl0);
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ))
+	{
+		zygoLogWarn("readWrite at 0x%6X Failed !  \n", uint_vme_address);
+		return return_code;
+	}
+	curPrecision = (uint_vme_data & 0x40) ? 1 : 0;
+	zygoLogInfo("current precision is  %s\n", curPrecision? "37bits":"32bits");
 	return curPrecision;
 }
 /// <summary>
@@ -5320,14 +5691,14 @@ bool getPrecision() {
 /// 0 if success
 /// -1 else
 /// </returns>
-int readFifoPosition(uint8_t axis, uint32_t* position) {
+int readFifoPosition(Axes axis, uint32_t* position) {
 
 	uint32_t uint_vme_data = 0,
 		uint_vme_address = 0;
 
 	zygoLogInfo("Reading FIFO Position on Axis %d...  \n", axis);
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEFifoPos);
-	if ((return_code = readWrite("A24D32", uint_vme_address, &uint_vme_data, READ)) != RET_SUCCESS)
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zVMEFifoPos);
+	if (return_code = readWrite("A24D32", uint_vme_address, &uint_vme_data, READ))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 		return return_code;
@@ -5344,29 +5715,29 @@ int readFifoPosition(uint8_t axis, uint32_t* position) {
 /// 0 if success
 /// -1 else
 /// </returns>
-int readVelocity(uint8_t axis, double* velocity) {
+int readVelocity(Axes axis, double* velocity) {
 
 	uint32_t uint_vme_data = 0,
 		uint_vme_address = 0;
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEVelocMSB);
-	if ((return_code = sampleVmePosition(axis)) != RET_SUCCESS)
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zVMEVelocMSB);
+	if (return_code = sampleVmePosition(axis))
 	{
 		zygoLogWarn("readVelocity: sampleVmePosition Failled !  \n"); return return_code;
 	}// the function both sample velocity and value
 	//Read the MSB and LSB	
-	if ((return_code = setHoldSampEnable()) != RET_SUCCESS)
+	if (return_code = setHoldSampEnable(axis))
 	{
 		zygoLogWarn("readVelocity:  setHoldSampEnable Failled !  \n"); return return_code;
 	}
-	if ((return_code = readWrite("A24D32", uint_vme_address, &uint_vme_data, READ)) != RET_SUCCESS)
+	if (return_code = readWrite("A24D32", uint_vme_address, &uint_vme_data, READ))
 	{
 		zygoLogWarn("readVelocity: Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 	}
-	if ((return_code = resetHoldSampEnable()) != RET_SUCCESS)
+	if (return_code = resetHoldSampEnable(axis))
 	{
 		zygoLogWarn("readVelocity:  resetHoldSampEnable Failled !  \n"); return return_code;
 	}
-	*velocity = (double)((int)uint_vme_data) * velocityScale;
+	*velocity = static_cast<double>((int)uint_vme_data) * velocityScale;
 	return RET_SUCCESS;
 }
 
@@ -5374,13 +5745,12 @@ int readVelocityForAllAxis(double* Velocity32_buf) {
 
 	double Velocity = 0.0;
 	zygoLogInfo("Reading the 32bits velocity value on all axis...  \n");
-	for (int i = 1; i < 5; i++)
-	{
-		if ((return_code = readVelocity(i, &Velocity)) != RET_SUCCESS)
+	for (const auto& i : AXES){
+		if (return_code = readVelocity(i, &Velocity))
 		{
 			zygoLogWarn(" ReadVelocity32 Failled !  \n"); return return_code;
 		}
-		*(Velocity32_buf + i - 1) = Velocity;
+		*(Velocity32_buf + (static_cast<int>(i) - 1)) = Velocity;
 		Velocity = 0.0;
 	}
 	return RET_SUCCESS;
@@ -5395,59 +5765,72 @@ int readVelocityForAllAxis(double* Velocity32_buf) {
 /// 0 if success
 /// -1 else
 /// </returns>
-int readPosition(uint8_t axis, double* position) {
-	int val = 0;
+int readPosition(Axes axis, double* position) {
+	short val = 0;
 	uint32_t uint_vme_data = 0,
 		uint_vme_address = 0, temp32 = 0;
 	//read sample position
 	//Read the MSB and LSB
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMESampPosMSB);
-	if ((return_code = readWrite("A24D32", uint_vme_address, &uint_vme_data, READ)) != RET_SUCCESS)
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zVMESampPosMSB);
+	if (return_code = readWrite("A24D32", uint_vme_address, &uint_vme_data, READ))
 	{
 		zygoLogWarn("readPosition: Register %6X access Faillure !  \n", uint_vme_address);
 		return return_code;
 	}
 
-	if (curPrecision) {
+	if (curPrecision) {//37 bits read
 
-		temp32 = (int)uint_vme_data;
+		temp32 = (uint32_t)uint_vme_data;
 		uint_vme_data = 0;
-		uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMESampPosExt);		//Read the Ext
-		if ((return_code = readWrite("A24D8", uint_vme_address, &uint_vme_data, READ)) != RET_SUCCESS)
+		uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zVMESampPosExt);		//Read the Ext
+		if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ))
 		{
 			zygoLogWarn("readPosition: Register %6X access Faillure !  \n", uint_vme_address);
 			return return_code;
 		}
-		val = (int)((short)uint_vme_data);
-		*position = ((double)(val)) * (2 ^ 32) + (double)((uint32_t)temp32) * positionScale;
+		val = (short)uint_vme_data;
+		//*
+		if ((val & 0x10) != 0) { // check if the ext value is negative
+	
+			*position = static_cast<double>((short)((short)0xffe0 + (val & 0x1f)));
+			
+			*position = (((*position) * (TMP32)) + temp32) * positionScale;
+			
+		}
+		else {
+			*position = (((val & 0x1F) * (TMP32)) + temp32)* positionScale;
+		}
+		//*/
+
+		zygoLogInfo("37 bits position is %lf\n", *position);
 	}
-	else {
-
-
-		*position = (double)((int)(uint_vme_data) * (positionScale));
+	else {//32 bits read
+		*position = (static_cast<double>((int)uint_vme_data)) * positionScale;
+		zygoLogInfo("32 bits position is %lf\n", *position);
 	}
 	return RET_SUCCESS;
 }
-int readPositionForAllAxis(double* Position32_buf) {
+int readPositionForAllAxis(double* PositionBuf) {
 
 	double position = 0.0;
-	zygoLogInfo("Reading the 32bits position value on all axis...  \n");
-	for (int i = 1; i < 5; i++)
+	zygoLogInfo("Reading the position value on all axis...  \n");
+	for (const auto& i : AXES)
 	{
-		if ((return_code = readPosition(i, &position)) != RET_SUCCESS)
+		if (return_code = readPosition(i, &position))
 		{
-			zygoLogWarn(" ReadPosition32 Failled !  \n"); return return_code;
+			zygoLogWarn(" ReadPosition Failled !  \n"); 
+			return return_code;
 		}
-		*(Position32_buf + i - 1) = position;
+		*(PositionBuf + (static_cast<int>(i) - 1)) = position;
 		position = 0.0;
 	}
 	return RET_SUCCESS;
 }
-bool isVmePos32Overflow(uint8_t axis) {
+bool isVmePos32Overflow(Axes axis) {
 	uint32_t uint_vme_data = 0, uint_vme_address = 0;
 	zygoLogInfo("Checking VME 32bits position overflow \n ");
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEErrStat1);
-	if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ)) != RET_SUCCESS)
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zVMEErrStat1);
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); 
 		return FALSE;
@@ -5456,13 +5839,13 @@ bool isVmePos32Overflow(uint8_t axis) {
 		return TRUE;
 	return FALSE;
 }
-bool IsVMEPos37Overflow(uint8_t axis) {
+bool IsVMEPos37Overflow(Axes axis) {
 
 	uint32_t uint_vme_data = 0,
 		uint_vme_address = 0;
 	zygoLogInfo("Checking VME 37bits position overflow \n ");
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEErrStat1);
-	if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ)) != RET_SUCCESS)
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zVMEErrStat1);
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return false;
 	}
@@ -5470,13 +5853,13 @@ bool IsVMEPos37Overflow(uint8_t axis) {
 		return true;
 	return false;
 }
-bool IsUserVelError(uint8_t axis) {
+bool IsUserVelError(Axes axis) {
 
 	uint32_t uint_vme_data = 0,
 		uint_vme_address = 0;
 	zygoLogInfo("Checking VME 32bits position overflow bit...\n ");
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEErrStat1);
-	if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ)) != RET_SUCCESS)
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zVMEErrStat1);
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return false;
 	}
@@ -5484,13 +5867,13 @@ bool IsUserVelError(uint8_t axis) {
 		return true;
 	return false;
 }
-bool IsVelError(uint8_t axis) {
+bool IsVelError(Axes axis) {
 
 	uint32_t uint_vme_data = 0,
 		uint_vme_address = 0;
 	zygoLogInfo("Checking velocity error bit...\n ");
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEErrStat1);
-	if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ)) != RET_SUCCESS)
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zVMEErrStat1);
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return false;
 	}
@@ -5498,13 +5881,13 @@ bool IsVelError(uint8_t axis) {
 		return true;
 	return false;
 }
-bool IsAccError(uint8_t axis) {
+bool IsAccError(Axes axis) {
 
 	uint32_t uint_vme_data = 0,
 		uint_vme_address = 0;
 	zygoLogInfo("Checking acceleration error bit...\n ");
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEErrStat0);
-	if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ)) != RET_SUCCESS)
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zVMEErrStat0);
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return false;
 	}
@@ -5512,43 +5895,43 @@ bool IsAccError(uint8_t axis) {
 		return true;
 	return false;
 }
-int ClearPosAndVelErrs(uint8_t axis) {
+int ClearPosAndVelErrs(Axes axis) {
 
 	uint32_t uint_vme_data = 0xF, uint_vme_address = 0;
 
 	zygoLogInfo("Reseting Position and velocity errors on Axis %d...  \n", axis);
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEErrClr1);
-	if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zVMEErrClr1);
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 	}
 
 	return RET_SUCCESS;
 }
-int ClearAllVMEErrs(uint8_t axis) {
+int ClearAllVMEErrs(Axes axis) {
 
 	uint32_t uint_vme_data = 0xFFFF,
 		uint_vme_address = 0;
 
 	zygoLogInfo("Reseting all VME errors on Axis %d...  \n", axis);
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEErrClr0);
-	if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zVMEErrClr0);
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 	}
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEErrClr1);
-	if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zVMEErrClr1);
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 	}
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEErrClr2);
-	if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zVMEErrClr2);
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 	}
 	uint_vme_data = 1;
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCmd);
-	if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCmd);
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 	}
@@ -5563,14 +5946,14 @@ int ClearAllVMEErrs(uint8_t axis) {
 /// <returns>
 /// 0 if successful
 /// </returns>
-int clearPosAndVelErrsForAllAxis(uint8_t axis) {
+int clearPosAndVelErrsForAllAxis(Axes axis) {
 
 	uint32_t uint_vme_data = 0xFFFF,
 		uint_vme_address = 0;
 
-	for (int i = 1; i < 5; i++)
+	for (const auto& i : AXES)
 	{
-		if ((return_code = ClearPosAndVelErrs(i)) != RET_SUCCESS)
+		if (return_code = ClearPosAndVelErrs(i))
 		{
 			zygoLogWarn("ClearPosAndVelErrs Failled !  \n"); return return_code;
 		}
@@ -5590,9 +5973,9 @@ int clearPosAndVelErrsForAllAxis(uint8_t axis) {
 /// </returns>
 int clearAllVMEErrsForAllAxis() {
 
-	for (int i = 1; i < 5; i++)
+	for (const auto& i : AXES)
 	{
-		if ((return_code = ClearAllVMEErrs(i)) != RET_SUCCESS)
+		if (return_code = ClearAllVMEErrs(i))
 		{
 			zygoLogWarn(" ClearAllVMEErrs Failled !  \n"); return return_code;
 		}
@@ -5603,15 +5986,15 @@ int clearAllVMEErrsForAllAxis() {
 }
 /*This fuction reads the ZMI "Time Register" on 32 bits
 */
-int readTime(uint8_t axis, double* time) {
+int readTime(Axes axis, double* time) {
 
 	uint32_t uint_vme_data = 0,
 		uint_vme_address = 0;
 
 	zygoLogInfo("Reading Elapsed time on Axis %d...  \n", axis);
 	//Read the MSB and LSB
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMETimeMSB);
-	if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ)) != RET_SUCCESS)
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zVMETimeMSB);
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 	}
@@ -5625,108 +6008,108 @@ int readTime(uint8_t axis, double* time) {
 int readTimeForAllAxis(double* Time32_buf) {
 
 	double time = 0.0;
-	for (int i = 1; i < 5; i++)
+	for (const auto& i : AXES)
 	{
-		if ((return_code = readTime(i, &time)) != RET_SUCCESS)
+		if (return_code = readTime(i, &time))
 		{
 			zygoLogWarn(" ReadTime32 Failled !  \n"); return return_code;
 		}
-		*(Time32_buf + i - 1) = time;
+		*(Time32_buf + (static_cast<int>(i) - 1)) = time;
 		time = 0.0;
 	}
 	return RET_SUCCESS;
 }
-int resetTime(uint8_t axis)
+int resetTime(Axes axis)
 {
 	uint32_t uint_vme_data = 0,
 		uint_vme_address = 0;
 	zygoLogInfo("Reseting Time on Axis: %d...\n", axis);
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCmd);
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCmd);
 	uint_vme_data = (1 << 3);
-	if ((return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_OR_OP_CODE)) != RET_SUCCESS)
+	if (return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_OR_OP_CODE))
 	{
 		zygoLogWarn(" readModifyWrite Failled !  \n"); return return_code;
 	}
 
 }
-int ResetPositionQuick(uint8_t axis)
+int ResetPositionQuick(Axes axis)
 {
 	uint32_t uint_vme_data = 0,
 		uint_vme_address = 0;
 	zygoLogInfo("Quick position reset on Axis: %d...\n", axis);
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCmd);
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCmd);
 	uint_vme_data = (1 << 4);
-	if ((return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_OR_OP_CODE)) != RET_SUCCESS)
+	if (return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_OR_OP_CODE))
 	{
 		zygoLogWarn(" readModifyWrite Failled !  \n"); return return_code;
 	}
 	return RET_SUCCESS;
 
 }
-int resetPosition(uint8_t axis)
+int resetPosition(Axes axis)
 {
 	uint32_t uint_vme_data = 0,
 		uint_vme_address = 0;
 	zygoLogInfo("Reseting Position on Axis: %d...\n", axis);
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCmd);
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCmd);
 	uint_vme_data = (1 << 2);
-	if ((return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_OR_OP_CODE)) != RET_SUCCESS)
+	if (return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_OR_OP_CODE))
 	{
 		zygoLogWarn(" readModifyWrite Failled !  \n"); return return_code;
 	}
 	return RET_SUCCESS;
 
 }
-int enablePreset(uint8_t axis)
+int enablePreset(Axes axis)
 {
 	uint32_t uint_vme_data = 0,
 		uint_vme_address = 0;
 	zygoLogInfo("Enabling preset position on Axis: %d...\n", axis);
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCtrl3);
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCtrl3);
 	uint_vme_data = (1 << 8);
-	if ((return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_OR_OP_CODE)) != RET_SUCCESS)
+	if (return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_OR_OP_CODE))
 	{
 		zygoLogWarn(" readModifyWrite Failled !  \n"); return return_code;
 	}
 	return RET_SUCCESS;
 
 }
-int enableSclkResetOnAxisReset(uint8_t axis)
+int enableSclkResetOnAxisReset(Axes axis)
 {
 	uint32_t uint_vme_data = 0,
 		uint_vme_address = 0;
 	zygoLogInfo("Enabling sampling clock reset on axis %u reset...\n", axis);
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCtrl3);
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCtrl3);
 	uint_vme_data = (1 << 9);
-	if ((return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_OR_OP_CODE)) != RET_SUCCESS)
+	if (return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_OR_OP_CODE))
 	{
 		zygoLogWarn(" readModifyWrite Failled !  \n"); return return_code;
 	}
 	return RET_SUCCESS;
 
 }
-int disableSCLKResetOnAxisReset(uint8_t axis)
+int disableSCLKResetOnAxisReset(Axes axis)
 {
 	uint32_t uint_vme_data = 0,
 		uint_vme_address = 0;
 	zygoLogInfo("Disabling sampling clock reset on axis %u reset...\n", axis);
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCtrl3);
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCtrl3);
 	uint_vme_data = ~(1 << 9);
-	if ((return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_AND_OP_CODE)) != RET_SUCCESS)
+	if (return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_AND_OP_CODE))
 	{
 		zygoLogWarn(" readModifyWrite Failled !  \n"); return return_code;
 	}
 	return RET_SUCCESS;
 
 }
-int enableResetFindsVelocity(uint8_t axis)
+int enableResetFindsVelocity(Axes axis)
 {
 	uint32_t uint_vme_data = 0,
 		uint_vme_address = 0;
 	zygoLogInfo("Enabling reset finds velocity  on Axis %d... \n", axis);
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCtrl3);
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCtrl3);
 	uint_vme_data = (1 << 11);
-	if ((return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_OR_OP_CODE)) != RET_SUCCESS)
+	if (return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_OR_OP_CODE))
 	{
 		zygoLogWarn(" readModifyWrite Failled !  \n"); return return_code;
 	}
@@ -5737,9 +6120,9 @@ int enableResetFindsVelocityForAllAxis()
 {
 	uint32_t uint_vme_data = 0,
 		uint_vme_address = 0;
-	for (int axis = 0; axis < 4; axis++) {
+	for (const auto& i : AXES) {
 
-		if ((return_code = enableResetFindsVelocity(axis + 1)) != RET_SUCCESS)
+		if (return_code = enableResetFindsVelocity(i))
 		{
 			zygoLogWarn(" EnableResetFindsVelocity Failled !  \n"); return return_code;
 		}
@@ -5748,14 +6131,14 @@ int enableResetFindsVelocityForAllAxis()
 
 }
 
-int disableResetFindsVelocity(uint8_t axis)
+int disableResetFindsVelocity(Axes axis)
 {
 	uint32_t uint_vme_data = 0,
 		uint_vme_address = 0;
 	zygoLogInfo("Disabling reset finds velocity  on Axis %d... \n", axis);
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCtrl3);
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCtrl3);
 	uint_vme_data = ~(1 << 11);
-	if ((return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_AND_OP_CODE)) != RET_SUCCESS)
+	if (return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_AND_OP_CODE))
 	{
 		zygoLogWarn(" readModifyWrite Failled !  \n"); return return_code;
 	}
@@ -5768,8 +6151,8 @@ int disableResetFindsVelocityForAllAxis()
 	uint32_t uint_vme_data = 0,
 		uint_vme_address = 0;
 
-	for (int i = 0; i < 4; i++) {
-		if ((return_code = disableResetFindsVelocity(1 + i)) != RET_SUCCESS)
+	for (const auto& i : AXES) {
+		if (return_code = disableResetFindsVelocity(i))
 		{
 			zygoLogWarn(" DisableResetFindsVelocity Failled !  \n"); return return_code;
 		}
@@ -5778,65 +6161,36 @@ int disableResetFindsVelocityForAllAxis()
 
 }
 
-int setSampleSourceClock(uint8_t axis, bool SCLK)
-{
-	uint32_t uint_vme_data = 0,
-		uint_vme_address = 0;
 
-	zygoLogInfo("Setting source clock to %s on axis %u ... \n", (SCLK == SCLK0 ? "SCLK0" : "SCLK1"), axis);
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCtrl2);
-	if (SCLK) {
-		uint_vme_data = 0x1000;
-		if ((return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_OR_OP_CODE)) != RET_SUCCESS)
-		{
-			zygoLogWarn("readModifyWrite failed !  \n");
-			return return_code;
-		}
-	}
-	else {
-		uint_vme_data = 0x7FFF;
-		if ((return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_AND_OP_CODE)) != RET_SUCCESS)
-		{
-			zygoLogWarn("readModifyWrite failed !  \n");
-			return return_code;
-		}
-	}
-	
-	currentResetSclk = SCLK;
-	return RET_SUCCESS;
-
-}
-
-
-int getSampleSourceClock(uint8_t axis, bool* SCLK)
+int getVMEBusSampleClk(Axes axis, SCLK& clk)
 {
 	uint32_t uint_vme_data = 0,
 		uint_vme_address = 0;
 
 	zygoLogInfo("getting sample source clock  on axis %u ... \n", axis);
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCtrl2);
-	if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCtrl2);
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 	}
-	*SCLK = (uint_vme_data & 0x1000) >> 12;
-	zygoLogInfo("sample source clock on axis %u is %s... \n", axis, (*SCLK == SCLK0 ? "SCLK0" : "SCLK1"));
-	currentResetSclk = *SCLK;
+	clk = static_cast<SCLK>((uint_vme_data & 0x1000) >> 12);
+	zygoLogInfo("sample source clock on axis %u is %s... \n", axis, (clk == SCLK::SCLK0 ? "SCLK0" : "SCLK1"));
+	currentResetSclk = clk;
 	return RET_SUCCESS;
 
 }
 
-int setResetSourceClock(uint8_t axis, bool SCLK)
+int setResetSourceClock(Axes axis, SCLK clk)
 {
 	uint32_t uint_vme_data = 0,
 		uint_vme_address = 0;
 
-	zygoLogInfo("Setting reset source clock to %s on axis %u ... \n", (SCLK == SCLK0 ? "SCLK0" : "SCLK1"), axis);
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCtrl3);
+	zygoLogInfo("Setting reset source clock to %s on axis %u ... \n", (clk == SCLK::SCLK0 ? "SCLK0" : "SCLK1"), axis);
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCtrl3);
 	
-	if (SCLK) {
+	if (static_cast<bool>(clk)) {
 		uint_vme_data = 0x0400;
-		if ((return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_OR_OP_CODE)) != RET_SUCCESS)
+		if (return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_OR_OP_CODE))
 		{
 			zygoLogWarn("readModifyWrite failed !  \n");
 			return return_code;
@@ -5844,44 +6198,44 @@ int setResetSourceClock(uint8_t axis, bool SCLK)
 	}
 	else {
 		uint_vme_data = 0XFBFF;
-		if ((return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_AND_OP_CODE)) != RET_SUCCESS)
+		if (return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_AND_OP_CODE))
 		{
 			zygoLogWarn("readModifyWrite failed !  \n");
 			return return_code;
 		}
 	}
 
-	if ((return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_OR_OP_CODE)) != RET_SUCCESS)
+	if (return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_OR_OP_CODE))
 	{
 		zygoLogWarn("readModifyWrite failed !  \n");
 		return return_code;
 	}
-	currentResetSclk = SCLK;
+	currentResetSclk = clk;
 	return RET_SUCCESS;
 
 }
 
 
-int getResetSourceClock(uint8_t axis, bool* SCLK)
+int getResetSourceClock(Axes axis, SCLK& clk)
 {
 	uint32_t uint_vme_data = 0,
 		uint_vme_address = 0;
 
 	zygoLogInfo("getting reset source clock  on axis %u ... \n", axis);
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCtrl3);
-	if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCtrl3);
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 	}
-	*SCLK = (uint_vme_data & 0x400) >> 10;
-	zygoLogInfo("Reset source clock on axis %u is %s... \n", axis, (*SCLK == SCLK0 ? "SCLK0" : "SCLK1"));
-	currentResetSclk = *SCLK;
+	clk = static_cast<SCLK>((uint_vme_data & 0x400) >> 10);
+	zygoLogInfo("Reset source clock on axis %u is %s... \n", axis, clk == SCLK::SCLK0 ? "SCLK0" : "SCLK1");
+	currentResetSclk = clk;
 	return RET_SUCCESS;
 
 }
 
 
-int setTimeDelayBetweenResAndCompleteBit(uint8_t axis, uint8_t timeDelay)
+int setTimeDelayBetweenResAndCompleteBit(Axes axis, uint8_t timeDelay)
 {
 	uint32_t uint_vme_data = 0,
 		uint_vme_address = 0;
@@ -5890,19 +6244,29 @@ int setTimeDelayBetweenResAndCompleteBit(uint8_t axis, uint8_t timeDelay)
 	{
 		zygoLogWarn("Time delay value is ranged 0 to 7\n"); return return_code;
 	}
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCtrl3);
-	if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ)) != RET_SUCCESS)
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCtrl3);
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 	}
 	uint_vme_data |= (timeDelay << 12);
-	if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 	}
 	zygoLogInfo("Setting time delay between axis reset and and reset complete assertion on Axis: %d  \n", axis);
 	return RET_SUCCESS;
 
+}
+
+int readScaledSsiAv(Axes axis, double* ssiPtr) {
+	if (return_code = readSsiAv(axis, ssiPtr))
+	{
+		zygoLogWarn("readSsiAv failed !  \n");
+		return return_code;
+	}
+	*ssiPtr *= SSIScale;
+	return RET_SUCCESS;
 }
 
 /// <summary>
@@ -5914,15 +6278,36 @@ int setTimeDelayBetweenResAndCompleteBit(uint8_t axis, uint8_t timeDelay)
 /// 0 if success
 /// -1 else
 /// </returns>
-int readScaledSsiAv(double* ssiPtr) {
-	double temp = 0.0;
-	if ((return_code = readSsiAv(ssiPtr)) != RET_SUCCESS)
+int readScaledSsiAvForAllAxis(double* ssiPtr) {
+	for (const auto& i : AXES) {
+		if (return_code = readScaledSsiAv(i, ssiPtr + (static_cast<int>(i) - 1)))
+		{
+			zygoLogWarn("readSsiAvForAllAxis failed !  \n");
+			return return_code;
+		}
+	}
+	return RET_SUCCESS;
+}
+
+int readSsiAv(Axes axis, double* ssiPtr) {
+	uint32_t uint_vme_address = 0;
+	uint32_t  uint_vme_data = 0;
+	// The max SSI Average value (0xFFFF) corresponds to 1.25V
+	//zygoLogInfo("Reading SSI average on Axis %u...  \n", i + 1);
+	/*/
+	if (return_code = resetAxis(  i+1))
 	{
-		zygoLogWarn("readSsiAv failed !  \n");
+		zygoLogWarn("resetAxis failed !  \n");
 		return return_code;
 	}
-	for (int i = 0; i < 4; i++)
-		ssiPtr[i] *= SSIScale;
+	//*/
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis)-1], zSSIAvg);
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ))
+	{
+		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
+	}
+
+	*ssiPtr = static_cast<double>(uint_vme_data);
 	return RET_SUCCESS;
 }
 /// <summary>
@@ -5934,44 +6319,61 @@ int readScaledSsiAv(double* ssiPtr) {
 /// 0 if success
 /// -1 else
 /// </returns>
-int readSsiAv(double* ssiPtr) {
+int readSsiAvForAllAxis(double* ssiPtr) {
 	uint32_t uint_vme_address = 0;
 	uint32_t  uint_vme_data = 0;
-	for (int i = 0; i < 4; i++)
+	for (const auto& i : AXES)
 	{
-		// The max SSI Average value (0xFFFF) corresponds to 1.25V
-		//zygoLogInfo("Reading SSI average on Axis %u...  \n", i + 1);
-		/*/
-		if ((return_code = resetAxis(  i+1)) != RET_SUCCESS)
-		{
-			zygoLogWarn("resetAxis failed !  \n");
-			return return_code;
-		}
-		//*/
-		uint_vme_address = ADD(BASE_ADDRESS[i], zSSIAvg);
-		if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ)) != RET_SUCCESS)
+		if (return_code = readSsiAv(i, ssiPtr + (static_cast<int>(i) - 1)))
 		{
 			zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 		}
 
-		ssiPtr[i] = (double)(uint_vme_data);
 	}
 	return RET_SUCCESS;
 }
-int readOpticalPowerUsingSsiAv(double* OpticalPower_uW) {
-
+int readOpticalPowerUsingSsiAv(Axes axis, double* OpticalPower_uW) {
+	double APD_Gain[1], SSI[1];
+	if (return_code = readSsiAv(axis, SSI))
+	{
+		zygoLogWarn("readSsiAv failed !  \n");
+		return return_code;
+	}
+	if (return_code = readApdGain(axis, APD_Gain))
+	{
+		zygoLogWarn("readApdGainForAllAxis failed !  \n");
+		return return_code;
+	}
+	*OpticalPower_uW = *SSI * 0.00218 / *APD_Gain;
+	if (*OpticalPower_uW < 0)
+	{
+		*OpticalPower_uW = 0;
+		zygoLogInfo("-------------------------------------------------------\n");
+		zygoLogInfo("[WARNING] SSI is negative on axis %d. Setting it to 0...%u\n", axis);
+		zygoLogInfo("Optical Power on axis %d is %f uW\n", axis, *OpticalPower_uW);
+		zygoLogInfo("-------------------------------------------------------\n");
+	}
+	else
+	{
+		zygoLogInfo("-------------------------------------------------------\n");
+		zygoLogInfo("Optical Power on axis %d is %f uW\n", axis, *OpticalPower_uW);
+		zygoLogInfo("-------------------------------------------------------\n");
+	}
+	return RET_SUCCESS;
+}
+int readOpticalPowerUsingSsiAvForAllAxis(double* OpticalPower_uW) {
 	uint32_t uint_vme_data = 0,
 		uint_vme_address = 0;
 
 	double APD_Gain[] = { 0.0, 0.0, 0.0, 0.0 },
 		SSI[] = { 0.0, 0.0, 0.0, 0.0 };
 
-	if ((return_code = readSsiAv(SSI)) != RET_SUCCESS)
+	if (return_code = readSsiAvForAllAxis(SSI))
 	{
 		zygoLogWarn("readSsiAv failed !  \n");
 		return return_code;
 	}
-	if ((return_code = readApdGainForAllAxis(APD_Gain)) != RET_SUCCESS)
+	if (return_code = readApdGainForAllAxis(APD_Gain))
 	{
 		zygoLogWarn("readApdGainForAllAxis failed !  \n");
 		return return_code;
@@ -5984,7 +6386,7 @@ int readOpticalPowerUsingSsiAv(double* OpticalPower_uW) {
 		{
 			OpticalPower_uW[i] = 0;
 			zygoLogInfo("-------------------------------------------------------\n");
-			zygoLogInfo("[WARNING] SSI is negative on axis. Setting it to 0...%u\n", i + 1);
+			zygoLogInfo("[WARNING] SSI is negative on axis %d. Setting it to 0...%u\n", i + 1);
 			zygoLogInfo("Optical Power on axis %d is %f uW\n", i + 1, OpticalPower_uW[i]);
 			zygoLogInfo("-------------------------------------------------------\n");
 		}
@@ -5998,7 +6400,7 @@ int readOpticalPowerUsingSsiAv(double* OpticalPower_uW) {
 
 	return RET_SUCCESS;
 }
-int setSsiSquelch(uint16_t axis, uint32_t squelchValue) {
+int setSsiSquelch(Axes axis, uint32_t squelchValue) {
 
 	//Set SSI Squelch(minimum AC optical signal that causes measurement signal ZMIError)
 	// default value is 0x80
@@ -6014,14 +6416,14 @@ int setSsiSquelch(uint16_t axis, uint32_t squelchValue) {
 	else
 		value = (short)(squelchValue & 0xFFF);
 
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zSSISquelch);
-	if ((return_code = readWrite("A24D16", uint_vme_address, &value, WRITE)) != RET_SUCCESS)
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zSSISquelch);
+	if (return_code = readWrite("A24D16", uint_vme_address, &value, WRITE))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 	}
 	return RET_SUCCESS;
 }
-int getSsiSquelch(uint16_t axis, uint32_t* squelchValue) {
+int getSsiSquelch(Axes axis, uint32_t* squelchValue) {
 
 	//get SSI Squelch(minimum AC optical signal that causes measurement signal ZMIError)
 	// default value is 0x80
@@ -6031,16 +6433,16 @@ int getSsiSquelch(uint16_t axis, uint32_t* squelchValue) {
 	if (squelchValue == NULL)
 		return BAD_ARG_VALUE;
 	zygoLogInfo("getting SSI Squelch value  on axis %u...\n", axis);
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zSSISquelch);
-	if ((return_code = readWrite("A24D16", uint_vme_address, &value, READ)) != RET_SUCCESS)
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zSSISquelch);
+	if (return_code = readWrite("A24D16", uint_vme_address, &value, READ))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 	}
-	*squelchValue = (double)value;
+	*squelchValue = static_cast<double>(value);
 	return RET_SUCCESS;
 }
 
-int getSsiMaxVal(uint8_t axis, uint32_t* SSIMax)
+int getSsiMaxVal(Axes axis, uint32_t* SSIMax)
 {
 	uint32_t uint_vme_data = 0,
 		uint_vme_address = 0;
@@ -6048,8 +6450,8 @@ int getSsiMaxVal(uint8_t axis, uint32_t* SSIMax)
 	zygoLogInfo("Getting SSI max value  on axis %u...\n", axis);
 	// The SSI max value (0xFFFF) corresponds to 1.25V
 
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zSSIMax);
-	if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ)) != RET_SUCCESS)
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zSSIMax);
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 	}
@@ -6063,57 +6465,57 @@ int getSsiMaxValForAllAxis(uint32_t* SSIMax_Buf)
 {
 	zygoLogInfo("Getting SSI max value  on all axis... \n");
 	uint32_t uint_vme_data = 0;
-	for (int i = 1; i < 5; i++)
+	for (const auto& i : AXES)
 	{
 		// The SSI max value (0xFFFF) corresponds to 1.25V
-		if ((return_code = getSsiMaxVal(i, &uint_vme_data)) != RET_SUCCESS)
+		if (return_code = getSsiMaxVal(i, &uint_vme_data))
 		{
 			zygoLogWarn("readApdGainForAllAxis failed !  \n");
 			return return_code;
 		}
-		*(SSIMax_Buf + i - 1) = uint_vme_data;
+		*(SSIMax_Buf + (static_cast<int>(i) - 1)) = uint_vme_data;
 	}
 
 	return RET_SUCCESS;
 
 }
-int resetSSIMinAndMax(uint8_t axis)
+int resetSSIMinAndMax(Axes axis)
 {
 	uint32_t uint_vme_data = 0,
 		uint_vme_address = 0;
 	zygoLogInfo("Reseting SSI max and min values  on axis %u...\n", axis);
 	// The SSI max value (0xFFFF) corresponds to 1.25V
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zTestCmd0);
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zTestCmd0);
 	uint_vme_data = 0x2;
-	if ((return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_OR_OP_CODE)) != RET_SUCCESS)
+	if (return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_OR_OP_CODE))
 	{
 		zygoLogWarn("readModifyWrite Failled !  \n"); return return_code;
 	}
 	return RET_SUCCESS;
 
 }
-int resetPhaseNoisePeak(uint8_t axis)
+int resetPhaseNoisePeak(Axes axis)
 {
 	uint32_t uint_vme_data = 0,
 		uint_vme_address = 0;
 	zygoLogInfo("Reseting SSI phase noise peak on axis %u...\n", axis);
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zTestCmd0);
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zTestCmd0);
 	uint_vme_data = 0x1;
-	if ((return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_OR_OP_CODE)) != RET_SUCCESS)
+	if (return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_OR_OP_CODE))
 	{
 		zygoLogWarn("readModifyWrite Failled !  \n"); return return_code;
 	}
 	return RET_SUCCESS;
 
 }
-int resetSigRmsL2MinAndMax(uint8_t axis)
+int resetSigRmsL2MinAndMax(Axes axis)
 {
 	uint32_t uint_vme_data = 0,
 		uint_vme_address = 0;
 	zygoLogInfo("Reseting SigRMSL2 min and max on axis %u...\n", axis);
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zTestCmd0);
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zTestCmd0);
 	uint_vme_data = (1 << 2);
-	if ((return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_OR_OP_CODE)) != RET_SUCCESS)
+	if (return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_OR_OP_CODE))
 	{
 		zygoLogWarn("readModifyWrite Failled !  \n"); return return_code;
 	}
@@ -6121,69 +6523,69 @@ int resetSigRmsL2MinAndMax(uint8_t axis)
 	return RET_SUCCESS;
 
 }
-int setGainControlMax(uint8_t axis)
+int setGainControlMax(Axes axis)
 {
 	uint32_t uint_vme_data = 0,
 		uint_vme_address = 0;
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCtrl5);
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCtrl5);
 
 	zygoLogInfo("Enabling Gain control max value on axis %u...\n", axis);
 	uint_vme_data = (1 << 3);
-	if ((return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_OR_OP_CODE)) != RET_SUCCESS)
+	if (return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_OR_OP_CODE))
 	{
 		zygoLogWarn("readModifyWrite Failled !  \n"); return return_code;
 	}
 	return RET_SUCCESS;
 }
-int setGainControlMin(uint8_t axis)
+int setGainControlMin(Axes axis)
 {
 	uint32_t uint_vme_data = 0,
 		uint_vme_address = 0;
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCtrl5);
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCtrl5);
 	zygoLogInfo("Enabling Gain control min value on axis %u...\n", axis);
 	uint_vme_data = (1 << 4);
-	if ((return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_OR_OP_CODE)) != RET_SUCCESS)
+	if (return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_OR_OP_CODE))
 	{
 		zygoLogWarn("readModifyWrite Failled !  \n"); return return_code;
 	}
 
 	return RET_SUCCESS;
 }
-int adjustGainControl(uint8_t axis)
+int adjustGainControl(Axes axis)
 {
 	uint32_t uint_vme_data = 0,
 		uint_vme_address = 0;
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCtrl5);
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCtrl5);
 	zygoLogInfo("Allowing Gain control to be continuously be adjusted in response to changing signal levels on axis %u...\n", axis);
 
 	uint_vme_data = (1 << 5);
 	return RET_SUCCESS;
 }
-int resetOptPowL2MinAndMax(uint8_t axis)
+int resetOptPowL2MinAndMax(Axes axis)
 {
 	uint32_t uint_vme_data = 0,
 		uint_vme_address = 0;
 	zygoLogInfo("Reseting optical power min and max on axis %u...\n", axis);
 	// The SSI max value (0xFFFF) corresponds to 1.25V
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zTestCmd0);
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zTestCmd0);
 
 	uint_vme_data = (1 << 2);
-	if ((return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_OR_OP_CODE)) != RET_SUCCESS)
+	if (return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_OR_OP_CODE))
 	{
 		zygoLogWarn("readModifyWrite Failled !  \n"); return return_code;
 	}
 	return RET_SUCCESS;
 
 }
-int checkSaturation(uint8_t axis, bool* sat)
+int checkSaturation(Axes axis, bool* sat)
 {
 	uint32_t uint_vme_data = 0,
 		uint_vme_address = 0;
 	zygoLogInfo("Checking signal saturation on axis %u...\n", axis);
 	// The SSI max value (0xFFFF) corresponds to 1.25V
 
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEErrStat0);
-	if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ)) != RET_SUCCESS)
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zVMEErrStat0);
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 	}
@@ -6191,7 +6593,7 @@ int checkSaturation(uint8_t axis, bool* sat)
 	if (uint_vme_data & (0x200))
 	{
 		zygoLogInfo("Measurement signal is saturated on Axis %u...  \n", axis);
-		if ((return_code = getSsiMaxVal(axis, &uint_vme_data)) != RET_SUCCESS)
+		if (return_code = getSsiMaxVal(axis, &uint_vme_data))
 		{
 			zygoLogWarn("getSsiMaxVal Failled !  \n"); return return_code;
 		}
@@ -6202,7 +6604,7 @@ int checkSaturation(uint8_t axis, bool* sat)
 	else
 	{
 		zygoLogInfo("Measurement signal is not saturated on Axis %u...  \n", axis);
-		if ((return_code = getSsiMaxVal(axis, &uint_vme_data)) != RET_SUCCESS)
+		if (return_code = getSsiMaxVal(axis, &uint_vme_data))
 		{
 			zygoLogWarn("getSsiMaxVal Failled !  \n"); return return_code;
 		}
@@ -6218,34 +6620,55 @@ int checkSaturationForAllAxis(bool* sat_Buf)
 		uint_vme_address = 0;
 	zygoLogInfo("Checking signal saturation on all axis...\n");
 	bool sat = false;
-	for (int i = 1; i < 5; i++)
+	for (const auto& i : AXES)
 	{
-		if ((return_code = checkSaturation(i, &sat)) != RET_SUCCESS)
+		if (return_code = checkSaturation(i, &sat))
 		{
 			zygoLogWarn("CheckSaturation Failled !  \n"); return return_code;
 		}
-		*(sat_Buf + i - 1) = sat;
+		*(sat_Buf + (static_cast<int>(i) - 1)) = sat;
 	}
 
 	return RET_SUCCESS;
 
 }
-int readApdGain(uint8_t axis, double* APD_Gain) {
+int readApdTemp(Axes axis, double* APD_Temp) {
 	uint32_t uint_vme_data = 0,
 		uint_vme_address = 0;
-	uint_vme_data = 0;
-	double APD_Gain_L2 = 0.0;
+	double APD_Temp_Reg = 0.0;
 
 	//enableAuxRegisters(  axis);
 	zygoLogInfo("Reading APD GAIN L2 on Axis %d...  \n", axis);
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zAPDGainL2);
-	if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ)) != RET_SUCCESS)
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zAPDTemp);
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 	}
 
-	APD_Gain_L2 = (double)uint_vme_data;
-	*APD_Gain = pow(2, ((int)(APD_Gain_L2 / 1024)));
+	APD_Temp_Reg = static_cast<double>(uint_vme_data);
+	*APD_Temp = APD_Temp_Reg/256.0;
+	zygoLogInfo("-------------------------------------------------------\n");
+	zygoLogInfo("APD Temp on axis %u: %f \n", axis, *APD_Temp);
+	zygoLogInfo("-------------------------------------------------------\n");
+	//disableAuxRegisters(  axis);
+	return RET_SUCCESS;
+}
+
+int readApdGain(Axes axis, double* APD_Gain) {
+	uint32_t uint_vme_data = 0,
+		uint_vme_address = 0;
+	double APD_Gain_L2 = 0.0;
+
+	//enableAuxRegisters(  axis);
+	zygoLogInfo("Reading APD GAIN L2 on Axis %d...  \n", axis);
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zAPDGainL2);
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ))
+	{
+		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
+	}
+
+	APD_Gain_L2 = static_cast<double>(uint_vme_data);
+	*APD_Gain = std::pow(2 , (APD_Gain_L2 / 1024.0));
 	zygoLogInfo("-------------------------------------------------------\n");
 	zygoLogInfo("APD Gain on axis %u: %f \n", axis, *APD_Gain);
 	zygoLogInfo("-------------------------------------------------------\n");
@@ -6257,34 +6680,34 @@ int readApdGainForAllAxis(double* APD_Gain_Buf) {
 	double APD_Gain = 0.0;
 	zygoLogInfo("Reading APD GAIN L2 on all axis ...  \n");
 
-	for (int i = 1; i < 5; i++)
+	for (const auto& i : AXES)
 	{
-		if ((return_code = readApdGain(i, &APD_Gain)) != RET_SUCCESS)
+		if (return_code = readApdGain(i, &APD_Gain))
 		{
 			zygoLogWarn("CheckSaturation Failled !  \n"); return return_code;
 		}
-		*(APD_Gain_Buf + i - 1) = APD_Gain;
+		*(APD_Gain_Buf + (static_cast<int>(i) - 1)) = APD_Gain;
 		APD_Gain = 0.0;
 	}
 	return RET_SUCCESS;
 }
-int enableAuxRegisters(uint8_t axis) {
+int enableAuxRegisters(Axes axis) {
 	uint32_t uint_vme_data = 0, uint_vme_address = 0;
 	zygoLogInfo("Enabling auxiliary registers on axis %u...  \n", axis);
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCtrl2);//rw
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCtrl2);//rw
 	uint_vme_data = 0x200;
-	if ((return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_OR_OP_CODE)) != RET_SUCCESS)
+	if (return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_OR_OP_CODE))
 	{
 		zygoLogWarn("readModifyWrite Failled !  \n"); return return_code;
 	}
 	return RET_SUCCESS;
 }
-bool isApdCtrlSoftErrs(uint8_t axis) {
+bool isApdCtrlSoftErrs(Axes axis) {
 	uint32_t uint_vme_data = 0, uint_vme_address = 0;
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zVMEErrStat2);
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zVMEErrStat2);
 
 	zygoLogInfo("Checking the APD control software errors on axis %u...  \n", axis);
-	if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ)) != RET_SUCCESS)
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 		return false;
@@ -6293,21 +6716,21 @@ bool isApdCtrlSoftErrs(uint8_t axis) {
 		return true;
 	return false;
 }
-int readApdCtrlSoftErrs(uint8_t axis) {
+int readApdCtrlSoftErrs(Axes axis) {
 #define APD_NESTED_ERR_END	-10
 	uint32_t uint_vme_data = 0, uint_vme_address = 0;
 	int ret_code=0,val=0;
 	int val1 = 0;
 	zygoLogInfo("Reading APD  errors on axis %u...  \n", axis);
 	zygoLogInfo("*************************APD Errors****************************\n");
-	if ((return_code = isApdCtrlSoftErrs(axis)) != RET_SUCCESS)
+	if (return_code = isApdCtrlSoftErrs(axis))
 	{
 		zygoLogWarn("isApdCtrlSoftErrs Failled !  \n"); return return_code;
 	}
 
 	//enableAuxRegisters(  axis); // Enable auxiliary registers to read the register value
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zSoftErrID);
-	if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ)) != RET_SUCCESS)
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zSoftErrID);
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 	}
@@ -6372,87 +6795,252 @@ int readApdCtrlSoftErrs(uint8_t axis) {
 	//disableAuxRegisters(  axis); // Enable auxiliary registers
 	return ret_code;
 }
-int enable32BitsOverflow(uint8_t axis) {
+int enable32BitsOverflow(Axes axis) {
 	uint32_t uint_vme_data = 0, uint_vme_address = 0;
 	// Enable auxiliary registers
 	zygoLogInfo("Enabling 32bits overflow on axis %u\n", axis);
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCtrl2);
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCtrl2);
 	uint_vme_data = 0x800;
-	if ((return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_OR_OP_CODE)) != RET_SUCCESS)
+	if (return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_OR_OP_CODE))
 	{
-		zygoLogWarn("readModifyWrite Failled !  \n"); return return_code;
+		zygoLogWarn("readModifyWrite Failled !  \n"); 
+		return return_code;
 	}
 	return RET_SUCCESS;
 }
-int disable32BitsOverflow(uint8_t axis) {
+int disable32BitsOverflow(Axes axis) {
 	uint32_t uint_vme_data = 0, uint_vme_address = 0;
 	// Enable auxiliary registers
 	zygoLogInfo("Disabling 32bits overflow on axis %u\n", axis);
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCtrl2);
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCtrl2);
 	uint_vme_data = 0xF7FF;
-	if ((return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_AND_OP_CODE)) != RET_SUCCESS)
+	if (return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_AND_OP_CODE))
 	{
 		zygoLogWarn("readModifyWrite Failled !  \n"); return return_code;
 	}
 	return RET_SUCCESS;
 }
-int disableAuxRegisters(uint8_t axis) {
+int disableAuxRegisters(Axes axis) {
 	uint32_t uint_vme_data = 0, uint_vme_address = 0;
 	// Disable auxiliary registers
 	zygoLogInfo("Disabling auxiliary registers on axis %u\n", axis);
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCtrl2);
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCtrl2);
 	uint_vme_data = 0xFDFF;
-	if ((return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_AND_OP_CODE)) != RET_SUCCESS)
+	if (return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_AND_OP_CODE))
 	{
 		zygoLogWarn("readModifyWrite Failled !  \n"); return return_code;
 	}
 	return RET_SUCCESS;
 }
-int sampleVmePosition(uint8_t axis) {
+int sampleVmePosition(Axes axis) {
 	uint32_t uint_vme_data = 0x200, ctr = 0, uint_vme_address = 0;
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCmd);
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCmd);
 	zygoLogInfo("Sampling velocity and position on axis %d...\n", axis);
 	//*
-	if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 		return return_code; 
 	}
 	while (!(uint_vme_data & 0x400))
 	{
-		if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ)) != RET_SUCCESS)
+		if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ))
 		{
 			zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); 
 			return return_code;
 		}
 	}
 	//*/
-	int sFlag = -1;
-	while (sFlag); // Wait for the VME external sample flag to be set before reading
-	{
-		getVmeExtSampFlag(axis, &sFlag);
-	}
 	return RET_SUCCESS;
 }
-int sclkOn() {
-	//Turn on bits 7 and 9 (SCLK Timer enable and SCLK0 output)
-	uint32_t uint_vme_data = 0x280, uint_vme_address = 0;
-	uint_vme_address = ADD(BASE_ADDRESS[2], zCtrl16);
-	if ((return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_OR_OP_CODE)) != RET_SUCCESS) {
+
+int setVMEBusSampleClk(Axes axis, SCLK clk) {
+	uint32_t uint_vme_data = 0x1000, uint_vme_address = 0;
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCtrl2);
+	if (clk == SCLK::SCLK1) {
+		if (return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_OR_OP_CODE)) {
+
+			zygoLogWarn("ReadWriteModify failed!  \n");
+			return return_code;
+		}
+	}
+	else
+	{
+		uint_vme_data = 0xEFFF;
+		if (return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_AND_OP_CODE)) {
+
+			zygoLogWarn("ReadWriteModify failed!  \n");
+			return return_code;
+		}
+	}
+	currentVMEBusSclk = clk;
+	return RET_SUCCESS;
+}
+
+int enableSCLKDivider(Axes axis) {
+	uint32_t uint_vme_data = 0x40, uint_vme_address = 0;
+	if (axis != Axes::Axis_1 && axis != Axes::Axis_3)
+		return BAD_AXIS_VALUE;
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCtrl16);
+	if (return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_OR_OP_CODE)) {
+
+		zygoLogWarn("ReadWriteModify failed!  \n");
+		return return_code;
+	}
+}
+
+int getSCLKDividerState(Axes axis, State& s) {
+	uint32_t uint_vme_data = 0, uint_vme_address = 0;
+	if (axis != Axes::Axis_1 && axis != Axes::Axis_3)
+		return BAD_AXIS_VALUE;
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCtrl16);
+
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ))
+	{
+		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
+	}
+	if (uint_vme_data & 0x40)
+		s = State::ON;
+	else
+		s = State::OFF;
+	return RET_SUCCESS;
+}
+int disableSCLKDivider(Axes axis) {
+	uint32_t uint_vme_data = 0xFFBF, uint_vme_address = 0;
+	if (axis != Axes::Axis_1 && axis != Axes::Axis_3)
+		return BAD_AXIS_VALUE;
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCtrl16);
+	if (return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_AND_OP_CODE)) {
+
+		zygoLogWarn("ReadWriteModify failed!  \n");
+		return return_code;
+	}
+}
+
+int enableSCLKDivideBy2(Axes axis) {
+	uint32_t uint_vme_data = 0x20, uint_vme_address = 0;
+	if (axis != Axes::Axis_1 && axis != Axes::Axis_3)
+		return BAD_AXIS_VALUE;
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCtrl16);
+	if (return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_OR_OP_CODE)) {
+
+		zygoLogWarn("ReadWriteModify failed!  \n");
+		return return_code;
+	}
+}
+
+int disableSCLKDivideBy2(Axes axis) {
+	uint32_t uint_vme_data = 0xFFDF, uint_vme_address = 0;
+	if (axis != Axes::Axis_1 && axis != Axes::Axis_3)
+		return BAD_AXIS_VALUE;
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCtrl16);
+	if (return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_AND_OP_CODE)) {
+
+		zygoLogWarn("ReadWriteModify failed!  \n");
+		return return_code;
+	}
+}
+
+int getSCLKDivideBy2(Axes axis, State& s) {
+	uint32_t uint_vme_data = 0, uint_vme_address = 0;
+	if (axis != Axes::Axis_1 && axis != Axes::Axis_3)
+		return BAD_AXIS_VALUE;
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCtrl16);
+
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ))
+	{
+		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
+	}
+	if (uint_vme_data & 0x20)
+		s = State::ON;
+	else
+		s = State::OFF;
+	return RET_SUCCESS;
+}
+int setSCLKDividerCoeff(Axes axis, SampleDividerCoeffs sdv) {
+	uint32_t uint_vme_data = 0xFF0F, uint_vme_address = 0;
+	if (axis != Axes::Axis_1 && axis != Axes::Axis_3)
+		return BAD_AXIS_VALUE;
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCtrl15);
+	if (return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_AND_OP_CODE)) {
+
+		zygoLogWarn("ReadWriteModify failed!  \n");
+		return return_code;
+	}
+	uint_vme_data = static_cast<uint32_t>(sdv);
+	if (return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_OR_OP_CODE)) {
 
 		zygoLogWarn("ReadWriteModify failed!  \n");
 		return return_code;
 	}
 	return RET_SUCCESS;
 }
-int sclkOff() {
-	uint32_t uint_vme_data = 0, uint_vme_address = 0;
-	uint_vme_address = ADD(BASE_ADDRESS[2], zCtrl16);
-	uint_vme_data = 0xFD7F;
-	if ((return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_AND_OP_CODE)) != RET_SUCCESS)
+int sclkOutputOn(Axes axis, SCLK clk) {
+	//Turn on bits 7 and 9 (SCLK Timer enable and SCLK output)
+	uint32_t uint_vme_data = 0x280, uint_vme_address = 0;
+	if (axis != Axes::Axis_1 && axis != Axes::Axis_3)
+		return BAD_AXIS_VALUE;
+	
+	setVMEBusSampleClk(axis, clk);
+	if (clk == SCLK::SCLK0) {
+		uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCtrl16);
+		if (return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_OR_OP_CODE)) {
+
+			zygoLogWarn("ReadWriteModify failed!  \n");
+			return return_code;
+		}
+	}
+	else
 	{
-		zygoLogWarn("ReadWriteModify failed!  \n");
-		return return_code;
+		uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCtrl16);
+		uint_vme_data = 0x80;
+		if (return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_OR_OP_CODE)) {
+
+			zygoLogWarn("ReadWriteModify failed!  \n");
+			return return_code;
+		}
+		uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCtrl17);
+		uint_vme_data = 0x200;
+		if (return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_OR_OP_CODE)) {
+
+			zygoLogWarn("ReadWriteModify failed!  \n");
+			return return_code;
+		}
+	}
+	return RET_SUCCESS;
+}
+
+int sclkOutputOff(Axes axis, SCLK clk) {
+	uint32_t uint_vme_data = 0, uint_vme_address = 0;
+	if (axis != Axes::Axis_1 && axis != Axes::Axis_3)
+		return BAD_AXIS_VALUE;
+
+	if (clk == SCLK::SCLK0) {
+		uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCtrl16);
+		uint_vme_data = 0xFD7F;
+		if (return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_AND_OP_CODE))
+		{
+			zygoLogWarn("ReadWriteModify failed!  \n");
+			return return_code;
+		}
+	}
+	else
+	{
+		uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCtrl16);
+		uint_vme_data = 0xFF7F;
+		if (return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_AND_OP_CODE))
+		{
+			zygoLogWarn("ReadWriteModify failed!  \n");
+			return return_code;
+		}
+
+		uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCtrl17);
+		uint_vme_data = 0xFDFF;
+		if (return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_AND_OP_CODE))
+		{
+			zygoLogWarn("ReadWriteModify failed!  \n");
+			return return_code;
+		}
 	}
 
 	return RET_SUCCESS;
@@ -6482,9 +7070,9 @@ int vmeSysReset() {
 int setSampTimerFreq(uint16_t sampTimerVal) {
 	uint32_t uint_vme_data = 0, uint_vme_address = 0;
 	zygoLogInfo("Setting the sampling timer frequency to %u ...\n", sampTimerVal);
-	uint_vme_address = ADD(BASE_ADDRESS[2], zSampleTimer);
+	uint_vme_address = ADD(BASE_ADDRESS[AXIS3 - 1], zSampleTimer);
 	uint_vme_data = sampTimerVal;
-	if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 	}
@@ -6503,8 +7091,8 @@ int setSampTimerFreq(uint16_t sampTimerVal) {
 int getSampTimerFreq(uint32_t* sampTimerVal) {
 	uint32_t uint_vme_address = 0;
 	zygoLogInfo("getting the sampling timer frequency ...\n");
-	uint_vme_address = ADD(BASE_ADDRESS[2], zSampleTimer);
-	if ((return_code = readWrite("A24D16", uint_vme_address, sampTimerVal, READ)) != RET_SUCCESS)
+	uint_vme_address = ADD(BASE_ADDRESS[AXIS3 - 1], zSampleTimer);
+	if (return_code = readWrite("A24D16", uint_vme_address, sampTimerVal, READ))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); 
 		return return_code;
@@ -6521,38 +7109,59 @@ int getSampTimerFreq(uint32_t* sampTimerVal) {
 /// 0 if success
 /// -1 if failed
 /// </returns>
-int getSamplingFrequency(uint32_t* sampFreq) {
-	uint32_t uint_vme_address = 0, uint_vme_data = 0;
+int getSamplingFrequency(Axes axis, uint32_t* sampFreq) {
+	uint32_t uint_vme_address = 0, uint_vme_data = 0, tmp = 0;
+	if (sampFreq == nullptr)
+		return BAD_ARG_POINTER;
+	if (axis != Axes::Axis_1 && axis != Axes::Axis_3)
+		return BAD_AXIS_VALUE;
+
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCtrl2);
 	zygoLogInfo("getting sampling frequency ...\n");
-	uint_vme_address = ADD(BASE_ADDRESS[2], zSampleTimer);
-	if (getSampTimerFreq(&uint_vme_data) != RET_SUCCESS)
+	uint_vme_address = ADD(BASE_ADDRESS[AXIS3 - 1], zSampleTimer);
+	if (return_code = getSampTimerFreq(&uint_vme_data))
 	{
 		zygoLogWarn("getSamplingFrequency failed !  \n"); 
 		return return_code;
 	}
-	currentSamplingFrequency = (uint32_t)(1e6 / (((double)uint_vme_data + 1) * 0.05));
-	if (sampFreq != nullptr)
-		*sampFreq = currentSamplingFrequency;
+	tmp = (uint32_t)(1e6 / ((static_cast<double>(uint_vme_data) + 1) * 0.05));
+	State s;
+
+	if (return_code = getSCLKDivideBy2(axis, s))
+	{
+		zygoLogWarn("getSCLKDivideBy2 failed !  \n");
+		return return_code;
+	}
+	if (s == State::ON)
+		tmp*= 2;
+	currentSamplingFrequency[axis == Axes::Axis_1 ? 0:1] = tmp;
+	*sampFreq = tmp;
 	return RET_SUCCESS;
 }
-int setHoldSampEnable() {
+int setHoldSampEnable(Axes axis) {
 	uint32_t uint_vme_data = 0, uint_vme_address = 0;
 	zygoLogInfo("Holding measured samples...\n");
-	uint_vme_address = ADD(BASE_ADDRESS[2], zCtrl2);
+	if (axis != Axes::Axis_1 && axis != Axes::Axis_3)
+		return BAD_AXIS_VALUE;
+
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCtrl2);
 	uint_vme_data = 0x2000;
-	if ((return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_OR_OP_CODE)) != RET_SUCCESS)
+	if (return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_OR_OP_CODE))
 	{
 		zygoLogWarn("ReadWriteModify failed!  \n");
 		return return_code;
 	}
 	return RET_SUCCESS;
 }
-int resetHoldSampEnable() {
+int resetHoldSampEnable(Axes axis) {
 	uint32_t uint_vme_data = 0, uint_vme_address = 0;
-	uint_vme_address = ADD(BASE_ADDRESS[2], zCtrl2);
+	if (axis != Axes::Axis_1 && axis != Axes::Axis_3)
+		return BAD_AXIS_VALUE;
+
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCtrl2);
 	zygoLogInfo("Updating measured samples...\n");
 	uint_vme_data = 0xDFFF;
-	if ((return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_AND_OP_CODE)) != RET_SUCCESS)
+	if (return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_AND_OP_CODE))
 	{
 		zygoLogWarn("ReadWriteModify failed!  \n");
 		return return_code;
@@ -6568,17 +7177,17 @@ int resetHoldSampEnable() {
 /// 0 if success
 /// -1 if failed
 /// </returns>
-int enableSampling(uint32_t sampleFreq) {
+int enableSampling(Axes axis, uint32_t sampleFreq, SCLK clk) {
 	uint16_t rdVal = 0, sclkVal = 0;
 	zygoLogInfo("Enabling sampling timer on the main axis...\n");
-	if ((return_code = setSamplingFrequency(sampleFreq)) != RET_SUCCESS)
+	if (return_code = setSamplingFrequency(axis, sampleFreq, SCLK::SCLK0))
 	{
 		zygoLogWarn("setSamplingFrequency failed!  \n");
 		return return_code;
 	}
-	if ((return_code = sclkOn()) != RET_SUCCESS)
+	if (return_code = sclkOutputOn(axis, clk))
 	{
-		zygoLogWarn("sclkOn failed!  \n");
+		zygoLogWarn("sclk0OuputOn failed!  \n");
 		return return_code;
 	}
 	return RET_SUCCESS;
@@ -6591,80 +7200,94 @@ int enableSampling(uint32_t sampleFreq) {
 /// 0 if success
 /// -1 if failed
 /// </returns>
-int setSamplingFrequency(uint32_t sampleFreq) {
+int setSamplingFrequency(Axes axis, uint32_t sampleFreq, SCLK clk) {
 	uint16_t rdVal = 0, sclkVal = 0;
 	uint32_t sampFreqGo = sampleFreq;
 	zygoLogInfo("Setting sampling frequency to %u...\n", sampleFreq);
-	if (sampleFreq <= 0 || sampleFreq > SAMP_FREQ_MAX)
+	//turn off sclk (turn off 7 and 9)
+	if (return_code = sclkOutputOff(axis, clk))
 	{
-		sclkVal = 1;
+		zygoLogWarn("sclkOutputOff failed!  \n");
+		return return_code;
+	}
+	if (sampleFreq > SAMP_FREQ_MAX_X_2)
+	{
 		sampFreqGo = SAMP_FREQ_MAX;
+		sclkVal = 1;
 	}
 	else if (sampleFreq <= SAMP_FREQ_MIN)
 	{
 		sclkVal = 0xFFFF;
-		sampFreqGo = (1 / (0.05 * 0xFFFF)) * 1e6;
+		sampFreqGo = SAMP_FREQ_MIN;
 		zygoLogInfo("ZMI sample frequency minimum is %u Hz.\n", (uint32_t)(SAMP_FREQ_MIN));
 		zygoLogInfo("Setting to min...\n");
 	}
-	else
+	else if(sampleFreq > SAMP_FREQ_MAX){
+		sampFreqGo = sampleFreq / 2;
+		sclkVal = (uint16_t)(1 / (sampFreqGo * 0.05 * 1e-6) - 1);
+		if (return_code = enableSCLKDivideBy2(axis))
+		{
+			zygoLogWarn("enableSCLKDivideBy2 failed!  \n");
+		}
+	}
+	else 
 		sclkVal = (uint16_t)(1 / (sampFreqGo * 0.05 * 1e-6) - 1);
 
-	//turn off sclk (turn off 7 and 9) and turn off divider (turn off 6)
-	if ((return_code = sclkOff()) != RET_SUCCESS)
-	{
-		zygoLogWarn("sclkOff failed!  \n");
-		return return_code;
-	}
 	//set sclk rate(only master axis needed)
-	if ((return_code = setSampTimerFreq(sclkVal)) != RET_SUCCESS)
+	if (return_code = setSampTimerFreq(sclkVal))
 	{
 		zygoLogWarn("setSampTimerFreq failed\n");
 		return RET_FAILED;
 	}
-	currentSamplingFrequency = sampleFreq;
+	//turn off sclk (turn off 7 and 9)
+	if (return_code = sclkOutputOn(axis,clk))
+	{
+		zygoLogWarn("sclkOutputOn failed!  \n");
+		return return_code;
+	}
+	currentSamplingFrequency[axis == Axes::Axis_1? 0:1] = sampFreqGo;
 	return RET_SUCCESS;
 }
 
-int disableSampleTimer() {
+int disableSampleTimer(Axes axis, SCLK clk) {
 	zygoLogInfo("Disabling sampling timer ...\n");
-	if ((return_code = sclkOff()) != RET_SUCCESS)
+	if (return_code = sclkOutputOff(axis, clk))
 	{
-		zygoLogWarn("sclkOff failed!  \n");
+		zygoLogWarn("sclkOutputOff failed!  \n");
 		return return_code;
 	}
 	return RET_SUCCESS;
 }
-int getVmeExtSampFlag(uint8_t axis, int* sampleFlag) {
+int getVmeExtSampFlag(Axes axis, int* sampleFlag) {
 	uint32_t uint_vme_data = 0, uint_vme_address = 0;
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zStat0);
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zStat0);
 
 	zygoLogInfo("Getting VME external sampling flag on axis %u...\n", axis);
-	if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ)) != RET_SUCCESS)
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); 
 		return return_code;
 	}
-	*sampleFlag = uint_vme_data &= 0x400;
+    *sampleFlag = uint_vme_data & 0x400;
 	return RET_SUCCESS;
 }
-bool clearVmeExtSampFlag(uint8_t axis) {
+bool clearVmeExtSampFlag(Axes axis) {
 	uint32_t uint_vme_data = 0, uint_vme_address = 0;
 	uint_vme_data = 0x100;
 	zygoLogInfo("Clearing VME external sampling flag bit on axis %u...\n", axis);
-	if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE)) != RET_SUCCESS)
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, WRITE))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 		return return_code;
 	}
 	return true;
 }
-bool isVmeIntReqPending(uint8_t axis) {
+bool isVmeIntReqPending(Axes axis) {
 	uint32_t uint_vme_data = 0, uint_vme_address = 0;
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zStat0);
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zStat0);
 	zygoLogInfo("Checking VME external sample flag interrupt request  on axis %u...\n", axis);
 
-	if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ)) != RET_SUCCESS)
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 	}
@@ -6673,23 +7296,21 @@ bool isVmeIntReqPending(uint8_t axis) {
 	}
 	return false;
 }
-int eepromRead(uint16_t offset, uint32_t* uint_vme_data,
-	uint16_t nBytes) {
+int eepromRead(uint16_t offset, uint32_t* uint_vme_data, uint16_t nBytes) {
 	uint32_t uint_vme_address = 0,
 		vme_data = 0;
 	char ch_access_mode[10];
 	zygoLogInfo("Reading EEPROM data...\n");
-	strcpy_s(ch_access_mode, sizeof(ch_access_mode), access_mode_Selection[6]);
-	uint_vme_address = ADD(BASE_ADDRESS[2], zTestStat1);
-	if ((return_code = readWrite("A24D16", uint_vme_address, &vme_data, READ)) != RET_SUCCESS)
+	uint_vme_address = ADD(BASE_ADDRESS[AXIS3 - 1], zTestStat1);
+	if (return_code = readWrite("A24D16", uint_vme_address, &vme_data, READ))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 	}
 	// Verify the EEPROM is error-free 
 	if ((vme_data & 0x800) != 0) {
-		uint_vme_address = ADD(BASE_ADDRESS[2], zTestCmd1); // Clear the error 
+		uint_vme_address = ADD(BASE_ADDRESS[AXIS3 - 1], zTestCmd1); // Clear the error 
 		vme_data = 0x04;
-		if ((return_code = readWrite(ch_access_mode, uint_vme_address, &vme_data, WRITE)) != RET_SUCCESS)
+		if (return_code = readWrite(ch_access_mode, uint_vme_address, &vme_data, WRITE))
 		{
 			zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 		}
@@ -6697,9 +7318,9 @@ int eepromRead(uint16_t offset, uint32_t* uint_vme_data,
 	// Wait until EEPROM Busy clears 
 	vme_data = 0x0200;
 	while (vme_data & 0x0200) {
-		uint_vme_address = ADD(BASE_ADDRESS[2], zTestStat1);
+		uint_vme_address = ADD(BASE_ADDRESS[AXIS3 - 1], zTestStat1);
 		vme_data = 0;
-		if ((return_code = readWrite(ch_access_mode, uint_vme_address, &vme_data, READ)) != RET_SUCCESS)
+		if (return_code = readWrite(ch_access_mode, uint_vme_address, &vme_data, READ))
 		{
 			zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 		}
@@ -6707,18 +7328,18 @@ int eepromRead(uint16_t offset, uint32_t* uint_vme_data,
 	}; // Wait while EEPROM busy 
 		// Start EEPROM Read 
 	//First send the adress to read
-	uint_vme_address = ADD(BASE_ADDRESS[2], zEEpromCtrl);
+	uint_vme_address = ADD(BASE_ADDRESS[AXIS3 - 1], zEEpromCtrl);
 	vme_data = zEEReadCmd | (offset & 0x3ff); // keep the last 10 bits and add them to the eerdcmd
-	if ((return_code = readWrite(ch_access_mode, uint_vme_address, &vme_data, WRITE)) != RET_SUCCESS)
+	if (return_code = readWrite(ch_access_mode, uint_vme_address, &vme_data, WRITE))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 	}
 
 	vme_data = 0x0200;
-	uint_vme_address = ADD(BASE_ADDRESS[2], zTestStat1);
+	uint_vme_address = ADD(BASE_ADDRESS[AXIS3 - 1], zTestStat1);
 	while (vme_data & 0x0200) {
 
-		if ((return_code = readWrite(ch_access_mode, uint_vme_address, &vme_data, READ)) != RET_SUCCESS)
+		if (return_code = readWrite(ch_access_mode, uint_vme_address, &vme_data, READ))
 		{
 			zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 		}
@@ -6742,9 +7363,9 @@ int eepromRead(uint16_t offset, uint32_t* uint_vme_data,
 		break;
 	}
 
-	uint_vme_address = ADD(BASE_ADDRESS[2], zEEpromReadReg);
+	uint_vme_address = ADD(BASE_ADDRESS[AXIS3 - 1], zEEpromReadReg);
 	*uint_vme_data = 0;
-	if ((return_code = readWrite(ch_access_mode, uint_vme_address, uint_vme_data, READ)) != RET_SUCCESS)
+	if (return_code = readWrite(ch_access_mode, uint_vme_address, uint_vme_data, READ))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 	}
@@ -6760,8 +7381,8 @@ int readWrite(const char* ch_access_mode, uint32_t uint_vme_address, uint32_t* u
 	/***   "A24D32":   A24  privileged data access                       ***/
 	/**************************************************************************/
 	uint8_t comp_valid_flag = 0;
-	comp_err = strncmp(ch_access_mode, "A24D32P", 7);
 	WaitForSingleObject(rw_key, INFINITE);
+	comp_err = strncmp(ch_access_mode, "A24D32P", 7);
 	if (comp_err == 0) {
 		comp_valid_flag = 1;
 		if (read_write == 0) {
@@ -6862,7 +7483,7 @@ int readWrite(const char* ch_access_mode, uint32_t uint_vme_address, uint32_t* u
 int zygoLogFatal(const char* fmt, ...) {
 	WaitForSingleObject(zygoLogFatal_key, INFINITE);
 	int argout = RET_SUCCESS;
-	if (fopen_s(&fdLog, "logfile.txt", "a") != RET_SUCCESS){
+	if (fopen_s(&fdLog, "logfile.txt", "a") != RET_SUCCESS) {
 		ReleaseMutex(zygoLogFatal_key);
 		return FILE_OPEN_FAILED;
 	}
@@ -6871,6 +7492,7 @@ int zygoLogFatal(const char* fmt, ...) {
 	errStr = (PCHAR)malloc(ERRSTRMAX);
 	if (errStr == NULL) {
 		ReleaseMutex(zygoLogFatal_key);
+		fclose(fdLog);
 		return ALLOC_MEM_ERROR;
 	}
 	va_start(argPtr, fmt);
@@ -6890,7 +7512,7 @@ int zygoLogFatal(const char* fmt, ...) {
 int zygoLogWarn(const char* fmt, ...) {
 	WaitForSingleObject(zygoLogWarn_key, INFINITE);
 	int argout = RET_SUCCESS;
-	if (fopen_s(&fdLog, "logfile.txt", "a") != RET_SUCCESS){
+	if (fopen_s(&fdLog, "logfile.txt", "a") != RET_SUCCESS) {
 		ReleaseMutex(zygoLogFatal_key);
 		return FILE_OPEN_FAILED;
 	}
@@ -6898,6 +7520,7 @@ int zygoLogWarn(const char* fmt, ...) {
 	char* errStr;
 	errStr = (PCHAR)malloc(ERRSTRMAX);
 	if (errStr == NULL) {
+		fclose(fdLog);
 		ReleaseMutex(zygoLogFatal_key);
 		return ALLOC_MEM_ERROR;
 	}
@@ -6905,7 +7528,7 @@ int zygoLogWarn(const char* fmt, ...) {
 	vsnprintf(errStr, ERRSTRMAX - 1, fmt, argPtr);
 	va_end(argPtr);
 	GetLocalTime(&lt);
-	fprintf(fdLog, "%d/%d/%d|%d:%d:%d:%d [WARNING] %s", lt.wYear, lt.wMonth, lt.wDay, lt.wHour, lt.wMinute, lt.wSecond, lt.wMilliseconds, errStr);
+	fprintf(fdLog, "%d/%d/%d|%d:%d:%d:%d [zygoLogWarn] %s", lt.wYear, lt.wMonth, lt.wDay, lt.wHour, lt.wMinute, lt.wSecond, lt.wMilliseconds, errStr);
 	if (errno) {
 		perror("ECASOLEILZMI4104CLIB_API : ZYGOLOGWARN : Kernel says ");
 		argout = LOGFILE_RW_FAILED;
@@ -6916,32 +7539,36 @@ int zygoLogWarn(const char* fmt, ...) {
 	return argout;
 }
 int zygoLogInfo(const char* fmt, ...) {
-	WaitForSingleObject(zygoLogInfo_key, INFINITE);
-	int argout = RET_SUCCESS;
-	if (fopen_s(&fdLog, "logfile.txt", "a") != RET_SUCCESS){
-		ReleaseMutex(zygoLogFatal_key);
-		return FILE_OPEN_FAILED;
+	
+	if(INFO_LEVEL){
+		WaitForSingleObject(zygoLogInfo_key, INFINITE);
+		if (fopen_s(&fdLog, "logfile.txt", "a") != RET_SUCCESS) {
+			tNbr++;
+			ReleaseSemaphore(zygoLogInfo_key, 1, NULL);
+			return FILE_OPEN_FAILED;
+		}
+		va_list argPtr;
+		char* errStr;
+		errStr = (PCHAR)malloc(ERRSTRMAX);
+		if (errStr == NULL) {
+			fclose(fdLog);
+			ReleaseSemaphore(zygoLogInfo_key, 1, NULL);
+			return ALLOC_MEM_ERROR;
+		}
+		va_start(argPtr, fmt);
+		vsnprintf(errStr, ERRSTRMAX - 1, fmt, argPtr);
+		va_end(argPtr);
+		GetLocalTime(&lt);
+		fprintf(fdLog, "%d/%d/%d|%d:%d:%d:%d [zygoLogInfo] %s", lt.wYear, lt.wMonth, lt.wDay, lt.wHour, lt.wMinute, lt.wSecond, lt.wMilliseconds, errStr);
+		if (errno) {
+			perror("ECASOLEILZMI4104CLIB_API : ZYGOLOGINFO : Kernel says ");
+			return LOGFILE_RW_FAILED;
+		}
+		fclose(fdLog);
+		ReleaseSemaphore(zygoLogInfo_key, 1, NULL);
+		free(errStr);
 	}
-	va_list argPtr;
-	char* errStr;
-	errStr = (PCHAR)malloc(ERRSTRMAX);
-	if (errStr == NULL) {
-		ReleaseMutex(zygoLogFatal_key);
-		return ALLOC_MEM_ERROR;
-	}
-	va_start(argPtr, fmt);
-	vsnprintf(errStr, ERRSTRMAX - 1, fmt, argPtr);
-	va_end(argPtr);
-	GetLocalTime(&lt);
-	fprintf(fdLog, "%d/%d/%d|%d:%d:%d:%d [zygoLogInfo] %s", lt.wYear, lt.wMonth, lt.wDay, lt.wHour, lt.wMinute, lt.wSecond, lt.wMilliseconds, errStr);
-	if (errno) {
-		perror("ECASOLEILZMI4104CLIB_API : ZYGOLOGINFO : Kernel says ");
-		argout = LOGFILE_RW_FAILED;
-	}
-	fclose(fdLog);
-	ReleaseMutex(zygoLogInfo_key);
-	free(errStr);
-	return argout;
+	return RET_SUCCESS;
 }
 int setPositionFilePath(char* filePath) {
 	POSITION_FILE_PATH = (char*)malloc(500 * sizeof(char));
@@ -6951,14 +7578,14 @@ int setPositionFilePath(char* filePath) {
 	return RET_SUCCESS;
 }
 
-int setGainMinControl(uint8_t axis) {
+int setGainMinControl(Axes axis) {
 	uint32_t uint_vme_address = 0, uint_vme_data = 0;
 
 	zygoLogInfo("Setting up gain min control on axis %d...\n", axis);
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCtrl5);
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCtrl5);
 
 	uint_vme_data = 0x10;
-	if ((return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_OR_OP_CODE)) != RET_SUCCESS)
+	if (return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_OR_OP_CODE))
 	{
 		zygoLogWarn("readWriteModify failed!!!!!!\n");
 		return return_code;
@@ -6967,14 +7594,14 @@ int setGainMinControl(uint8_t axis) {
 }
 
 
-int getGainMinControl(uint8_t axis, bool* state) {
+int getGainMinControl(Axes axis, bool* state) {
 	uint32_t uint_vme_address = 0, uint_vme_data = 0;
 
 	zygoLogInfo("Getting minimum gain control state on axis %d...\n", axis);
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCtrl5);
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCtrl5);
 
 	uint_vme_data = 0;
-	if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ)) != RET_SUCCESS)
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 		return return_code;
@@ -6986,14 +7613,14 @@ int getGainMinControl(uint8_t axis, bool* state) {
 }
 
 
-int resetGainMinControl(uint8_t axis) {
+int resetGainMinControl(Axes axis) {
 	uint32_t uint_vme_address = 0, uint_vme_data = 0;
 
 	zygoLogInfo("Resettiing gain min control on axis %d...\n", axis);
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCtrl5);
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCtrl5);
 
 	uint_vme_data = 0xFFEF;
-	if ((return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_AND_OP_CODE)) != RET_SUCCESS)
+	if (return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_AND_OP_CODE))
 	{
 		zygoLogWarn("readWriteModify failed!!!!!!\n");
 		return return_code;
@@ -7001,14 +7628,14 @@ int resetGainMinControl(uint8_t axis) {
 	return RET_SUCCESS;
 }
 
-int setGainMaxControl(uint8_t axis) {
+int setGainMaxControl(Axes axis) {
 	uint32_t uint_vme_address = 0, uint_vme_data = 0;
 
 	zygoLogInfo("Setting up gain max control on axis %d...\n", axis);
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCtrl5);
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCtrl5);
 
 	uint_vme_data = 0x8;
-	if ((return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_OR_OP_CODE)) != RET_SUCCESS)
+	if (return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_OR_OP_CODE))
 	{
 		zygoLogWarn("readWriteModify failed!!!!!!\n");
 		return return_code;
@@ -7018,14 +7645,14 @@ int setGainMaxControl(uint8_t axis) {
 }
 
 
-int getGainMaxControl(uint8_t axis, bool* state) {
+int getGainMaxControl(Axes axis, bool* state) {
 	uint32_t uint_vme_address = 0, uint_vme_data = 0;
 
 	zygoLogInfo("Getting maximum gain control state on axis %d...\n", axis);
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCtrl5);
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCtrl5);
 
 	uint_vme_data = 0;
-	if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ)) != RET_SUCCESS)
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 		return return_code;
@@ -7036,14 +7663,14 @@ int getGainMaxControl(uint8_t axis, bool* state) {
 	return RET_SUCCESS;
 }
 
-int resetGainMaxControl(uint8_t axis) {
+int resetGainMaxControl(Axes axis) {
 	uint32_t uint_vme_address = 0, uint_vme_data = 0;
 
 	zygoLogInfo("Resetting gain max control on axis %d...\n", axis);
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCtrl5);
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCtrl5);
 
 	uint_vme_data = 0xFFF7;
-	if ((return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_AND_OP_CODE)) != RET_SUCCESS)
+	if (return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_AND_OP_CODE))
 	{
 		zygoLogWarn("readWriteModify failed!!!!!!\n");
 		return return_code;
@@ -7052,14 +7679,14 @@ int resetGainMaxControl(uint8_t axis) {
 }
 
 
-int setGainControlAgc(uint8_t axis) {
+int setGainControlAgc(Axes axis) {
 	uint32_t uint_vme_address = 0, uint_vme_data = 0;
 
 	zygoLogInfo("Setting up automatic gain control on axis %d...\n", axis);
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCtrl5);
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCtrl5);
 
 	uint_vme_data = 0x20;
-	if ((return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_OR_OP_CODE)) != RET_SUCCESS)
+	if (return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_OR_OP_CODE))
 	{
 		zygoLogWarn("readWriteModify failed!!!!!!\n");
 		return return_code;
@@ -7067,14 +7694,14 @@ int setGainControlAgc(uint8_t axis) {
 	return RET_SUCCESS;
 }
 
-int getGainControlAgc(uint8_t axis, bool* agcState) {
+int getGainControlAgc(Axes axis, bool* agcState) {
 	uint32_t uint_vme_address = 0, uint_vme_data = 0;
 
 	zygoLogInfo("Getting automatic gain control state on axis %d...\n", axis);
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCtrl5);
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCtrl5);
 
 	uint_vme_data = 0;
-	if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ)) != RET_SUCCESS)
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address);
 		return return_code;
@@ -7085,14 +7712,14 @@ int getGainControlAgc(uint8_t axis, bool* agcState) {
 	return RET_SUCCESS;
 }
 
-int resetGainControlAgc(uint8_t axis) {
+int resetGainControlAgc(Axes axis) {
 	uint32_t uint_vme_address = 0, uint_vme_data = 0;
 
 	zygoLogInfo("Reseting automatic gain control on axis %d...\n", axis);
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zCtrl5);
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCtrl5);
 
 	uint_vme_data = 0xFFDF;
-	if ((return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_AND_OP_CODE)) != RET_SUCCESS)
+	if (return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_AND_OP_CODE))
 	{
 		zygoLogWarn("readWriteModify failed!!!!!!\n");
 		return return_code;
@@ -7100,45 +7727,46 @@ int resetGainControlAgc(uint8_t axis) {
 	return RET_SUCCESS;
 }
 
-int readGseData(uint32_t axis, double* gseTargetGain, double* gseActualGain, double* gseSigRMS, double* gseMeasDC) {
+int readGseData(Axes axis, double* gseTargetGain, double* gseActualGain, double* gseSigRMS, double* gseMeasDC) {
 	uint32_t uint_vme_address = 0, uint_vme_data;
 	double targetGain = 0, actualGain = 0, sigRMS = 0, measDC = 0;
 
 	zygoLogInfo("Reading GSE data on axis %d...\n", axis);
 	zygoLogInfo("Reading actual gain...\n");
 	//enableAuxRegisters(axis);
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zGSETargetGain);
+
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zGSETargetGain);
 	uint_vme_data = 0;
-	if ((return_code = readWrite("A24D32", uint_vme_address, &uint_vme_data, READ)) != RET_SUCCESS)
+	if (return_code = readWrite("A24D32", uint_vme_address, &uint_vme_data, READ))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 	}
-	actualGain = pow(2, ((int)((uint_vme_data & 0xFFFF) / 1024)));
-	targetGain = pow(2, ((int)(((uint_vme_data & 0xFFFF0000) >> 16) / 1024)));
+	actualGain = std::pow(2, ((uint_vme_data & 0xFFFF) / 1024.0));
+	targetGain = std::pow(2, (((uint_vme_data & 0xFFFF0000) >> 16) / 1024.0));
 	zygoLogInfo("The GSE current gain on axis %d is %lf\n", axis, actualGain);
 	zygoLogInfo("The GSE target gain on axis %d is %lf\n", axis, targetGain);
 	*gseTargetGain = targetGain;
 	*gseActualGain = actualGain;
 
 
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zGSESigRMSGain);
-	if ((return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ)) != RET_SUCCESS)
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zGSESigRMSGain);
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, READ))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 	}
-	sigRMS = pow(2, ((int)(uint_vme_data / 1024)));
+	sigRMS = std::pow(2, (uint_vme_data / 1024.0));
 	zygoLogInfo("The GSE sig RMS gain on axis %d is %lf\n", axis, sigRMS);
 	*gseSigRMS = sigRMS;
 
 
-	uint_vme_address = ADD(BASE_ADDRESS[axis - 1], zGSEMeasDCLow);
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zGSEMeasDCLow);
 	uint_vme_data = 0;
 
-	if ((return_code = readWrite("A24D32", uint_vme_address, &uint_vme_data, READ)) != RET_SUCCESS)
+	if (return_code = readWrite("A24D32", uint_vme_address, &uint_vme_data, READ))
 	{
 		zygoLogWarn("Register %6X access Faillure !  \n", uint_vme_address); return return_code;
 	}
-	measDC = (double)uint_vme_data;
+	measDC = static_cast<double>(uint_vme_data);
 	zygoLogInfo("The GSE meas DC on axis %d is %lf\n", axis, measDC);
 	*gseMeasDC = measDC;
 
@@ -7150,8 +7778,8 @@ int readGseData(uint32_t axis, double* gseTargetGain, double* gseActualGain, dou
 int readGseDataForAllAxis(double* gseTargetGain, double* gseActualGain, double* gseSigRMS, double* gseMeasDC) {
 
 	double targetGain = 0, actualGain = 0, sigRMS = 0, measDC = 0;
-	for (int axis = 1; axis < 5; axis++) {
-		if ((return_code = readGseData(axis, &targetGain, &actualGain, &sigRMS, &measDC)) != RET_SUCCESS)
+	for (const auto& axis : AXES) {
+		if (return_code = readGseData(axis, &targetGain, &actualGain, &sigRMS, &measDC))
 		{
 			zygoLogWarn("Read GSE data failed on axis %d !  \n", axis);
 			return return_code;
@@ -7164,25 +7792,308 @@ int readGseDataForAllAxis(double* gseTargetGain, double* gseActualGain, double* 
 
 	return RET_SUCCESS;
 }
-uint32_t getInterferometerConfiguration() {
+
+int serialBusSampleClk(Axes axis, SCLK clk) {
+	uint32_t uint_vme_address = 0, uint_vme_data = 0;
+	if (axis != Axes::Axis_1 && axis != Axes::Axis_3)
+		return BAD_AXIS_VALUE;
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCtrl15);
+	if (clk == SCLK::SCLK1) {
+		uint_vme_data = 0x1;
+		if (return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_OR_OP_CODE))
+		{
+			zygoLogWarn("readWriteModify failed!!!!!!\n");
+			return return_code;
+		}
+	}
+	else
+	{
+		uint_vme_data = 0xFFFE;
+		if (return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_AND_OP_CODE))
+		{
+			zygoLogWarn("readWriteModify failed!!!!!!\n");
+			return return_code;
+		}
+
+	}
+	return RET_SUCCESS;
+
+}
+int p2BusClkDriver(Axes axis, SCLK clk) {
+	uint32_t uint_vme_address = 0, uint_vme_data = 0x200;
+	if (axis != Axes::Axis_1 && axis != Axes::Axis_3)
+		return BAD_AXIS_VALUE;
+	sclkOutputOn(axis, clk);
+	if (clk == SCLK::SCLK0) {
+		uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCtrl16);
+		uint_vme_data = 0xFEFF;
+		if (return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_AND_OP_CODE))
+		{
+			zygoLogWarn("readWriteModify failed!!!!!!\n");
+			return return_code;
+		}
+
+		//sclk divider enable
+		/*
+		uint_vme_data = 0x40;
+		if (return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_OR_OP_CODE))
+		{
+			zygoLogWarn("readWriteModify failed!!!!!!\n");
+			return return_code;
+		}
+		*/
+	}
+	else
+	{
+		uint_vme_data = 0x100;
+		uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCtrl16);
+		if (return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_OR_OP_CODE))
+		{
+			zygoLogWarn("readWriteModify failed!!!!!!\n");
+			return return_code;
+		}
+
+	}
+	return RET_SUCCESS;
+
+}
+int clearP2BusOutputDriver(Axes axis) {
+	uint32_t uint_vme_address = 0, uint_vme_data = 0;
+	if (axis != Axes::Axis_1 && axis != Axes::Axis_3)
+		return BAD_AXIS_VALUE;
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCtrl16);
+	uint_vme_data = 0xFDFF;
+	if (return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_AND_OP_CODE))
+	{
+		zygoLogWarn("readWriteModify failed!!!!!!\n");
+		return return_code;
+	}
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCtrl17);
+	if (return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_AND_OP_CODE))
+	{
+		zygoLogWarn("readWriteModify failed!!!!!!\n");
+		return return_code;
+	}
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCtrl15);
+	uint_vme_data = 0xFFF9;
+	if (return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_AND_OP_CODE))
+	{
+		zygoLogWarn("readWriteModify failed!!!!!!\n");
+		return return_code;
+	}
+	return RET_SUCCESS;
+}
+int setSerialBusOutputDriver(Axes axis, SerialOutputDriver sdo){
+	uint32_t uint_vme_address = 0, uint_vme_data = 0;
+	if (axis != Axes::Axis_1 && axis != Axes::Axis_3)
+		return BAD_AXIS_VALUE;
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCtrl15);
+	if (sdo == SerialOutputDriver::P2D) { //P2d
+		uint_vme_data = 0x2;
+		if (return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_OR_OP_CODE))
+		{
+			zygoLogWarn("readWriteModify failed!!!!!!\n");
+			return return_code;
+		}
+		uint_vme_data = 0xFFFB;
+		if (return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_AND_OP_CODE))
+		{
+			zygoLogWarn("readWriteModify failed!!!!!!\n");
+			return return_code;
+		}
+	}
+	else { // P2z
+		uint_vme_data = 0x4;
+		if (return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_OR_OP_CODE))
+		{
+			zygoLogWarn("readWriteModify failed!!!!!!\n");
+			return return_code;
+		}
+		uint_vme_data = 0xFFFD;
+		if (return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_AND_OP_CODE))
+		{
+			zygoLogWarn("readWriteModify failed!!!!!!\n");
+			return return_code;
+		}
+	}
+	return RET_SUCCESS;
+}
+int setSerialBusDataPositionSize(Axes axis, SerialDataPositionSize sdps) {
+	uint32_t uint_vme_address = 0, uint_vme_data = 0;
+	if (axis != Axes::Axis_1 && axis != Axes::Axis_3)
+		return BAD_AXIS_VALUE;
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCtrl15);
+	if (sdps == SerialDataPositionSize::P37) { // 37 bits
+		uint_vme_data = 0x8;
+		if (return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_OR_OP_CODE))
+		{
+			zygoLogWarn("readWriteModify failed!!!!!!\n");
+			return return_code;
+		}
+	}
+	else { // 32 bits
+		uint_vme_data = 0xFFF7;
+		if (return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_AND_OP_CODE))
+		{
+			zygoLogWarn("readWriteModify failed!!!!!!\n");
+			return return_code;
+		}
+	}
+
+	return RET_SUCCESS;
+}
+int setP2BusBitWindow(Axes axis, BitWindow bw) {
+	uint32_t uint_vme_address = 0, uint_vme_data = 0;
+
+	uint_vme_address = ADD(BASE_ADDRESS[AXIS3 - 1], zCtrl4);
+	uint_vme_data = 0xFF1F;
+	if (return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_AND_OP_CODE))
+	{
+		zygoLogWarn("readWriteModify failed!!!!!!\n");
+		return return_code;
+	}
+	uint_vme_data = (static_cast<uint32_t>(bw) << 5);
+	if (return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_OR_OP_CODE))
+	{
+		zygoLogWarn("readWriteModify failed!!!!!!\n");
+		return return_code;
+	}
+	return RET_SUCCESS;
+}
+int configureSerialBus(Axes axis, SCLK clk, SerialOutputDriver sdo, SerialDataPositionSize sdps, BitWindow bw, uint32_t sampFreq) {
+	uint32_t uint_vme_address = 0, uint_vme_data = 0;
+
+	zygoLogInfo("Setting up serial data transmission on lines P2d and P2Z...\n");
+	zygoLogInfo("Parameters: clk = SCLK %d, SerialOutputDriver = %s, SerialDataPositionSize = %s , BitWindow = %d, Sampling Frequency = %lu Hz\n", 
+		(clk==SCLK::SCLK0)?0:1, (sdo == SerialOutputDriver::P2D)?"P2D":"P2Z", sdps == SerialDataPositionSize::P32?"32bits":"37bits", 
+		static_cast<int>(bw), sampFreq);
+	//startSerialBus();
+		//set sclk rate(only master axis needed)
+
+
+	//*
+	if (return_code = setSamplingFrequency(axis, sampFreq, clk)) {
+		zygoLogWarn("setSamplingFrequency failed!!!!!!\n");
+		return return_code;
+	}
+	// Configure P2 bus clock driver
+	
+	if (return_code = p2BusClkDriver(axis, clk)) {
+	zygoLogWarn("p2BusClkDriver failed!!!!!!\n");
+	return return_code;
+	}	
+	//Select source clock to control the sampling of data 	
+	if (return_code = serialBusSampleClk(axis, clk)) {
+		zygoLogWarn("serialBusSampleClk failed!!!!!!\n");
+		return return_code;
+	}
+	
+	/*
+	uint_vme_data = 0x1;
+	uint_vme_address = ADD(BASE_ADDRESS[AXIS3 - 1], 0x2002);
+	if (return_code = readWrite("A24D16", uint_vme_address, &uint_vme_data, LOGICAL_OR_OP_CODE))
+	{
+		zygoLogWarn("readWrite failed!!!!!!\n");
+		return return_code;
+	}
+	*/
+	
+	//Configure the serial output driver (P2d or P2Z)
+	if (return_code = setSerialBusOutputDriver(axis, sdo)) {
+	zygoLogWarn("setSerialBusOutputDriver failed!!!!!!\n");
+	return return_code;
+	}
+	
+	//Select serial data position size (32 bits or 37 bits)
+	if (return_code = setSerialBusDataPositionSize(axis, sdps)) {
+	zygoLogWarn("setSerialBusDataPositionSize failed!!!!!!\n");
+	return return_code;
+	}
+	//Select P2 bit window
+	if (return_code = setP2BusBitWindow(axis, bw)) {
+	zygoLogWarn("setP2BusBitWindow failed!!!!!!\n");
+	return return_code;
+	}
+	//*/
+	return RET_SUCCESS;
+}
+
+int startSerialBus(Axes axis) {
+	if (axis != Axes::Axis_1 && axis != Axes::Axis_3)
+		return BAD_AXIS_VALUE;
+	
+	zygoLogInfo("Starting serial data output...\n");
+	uint32_t uint_vme_address = 0, uint_vme_data = 0;
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCtrl2);
+	uint_vme_data = 0x100;
+	if (return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_OR_OP_CODE))
+	{
+		zygoLogWarn("readWriteModify failed!!!!!!\n");
+		return return_code;
+	}
+	
+	return RET_SUCCESS;
+}
+
+int stopSerialBus(Axes axis) {
+	zygoLogInfo("Halting serial data output...\n");
+	uint32_t uint_vme_address = 0, uint_vme_data = 0;
+	if (axis != Axes::Axis_1 && axis != Axes::Axis_3)
+		return BAD_AXIS_VALUE;
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCtrl2);
+	uint_vme_data = 0xFEFF;
+	if (return_code = readModifyWrite("A24D16", uint_vme_address, uint_vme_data, LOGICAL_AND_OP_CODE))
+	{
+		zygoLogWarn("readWriteModify failed!!!!!!\n");
+		return return_code;
+	}
+	if (return_code = clearP2BusOutputDriver(axis))
+	{
+		zygoLogWarn("clearP2BusOutputDriver failed!!!!!!\n");
+		return return_code;
+	}
+	return RET_SUCCESS;
+}
+
+
+int getSerialBusState(Axes axis, State& s) {
+	uint32_t uint_vme_address = 0, uint_vme_data = 0;
+	if (axis != Axes::Axis_1 && axis != Axes::Axis_3)
+		return BAD_AXIS_VALUE;
+	uint_vme_address = ADD(BASE_ADDRESS[static_cast<uint8_t>(axis) - 1], zCtrl2);
+	uint_vme_data = 0x100;
+	if (readWrite("A24D16", uint_vme_address, &uint_vme_data, READ))
+	{
+		zygoLogWarn("getSerialOutputState failed!!!!!!\n");
+		return false;
+	}
+	if (uint_vme_data & 0x100) 
+		s = State::ON;
+	else
+		s = State::OFF;
+	return RET_SUCCESS;
+}
+
+uint8_t getInterferometerConfiguration() {
 	return curInterferoConfig;
 }
-bool getCachedSampleSclk() {
+SCLK getCachedSampleSclk() {
 	return currentResetSclk;
 }
-bool getCachedResetSclk() {
+SCLK getCachedResetSclk() {
 	return currentResetSclk;
 }
 
 uint32_t getCachedSamplingFrequency() {
-	return (uint32_t)currentSamplingFrequency;
+	return (uint32_t)currentSamplingFrequency[1];
 }
 
 bool getCachedCecState() {
 	return cecState;
 }
+
 uint32_t getCachedBaseAddress() {
-	return BASE_ADDRESS[2];
+	return BASE_ADDRESS[AXIS3 - 1];
 }
 /// <summary>
 /// read the Zygo board version

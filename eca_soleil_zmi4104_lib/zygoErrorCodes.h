@@ -26,7 +26,7 @@
 //Unknow software error type
 #define APD_SOFT_ERR_NBR						-70
 
-
+#define	MAX_HEAP_SIZE_REACH						100
 #define	RET_FAILED								-1
 #define FIFO_OVERLAP_ERR_CODE					-100
 #define VME_PCI_GATEWAY_NOT_FOUND				-101
@@ -53,3 +53,4 @@
 #define	EEPROM_READ_FAILED						-19
 #define	RW_FAILED								-20
 #define	LOGFILE_RW_FAILED						-21
+#define	BAD_OPT_PWR_DC_VALUE					-22

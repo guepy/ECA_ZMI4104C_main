@@ -140,7 +140,7 @@ font: 75 12pt &quot;MS Shell Dlg 2&quot;;
        <item>
         <widget class="QCheckBox" name="itCheckBox">
          <property name="text">
-          <string>Int time</string>
+          <string>Duration</string>
          </property>
         </widget>
        </item>

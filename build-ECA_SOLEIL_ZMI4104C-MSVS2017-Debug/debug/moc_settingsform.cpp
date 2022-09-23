@@ -22,8 +22,8 @@ QT_BEGIN_MOC_NAMESPACE
 QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 struct qt_meta_stringdata_SettingsForm_t {
-    QByteArrayData data[79];
-    char stringdata0[1990];
+    QByteArrayData data[87];
+    char stringdata0[2254];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -110,7 +110,15 @@ QT_MOC_LITERAL(74, 1835, 32), // "on_apdSigRmsL2Set_4_valueChanged"
 QT_MOC_LITERAL(75, 1868, 32), // "on_apdOptPwrL2Set_4_valueChanged"
 QT_MOC_LITERAL(76, 1901, 30), // "on_baseAdressInput_textChanged"
 QT_MOC_LITERAL(77, 1932, 32), // "on_resetSCLK_currentIndexChanged"
-QT_MOC_LITERAL(78, 1965, 24) // "on_sampFreq_valueChanged"
+QT_MOC_LITERAL(78, 1965, 24), // "on_sampFreq_valueChanged"
+QT_MOC_LITERAL(79, 1990, 32), // "on_sigRmsL2MaxLim_1_valueChanged"
+QT_MOC_LITERAL(80, 2023, 32), // "on_sigRmsL2MaxLim_2_valueChanged"
+QT_MOC_LITERAL(81, 2056, 32), // "on_sigRmsL2MaxLim_4_valueChanged"
+QT_MOC_LITERAL(82, 2089, 32), // "on_sigRmsL2MaxLim_3_valueChanged"
+QT_MOC_LITERAL(83, 2122, 32), // "on_sigRmsL2MinLim_1_valueChanged"
+QT_MOC_LITERAL(84, 2155, 32), // "on_sigRmsL2MinLim_2_valueChanged"
+QT_MOC_LITERAL(85, 2188, 32), // "on_sigRmsL2MinLim_3_valueChanged"
+QT_MOC_LITERAL(86, 2221, 32) // "on_sigRmsL2MinLim_4_valueChanged"
 
     },
     "SettingsForm\0closeThis\0\0"
@@ -172,7 +180,15 @@ QT_MOC_LITERAL(78, 1965, 24) // "on_sampFreq_valueChanged"
     "on_apdOptPwrL2Set_4_valueChanged\0"
     "on_baseAdressInput_textChanged\0"
     "on_resetSCLK_currentIndexChanged\0"
-    "on_sampFreq_valueChanged"
+    "on_sampFreq_valueChanged\0"
+    "on_sigRmsL2MaxLim_1_valueChanged\0"
+    "on_sigRmsL2MaxLim_2_valueChanged\0"
+    "on_sigRmsL2MaxLim_4_valueChanged\0"
+    "on_sigRmsL2MaxLim_3_valueChanged\0"
+    "on_sigRmsL2MinLim_1_valueChanged\0"
+    "on_sigRmsL2MinLim_2_valueChanged\0"
+    "on_sigRmsL2MinLim_3_valueChanged\0"
+    "on_sigRmsL2MinLim_4_valueChanged"
 };
 #undef QT_MOC_LITERAL
 
@@ -182,7 +198,7 @@ static const uint qt_meta_data_SettingsForm[] = {
        8,       // revision
        0,       // classname
        0,    0, // classinfo
-      63,   14, // methods
+      71,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -190,71 +206,79 @@ static const uint qt_meta_data_SettingsForm[] = {
        4,       // signalCount
 
  // signals: name, argc, parameters, tag, flags
-       1,    0,  329,    2, 0x06 /* Public */,
-       3,    1,  330,    2, 0x06 /* Public */,
-       5,    3,  333,    2, 0x06 /* Public */,
-      10,    0,  340,    2, 0x06 /* Public */,
+       1,    0,  369,    2, 0x06 /* Public */,
+       3,    1,  370,    2, 0x06 /* Public */,
+       5,    3,  373,    2, 0x06 /* Public */,
+      10,    0,  380,    2, 0x06 /* Public */,
 
  // slots: name, argc, parameters, tag, flags
-      11,    0,  341,    2, 0x08 /* Private */,
-      12,    0,  342,    2, 0x08 /* Private */,
-      13,    0,  343,    2, 0x08 /* Private */,
-      14,    1,  344,    2, 0x08 /* Private */,
-      17,    0,  347,    2, 0x08 /* Private */,
-      18,    1,  348,    2, 0x08 /* Private */,
-      20,    1,  351,    2, 0x08 /* Private */,
-      21,    2,  354,    2, 0x08 /* Private */,
-      24,    1,  359,    2, 0x08 /* Private */,
-      25,    0,  362,    2, 0x08 /* Private */,
-      26,    1,  363,    2, 0x08 /* Private */,
-      27,    1,  366,    2, 0x08 /* Private */,
-      28,    1,  369,    2, 0x08 /* Private */,
-      29,    1,  372,    2, 0x08 /* Private */,
-      30,    1,  375,    2, 0x08 /* Private */,
-      31,    1,  378,    2, 0x08 /* Private */,
-      32,    1,  381,    2, 0x08 /* Private */,
-      33,    1,  384,    2, 0x08 /* Private */,
-      34,    1,  387,    2, 0x08 /* Private */,
-      35,    1,  390,    2, 0x08 /* Private */,
-      36,    1,  393,    2, 0x08 /* Private */,
-      37,    1,  396,    2, 0x08 /* Private */,
-      38,    3,  399,    2, 0x08 /* Private */,
-      42,    0,  406,    2, 0x08 /* Private */,
-      43,    1,  407,    2, 0x08 /* Private */,
-      45,    1,  410,    2, 0x08 /* Private */,
-      46,    1,  413,    2, 0x08 /* Private */,
-      47,    1,  416,    2, 0x08 /* Private */,
-      48,    0,  419,    2, 0x08 /* Private */,
-      49,    0,  420,    2, 0x08 /* Private */,
-      50,    0,  421,    2, 0x08 /* Private */,
-      51,    1,  422,    2, 0x08 /* Private */,
-      52,    1,  425,    2, 0x08 /* Private */,
-      53,    1,  428,    2, 0x08 /* Private */,
-      54,    1,  431,    2, 0x08 /* Private */,
-      55,    1,  434,    2, 0x08 /* Private */,
-      56,    1,  437,    2, 0x08 /* Private */,
-      57,    1,  440,    2, 0x08 /* Private */,
-      58,    1,  443,    2, 0x08 /* Private */,
-      59,    1,  446,    2, 0x08 /* Private */,
-      60,    1,  449,    2, 0x08 /* Private */,
-      61,    1,  452,    2, 0x08 /* Private */,
-      62,    1,  455,    2, 0x08 /* Private */,
-      63,    1,  458,    2, 0x08 /* Private */,
-      64,    1,  461,    2, 0x08 /* Private */,
-      65,    1,  464,    2, 0x08 /* Private */,
-      66,    1,  467,    2, 0x08 /* Private */,
-      67,    1,  470,    2, 0x08 /* Private */,
-      68,    1,  473,    2, 0x08 /* Private */,
-      69,    1,  476,    2, 0x08 /* Private */,
-      70,    1,  479,    2, 0x08 /* Private */,
-      71,    1,  482,    2, 0x08 /* Private */,
-      72,    1,  485,    2, 0x08 /* Private */,
-      73,    1,  488,    2, 0x08 /* Private */,
-      74,    1,  491,    2, 0x08 /* Private */,
-      75,    1,  494,    2, 0x08 /* Private */,
-      76,    1,  497,    2, 0x08 /* Private */,
-      77,    1,  500,    2, 0x08 /* Private */,
-      78,    1,  503,    2, 0x08 /* Private */,
+      11,    0,  381,    2, 0x08 /* Private */,
+      12,    0,  382,    2, 0x08 /* Private */,
+      13,    0,  383,    2, 0x08 /* Private */,
+      14,    1,  384,    2, 0x08 /* Private */,
+      17,    0,  387,    2, 0x08 /* Private */,
+      18,    1,  388,    2, 0x08 /* Private */,
+      20,    1,  391,    2, 0x08 /* Private */,
+      21,    2,  394,    2, 0x08 /* Private */,
+      24,    1,  399,    2, 0x08 /* Private */,
+      25,    0,  402,    2, 0x08 /* Private */,
+      26,    1,  403,    2, 0x08 /* Private */,
+      27,    1,  406,    2, 0x08 /* Private */,
+      28,    1,  409,    2, 0x08 /* Private */,
+      29,    1,  412,    2, 0x08 /* Private */,
+      30,    1,  415,    2, 0x08 /* Private */,
+      31,    1,  418,    2, 0x08 /* Private */,
+      32,    1,  421,    2, 0x08 /* Private */,
+      33,    1,  424,    2, 0x08 /* Private */,
+      34,    1,  427,    2, 0x08 /* Private */,
+      35,    1,  430,    2, 0x08 /* Private */,
+      36,    1,  433,    2, 0x08 /* Private */,
+      37,    1,  436,    2, 0x08 /* Private */,
+      38,    3,  439,    2, 0x08 /* Private */,
+      42,    0,  446,    2, 0x08 /* Private */,
+      43,    1,  447,    2, 0x08 /* Private */,
+      45,    1,  450,    2, 0x08 /* Private */,
+      46,    1,  453,    2, 0x08 /* Private */,
+      47,    1,  456,    2, 0x08 /* Private */,
+      48,    0,  459,    2, 0x08 /* Private */,
+      49,    0,  460,    2, 0x08 /* Private */,
+      50,    0,  461,    2, 0x08 /* Private */,
+      51,    1,  462,    2, 0x08 /* Private */,
+      52,    1,  465,    2, 0x08 /* Private */,
+      53,    1,  468,    2, 0x08 /* Private */,
+      54,    1,  471,    2, 0x08 /* Private */,
+      55,    1,  474,    2, 0x08 /* Private */,
+      56,    1,  477,    2, 0x08 /* Private */,
+      57,    1,  480,    2, 0x08 /* Private */,
+      58,    1,  483,    2, 0x08 /* Private */,
+      59,    1,  486,    2, 0x08 /* Private */,
+      60,    1,  489,    2, 0x08 /* Private */,
+      61,    1,  492,    2, 0x08 /* Private */,
+      62,    1,  495,    2, 0x08 /* Private */,
+      63,    1,  498,    2, 0x08 /* Private */,
+      64,    1,  501,    2, 0x08 /* Private */,
+      65,    1,  504,    2, 0x08 /* Private */,
+      66,    1,  507,    2, 0x08 /* Private */,
+      67,    1,  510,    2, 0x08 /* Private */,
+      68,    1,  513,    2, 0x08 /* Private */,
+      69,    1,  516,    2, 0x08 /* Private */,
+      70,    1,  519,    2, 0x08 /* Private */,
+      71,    1,  522,    2, 0x08 /* Private */,
+      72,    1,  525,    2, 0x08 /* Private */,
+      73,    1,  528,    2, 0x08 /* Private */,
+      74,    1,  531,    2, 0x08 /* Private */,
+      75,    1,  534,    2, 0x08 /* Private */,
+      76,    1,  537,    2, 0x08 /* Private */,
+      77,    1,  540,    2, 0x08 /* Private */,
+      78,    1,  543,    2, 0x08 /* Private */,
+      79,    1,  546,    2, 0x08 /* Private */,
+      80,    1,  549,    2, 0x08 /* Private */,
+      81,    1,  552,    2, 0x08 /* Private */,
+      82,    1,  555,    2, 0x08 /* Private */,
+      83,    1,  558,    2, 0x08 /* Private */,
+      84,    1,  561,    2, 0x08 /* Private */,
+      85,    1,  564,    2, 0x08 /* Private */,
+      86,    1,  567,    2, 0x08 /* Private */,
 
  // signals: parameters
     QMetaType::Void,
@@ -303,25 +327,33 @@ static const uint qt_meta_data_SettingsForm[] = {
     QMetaType::Void, QMetaType::Int,   44,
     QMetaType::Void, QMetaType::Int,   44,
     QMetaType::Void, QMetaType::Int,   44,
-    QMetaType::Void, QMetaType::Int,   44,
-    QMetaType::Void, QMetaType::Int,   44,
-    QMetaType::Void, QMetaType::Int,   44,
-    QMetaType::Void, QMetaType::Int,   44,
-    QMetaType::Void, QMetaType::Int,   44,
-    QMetaType::Void, QMetaType::Int,   44,
-    QMetaType::Void, QMetaType::Int,   44,
-    QMetaType::Void, QMetaType::Int,   44,
-    QMetaType::Void, QMetaType::Int,   44,
-    QMetaType::Void, QMetaType::Int,   44,
-    QMetaType::Void, QMetaType::Int,   44,
-    QMetaType::Void, QMetaType::Int,   44,
-    QMetaType::Void, QMetaType::Int,   44,
-    QMetaType::Void, QMetaType::Int,   44,
-    QMetaType::Void, QMetaType::Int,   44,
-    QMetaType::Void, QMetaType::Int,   44,
+    QMetaType::Void, QMetaType::Double,   44,
+    QMetaType::Void, QMetaType::Double,   44,
+    QMetaType::Void, QMetaType::Double,   44,
+    QMetaType::Void, QMetaType::Double,   44,
+    QMetaType::Void, QMetaType::Double,   44,
+    QMetaType::Void, QMetaType::Double,   44,
+    QMetaType::Void, QMetaType::Double,   44,
+    QMetaType::Void, QMetaType::Double,   44,
+    QMetaType::Void, QMetaType::Double,   44,
+    QMetaType::Void, QMetaType::Double,   44,
+    QMetaType::Void, QMetaType::Double,   44,
+    QMetaType::Void, QMetaType::Double,   44,
+    QMetaType::Void, QMetaType::Double,   44,
+    QMetaType::Void, QMetaType::Double,   44,
+    QMetaType::Void, QMetaType::Double,   44,
+    QMetaType::Void, QMetaType::Double,   44,
     QMetaType::Void, QMetaType::QString,   44,
     QMetaType::Void, QMetaType::Int,   19,
     QMetaType::Void, QMetaType::Int,   44,
+    QMetaType::Void, QMetaType::Double,   44,
+    QMetaType::Void, QMetaType::Double,   44,
+    QMetaType::Void, QMetaType::Double,   44,
+    QMetaType::Void, QMetaType::Double,   44,
+    QMetaType::Void, QMetaType::Double,   44,
+    QMetaType::Void, QMetaType::Double,   44,
+    QMetaType::Void, QMetaType::Double,   44,
+    QMetaType::Void, QMetaType::Double,   44,
 
        0        // eod
 };
@@ -377,25 +409,33 @@ void SettingsForm::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id
         case 41: _t->on_kvFilterCoeff_2_valueChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
         case 42: _t->on_kvFilterCoeff_3_valueChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
         case 43: _t->on_kvFilterCoeff_4_valueChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 44: _t->on_apdBiasDac_valueChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 45: _t->on_apdGainL2SetVal_valueChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 46: _t->on_apdSigRmsL2Set_valueChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 47: _t->on_apdOptPwrL2Set_valueChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 48: _t->on_apdBiasDac_2_valueChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 49: _t->on_apdGainL2SetVal_2_valueChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 50: _t->on_apdSigRmsL2Set_2_valueChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 51: _t->on_apdOptPwrL2Set_2_valueChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 52: _t->on_apdBiasDac_3_valueChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 53: _t->on_apdGainL2SetVal_3_valueChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 54: _t->on_apdSigRmsL2Set_3_valueChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 55: _t->on_apdOptPwrL2Set_3_valueChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 56: _t->on_apdBiasDac_4_valueChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 57: _t->on_apdGainL2SetVal_4_valueChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 58: _t->on_apdSigRmsL2Set_4_valueChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 59: _t->on_apdOptPwrL2Set_4_valueChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 44: _t->on_apdBiasDac_valueChanged((*reinterpret_cast< double(*)>(_a[1]))); break;
+        case 45: _t->on_apdGainL2SetVal_valueChanged((*reinterpret_cast< double(*)>(_a[1]))); break;
+        case 46: _t->on_apdSigRmsL2Set_valueChanged((*reinterpret_cast< double(*)>(_a[1]))); break;
+        case 47: _t->on_apdOptPwrL2Set_valueChanged((*reinterpret_cast< double(*)>(_a[1]))); break;
+        case 48: _t->on_apdBiasDac_2_valueChanged((*reinterpret_cast< double(*)>(_a[1]))); break;
+        case 49: _t->on_apdGainL2SetVal_2_valueChanged((*reinterpret_cast< double(*)>(_a[1]))); break;
+        case 50: _t->on_apdSigRmsL2Set_2_valueChanged((*reinterpret_cast< double(*)>(_a[1]))); break;
+        case 51: _t->on_apdOptPwrL2Set_2_valueChanged((*reinterpret_cast< double(*)>(_a[1]))); break;
+        case 52: _t->on_apdBiasDac_3_valueChanged((*reinterpret_cast< double(*)>(_a[1]))); break;
+        case 53: _t->on_apdGainL2SetVal_3_valueChanged((*reinterpret_cast< double(*)>(_a[1]))); break;
+        case 54: _t->on_apdSigRmsL2Set_3_valueChanged((*reinterpret_cast< double(*)>(_a[1]))); break;
+        case 55: _t->on_apdOptPwrL2Set_3_valueChanged((*reinterpret_cast< double(*)>(_a[1]))); break;
+        case 56: _t->on_apdBiasDac_4_valueChanged((*reinterpret_cast< double(*)>(_a[1]))); break;
+        case 57: _t->on_apdGainL2SetVal_4_valueChanged((*reinterpret_cast< double(*)>(_a[1]))); break;
+        case 58: _t->on_apdSigRmsL2Set_4_valueChanged((*reinterpret_cast< double(*)>(_a[1]))); break;
+        case 59: _t->on_apdOptPwrL2Set_4_valueChanged((*reinterpret_cast< double(*)>(_a[1]))); break;
         case 60: _t->on_baseAdressInput_textChanged((*reinterpret_cast< const QString(*)>(_a[1]))); break;
         case 61: _t->on_resetSCLK_currentIndexChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
         case 62: _t->on_sampFreq_valueChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 63: _t->on_sigRmsL2MaxLim_1_valueChanged((*reinterpret_cast< double(*)>(_a[1]))); break;
+        case 64: _t->on_sigRmsL2MaxLim_2_valueChanged((*reinterpret_cast< double(*)>(_a[1]))); break;
+        case 65: _t->on_sigRmsL2MaxLim_4_valueChanged((*reinterpret_cast< double(*)>(_a[1]))); break;
+        case 66: _t->on_sigRmsL2MaxLim_3_valueChanged((*reinterpret_cast< double(*)>(_a[1]))); break;
+        case 67: _t->on_sigRmsL2MinLim_1_valueChanged((*reinterpret_cast< double(*)>(_a[1]))); break;
+        case 68: _t->on_sigRmsL2MinLim_2_valueChanged((*reinterpret_cast< double(*)>(_a[1]))); break;
+        case 69: _t->on_sigRmsL2MinLim_3_valueChanged((*reinterpret_cast< double(*)>(_a[1]))); break;
+        case 70: _t->on_sigRmsL2MinLim_4_valueChanged((*reinterpret_cast< double(*)>(_a[1]))); break;
         default: ;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {
@@ -460,13 +500,13 @@ int SettingsForm::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 63)
+        if (_id < 71)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 63;
+        _id -= 71;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 63)
+        if (_id < 71)
             *reinterpret_cast<int*>(_a[0]) = -1;
-        _id -= 63;
+        _id -= 71;
     }
     return _id;
 }

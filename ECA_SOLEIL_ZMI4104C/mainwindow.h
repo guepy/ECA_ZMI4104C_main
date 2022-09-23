@@ -11,12 +11,15 @@
 #include "presetpositionform.h"
 #include "cesettingsform.h"
 #include "dataprocessing.h"
+#include "serialoutput.h"
 #include "graphsform.h"
-//#include "../eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.h"
 #include <string>
 #include <memory>
 #include <iostream>
 #include <thread>
+#include <array>
+#include <algorithm>
+#include <sstream>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -38,6 +41,8 @@ public:
     FlyscanForm *flyscanForm;
     // --------Bouton set position offset-----------------------
     positionOffsetForm *posOffsetForm;
+    // --------Bouton configure serial output --------------------------
+    serialOutput *sdo;
     //-------------plot graphs button --------------------------
     //graphsForm* customplotForm;
     // --------Bouton preset position --------------------------
@@ -54,6 +59,11 @@ public:
     double *SSIav;
     unsigned int ceVelMin, ceVelMax;
 private:
+    constexpr static const int barCoeff = 100;
+    constexpr static const int optPwrMax = 20;
+    constexpr static const int mixFreqMax = 1;
+    constexpr static const int AXES_NBR = 4;
+    constexpr static const int BIAS_MODE_CTR_MAX = 5;
     int currentLeftBlockUnits;
     int currentRightBlockUnits;
     unsigned int currentCECUnits;
@@ -68,10 +78,14 @@ private:
     int leftBlockIndex;
     int rightBlockIndex;
     bool cecHarwareOn;
-    CEratios* ceRatios;
     unsigned int currentcecAxis;
+    unsigned int currentAPDTempAxis;
     bool speedModeOn;
     bool speedAxisSelect[4];
+    double* optPwrDC;
+    double* scaledOptPwrDC;
+    double* mxFreq{};
+    double* Temp;
 signals:
     void fifoModeSignal(bool index);
     void stopContinuousScanSignal();
@@ -92,7 +106,7 @@ signals:
     void PresetPosChanged(double* PresPosPtr);
     void configureCEChardwareRequest(unsigned int axis, unsigned int ceVelMin, unsigned int ceVelMax);
     void stopCEChardwareRequest(unsigned int axis);
-    void updateCECRatiosRequest(unsigned int axis, CEratios* ceRatios, unsigned int index);
+    void updateCECRatiosRequest(unsigned int axis, unsigned int index);
     void flyscanErrorCode(int ret_code);
     void flyscanStatValues(unsigned char* axisTab, double* mean, double* stdDev);
     void flyscanProcTerm();
@@ -104,6 +118,7 @@ signals:
     void apdValues(unsigned int axis, uint32_t* coeff);
     void gainControlsValues( unsigned int axis, bool* val);
     void updatePositionOnGraphs(double * position);
+    void closeSdoRequest();
 public slots:
     // --------------button continuous acquisition---------------------------
     void openFlyscanForm();
@@ -122,13 +137,24 @@ public slots:
     void openPositionOffsetForm();
     void closePositionOffsetForm();
     void reopenPositionOffsetForm();
+    // --------------serial output button---------------------------
+    void openSdoForm();
+    void closeSdoForm();
+    void reopenSdoForm();
     //--------------Pot graphs button---------------------------------
     void openCustomplotForm();
     void closeCustomplotForm();
     void reopenCustomplotForm();
-
+    void on_cecRatiosUpdated_recieved( CEratios* val);
     void refresh_screen();
 private slots:
+    void initBars();
+    void setDisplayOutputString(std::string text, std::string col);
+    void on_startSerialOutputRequest_recieved();
+    void on_stopSerialOutputRequest_recieved();
+    void on_errorSerialOutputRequest_recieved();
+    void updateBiasMode();
+    void updateAPDTemperature();
     void on_OffsetPos_Changed(double* OffPosPtr);
     void on_PresetPos_Changed(double* PresPosPtr);
     void on_pushButton_11_clicked();
@@ -143,7 +169,7 @@ private slots:
     void on_resetButtonAxis4_clicked();
     void onBoardsInitializationComplete();
     void refreshLEDsStatus();
-    void initBoards();
+    void initBoards(bool argin);
     void on_leftBlockUnits_currentIndexChanged(int index);
     void on_rightBlockUnits_currentIndexChanged(int index);
     void speedUpdateLeftBlockValue();
@@ -166,9 +192,9 @@ private slots:
     void on_stopContinuousScanSignal_received();
     void stopContinuousScanThread();
     void on_radioButton_clicked();
-
+    void updateMixingFrequencyBar();
     void on_ceUnits_currentIndexChanged(int index);
-
+    void updateOPtPwrBar();
     void on_radioButton_2_clicked();
 
     void on_cecAxis1_clicked();
@@ -191,6 +217,11 @@ private slots:
 
     void on_enableAxis4_clicked(bool checked);
 
+    void on_biasModeAxis_currentIndexChanged(int index);
+    void on_adpTempAxes_currentIndexChanged(int index);
+
+    void on_buttonSerialOutput_clicked();
+
 private:
     Ui::MainWindow *ui;
 };
@@ -204,6 +235,8 @@ static bool presPosForm_int=0;
 static bool posOffForm_int=0;
 // --------------plot graphs button---------------------------
 static bool customplotForm_int=0;
+// --------------serial output button---------------------------
+static bool sdoForm_int=0;
 //---------------LEDs-----------------
 //static QPainter* circlePainter;
 static const char* ledsColorString[3] = {
@@ -221,11 +254,11 @@ static const double displayUnitsCoeffs[5]{
 };
 
 static const char* biasMode[5] = {
-    "CONSTANT_VOLTAGE_MODE",
-    "CONSTANT_GAIN_MODE",
-    "CONSTANT_OPT_PWR_MODE",
-    "SIG_RMS_ADJUST_MODE",
-    "OFF_MODE"
+    "OFF",//"OFF_MODE",
+    "VOLT",//"CONSTANT_VOLTAGE_MODE",
+    "GAIN",//"CONSTANT_GAIN_MODE",
+    "OPWR",//"CONSTANT_OPT_PWR_MODE",
+    "SRMS"//"SIG_RMS_ADJUST_MODE"
 };
 
 

@@ -5,12 +5,15 @@ unsigned int* dataProcessing::base_A24D32_ptr = new unsigned int;
 unsigned int* dataProcessing::base_A24D32_FR_ptr = new unsigned int;
 bool dataProcessing::precision37 = false;
 bool dataProcessing::fifoMode=false;
+bool dataProcessing::currentSerialOutputState = false;
+Axes dataProcessing::curSerialBusAxis = Axes::Axis_3;
 dataProcessing::dataProcessing(QObject *parent) : QObject(parent)
 {
     position=(double*)malloc(5*sizeof (double));
-    bias_mode = BIAS_CONSTANT_VOLT_MODE;
+    bias_mode = BIAS_MODE::BIAS_CONSTANT_GAIN_MODE;
     ledsErrorStatus = new bool[5];
     ledsStatus = new bool[5];
+    cecRatiosVal = new CEratios;
     //initBoardsThread = new QThread;
 
 }
@@ -22,33 +25,26 @@ void dataProcessing::on_initBoardsRequest_recieved(){
 */
 void dataProcessing::on_initBoardsRequest_recieved(){
 
-    //qDebug()<<"initializing boards";
-
-    //SIS1100W_STATUS stat = sis1100w_Get_Handle_And_Open(0 , dev); //
-    //*/
-    if(initSisBoards( )!= RET_SUCCESS) {
-        zygoLogFatal("Failed to initialize SIS boards\n");
+    if(initSisBoards(1)!= RET_SUCCESS) {
+        fprintf(stderr,"Failed to initialize SIS boards\n");
     }
-    //*/
-    //vmeSystemReset();
-    /*if (stat != Stat1100Success) {
-        qDebug()<<"Getting Sis handle failed";
-        zygoLogInfo("Getting Sis handle failed\n");
-        zygoLogWarn("Reinitializing VME System \n");
-        vmeSystemReset();
-    }*/
+
     emit initAxisComplete();
     //qDebug()<<"initialization complete";
     emit initBoardsDone();
 }
+
 void dataProcessing::vmeSystemReset(){
-    zygoLogInfo("VME SYSTEM RESET!!!\n");
-    if(initSisBoards( )!= RET_SUCCESS) zygoLogFatal("Failed to initialize SIS boards\n");
+    fprintf(stdout, "VME SYSTEM RESET!!!\n");
+    if(initSisBoards(1)!= RET_SUCCESS) fprintf(stderr,"Failed to initialize SIS boards\n");
     //Sleep(10);
-    if(initZmiBoards( ) != RET_SUCCESS) zygoLogFatal("Failed to initialize ZMI board\n");
+    if(initZmiBoards() != RET_SUCCESS) fprintf(stderr,"Failed to initialize ZMI board\n");
     //ui->pushButton_11->setEnabled(false);
-    if(initAxis(  bias_mode) != RET_SUCCESS) zygoLogFatal("Failed to initialize axis\n");
+    if(initAxis(  bias_mode) != RET_SUCCESS) fprintf(stderr,"Failed to initialize axis\n");
     enableDoublePassInterferometer();
+    emit initAxisComplete();
+    //qDebug()<<"initialization complete";
+    emit initBoardsDone();
 
 }
 int dataProcessing::getLEDsColor(int* ledsColor){
@@ -70,33 +66,38 @@ int dataProcessing::getLEDsColor(int* ledsColor){
             else
                 ledsColor[ledi] = 0;//"black";
 
-}
+    }
+    State s;
+    getSerialBusState(curSerialBusAxis, s);
+    dataProcessing::currentSerialOutputState = static_cast<bool>(s);
     return 0;
 }
-void dataProcessing::updatePVT(int index, double* val){
-
+void dataProcessing::updatePVT(int index, double* val, double* Temp){
 
     switch(index){
-        case 0:
-                readPositionForAllAxis( val);
-        break;
-        case 1:
-              readVelocityForAllAxis( val);
-        break;
-        case 2:
-            readTimeForAllAxis( val);
-        break;
-        default:
-        break;
+    case 0:
+            readPositionForAllAxis( val);
+    break;
+    case 1:
+          readVelocityForAllAxis( val);
+    break;
+    case 2:
+        readTimeForAllAxis( val);
+    break;
+    default:
+    break;
+    }
+    for (const auto& i : AXES){
+        readApdTemp(i,Temp+(static_cast<int>(i)-1));
     }
 
 }
-void dataProcessing::updatePVT(int index, double* val, int axis){
-
-
+void dataProcessing::updatePVT(int index, double* val, int ax){
+    if(ax < 5){
+        Axes axis = static_cast<Axes>(ax);
     switch(index){
         case 0:
-                readPosition(axis, val);
+              readPosition(axis, val);
 
         break;
         case 1:
@@ -108,14 +109,16 @@ void dataProcessing::updatePVT(int index, double* val, int axis){
         default:
         break;
     }
+  }
+
+  else
+    qDebug() << "bad axis number" << endl;
 
 }
 void dataProcessing::updateOAS(int index, double* val){
-
-
     switch(index){
         case 0:
-            readOpticalPowerUsingSsiAv( val);
+            readOpticalPowerUsingSsiAvForAllAxis( val);
             //qDebug()<<"Reading Opt Power";
         break;
         case 1:
@@ -123,11 +126,23 @@ void dataProcessing::updateOAS(int index, double* val){
             //qDebug()<<"Reading APD gain";
         break;
         case 2:
-            readScaledSsiAv( val);
+            readScaledSsiAvForAllAxis( val);
             //qDebug()<<"Reading SSI values";
+        break;
+        case 3:
+        {
+            std::array<double,4> tmp{0.0};
+            readOptPwrDCForAllAxis( tmp);
+            for(int i=0; i < 4; i++){
+                val[i] = tmp.at(i);
+            }
+        }
         break;
         default:
         break;
+    }
+    for (const auto& i : AXES){
+        getBiasMode(i, biasModeTab.at(static_cast<int>(i)-1));
     }
 
 }
@@ -136,39 +151,17 @@ void dataProcessing::updateTime(double* time){
     ReadTime32_ForAllAxis( time);
 }*/
 void dataProcessing::on_changeBiasModeRequest_recieved(){
-    switch (currentBiasMode) {
-        case 0:
-        bias_mode = BIAS_CONSTANT_VOLT_MODE;
-        break;
-        case 1:
-        bias_mode = BIAS_CONSTANT_GAIN_MODE;
-        break;
-        case 2:
-        bias_mode = BIAS_CONSTANT_OPT_PWR_MODE;
-        break;
-        case 3:
-        bias_mode = BIAS_SIG_RMS_ADJUST_MODE;
-        break;
-        case 4:
-        bias_mode = BIAS_OFF_MODE;
-        break;
-        default:
-        break;
-
-    }
-    {
-
-    initAxis(  bias_mode);
-    }
+    bias_mode = static_cast<BIAS_MODE>(currentBiasMode);
+    setBiasMode( static_cast<Axes>(currentBiasModeAxis+1), bias_mode);
 
     emit initAxisComplete();
 }
 void dataProcessing::on_resetAxisRequest_recieved(int axis){
     if(axis>4)
-        for(int i=1; i<5;i++)
-            resetAxis(  i);
+        for (const auto& i : AXES)
+            resetAxis(i);
     else
-        resetAxis(  axis);
+        resetAxis(static_cast<Axes>(axis));
 }
 dataProcessing::~dataProcessing()
 {
@@ -180,57 +173,59 @@ dataProcessing::~dataProcessing()
 }
 
 void dataProcessing::on_OffsetPosition_Changed(double* offPosPtr){
-    for(int i=0;i<4;i++){
-        if(dataProcessing::precision37)
-        setPositionOffset32(  i+1, (unsigned int)(offPosPtr[i]/positionScale));
+    for (const auto& i : AXES){
+        setPositionOffset(  i, offPosPtr+static_cast<int>(i)-1);
     }
 }
 
 void dataProcessing::on_PresetPosition_Changed(double* presPosPtr){
-    for(int i=0;i<4;i++){
-        if(dataProcessing::precision37)
-            setPresetPosition37(  i+1, (presPosPtr[i]/positionScale));
-        else
-            setPresetPosition32(  i+1,(presPosPtr[i]/positionScale));
-    }
+    for (const auto& i : AXES)
+       setPresetPosition(  i, (presPosPtr+static_cast<int>(i)-1));
 }
 
-int dataProcessing::updateCECRatios(unsigned int axis, CEratios* val, unsigned int index){
+int dataProcessing::updateCECRatios(unsigned int axis, unsigned int units){
 
 
-    CEratios ceRatios = { 0.0,0.0,0.0 };
-    CECoeffs ceCoeffs = { {0,0},0.0,{0,0} };
-    CEratioUnits ratioUnits= ratio_in_dB;
+    CEratios ceRatios;
+    CECoeffs ceCoeffs;
+    CEratioUnits ratioUnits= CEratioUnits::ratio_in_dB;
 
-    switch (index) {
+    ceRatios.CE0ratio = 0.0;
+    ceRatios.CENratio = 0.0;
+    ceRatios.measSignal = 0.0;
+    ceCoeffs.CEC0coeff= std::complex<double>(0,0);
+    ceCoeffs.CEC1coeff =0;
+    ceCoeffs.CECNcoeff= std::complex<double>(0,0);
+    switch (units) {
         case 0:
-        ratioUnits = ratio_in_dB;
+        ratioUnits = CEratioUnits::ratio_in_dB;
         break;
         case 1:
-        ratioUnits = ratio_in_percent;
+        ratioUnits = CEratioUnits::ratio_in_percent;
         break;
         case 2:
-        ratioUnits = ratio_in_nmRMS;
+        ratioUnits = CEratioUnits::ratio_in_nmRMS;
         break;
         default:
         break;
     }
     //int ret = 0;
 
-    if (readCalcCecoeffs(  axis, &ceCoeffs) != RET_SUCCESS)
+    if (readCalcCecoeffs( static_cast<Axes>(axis) , ceCoeffs) != RET_SUCCESS)
         {
-            zygoLogWarn("Failed to calculate CE ratios \n");
+            fprintf(stderr, "[WARNING]Failed to calculate CE ratios \n");
             return RET_FAILED;
         }
-    zygoLogInfo("CEC0coeff %f+i%f, CEC1coeff %f, CECNcoeff  %f+i%f\n", ceCoeffs.CEC0coeff.rpart,
-        ceCoeffs.CEC0coeff.ipart, ceCoeffs.CEC1coeff, ceCoeffs.CECNcoeff.rpart, ceCoeffs.CECNcoeff.ipart);
-    if (calculateCeratio(  axis, &ceRatios, ratioUnits) != RET_SUCCESS)
+    qDebug()<<"CEC0coeff ,"<<ceCoeffs.CEC0coeff.real()<<"+ "<<ceCoeffs.CEC0coeff.imag()<<"i"<<" CEC1coeff "<<ceCoeffs.CEC1coeff<<"CECNcoeff "<<ceCoeffs.CECNcoeff.real()<<" + "<< ceCoeffs.CECNcoeff.imag()<<"i";
+    fprintf(stdout, "CEC0coeff %f+i%f, CEC1coeff %f, CECNcoeff  %f+i%f\n", ceCoeffs.CEC0coeff.real(),
+        ceCoeffs.CEC0coeff.imag(), ceCoeffs.CEC1coeff, ceCoeffs.CECNcoeff.real(), ceCoeffs.CECNcoeff.imag());
+    if (calculateCeratio(   static_cast<Axes>(axis), ceRatios, ratioUnits) != RET_SUCCESS)
         {
-            zygoLogWarn("Failed to calculate CE ratios \n");
+            fprintf(stderr, "[WARNING]Failed to calculate CE ratios \n");
             return RET_FAILED;
         }
-    zygoLogInfo("Meas signal %f, CE0 Ratio %f, CEN Ratio %f \n", ceRatios.measSignal, ceRatios.CE0ratio, ceRatios.CENratio);
-    *val = ceRatios;
+    fprintf(stdout, "Meas signal %f, CE0 Ratio %f, CEN Ratio %f \n", ceRatios.measSignal, ceRatios.CE0ratio, ceRatios.CENratio);
+    memcpy(cecRatiosVal, &ceRatios, sizeof (CEratios));
 
    /* ceRatios.measSignal = 0;
     ceRatios.CE0ratio = 0;
@@ -238,13 +233,14 @@ int dataProcessing::updateCECRatios(unsigned int axis, CEratios* val, unsigned i
 
     if(getAproximateCEratio(  3, &ceRatios, ratioUnits) != RET_SUCCESS)
         {
-            zygoLogWarn("Failed to calculate CE ratios \n");
+            fprintf(stderr, "[WARNING]Failed to calculate CE ratios \n");
             goto exit_flag;
         }
-    zygoLogInfo("Approximate Meas signal %f, CE0 Ratio %f, CEN Ratio %f \n", ceRatios.measSignal, ceRatios.CE0ratio, ceRatios.CENratio);
+    fprintf(stdout, "Approximate Meas signal %f, CE0 Ratio %f, CEN Ratio %f \n", ceRatios.measSignal, ceRatios.CE0ratio, ceRatios.CENratio);
     */
     //*/
     //readCEerrorStatReg(  3, &ret);
+    emit cecRatiosUpdated( cecRatiosVal);
     return RET_SUCCESS;
     //*/
 }
@@ -253,7 +249,7 @@ int dataProcessing::on_configureCECHardware_recieved(unsigned int axis, unsigned
 
 
     //qDebug()<<"config started ";
-    if(configureCecHardware(  axis, ceVelMin, ceVelMax) != RET_SUCCESS)
+    if(configureCecHardware( static_cast<Axes>(axis), ceVelMin, ceVelMax) != RET_SUCCESS)
         return RET_FAILED;
 
     //qDebug()<<"config terminated ";
@@ -261,7 +257,7 @@ int dataProcessing::on_configureCECHardware_recieved(unsigned int axis, unsigned
 }
 int dataProcessing::on_stopCECHardware_recieved(unsigned int axis){
 
-    if (disableCecCompensation(  axis) != RET_SUCCESS)
+    if (disableCecCompensation( static_cast<Axes>(axis)) != RET_SUCCESS)
         return RET_FAILED;
 
     return RET_SUCCESS;
@@ -284,6 +280,27 @@ int dataProcessing::on_configureFlyscanRequest_recieved(){
         return RET_FAILED;
     }
     dataProcessing::dev_mutex.unlock();
+    switch(axisNbr){
+    case 1:
+        fifoFlyscanAxisTab[0] = 3;
+        fifoFlyscanAxisTab[1] = 0;
+        fifoFlyscanAxisTab[2] = 0;
+        fifoFlyscanAxisTab[3] = 0;
+        break;
+    case 2:
+        fifoFlyscanAxisTab[0] = 1;
+        fifoFlyscanAxisTab[1] = 3;
+        fifoFlyscanAxisTab[2] = 0;
+        fifoFlyscanAxisTab[3] = 0;
+        break;
+    default:
+        fifoFlyscanAxisTab[0] = 1;
+        fifoFlyscanAxisTab[1] = 2;
+        fifoFlyscanAxisTab[2] = 3;
+        fifoFlyscanAxisTab[3] = 4;
+        break;
+    }
+
     Ltimer->start();
     return RET_SUCCESS;
 }
@@ -291,18 +308,19 @@ int dataProcessing::on_configureFlyscanRequest_recieved(){
 int dataProcessing::on_acquisitionTimer_timeout(){
 
     dataProcessing::dev_mutex.lock();
-    if(flyscanSizeValue<256){
-        flyscanSizeValue=256;
+    static unsigned int ramDataSize;
+    if(flyscanSizeValue<NBR_SAMP_PER_PAGE){
+        flyscanSizeValue=NBR_SAMP_PER_PAGE;
         //qDebug()<<"setting size to the min: 256";
         emit flyscanErrorCode(-101);
     }
-    if(flyscanSizeValue>NBR_RAM_PAGES*256){
-        flyscanSizeValue=NBR_RAM_PAGES*256;
+    if(flyscanSizeValue>NBR_RAM_PAGES*NBR_SAMP_PER_PAGE){
+        flyscanSizeValue=NBR_RAM_PAGES*NBR_SAMP_PER_PAGE;
         //qDebug()<<"setting size to the max: "<< NBR_RAM_PAGES*256;
         emit flyscanErrorCode(-102);
     }
-    if(flyscanSizeValue>NBR_RAM_PAGES*128 && axisNbr>2){
-        flyscanSizeValue=NBR_RAM_PAGES*2128;
+    if(flyscanSizeValue>(NBR_RAM_PAGES*NBR_SAMP_PER_PAGE/2) && axisNbr>2){
+        flyscanSizeValue=(NBR_RAM_PAGES*NBR_SAMP_PER_PAGE)/2;
         //qDebug()<<"setting size to the max: "<< NBR_RAM_PAGES*128;
         emit flyscanErrorCode(-103);
     }
@@ -313,30 +331,32 @@ int dataProcessing::on_acquisitionTimer_timeout(){
         emit flyscanErrorCode(-104);
         return RET_FAILED;
     }
-    //*/
-    if (!(dataProcessing::base_A24D32_ptr = (PUINT)calloc((UINT)( sizeof (UINT)*(flyscanSizeValue*1.5*axisNbr)), sizeof(unsigned int)))){
-        dataProcessing::dev_mutex.unlock();
-        Ltimer->stop();
-        zygoLogWarn("can not allocate memory on the host machine");
-        emit flyscanErrorCode(-105);
-        emit flyscanProcTerm();
-        return RET_FAILED;
-    }
-    if (!(dataProcessing::base_A24D32_FR_ptr = (PUINT)calloc((UINT)( sizeof (UINT)*flyscanSizeValue*1.5*axisNbr), sizeof(unsigned int)))){
-        dataProcessing::dev_mutex.unlock();
-        Ltimer->stop();
-        zygoLogWarn("can not allocate memory on the host machine");
-        emit flyscanErrorCode(-105);
-        emit flyscanProcTerm();
-        return RET_FAILED;
-    }
-    //*/
-    unsigned int ramDataSize = flyscanSizeValue/256;
+
+    ramDataSize = ceil(flyscanSizeValue/NBR_SAMP_PER_PAGE);
     if(axisNbr>2){
-        ramDataSize = (flyscanSizeValue*2>16384)?flyscanSizeValue*2:16384;
+        //ramDataSize = (flyscanSizeValue*2>16384)?flyscanSizeValue*2:16384;
+        ramDataSize = (ramDataSize*4 > NBR_RAM_PAGES)? NBR_RAM_PAGES : ramDataSize*4 ;
     }
 
-    zygoLogInfo("Sampling data... \n");
+    //*/
+    if (!(base_A24D32_ptr = (PUINT)calloc(ramDataSize*NBR_SAMP_PER_PAGE, sizeof(unsigned int)))){
+        dataProcessing::dev_mutex.unlock();
+        Ltimer->stop();
+        fprintf(stderr, "[WARNING]can not allocate memory on the host machine");
+        emit flyscanErrorCode(-105);
+        emit flyscanProcTerm();
+        return RET_FAILED;
+    }
+    if (!(base_A24D32_FR_ptr = (PUINT)calloc(ramDataSize*NBR_SAMP_PER_PAGE, sizeof(unsigned int)))){
+        dataProcessing::dev_mutex.unlock();
+        Ltimer->stop();
+        fprintf(stderr, "[WARNING]can not allocate memory on the host machine");
+        emit flyscanErrorCode(-105);
+        emit flyscanProcTerm();
+        return RET_FAILED;
+    }
+    //*/
+
     if (getFlyscanData(  base_A24D32_FR_ptr, base_A24D32_ptr, &axisNbr, ramDataSize) != RET_SUCCESS)
     {
         dataProcessing::dev_mutex.unlock();
@@ -357,10 +377,11 @@ int dataProcessing::on_acquisitionTimer_timeout(){
     //qDebug()<<"flyscan data processing terminated";
     emit flyscanProcTerm();
     emit flyscanStatValues((unsigned char*)fifoFlyscanAxisTab,(double*)meanVal,(double*)stdDevVal);
-    //qDebug()<<"Freeing buf "<<base_A24D32_FR_ptr<<" and "<<base_A24D32_ptr;
+    qDebug()<<"flysacanaxis tab[0] is "<< (int)(*fifoFlyscanAxisTab)<<"mean val is"<<*meanVal<<" and stdDev val is "<<*stdDevVal;
+    emit flyscanErrorCode(RET_SUCCESS);
     delete (base_A24D32_FR_ptr);
     delete (base_A24D32_ptr);
-    emit flyscanErrorCode(RET_SUCCESS);
+
     Ltimer->stop();
     return RET_SUCCESS;
 }
@@ -374,10 +395,10 @@ int dataProcessing::on_configureFifoFlyscanRequest_recieved(){
     bool ovf =0;
     size_t mysize=0;
     qDebug()<<"config fifo mode is "<<flyscanFreqValue;
-    fifoParam* flyscanFifoParam = new fifoParam;
-    flyscanFifoParam->acqTime=flyscanTimeValue;
-    flyscanFifoParam->freq=flyscanFreqValue;
-    flyscanFifoParam->nbrPts=flyscanSizeValue;
+    fifoParam flyscanFifoParam{};
+    flyscanFifoParam.acqTime=flyscanTimeValue;
+    flyscanFifoParam.freq=flyscanFreqValue;
+    flyscanFifoParam.nbrPts=flyscanSizeValue;
     //qDebug()<<"flyscansizeValue: "<<flyscanSizeValue;
     //qDebug()<<"axisnbr in dataprocessing: "<<axisNbr;
     if(fifoMode){
@@ -388,10 +409,10 @@ int dataProcessing::on_configureFifoFlyscanRequest_recieved(){
     }
 
     if (!(base_A24D32_ptr = (PUINT)calloc(mysize, sizeof(unsigned int)))){
-        zygoLogWarn("can not allocate memory on the host machine");
+        fprintf(stderr, "[WARNING]can not allocate memory on the host machine");
         emit flyscanErrorCode(-105);
         emit flyscanProcTerm();
-        delete flyscanFifoParam;
+
         return RET_FAILED;
     }
     dataProcessing::dev_mutex.lock();
@@ -402,7 +423,7 @@ int dataProcessing::on_configureFifoFlyscanRequest_recieved(){
         emit flyscanErrorCode(-99);
         emit flyscanProcTerm();
         delete (base_A24D32_ptr);
-        delete flyscanFifoParam;
+
         return RET_FAILED;
     }
     else
@@ -420,12 +441,12 @@ int dataProcessing::on_configureFifoFlyscanRequest_recieved(){
         }
 
         dataProcessing::dev_mutex.lock();
-        if (processFifoData(axisNbr, (PUCHAR)fifoFlyscanAxisTab, base_A24D32_ptr, flyscanFifoParam->nbrPts, (PUCHAR)flyscanPath,(double*)meanVal, (double*)stdDevVal) != RET_SUCCESS){
+        if (processFifoData(axisNbr, (PUCHAR)fifoFlyscanAxisTab, base_A24D32_ptr, flyscanFifoParam.nbrPts, (const char*)flyscanPath,(double*)meanVal, (double*)stdDevVal) != RET_SUCCESS){
             dataProcessing::dev_mutex.unlock();
             emit flyscanErrorCode(-107);
             emit flyscanProcTerm();
             delete (base_A24D32_ptr);
-            delete flyscanFifoParam;
+
             return RET_FAILED;
         }
         if(ovf){
@@ -439,14 +460,16 @@ int dataProcessing::on_configureFifoFlyscanRequest_recieved(){
     emit flyscanStatValues((unsigned char*)fifoFlyscanAxisTab,(double*)meanVal,(double*)stdDevVal);
     //qDebug()<<"Freeing buf \n"<<  base_A24D32_ptr;
     delete (base_A24D32_ptr);
-    delete flyscanFifoParam;
+
     emit flyscanErrorCode(RET_SUCCESS);
     emit flyscanProcTerm();
     return RET_SUCCESS;
 }
 void dataProcessing::on_updateSettingsRequest_received( unsigned int a,  unsigned int b, int* val){
-    std::thread updateSettingsRequestThread(&dataProcessing::updateSettingsRequest,this,a,b,val);
-    updateSettingsRequestThread.detach();
+    qDebug() << "APD SET CALLED val=" << *val << endl << endl;
+    updateSettingsRequest(a,b,val);
+   // std::thread updateSettingsRequestThread(&dataProcessing::updateSettingsRequest,this,a,b,val);
+   // updateSettingsRequestThread.detach();
 }
 void dataProcessing::updateSettingsRequest( unsigned int a,  unsigned int b, int* val){
     //qDebug()<<"dataProcessing::updateSettingsRequest";
@@ -456,21 +479,23 @@ void dataProcessing::updateSettingsRequest( unsigned int a,  unsigned int b, int
     case 1:
         switch ( b) {
         case 1:
-            setResetSourceClock(  3, (unsigned int*) val);
+            setResetSourceClock(  static_cast<Axes>(3), static_cast<SCLK>(*val));
             break;
         case 2:
-            if(* val)
+            if(*val == 0)
+            enableSinglePassInterferometer();
+            else if(*val == 1)
                 enableDoublePassInterferometer();
             else
-                enableSinglePassInterferometer();
+                enableQuadPassInterferometer();
             break;
         case 3:
 
-            if(* val < 1){
-                dataProcessing::precision37 = true;
+            if(*val < 1){
+                dataProcessing::precision37 = false;
             }
             else{
-                dataProcessing::precision37 = false;
+                dataProcessing::precision37 = true;
             }
             setPrecision(dataProcessing::precision37);
             break;
@@ -482,10 +507,10 @@ void dataProcessing::updateSettingsRequest( unsigned int a,  unsigned int b, int
                 disableResetFindsVelocityForAllAxis( );
             break;
         case 5:
-            setSampleSourceClock(  3, (unsigned int*) val);
+            setVMEBusSampleClk(static_cast<Axes>(3), static_cast<SCLK>(*val));
             break;
         case 6:
-            setSamplingFrequency((unsigned int)(val[0]));
+            setSamplingFrequency(Axes::Axis_3, (unsigned int)(val[0]), SCLK::SCLK0);
         break;
         default:
             r=( b-7)%3;
@@ -493,21 +518,21 @@ void dataProcessing::updateSettingsRequest( unsigned int a,  unsigned int b, int
             switch (r) {
             case 0:
                 if(* val < 1)
-                    resetGainMinControl(q+1);
+                    resetGainMinControl(static_cast<Axes>(q+1));
                 else
-                    setGainMinControl(q+1);
+                    setGainMinControl(static_cast<Axes>(q+1));
                 break;
             case 1:
                 if(* val < 1)
-                    resetGainControlAgc(q+1);
+                    resetGainControlAgc(static_cast<Axes>(q+1));
                 else
-                    setGainControlAgc(q+1);
+                    setGainControlAgc(static_cast<Axes>(q+1));
                 break;
             case 2:
                 if(* val < 1)
-                    resetGainMaxControl(q+1);
+                    resetGainMaxControl(static_cast<Axes>(q+1));
                 else
-                    setGainMaxControl(q+1);
+                    setGainMaxControl(static_cast<Axes>(q+1));
                 break;
             }
         break;
@@ -518,24 +543,31 @@ void dataProcessing::updateSettingsRequest( unsigned int a,  unsigned int b, int
         q= b/4;
         switch (r) {
         case 0:
-            setApdL2Gain(q+1, * val);
+            qDebug() << "APD SET CALLED q=" << q << " , val=" << *val << endl << endl;
+            setApdL2GainSet(static_cast<Axes>(q+1), (*val)/1000.0);
         case 1:
-            setApdBiasDac(q+1, * val);
+            setApdBiasVoltage(static_cast<Axes>(q+1), (*val)/1000.0);
             break;
         case 2:
-            setApdL2SigRms(q+1, * val);
+            setApdL2SigRmsSet(static_cast<Axes>(q+1), (*val)/1000.0);
             break;
         case 3:
-            setApdL2OptPwr(q+1, * val);
+            setApdL2OptPwrSet(static_cast<Axes>(q+1), (*val)/1000.0);
+            break;
+        case 4:
+            setApdL2SigRmsMinLim(static_cast<Axes>(q+1), (*val)/1000.0);
+            break;
+        case 5:
+            setApdL2SigRmsMaxLim(static_cast<Axes>(q+1), (*val)/1000.0);
+            break;
             break;
         }
-        break;
     case 3:
         if ( b>=4) {
-            setSsiSquelch( b-3,* val);
+            setSsiSquelch(static_cast<Axes>(b-3),* val);
         }
         else{
-            setKpAndKvCoeff(   b+1, val[0], val[1] );
+            setKpAndKvCoeff(static_cast<Axes>(b+1), val[0], val[1] );
         }
         break;
     case 4:
@@ -547,13 +579,13 @@ void dataProcessing::updateSettingsRequest( unsigned int a,  unsigned int b, int
             break;
         case 5:
             //qDebug()<<"updateSettingsRequest(4,5) received";
-            for(int axis=1;axis<5;axis++){
-                readSsiCalibrationData(  axis, (double*)ssiVals, (double*)optPwrVals);
-                emit ssiDataAvailable(axis, (double*)ssiVals, (double*)optPwrVals);
+            for(const auto& axis: AXES){
+                readSsiCalibrationData(axis, (double*)ssiVals, (double*)optPwrVals);
+                emit ssiDataAvailable(static_cast<int>(axis), (double*)ssiVals, (double*)optPwrVals);
             }
             break;
         case 4:
-            setSsiSquelch((int)( val[0]),  val[1]);
+            setSsiSquelch(static_cast<Axes>((int)( val[0])),  val[1]);
             break;
         default:
             //qDebug()<<"Unknow value of b: "<< b;
@@ -564,51 +596,86 @@ void dataProcessing::updateSettingsRequest( unsigned int a,  unsigned int b, int
         readGseDataForAllAxis(gseData, gseData+4, gseData+8,gseData+12);
         emit readGSEDataComplete(gseData);
     break;
-}
+    }
     dataProcessing::dev_mutex.unlock();
 }
 void dataProcessing::on_initSettingsFormRequest_received(){
+    initSettingsFormRequest();
+    /*
    std::thread initSettingsFormRequestThread(&dataProcessing::initSettingsFormRequest,this);
    initSettingsFormRequestThread.detach();
+   */
 }
 
 void dataProcessing::initSettingsFormRequest(){
     //qDebug()<<"initSettingsFormRequestThread started";
     dataProcessing::dev_mutex.lock();
-    for(int axis=1; axis<5; axis++){
+    for(const auto& axis: AXES){
         //qDebug()<<"axis "<<axis;
         getSsiSquelch(axis,ssiSq);
-        emit ssiSquelchValues(axis, ssiSq);
+        emit ssiSquelchValues(static_cast<int>(axis), ssiSq);
         //qDebug()<<"ssisq= "<<ssiSq[0];
         getKpAndKvCoeff(axis, kpKvcoeff);
-        emit KpKvValues(axis, kpKvcoeff);
-        getApdL2Gain(axis, gain);
-        getApdBiasDac(axis, gain+1);
-        getApdL2SigRms(axis, gain+2);
-        getApdL2OptPwr(axis, gain+3);
-        emit apdValues(axis, gain);
+        emit KpKvValues(static_cast<int>(axis), kpKvcoeff);
+        getApdL2GainSet(axis, gain);
+        getApdBiasVoltage(axis, gain+1);
+        getApdL2SigRmsSet(axis, gain+2);
+        getApdL2OptPwrSet(axis, gain+3);
+        getApdL2SigRmsMinLim(axis, gain+4);
+        getApdL2SigRmsMaxLim(axis, gain+5);
+        emit apdValues(static_cast<int>(axis), gain);
         getGainMinControl(axis,gainControls);
         getGainMaxControl(axis,gainControls+1);
         getGainControlAgc(axis,gainControls+2);
-        emit gainControlsValues(axis,gainControls);
+        emit gainControlsValues(static_cast<int>(axis),gainControls);
+        getBiasMode(axis, biasModeTab.at(static_cast<int>(axis)-1));
         //qDebug()<<"Gain min state on axis "<<axis<<" is "<<*gainControls;
         //qDebug()<<"Gain max state on axis "<<axis<<" is "<<gainControls[1];
     }
-    getSamplingFrequency(nullptr);
+    getSamplingFrequency(Axes::Axis_3, nullptr);
     dataProcessing::dev_mutex.unlock();
     prop[0] = getInterferometerConfiguration()-1;
-    prop[1] = getCachedSampleSclk();
-    prop[2] = getCachedResetSclk();
+    prop[1] = static_cast<bool>(getCachedSampleSclk());
+    prop[2] = static_cast<bool>(getCachedResetSclk());
+    curPrecision = getPrecision();
+    prop[3] = curPrecision;
+    State s;
+    getSerialBusState(curSerialBusAxis, s);
+    prop[4] = static_cast<bool>(s);
     emit currentIntBoardProperties(prop, getCachedSamplingFrequency());
-    //qDebug()<<"dataProcessing::apdval0"<<getCurrentInterType()<<"apdval1"<<prop[0]<<"apdval2"<<prop[2]<<"apdval3"<<getSampFreq();
-    //qDebug()<<"initSettingsFormRequestThread done";
 }
 void dataProcessing::on_modifyBaseAddressRequest_received(unsigned int add){
     //qDebug()<<"on_setBaseAddressRequest_received";
     setBaseAddress(add);
 }
-
+void dataProcessing::on_sampFreqRequest_received(){
+    emit sampFreq(getCachedSamplingFrequency());
+}
 void dataProcessing::on_stopContinuousScanSignal_received(){
 
     stopAquisition(3);
 }
+
+void dataProcessing::on_configureSerialOutput_received(SCLK clk, SerialOutputDriver sdo, SerialDataPositionSize sdps, BitWindow bw, uint32_t sampFreq ){
+
+    dataProcessing::dev_mutex.lock();
+    if(configureSerialBus(curSerialBusAxis, clk, sdo, sdps, bw, sampFreq))
+        emit  errorSerialOutputRequest();
+    dataProcessing::dev_mutex.unlock();
+}
+
+void dataProcessing::on_startSerialOutput_received(){
+
+    if(startSerialBus(curSerialBusAxis))
+        emit  errorSerialOutputRequest();
+    else
+        emit startSerialOutputRequest();
+}
+
+void dataProcessing::on_stopSerialOutput_received(){
+    if(stopSerialBus(curSerialBusAxis))
+        emit  errorSerialOutputRequest();
+    else
+        emit stopSerialOutputRequest();
+}
+

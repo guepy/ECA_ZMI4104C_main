@@ -9,10 +9,10 @@ presetPositionForm::presetPositionForm(QWidget *parent) :
     currentUnits=0;
     presPosValue=new double[4];
     alreadyApplied = false;
-    ui->presPosAxis1->setValidator(new QRegExpValidator(QRegExp("[0-9]*[.][0-9]*"), ui->presPosAxis1));
-    ui->presPosAxis2->setValidator(new QRegExpValidator(QRegExp("[0-9]*[.][0-9]*"), ui->presPosAxis2));
-    ui->presPosAxis3->setValidator(new QRegExpValidator(QRegExp("[0-9]*[.][0-9]*"), ui->presPosAxis3));
-    ui->presPosAxis4->setValidator(new QRegExpValidator(QRegExp("[0-9]*[.][0-9]*"), ui->presPosAxis4));
+    ui->presPosAxis1->setValidator(new QRegExpValidator(QRegExp(R"re(^(\+?\-?\d*\s?)*$)re"), ui->presPosAxis1));
+    ui->presPosAxis2->setValidator(new QRegExpValidator(QRegExp(R"re(^(\+?\-?\d*\s?)*$)re"), ui->presPosAxis2));
+    ui->presPosAxis3->setValidator(new QRegExpValidator(QRegExp(R"re(^(\+?\-?\d*\s?)*$)re"), ui->presPosAxis3));
+    ui->presPosAxis4->setValidator(new QRegExpValidator(QRegExp(R"re(^(\+?\-?\d*\s?)*$)re"), ui->presPosAxis4));
     ui->presPosAxis1->setText(QString::number(0));
     ui->presPosAxis2->setText(QString::number(0));
     ui->presPosAxis3->setText(QString::number(0));
@@ -64,7 +64,7 @@ void presetPositionForm::getPresPosValues(double* valPtr){
     if(!ok)
         qDebug()<<"Conversion failed";
     for(int i=0;i<4;i++){
-        qDebug()<<"position offset on axis "<<i+1<<"is"<<valPtr[i];
+        qDebug()<<"position preset on axis "<<i+1<<"is"<<valPtr[i];
     }
     emit PresetPosChanged(valPtr);
 }
@@ -72,5 +72,12 @@ void presetPositionForm::getPresPosValues(double* valPtr){
 void presetPositionForm::on_leftBlockUnits_currentIndexChanged(int index)
 {
     currentUnits = index;
+}
+
+
+void presetPositionForm::on_radioButton_2_clicked(bool checked)
+{
+    (void)checked;
+    // TO DO
 }
 

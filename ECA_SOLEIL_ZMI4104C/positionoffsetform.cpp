@@ -10,10 +10,10 @@ positionOffsetForm::positionOffsetForm(QWidget *parent) :
     posOffsetValue=new double[4];
     alreadyApplied = false;
     //ui->lineEdit_11->textChanged()
-    ui->offPosAxis1->setValidator(new QRegExpValidator(QRegExp("[0-9]*[.][0-9]*"), ui->offPosAxis1));
-    ui->offPosAxis2->setValidator(new QRegExpValidator(QRegExp("[0-9]*[.][0-9]*"), ui->offPosAxis2));
-    ui->offPosAxis3->setValidator(new QRegExpValidator(QRegExp("[0-9]*[.][0-9]*"), ui->offPosAxis3));
-    ui->offPosAxis4->setValidator(new QRegExpValidator(QRegExp("[0-9]*[.][0-9]*"), ui->offPosAxis4));
+    ui->offPosAxis1->setValidator(new QRegExpValidator(QRegExp(R"re(^(\+?\-?\d*\s?)*$)re"), ui->offPosAxis1));
+    ui->offPosAxis2->setValidator(new QRegExpValidator(QRegExp(R"re(^(\+?\-?\d*\s?)*$)re"), ui->offPosAxis2));
+    ui->offPosAxis3->setValidator(new QRegExpValidator(QRegExp(R"re(^(\+?\-?\d*\s?)*$)re"), ui->offPosAxis3));
+    ui->offPosAxis4->setValidator(new QRegExpValidator(QRegExp(R"re(^(\+?\-?\d*\s?)*$)re"), ui->offPosAxis4));
     ui->offPosAxis1->setText(QString::number(0));
     ui->offPosAxis2->setText(QString::number(0));
     ui->offPosAxis3->setText(QString::number(0));

@@ -116,6 +116,7 @@ void graphsForm::refreshGraphs(){
 
 }
 void graphsForm::on_scaleAxisRequest_recieved(int units){
+    (void)units;
     for(int i=0;i<4;i++)
         ui->customPlot->graph(i)->data()->clear();
     ui->customPlot->yAxis->rescale(true);
@@ -212,6 +213,8 @@ void graphsForm::on_checkBox_3_clicked(bool checked)
 
 void graphsForm::updateGraphOnAxis(unsigned int graphNbr, unsigned int axisNbr){
 
+    (void)axisNbr;
+    (void)graphNbr;
 }
 void graphsForm::graphsForm::on_checkBox_4_clicked(bool checked)
 {

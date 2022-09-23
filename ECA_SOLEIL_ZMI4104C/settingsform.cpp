@@ -11,17 +11,17 @@ SettingsForm::SettingsForm(QWidget *parent) :
     ui->baseAdressInput->setValidator(new QRegExpValidator(QRegExp("^[0-9A-F]{1,7}$", Qt::CaseInsensitive), ui->baseAdressInput));
     ui->baseAdressInput->setText(QString::number(16000));
 
-    ui->apdGainL2SetVal->setMinimum(0);//min freq
-    ui->apdGainL2SetVal->setMaximum(5120);//max freq
-    ui->apdSigRmsL2Set->setMinimum(0);//min freq
-    ui->apdSigRmsL2Set->setMaximum(0xFFFF);//min freq
-    ui->apdBiasDac->setMinimum(0);//min freq
-    ui->apdBiasDac->setMaximum(0xFFFF);//min freq
-    ui->apdOptPwrL2Set->setMinimum(-3920);//min freq
-    ui->apdOptPwrL2Set->setMaximum(3402);//max freq
+    ui->apdGainL2SetVal_1->setMinimum(0);//min freq
+    ui->apdGainL2SetVal_1->setMaximum(32);//max freq
+    ui->apdSigRmsL2Set_1->setMinimum(0);//min freq
+    ui->apdSigRmsL2Set_1->setMaximum(0xFFFF);//min freq
+    ui->apdBiasDac_1->setMinimum(0);//min freq
+    ui->apdBiasDac_1->setMaximum(0xFFFF);//min freq
+    ui->apdOptPwrL2Set_1->setMinimum(-3920);//min freq
+    ui->apdOptPwrL2Set_1->setMaximum(3402);//max freq
 
     ui->apdGainL2SetVal_2->setMinimum(0);//min freq
-    ui->apdGainL2SetVal_2->setMaximum(5120);//max freq
+    ui->apdGainL2SetVal_2->setMaximum(32);//max freq
     ui->apdSigRmsL2Set_2->setMinimum(0);//min freq
     ui->apdSigRmsL2Set_2->setMaximum(0xFFFF);//min freq
     ui->apdBiasDac_2->setMinimum(0);//min freq
@@ -30,7 +30,7 @@ SettingsForm::SettingsForm(QWidget *parent) :
     ui->apdOptPwrL2Set_2->setMaximum(3402);//max freq
 
     ui->apdGainL2SetVal_3->setMinimum(0);//min freq
-    ui->apdGainL2SetVal_3->setMaximum(5120);//max freq
+    ui->apdGainL2SetVal_3->setMaximum(32);//max freq
     ui->apdSigRmsL2Set_3->setMinimum(0);//min freq
     ui->apdSigRmsL2Set_3->setMaximum(0xFFFF);//min freq
     ui->apdBiasDac_3->setMinimum(0);//min freq
@@ -39,13 +39,31 @@ SettingsForm::SettingsForm(QWidget *parent) :
     ui->apdOptPwrL2Set_3->setMaximum(3402);//max freq
 
     ui->apdGainL2SetVal_4->setMinimum(0);//min freq
-    ui->apdGainL2SetVal_4->setMaximum(5120);//max freq
+    ui->apdGainL2SetVal_4->setMaximum(32);//max freq
     ui->apdSigRmsL2Set_4->setMinimum(0);//min freq
     ui->apdSigRmsL2Set_4->setMaximum(0xFFFF);//min freq
     ui->apdBiasDac_4->setMinimum(0);//min freq
-    ui->apdBiasDac_4->setMaximum(0xFFFF);//min freq
-    ui->apdOptPwrL2Set_4->setMinimum(-3920);//min freq
-    ui->apdOptPwrL2Set_4->setMaximum(3402);//max freq
+    ui->apdBiasDac_4->setMaximum(0xFFFF);
+    ui->apdOptPwrL2Set_4->setMinimum(-3920);
+    ui->apdOptPwrL2Set_4->setMaximum(3402);
+
+    ui->sigRmsL2MaxLim_1->setMinimum(0);
+    ui->sigRmsL2MaxLim_1->setMaximum(0xFFFF);
+    ui->sigRmsL2MaxLim_2->setMinimum(0);
+    ui->sigRmsL2MaxLim_3->setMaximum(0xFFFF);
+    ui->sigRmsL2MaxLim_4->setMinimum(0);
+    ui->sigRmsL2MaxLim_2->setMaximum(0xFFFF);
+    ui->sigRmsL2MaxLim_3->setMinimum(0);
+    ui->sigRmsL2MaxLim_4->setMaximum(0xFFFF);
+
+    ui->sigRmsL2MinLim_1->setMinimum(0);
+    ui->sigRmsL2MinLim_1->setMaximum(0xFFFF);
+    ui->sigRmsL2MinLim_2->setMinimum(0);
+    ui->sigRmsL2MinLim_3->setMaximum(0xFFFF);
+    ui->sigRmsL2MinLim_4->setMinimum(0);
+    ui->sigRmsL2MinLim_2->setMaximum(0xFFFF);
+    ui->sigRmsL2MinLim_3->setMinimum(0);
+    ui->sigRmsL2MinLim_4->setMaximum(0xFFFF);
 
     ui->kpFilterCoeff->setMinimum(-9);
     ui->kpFilterCoeff->setMaximum(-2);
@@ -79,6 +97,7 @@ SettingsForm::SettingsForm(QWidget *parent) :
 
     ui->sampFreq->setMaximum(2e7);
     ui->sampFreq->setMinimum(0);
+
     //*
     //ui->apdBiasDac->setEnabled(false);
     stimer = new QTimer(this);
@@ -102,12 +121,9 @@ void SettingsForm::on_settingsFormRun_received(){
 void SettingsForm::refreshSettings(){
 
     stimer->stop();
-    qDebug()<<"settings timer timeout";
-//*/
     updateEEPROMData();
     updateDiagnosticsData();
     stimer->start(TIMEOUT_VAL);
-//*/
 }
 //-----Button cancel-------
 void SettingsForm::on_pushButton_5_clicked()
@@ -117,7 +133,9 @@ void SettingsForm::on_pushButton_5_clicked()
 void SettingsForm::closeForm(){
     emit closeThis();
     qDebug()<<"Close this emitted";
-    this->deleteLater();
+    ui->~SettingsForm();
+    close();
+    //this->deleteLater();
 }
 
 unsigned int SettingsForm::convertHex2Uint(std::string hex) {
@@ -160,22 +178,24 @@ void SettingsForm::on_currentIntBoardProperties_received(bool* val, unsigned int
     qDebug()<<"curInterferoType is "<<curInterferoType;
     ui->interType->setCurrentIndex(curInterferoType);
 
-    curSampleSCLK = val[1];
-    prevSampleSCLK = val[1];
-    ui->sampleSCLK->setCurrentIndex(val[1]);
+    curSampleSCLK = prevSampleSCLK = val[1];
+    ui->sampleSCLK->setCurrentIndex(curSampleSCLK);
 
-    curSampleSCLK = val[1];
-    prevSampleSCLK = val[1];
-    ui->resetSCLK->setCurrentIndex(val[2]);
+    curResetSCLK = prevResetSCLK = val[2];
+    ui->resetSCLK->setCurrentIndex(curResetSCLK);
 
-    curSampleFreq = val[1];
-    prevSampleFreq = val[1];
-    ui->sampFreq->setValue(sampFreq);
+    curPrecision = prevPrecision = val[3];
+    ui->precisionVal->setCurrentIndex(curPrecision ? 1 : 0);
+
+    curSampleFreq =  prevSampleFreq = sampFreq;
+    ui->sampFreq->setValue(curSampleFreq);
+
+
 }
 void SettingsForm::updateGeneralSettings(){
 
     if(curInterferoType != prevInterferoType){
-        val[0]=(curInterferoType)?1:0;
+        val[0]= curInterferoType;
         emit updateSettingsRequest(1,2,val);
         prevInterferoType= curInterferoType;
     }
@@ -324,34 +344,52 @@ void SettingsForm::on_kvFilterCoeff_4_valueChanged(int arg1)
 
 void SettingsForm::updateApdSettings(){
     uint8_t i=0;
+    int val =0;
     for(i=0;i<4;i++){
         if(curApdGainL2Set[i] != prevApdGainL2Set[i]){
-            emit updateSettingsRequest(2,4*i,&curApdGainL2Set[i] );
+            val = curApdGainL2Set[i] * 1000;
+            emit updateSettingsRequest(2,4*i,&val);
             prevApdGainL2Set[i]= curApdGainL2Set[i];
         }
 
         if(curApdBiasDac[i] != prevApdBiasDac[i]){
-            emit updateSettingsRequest(2,4*i+1,&curApdBiasDac[i] );
+            val = curApdBiasDac[i]*1000;
+            emit updateSettingsRequest(2,4*i+1,&val );
             prevApdBiasDac[i]= curApdBiasDac[i];
         }
 
         if(curApdSigRmsL2Set[i] != prevApdSigRmsL2Set[i]){
-            emit updateSettingsRequest(2,4*i+2,&curApdSigRmsL2Set[i] );
+            val = curApdSigRmsL2Set[i] * 1000;
+            emit updateSettingsRequest(2,4*i+2,&val );
             prevApdSigRmsL2Set[i]= curApdSigRmsL2Set[i];
         }
 
         if(curApdOptPwrL2Set[i] != prevApdOptPwrL2Set[i]){
-            emit updateSettingsRequest(2,4*i+3,&curApdOptPwrL2Set[i] );
+            val = curApdOptPwrL2Set[i] * 1000;
+            emit updateSettingsRequest(2,4*i+3,&val );
             prevApdOptPwrL2Set[i]= curApdOptPwrL2Set[i];
+        }
+        if(curApdSigRmsL2MinLim[i] != prevApdSigRmsL2MinLim[i]){
+            val = curApdSigRmsL2MinLim[i] * 1000;
+            emit updateSettingsRequest(2,4*i+4,&val );
+            prevApdSigRmsL2MinLim[i]= curApdSigRmsL2MinLim[i];
+        }
+        if(curApdSigRmsL2MaxLim[i] != prevApdSigRmsL2MaxLim[i]){
+            val = curApdSigRmsL2MaxLim[i] * 1000;
+            emit updateSettingsRequest(2,4*i+5,&val );
+            prevApdSigRmsL2MaxLim[i]= curApdSigRmsL2MaxLim[i];
         }
     }
 
 }
 void SettingsForm::on_gainControlsValues_received(unsigned int axis,bool* val)
 {
+    gainControlsValuesFunc(axis,val);
+    /*
     qDebug()<<"on_ssiDataAvailable_received";
     std::thread gainControlsValuesThread(&SettingsForm::gainControlsValuesFunc, this,axis,val);
     gainControlsValuesThread.detach();
+    */
 }
 
 void SettingsForm::gainControlsValuesFunc(unsigned int axis,bool* val)
@@ -414,9 +452,12 @@ void SettingsForm::gainControlsValuesFunc(unsigned int axis,bool* val)
 
 void SettingsForm::on_ssiDataAvailable_received(unsigned int axis,double *ssiVals, double *optPwrVals)
 {
+    ssiDataAvailableFunc(axis,ssiVals, optPwrVals);
+    /*
     qDebug()<<"on_ssiDataAvailable_received";
     std::thread ssiDataAvailableThread(&SettingsForm::ssiDataAvailableFunc, this,axis,ssiVals, optPwrVals);
     ssiDataAvailableThread.detach();
+    */
 }
 
 void SettingsForm::ssiDataAvailableFunc(unsigned int axis,double *ssiVals, double *optPwrVals)
@@ -464,8 +505,6 @@ switch (axis) {
 }
 
 void SettingsForm::on_ssiSquelchValues_received(unsigned int axis, unsigned int* ssiSq){
-    qDebug()<<"on_ssiSquelchValues_received";
-    qDebug()<<"ssisq1= "<<ssiSq[0];
     switch (axis) {
         case 1:
         curSSIsquelch[0]=*ssiSq;
@@ -492,7 +531,6 @@ void SettingsForm::on_ssiSquelchValues_received(unsigned int axis, unsigned int*
     }
 }
 void SettingsForm::on_KpKvValues_received(unsigned int axis, int* coeff){
-    qDebug()<<"on_KpKvValues_received";
     switch (axis) {
         case 1:
         curKpFilterCoeff[0] = coeff[0];
@@ -555,68 +593,72 @@ void SettingsForm::on_readGSEDataComplete_received(double* gseData){
 }
 
 
-void SettingsForm::on_apdValues_received(unsigned int axis, uint32_t* val){
-qDebug()<<"on_apdValues_received here";
-
-qDebug()<<"settingForm::apdval0"<<val[0]<<"apdval1"<<val[1]<<"apdval2"<<val[2]<<"apdval3"<<val[3];
+void SettingsForm::on_apdValues_received(unsigned int axis, double* val){
+    qDebug() << "Val[0]= " << val[0] << endl;
     switch (axis) {
         case 1:
-        curApdGainL2Set[0] = val[0];
-        prevApdGainL2Set[0] = val[0];
-        prevApdBiasDac[0] = val[1];
-        curApdBiasDac[0] = val[1];
-        prevApdSigRmsL2Set[0] = val[2];
-        curApdSigRmsL2Set[0] = val[2];
-        curApdOptPwrL2Set[0] = val[3];
-        prevApdOptPwrL2Set[0] = val[3];
-        ui->apdGainL2SetVal->setValue(val[0]);
-        ui->apdBiasDac->setValue(val[1]);
-        ui->apdSigRmsL2Set->setValue(val[2]);
-        ui->apdOptPwrL2Set->setValue(val[3]);
+        curApdGainL2Set[0] = prevApdGainL2Set[0] = val[0];
+        prevApdBiasDac[0] = curApdBiasDac[0] = val[1];
+        prevApdSigRmsL2Set[0] = curApdSigRmsL2Set[0] = val[2];
+        curApdOptPwrL2Set[0] = prevApdOptPwrL2Set[0] = val[3];
+
+        prevApdSigRmsL2MinLim[0] = curApdSigRmsL2MinLim[0] = val[4];
+        prevApdSigRmsL2MaxLim[0] = curApdSigRmsL2MaxLim[0] = val[5];
+
+        ui->apdGainL2SetVal_1->setValue(val[0]);
+        ui->apdBiasDac_1->setValue(val[1]/1000);
+        ui->apdSigRmsL2Set_1->setValue(val[2]);
+        ui->apdOptPwrL2Set_1->setValue(val[3]);
+        ui->sigRmsL2MinLim_1->setValue(val[4]);
+        ui->sigRmsL2MaxLim_1->setValue(val[5]);
             break;
         case 2:
-        curApdGainL2Set[1] = val[0];
-        prevApdGainL2Set[1] = val[0];
-        prevApdBiasDac[1] = val[1];
-        curApdBiasDac[1] = val[1];
-        prevApdSigRmsL2Set[1] = val[2];
-        curApdSigRmsL2Set[1] = val[2];
-        curApdOptPwrL2Set[1] = val[3];
-        prevApdOptPwrL2Set[1] = val[3];
+        curApdGainL2Set[1] = prevApdGainL2Set[1] = val[0];
+        prevApdBiasDac[1] = curApdBiasDac[1] = val[1];
+        prevApdSigRmsL2Set[1] = curApdSigRmsL2Set[1] = val[2];
+        curApdOptPwrL2Set[1] = prevApdOptPwrL2Set[1] = val[3];
+
+        prevApdSigRmsL2MinLim[1] = curApdSigRmsL2MinLim[1] = val[4];
+        prevApdSigRmsL2MaxLim[1] = curApdSigRmsL2MaxLim[1] = val[5];
+
         ui->apdGainL2SetVal_2->setValue(val[0]);
-        ui->apdBiasDac_2->setValue(val[1]);
+        ui->apdBiasDac_2->setValue(val[1]/1000);
         ui->apdSigRmsL2Set_2->setValue(val[2]);
         ui->apdOptPwrL2Set_2->setValue(val[3]);
+        ui->sigRmsL2MinLim_2->setValue(val[4]);
+        ui->sigRmsL2MaxLim_2->setValue(val[5]);
             break;
         case 3:
-        curApdGainL2Set[2] = val[0];
-        prevApdGainL2Set[2] = val[0];
-        prevApdBiasDac[2] = val[1];
-        curApdBiasDac[2] = val[1];
-        prevApdSigRmsL2Set[2] = val[2];
-        curApdSigRmsL2Set[2] = val[2];
-        curApdOptPwrL2Set[2] = val[3];
-        prevApdOptPwrL2Set[2] = val[3];
+        curApdGainL2Set[2] = prevApdGainL2Set[2] = val[0];
+        prevApdBiasDac[2] = curApdBiasDac[2] = val[1];
+        prevApdSigRmsL2Set[2] = curApdSigRmsL2Set[2] = val[2];
+        curApdOptPwrL2Set[2] = prevApdOptPwrL2Set[2] = val[3];
+
+        prevApdSigRmsL2MinLim[2] = curApdSigRmsL2MinLim[2] = val[4];
+        prevApdSigRmsL2MaxLim[2] = curApdSigRmsL2MaxLim[2] = val[5];
 
         ui->apdGainL2SetVal_3->setValue(val[0]);
-        ui->apdBiasDac_3->setValue(val[1]);
+        ui->apdBiasDac_3->setValue(val[1]/1000);
         ui->apdSigRmsL2Set_3->setValue(val[2]);
         ui->apdOptPwrL2Set_3->setValue(val[3]);
+        ui->sigRmsL2MinLim_3->setValue(val[4]);
+        ui->sigRmsL2MaxLim_3->setValue(val[5]);
             break;
         case 4:
-        curApdGainL2Set[3] = val[0];
-        prevApdGainL2Set[3] = val[0];
-        prevApdBiasDac[3] = val[1];
-        curApdBiasDac[3] = val[1];
-        prevApdSigRmsL2Set[3] = val[2];
-        curApdSigRmsL2Set[3] = val[2];
-        curApdOptPwrL2Set[3] = val[3];
-        prevApdOptPwrL2Set[3] = val[3];
+        curApdGainL2Set[3] = prevApdGainL2Set[3] = val[0];
+        prevApdBiasDac[3] = curApdBiasDac[3] = val[1];
+        prevApdSigRmsL2Set[3] = curApdSigRmsL2Set[3] = val[2];
+        curApdOptPwrL2Set[3] = prevApdOptPwrL2Set[3] = val[3];
+
+        prevApdSigRmsL2MinLim[3] = curApdSigRmsL2MinLim[3] = val[4];
+        prevApdSigRmsL2MaxLim[3] = curApdSigRmsL2MaxLim[3] = val[5];
 
         ui->apdGainL2SetVal_4->setValue(val[0]);
-        ui->apdBiasDac_4->setValue(val[1]);
+        ui->apdBiasDac_4->setValue(val[1]/1000);
         ui->apdSigRmsL2Set_4->setValue(val[2]);
         ui->apdOptPwrL2Set_4->setValue(val[3]);
+        ui->sigRmsL2MinLim_4->setValue(val[4]);
+        ui->sigRmsL2MaxLim_4->setValue(val[5]);
             break;
         default:
             break;
@@ -728,12 +770,14 @@ void SettingsForm::updateCalibrationData()
 
 void SettingsForm::updateEEPROMData()
 {
-    emit updateSettingsRequest(4,5, nullptr);
+    int val = 0;
+    emit updateSettingsRequest(4,5, &val);
 }
 
 void SettingsForm::updateDiagnosticsData()
 {
-    emit updateSettingsRequest(5,0, nullptr);
+    int val = 0;
+    emit updateSettingsRequest(5,0,&val);
 }
 
 
@@ -756,92 +800,92 @@ void SettingsForm::on_ssiSquelch_4_valueChanged(int arg1)
     curSSIsquelch[1] = arg1;
 }
 
-
-void SettingsForm::on_apdBiasDac_valueChanged(int arg1)
+void SettingsForm::on_apdBiasDac_valueChanged(double arg1)
 {
-    curApdBiasDac[0] = (double) arg1;
+    curApdBiasDac[0] = arg1;
 }
 
-void SettingsForm::on_apdGainL2SetVal_valueChanged(int arg1)
+void SettingsForm::on_apdGainL2SetVal_valueChanged(double arg1)
 {
-    curApdGainL2Set[0] = (double) arg1;
+    curApdGainL2Set[0] = arg1;
 }
 
-void SettingsForm::on_apdSigRmsL2Set_valueChanged(int arg1)
+void SettingsForm::on_apdSigRmsL2Set_valueChanged(double arg1)
 {
-    curApdSigRmsL2Set[0] = (double) arg1;
+    curApdSigRmsL2Set[0] = arg1;
 }
 
-void SettingsForm::on_apdOptPwrL2Set_valueChanged(int arg1)
+void SettingsForm::on_apdOptPwrL2Set_valueChanged(double arg1)
 {
-    curApdOptPwrL2Set[0] = (double) arg1;
+    curApdOptPwrL2Set[0] = arg1;
 }
 
 
-void SettingsForm::on_apdBiasDac_2_valueChanged(int arg1)
+void SettingsForm::on_apdBiasDac_2_valueChanged(double arg1)
 {
-    curApdBiasDac[1] = (double) arg1;
+    curApdBiasDac[1] = arg1;
 }
 
-void SettingsForm::on_apdGainL2SetVal_2_valueChanged(int arg1)
+void SettingsForm::on_apdGainL2SetVal_2_valueChanged(double arg1)
 {
-    curApdGainL2Set[1] = (double) arg1;
+    curApdGainL2Set[1] = arg1;
 }
 
-void SettingsForm::on_apdSigRmsL2Set_2_valueChanged(int arg1)
+void SettingsForm::on_apdSigRmsL2Set_2_valueChanged(double arg1)
 {
-    curApdSigRmsL2Set[1] = (double) arg1;
+    curApdSigRmsL2Set[1] = arg1;
 }
 
-void SettingsForm::on_apdOptPwrL2Set_2_valueChanged(int arg1)
+void SettingsForm::on_apdOptPwrL2Set_2_valueChanged(double arg1)
 {
-    curApdOptPwrL2Set[1] = (double) arg1;
+    curApdOptPwrL2Set[1] = arg1;
 }
 
-void SettingsForm::on_apdBiasDac_3_valueChanged(int arg1)
+void SettingsForm::on_apdBiasDac_3_valueChanged(double arg1)
 {
-    curApdBiasDac[2] = (double) arg1;
+    curApdBiasDac[2] = arg1;
 }
 
-void SettingsForm::on_apdGainL2SetVal_3_valueChanged(int arg1)
+void SettingsForm::on_apdGainL2SetVal_3_valueChanged(double arg1)
 {
-    curApdGainL2Set[2] = (double) arg1;
+    curApdGainL2Set[2] = arg1;
 }
 
-void SettingsForm::on_apdSigRmsL2Set_3_valueChanged(int arg1)
+void SettingsForm::on_apdSigRmsL2Set_3_valueChanged(double arg1)
 {
-    curApdSigRmsL2Set[2] = (double) arg1;
+    curApdSigRmsL2Set[2] = arg1;
 }
 
-void SettingsForm::on_apdOptPwrL2Set_3_valueChanged(int arg1)
+void SettingsForm::on_apdOptPwrL2Set_3_valueChanged(double arg1)
 {
-    curApdOptPwrL2Set[2] = (double) arg1;
+    curApdOptPwrL2Set[2] = arg1;
 }
 
-void SettingsForm::on_apdBiasDac_4_valueChanged(int arg1)
+void SettingsForm::on_apdBiasDac_4_valueChanged(double arg1)
 {
-    curApdBiasDac[3] = (double) arg1;
+    curApdBiasDac[3] = arg1;
 }
 
-void SettingsForm::on_apdGainL2SetVal_4_valueChanged(int arg1)
+void SettingsForm::on_apdGainL2SetVal_4_valueChanged(double arg1)
 {
-    curApdGainL2Set[3] = (double) arg1;
+    curApdGainL2Set[3] = arg1;
 }
 
-void SettingsForm::on_apdSigRmsL2Set_4_valueChanged(int arg1)
+void SettingsForm::on_apdSigRmsL2Set_4_valueChanged(double arg1)
 {
-    curApdSigRmsL2Set[3] = (double) arg1;
+    curApdSigRmsL2Set[3] = arg1;
 }
 
-void SettingsForm::on_apdOptPwrL2Set_4_valueChanged(int arg1)
+void SettingsForm::on_apdOptPwrL2Set_4_valueChanged(double arg1)
 {
-    curApdOptPwrL2Set[3] = (double) arg1;
+    curApdOptPwrL2Set[3] = arg1;
 }
 
 void SettingsForm::on_baseAdressInput_textChanged(const QString &arg1)
 {
+    (void)arg1;
     basAd=ui->baseAdressInput->text().toStdString();
-    baseAdChange =true;
+    baseAdChange ^=true;
 }
 
 void SettingsForm::updateBaseAddress(){
@@ -862,5 +906,53 @@ void SettingsForm::on_resetSCLK_currentIndexChanged(int index)
 void SettingsForm::on_sampFreq_valueChanged(int arg1)
 {
     curSampleFreq=(unsigned int)arg1;
+}
+
+
+void SettingsForm::on_sigRmsL2MaxLim_1_valueChanged(double arg1)
+{
+    curApdSigRmsL2MaxLim[0] = arg1;
+}
+
+void SettingsForm::on_sigRmsL2MaxLim_2_valueChanged(double arg1)
+{
+    curApdSigRmsL2MaxLim[1] = arg1;
+
+}
+
+void SettingsForm::on_sigRmsL2MaxLim_3_valueChanged(double arg1)
+{
+    curApdSigRmsL2MaxLim[2] = arg1;
+
+}
+
+void SettingsForm::on_sigRmsL2MaxLim_4_valueChanged(double arg1)
+{
+    curApdSigRmsL2MaxLim[3] = arg1;
+
+}
+
+void SettingsForm::on_sigRmsL2MinLim_1_valueChanged(double arg1)
+{
+    curApdSigRmsL2MinLim[0] = arg1;
+
+}
+
+void SettingsForm::on_sigRmsL2MinLim_2_valueChanged(double arg1)
+{
+    curApdSigRmsL2MinLim[1] = arg1;
+
+}
+
+void SettingsForm::on_sigRmsL2MinLim_3_valueChanged(double arg1)
+{
+    curApdSigRmsL2MinLim[2] = arg1;
+
+}
+
+void SettingsForm::on_sigRmsL2MinLim_4_valueChanged(double arg1)
+{
+    curApdSigRmsL2MinLim[3] = arg1;
+
 }
 

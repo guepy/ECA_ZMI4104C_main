@@ -18,6 +18,8 @@ public:
 private slots:
     void on_pushButton_5_clicked();
 
+    void on_uscCE0_valueChanged(double arg1);
+
 private:
     Ui::CEsettingsForm *ui;
 };

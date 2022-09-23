@@ -6,7 +6,7 @@
 #include <QTimer>
 #include <thread>
 
-#define TIMEOUT_VAL 10000//10s
+#define TIMEOUT_VAL 100//100ms
 namespace Ui {
 class SettingsForm;
 }
@@ -24,35 +24,39 @@ class SettingsForm : public QWidget
     bool updateAv=false;
     int* updateTable;
 
-    int prevApdBiasDac[4] = {0,0,0,0};
-    int curApdBiasDac[4] = {0,0,0,0};
-    int curApdGainL2Set[4] = {0,0,0,0};
-    int prevApdGainL2Set[4] = {0,0,0,0};
-    int curApdOptPwrL2Set[4] = {0,0,0,0};
-    int prevApdOptPwrL2Set[4] = {0,0,0,0};
-    int prevApdSigRmsL2Set[4] = {0,0,0,0};
-    int curApdSigRmsL2Set[4] = {0,0,0,0};
+    double prevApdBiasDac[4] = {0};
+    double curApdBiasDac[4] = {0};
+    double curApdGainL2Set[4] = {0};
+    double prevApdGainL2Set[4] = {0};
+    double curApdOptPwrL2Set[4] = {0};
+    double prevApdOptPwrL2Set[4] = {0};
+    double prevApdSigRmsL2Set[4] = {0};
+    double curApdSigRmsL2Set[4] = {0};
+    double curApdSigRmsL2MaxLim[4] = {0};
+    double prevApdSigRmsL2MaxLim[4] = {0};
+    double curApdSigRmsL2MinLim[4] = {0};
+    double prevApdSigRmsL2MinLim[4] = {0};
 
-    int curKpFilterCoeff[4] = {0,0,0,0};
-    int prevKpFilterCoeff[4] = {0,0,0,0};
-    int curKvFilterCoeff[4] = {0,0,0,0};
-    int prevKvFilterCoeff[4] = {0,0,0,0};
+    int curKpFilterCoeff[4] = {0};
+    int prevKpFilterCoeff[4] = {0};
+    int curKvFilterCoeff[4] = {0};
+    int prevKvFilterCoeff[4] = {0};
 
-    int curSSIsquelch[4] = {0,0,0,0};
-    int prevSSIsquelch[4] = {0,0,0,0};
+    int curSSIsquelch[4] = {0};
+    int prevSSIsquelch[4] = {0};
 
-    int curGainMinControl[4] = {0,0,0,0};
-    int prevGainMinControl [4] = {0,0,0,0};
-    int curGainMaxControl [4] = {0,0,0,0};
-    int prevGainMaxControl [4] = {0,0,0,0};
-    int curAutoAdjustGainMode [4] = {0,0,0,0};
-    int prevAutoAdjustGainMode [4] = {0,0,0,0};
+    int curGainMinControl[4] = {0};
+    int prevGainMinControl [4] = {0};
+    int curGainMaxControl [4] = {0};
+    int prevGainMaxControl [4] = {0};
+    int curAutoAdjustGainMode [4] = {0};
+    int prevAutoAdjustGainMode [4] = {0};
     int val[10];
 
     bool prevInterferoType = 0;
     bool prevPrecision = 0;
     bool prevResetFindVelocity = 0;
-    bool curInterferoType = 0;
+    char curInterferoType = 0;
     std::string basAd;
     bool curPrecision = 0;
     bool curResetFindVelocity = 0;
@@ -62,7 +66,7 @@ class SettingsForm : public QWidget
     bool prevResetSCLK = 0;
     unsigned int curSampleFreq = 0;
     unsigned int prevSampleFreq = 0;
-    bool baseAdChange=false;
+    bool baseAdChange=true;
 public:
     explicit SettingsForm(QWidget *parent = nullptr);
     ~SettingsForm();
@@ -71,7 +75,7 @@ public:
     void on_ssiDataAvailable_received(unsigned int axis,double *ssiVals, double *optPwrVals);
     void on_ssiSquelchValues_received(unsigned int axis, unsigned int* val);
     void on_KpKvValues_received(unsigned int axis, int* val);
-    void on_apdValues_received(unsigned int axis, uint32_t* val);
+    void on_apdValues_received(unsigned int axis, double* val);
     void on_readGSEDataComplete_received(double* gseData);
     void on_gainControlsValues_received( unsigned int axis, bool* val);
     void on_currentIntBoardProperties_received(bool* val,unsigned int sampFreq);// bool*=[intType, sampleSclk, resetSclk]
@@ -137,31 +141,47 @@ private slots:
     void on_kvFilterCoeff_3_valueChanged(int arg1);
     void on_kvFilterCoeff_4_valueChanged(int arg1);
 
-    void on_apdBiasDac_valueChanged(int arg1);
-    void on_apdGainL2SetVal_valueChanged(int arg1);
-    void on_apdSigRmsL2Set_valueChanged(int arg1);
-    void on_apdOptPwrL2Set_valueChanged(int arg1);
+    void on_apdBiasDac_valueChanged(double arg1);
+    void on_apdGainL2SetVal_valueChanged(double arg1);
+    void on_apdSigRmsL2Set_valueChanged(double arg1);
+    void on_apdOptPwrL2Set_valueChanged(double arg1);
 
-    void on_apdBiasDac_2_valueChanged(int arg1);
-    void on_apdGainL2SetVal_2_valueChanged(int arg1);
-    void on_apdSigRmsL2Set_2_valueChanged(int arg1);
-    void on_apdOptPwrL2Set_2_valueChanged(int arg1);
+    void on_apdBiasDac_2_valueChanged(double arg1);
+    void on_apdGainL2SetVal_2_valueChanged(double arg1);
+    void on_apdSigRmsL2Set_2_valueChanged(double arg1);
+    void on_apdOptPwrL2Set_2_valueChanged(double arg1);
 
-    void on_apdBiasDac_3_valueChanged(int arg1);
-    void on_apdGainL2SetVal_3_valueChanged(int arg1);
-    void on_apdSigRmsL2Set_3_valueChanged(int arg1);
-    void on_apdOptPwrL2Set_3_valueChanged(int arg1);
+    void on_apdBiasDac_3_valueChanged(double arg1);
+    void on_apdGainL2SetVal_3_valueChanged(double arg1);
+    void on_apdSigRmsL2Set_3_valueChanged(double arg1);
+    void on_apdOptPwrL2Set_3_valueChanged(double arg1);
 
-    void on_apdBiasDac_4_valueChanged(int arg1);
-    void on_apdGainL2SetVal_4_valueChanged(int arg1);
-    void on_apdSigRmsL2Set_4_valueChanged(int arg1);
-    void on_apdOptPwrL2Set_4_valueChanged(int arg1);
+    void on_apdBiasDac_4_valueChanged(double arg1);
+    void on_apdGainL2SetVal_4_valueChanged(double arg1);
+    void on_apdSigRmsL2Set_4_valueChanged(double arg1);
+    void on_apdOptPwrL2Set_4_valueChanged(double arg1);
 
     void on_baseAdressInput_textChanged(const QString &arg1);
 
     void on_resetSCLK_currentIndexChanged(int index);
 
     void on_sampFreq_valueChanged(int arg1);
+
+    void on_sigRmsL2MaxLim_1_valueChanged(double arg1);
+
+    void on_sigRmsL2MaxLim_2_valueChanged(double arg1);
+
+    void on_sigRmsL2MaxLim_4_valueChanged(double arg1);
+
+    void on_sigRmsL2MaxLim_3_valueChanged(double arg1);
+
+    void on_sigRmsL2MinLim_1_valueChanged(double arg1);
+
+    void on_sigRmsL2MinLim_2_valueChanged(double arg1);
+
+    void on_sigRmsL2MinLim_3_valueChanged(double arg1);
+
+    void on_sigRmsL2MinLim_4_valueChanged(double arg1);
 
 private:
     Ui::SettingsForm *ui;

@@ -44,274 +44,6 @@
                   "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                 },
                 "region": {
-                  "startLine": 335,
-                  "startColumn": 5,
-                  "endLine": 335,
-                  "endColumn": 23
-                }
-              },
-              "logicalLocations": [
-                {
-                  "decoratedName": "vme_A24DMA_D16_read",
-                  "kind": "function"
-                }
-              ]
-            }
-          ],
-          "codeFlows": [
-            {
-              "threadFlows": [
-                {
-                  "locations": [
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
-                          },
-                          "region": {
-                            "startLine": 319,
-                            "startColumn": 13
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
-                          },
-                          "region": {
-                            "startLine": 320,
-                            "startColumn": 7
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
-                          },
-                          "region": {
-                            "startLine": 321,
-                            "startColumn": 16
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
-                          },
-                          "region": {
-                            "startLine": 323,
-                            "startColumn": 7
-                          }
-                        },
-                        "message": {
-                          "text": "'buf' is a 0 byte array"
-                        }
-                      },
-                      "kinds": [
-                        "declaration"
-                      ],
-                      "importance": "essential"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
-                          },
-                          "region": {
-                            "startLine": 324,
-                            "startColumn": 11
-                          }
-                        },
-                        "message": {
-                          "text": "Skip this branch, (assume 'buf==0' is false)"
-                        }
-                      },
-                      "kinds": [
-                        "branch"
-                      ],
-                      "importance": "important"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
-                          },
-                          "region": {
-                            "startLine": 327,
-                            "startColumn": 15
-                          }
-                        },
-                        "message": {
-                          "text": "'buf' is an In/Out argument to 'sis1100w_Vme_Dma_Read' (declared at c:\\users\\guekam\\source\\repos\\eca_zmi4104_project\\eca_zmi4104c_main\\eca_soleil_zmi4104_lib\\sis1100_zmilib\\sis1100w.h:101)"
-                        }
-                      },
-                      "kinds": [
-                        "declaration"
-                      ],
-                      "importance": "important"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
-                          },
-                          "region": {
-                            "startLine": 328,
-                            "startColumn": 7
-                          }
-                        },
-                        "message": {
-                          "text": "Skip this branch, (assume 'return_code' is false)"
-                        }
-                      },
-                      "kinds": [
-                        "branch"
-                      ],
-                      "importance": "important"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
-                          },
-                          "region": {
-                            "startLine": 333,
-                            "startColumn": 10
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
-                          },
-                          "region": {
-                            "startLine": 333,
-                            "startColumn": 17
-                          }
-                        },
-                        "message": {
-                          "text": "Enter this loop, (assume 'i<req_num_of_words')"
-                        }
-                      },
-                      "kinds": [
-                        "branch"
-                      ],
-                      "importance": "important"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
-                          },
-                          "region": {
-                            "startLine": 335,
-                            "startColumn": 16
-                          }
-                        }
-                      },
-                      "importance": "unimportant"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
-                          },
-                          "region": {
-                            "startLine": 333,
-                            "startColumn": 38
-                          }
-                        },
-                        "message": {
-                          "text": "'i' may equal 1"
-                        }
-                      },
-                      "kinds": [
-                        "declaration"
-                      ],
-                      "importance": "essential"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
-                          },
-                          "region": {
-                            "startLine": 333,
-                            "startColumn": 17
-                          }
-                        },
-                        "message": {
-                          "text": "Continue this loop, (assume 'i<req_num_of_words')"
-                        }
-                      },
-                      "kinds": [
-                        "branch"
-                      ],
-                      "importance": "important"
-                    },
-                    {
-                      "location": {
-                        "physicalLocation": {
-                          "artifactLocation": {
-                            "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
-                          },
-                          "region": {
-                            "startLine": 335,
-                            "startColumn": 16
-                          }
-                        },
-                        "message": {
-                          "text": "Invalid read from 'buf', (outside its readable range)"
-                        }
-                      },
-                      "kinds": [
-                        "usage"
-                      ],
-                      "importance": "essential"
-                    }
-                  ]
-                }
-              ]
-            }
-          ],
-          "suppressions": []
-        },
-        {
-          "ruleId": "C6385",
-          "message": {
-            "text": "Reading invalid data from 'buf':  the readable size is 'req_num_of_words*sizeof(uint32_t)' bytes, but '8' bytes may be read."
-          },
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
-                },
-                "region": {
                   "startLine": 365,
                   "startColumn": 4,
                   "endLine": 365,
@@ -580,9 +312,9 @@
                   "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                 },
                 "region": {
-                  "startLine": 396,
+                  "startLine": 394,
                   "startColumn": 4,
-                  "endLine": 396,
+                  "endLine": 394,
                   "endColumn": 33
                 }
               },
@@ -606,7 +338,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 381,
+                            "startLine": 379,
                             "startColumn": 13
                           }
                         }
@@ -620,7 +352,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 382,
+                            "startLine": 380,
                             "startColumn": 7
                           }
                         }
@@ -634,7 +366,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 383,
+                            "startLine": 381,
                             "startColumn": 16
                           }
                         }
@@ -648,7 +380,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 385,
+                            "startLine": 383,
                             "startColumn": 7
                           }
                         },
@@ -668,7 +400,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 386,
+                            "startLine": 384,
                             "startColumn": 11
                           }
                         },
@@ -688,7 +420,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 389,
+                            "startLine": 387,
                             "startColumn": 15
                           }
                         },
@@ -708,7 +440,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 390,
+                            "startLine": 388,
                             "startColumn": 7
                           }
                         },
@@ -728,7 +460,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 395,
+                            "startLine": 393,
                             "startColumn": 10
                           }
                         }
@@ -742,7 +474,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 395,
+                            "startLine": 393,
                             "startColumn": 17
                           }
                         },
@@ -762,7 +494,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 396,
+                            "startLine": 394,
                             "startColumn": 16
                           }
                         }
@@ -776,7 +508,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 395,
+                            "startLine": 393,
                             "startColumn": 38
                           }
                         },
@@ -796,7 +528,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 395,
+                            "startLine": 393,
                             "startColumn": 17
                           }
                         },
@@ -816,7 +548,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 396,
+                            "startLine": 394,
                             "startColumn": 16
                           }
                         },
@@ -848,9 +580,9 @@
                   "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                 },
                 "region": {
-                  "startLine": 496,
+                  "startLine": 494,
                   "startColumn": 4,
-                  "endLine": 496,
+                  "endLine": 494,
                   "endColumn": 89
                 }
               },
@@ -874,7 +606,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 484,
+                            "startLine": 482,
                             "startColumn": 13
                           }
                         }
@@ -888,7 +620,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 485,
+                            "startLine": 483,
                             "startColumn": 7
                           }
                         }
@@ -902,7 +634,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 486,
+                            "startLine": 484,
                             "startColumn": 16
                           }
                         }
@@ -916,7 +648,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 488,
+                            "startLine": 486,
                             "startColumn": 7
                           }
                         },
@@ -936,7 +668,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 489,
+                            "startLine": 487,
                             "startColumn": 11
                           }
                         },
@@ -956,7 +688,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 492,
+                            "startLine": 490,
                             "startColumn": 10
                           }
                         }
@@ -970,7 +702,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 492,
+                            "startLine": 490,
                             "startColumn": 17
                           }
                         },
@@ -990,7 +722,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 496,
+                            "startLine": 494,
                             "startColumn": 11
                           }
                         }
@@ -1004,7 +736,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 492,
+                            "startLine": 490,
                             "startColumn": 38
                           }
                         },
@@ -1024,7 +756,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 492,
+                            "startLine": 490,
                             "startColumn": 17
                           }
                         },
@@ -1044,7 +776,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 496,
+                            "startLine": 494,
                             "startColumn": 11
                           }
                         },
@@ -1076,9 +808,9 @@
                   "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                 },
                 "region": {
-                  "startLine": 527,
+                  "startLine": 525,
                   "startColumn": 4,
-                  "endLine": 527,
+                  "endLine": 525,
                   "endColumn": 89
                 }
               },
@@ -1102,7 +834,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 515,
+                            "startLine": 513,
                             "startColumn": 13
                           }
                         }
@@ -1116,7 +848,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 516,
+                            "startLine": 514,
                             "startColumn": 7
                           }
                         }
@@ -1130,7 +862,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 517,
+                            "startLine": 515,
                             "startColumn": 16
                           }
                         }
@@ -1144,7 +876,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 519,
+                            "startLine": 517,
                             "startColumn": 7
                           }
                         },
@@ -1164,7 +896,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 520,
+                            "startLine": 518,
                             "startColumn": 11
                           }
                         },
@@ -1184,7 +916,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 523,
+                            "startLine": 521,
                             "startColumn": 10
                           }
                         }
@@ -1198,7 +930,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 523,
+                            "startLine": 521,
                             "startColumn": 17
                           }
                         },
@@ -1218,7 +950,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 527,
+                            "startLine": 525,
                             "startColumn": 11
                           }
                         }
@@ -1232,7 +964,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 523,
+                            "startLine": 521,
                             "startColumn": 38
                           }
                         },
@@ -1252,7 +984,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 523,
+                            "startLine": 521,
                             "startColumn": 17
                           }
                         },
@@ -1272,7 +1004,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 527,
+                            "startLine": 525,
                             "startColumn": 11
                           }
                         },
@@ -1304,9 +1036,9 @@
                   "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                 },
                 "region": {
-                  "startLine": 640,
+                  "startLine": 638,
                   "startColumn": 4,
-                  "endLine": 640,
+                  "endLine": 638,
                   "endColumn": 38
                 }
               },
@@ -1330,7 +1062,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 625,
+                            "startLine": 623,
                             "startColumn": 13
                           }
                         }
@@ -1344,7 +1076,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 626,
+                            "startLine": 624,
                             "startColumn": 7
                           }
                         }
@@ -1358,7 +1090,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 627,
+                            "startLine": 625,
                             "startColumn": 16
                           }
                         }
@@ -1372,7 +1104,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 629,
+                            "startLine": 627,
                             "startColumn": 7
                           }
                         },
@@ -1392,7 +1124,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 630,
+                            "startLine": 628,
                             "startColumn": 11
                           }
                         },
@@ -1412,7 +1144,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 633,
+                            "startLine": 631,
                             "startColumn": 15
                           }
                         },
@@ -1432,7 +1164,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 634,
+                            "startLine": 632,
                             "startColumn": 7
                           }
                         },
@@ -1452,7 +1184,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 639,
+                            "startLine": 637,
                             "startColumn": 10
                           }
                         }
@@ -1466,7 +1198,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 639,
+                            "startLine": 637,
                             "startColumn": 17
                           }
                         },
@@ -1486,7 +1218,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 640,
+                            "startLine": 638,
                             "startColumn": 16
                           }
                         }
@@ -1500,7 +1232,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 639,
+                            "startLine": 637,
                             "startColumn": 38
                           }
                         },
@@ -1520,7 +1252,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 639,
+                            "startLine": 637,
                             "startColumn": 17
                           }
                         },
@@ -1540,7 +1272,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 640,
+                            "startLine": 638,
                             "startColumn": 16
                           }
                         },
@@ -1572,9 +1304,9 @@
                   "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                 },
                 "region": {
-                  "startLine": 670,
+                  "startLine": 668,
                   "startColumn": 4,
-                  "endLine": 670,
+                  "endLine": 668,
                   "endColumn": 33
                 }
               },
@@ -1598,7 +1330,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 655,
+                            "startLine": 653,
                             "startColumn": 13
                           }
                         }
@@ -1612,7 +1344,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 656,
+                            "startLine": 654,
                             "startColumn": 7
                           }
                         }
@@ -1626,7 +1358,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 657,
+                            "startLine": 655,
                             "startColumn": 16
                           }
                         }
@@ -1640,7 +1372,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 659,
+                            "startLine": 657,
                             "startColumn": 7
                           }
                         },
@@ -1660,7 +1392,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 660,
+                            "startLine": 658,
                             "startColumn": 11
                           }
                         },
@@ -1680,7 +1412,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 663,
+                            "startLine": 661,
                             "startColumn": 15
                           }
                         },
@@ -1700,7 +1432,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 664,
+                            "startLine": 662,
                             "startColumn": 7
                           }
                         },
@@ -1720,7 +1452,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 669,
+                            "startLine": 667,
                             "startColumn": 10
                           }
                         }
@@ -1734,7 +1466,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 669,
+                            "startLine": 667,
                             "startColumn": 17
                           }
                         },
@@ -1754,7 +1486,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 670,
+                            "startLine": 668,
                             "startColumn": 16
                           }
                         }
@@ -1768,7 +1500,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 669,
+                            "startLine": 667,
                             "startColumn": 38
                           }
                         },
@@ -1788,7 +1520,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 669,
+                            "startLine": 667,
                             "startColumn": 17
                           }
                         },
@@ -1808,7 +1540,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 670,
+                            "startLine": 668,
                             "startColumn": 16
                           }
                         },
@@ -1840,9 +1572,9 @@
                   "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                 },
                 "region": {
-                  "startLine": 760,
+                  "startLine": 758,
                   "startColumn": 4,
-                  "endLine": 760,
+                  "endLine": 758,
                   "endColumn": 89
                 }
               },
@@ -1866,7 +1598,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 748,
+                            "startLine": 746,
                             "startColumn": 13
                           }
                         }
@@ -1880,7 +1612,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 749,
+                            "startLine": 747,
                             "startColumn": 7
                           }
                         }
@@ -1894,7 +1626,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 750,
+                            "startLine": 748,
                             "startColumn": 16
                           }
                         }
@@ -1908,7 +1640,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 752,
+                            "startLine": 750,
                             "startColumn": 7
                           }
                         },
@@ -1928,7 +1660,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 753,
+                            "startLine": 751,
                             "startColumn": 11
                           }
                         },
@@ -1948,7 +1680,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 756,
+                            "startLine": 754,
                             "startColumn": 10
                           }
                         }
@@ -1962,7 +1694,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 756,
+                            "startLine": 754,
                             "startColumn": 17
                           }
                         },
@@ -1982,7 +1714,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 760,
+                            "startLine": 758,
                             "startColumn": 11
                           }
                         }
@@ -1996,7 +1728,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 756,
+                            "startLine": 754,
                             "startColumn": 38
                           }
                         },
@@ -2016,7 +1748,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 756,
+                            "startLine": 754,
                             "startColumn": 17
                           }
                         },
@@ -2036,7 +1768,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 760,
+                            "startLine": 758,
                             "startColumn": 11
                           }
                         },
@@ -2068,9 +1800,9 @@
                   "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                 },
                 "region": {
-                  "startLine": 792,
+                  "startLine": 790,
                   "startColumn": 4,
-                  "endLine": 792,
+                  "endLine": 790,
                   "endColumn": 89
                 }
               },
@@ -2094,7 +1826,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 779,
+                            "startLine": 777,
                             "startColumn": 13
                           }
                         }
@@ -2108,7 +1840,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 780,
+                            "startLine": 778,
                             "startColumn": 7
                           }
                         }
@@ -2122,7 +1854,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 781,
+                            "startLine": 779,
                             "startColumn": 16
                           }
                         }
@@ -2136,7 +1868,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 783,
+                            "startLine": 781,
                             "startColumn": 7
                           }
                         },
@@ -2156,7 +1888,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 784,
+                            "startLine": 782,
                             "startColumn": 11
                           }
                         },
@@ -2176,7 +1908,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 787,
+                            "startLine": 785,
                             "startColumn": 10
                           }
                         }
@@ -2190,7 +1922,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 787,
+                            "startLine": 785,
                             "startColumn": 17
                           }
                         },
@@ -2210,7 +1942,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 792,
+                            "startLine": 790,
                             "startColumn": 11
                           }
                         }
@@ -2224,7 +1956,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 787,
+                            "startLine": 785,
                             "startColumn": 38
                           }
                         },
@@ -2244,7 +1976,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 787,
+                            "startLine": 785,
                             "startColumn": 17
                           }
                         },
@@ -2264,7 +1996,7 @@
                             "uri": "file:///C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis3100_vme_calls.cpp"
                           },
                           "region": {
-                            "startLine": 792,
+                            "startLine": 790,
                             "startColumn": 11
                           }
                         },
@@ -2295,7 +2027,7 @@
       },
       "invocations": [
         {
-          "commandLine": "\"C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\VC\\Tools\\MSVC\\14.28.29910\\bin\\HostX86\\x86\\c1xx.dll\" -ACf{1F7B090C-16DB-4822-966A-A93D26ED4681} -ACpmspft140.dll -Alint -D_PREFAST_ -D_AST_FE_ -Analyze -zm0x00AAB1C0 -allChunksReserved -il C:\\Users\\guekam\\AppData\\Local\\Temp\\_CL_46840b21ast -typedil -f sis1100_zmilib\\sis3100_vme_calls.cpp -Ze -D_MSC_EXTENSIONS -Zp8 -Gs -pc \\:/ -D_MSC_VER=1928 -D_MSC_FULL_VER=192829914 -D_MSC_BUILD=0 -D_WIN32 -D_M_IX86=600 -D_M_IX86_FP=2 -GR -D_CPPRTTI -I C:\\Users\\guekam\\source\\repos\\ECA_ZMI4104_Project\\ECA_ZMI4104C_main\\eca_soleil_zmi4104_lib\\sis1100_zmilib -nologo -W 1 -diagnostics:column -D_GUARDOVERFLOW_CRT_ALLOCATORS=1 -GF -Og -Ot -Oi -ltcg -DCODE_ANALYSIS -DWIN32 -DNDEBUG -DECASOLEILZMI4104LIB_EXPORTS -D_WINDOWS -D_USRDLL -D_WINDLL -D_UNICODE -DUNICODE -EHs -D_CPPUNWIND -EHc -MD -D_MT -D_DLL -GS -D_M_FP_PRECISE -permissive- -Zc:wchar_t -Zc:forScope -Yupch.h -FpRelease\\eca_soleil_zmi4104_lib.pch -FoRelease\\sis3100_vme_calls.obj -FdRelease\\vc142.pdb -Gd -analyze:projectdirectory C:\\Users\\guekam\\source\\repos\\ECA_ZMI4104_Project\\ECA_ZMI4104C_main\\eca_soleil_zmi4104_lib -analyze:rulesetdirectory ;C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\Team Tools\\Static Analysis Tools\\\\Rule Sets; -analyze:ruleset C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\Team Tools\\Static Analysis Tools\\Rule Sets\\NativeRecommendedRules.ruleset -analyze:quiet -analyze:plugin C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\VC\\Tools\\MSVC\\14.28.29910\\bin\\HostX86\\x86\\EspXEngine.dll -FC -errorreport:prompt -I C:\\Users\\guekam\\source\\repos\\ECA_ZMI4104_Project\\ECA_ZMI4104C_main\\ECA_ZMI4104C_main -I C:\\Users\\guekam\\source\\repos\\ECA_ZMI4104_Project\\ECA_ZMI4104C_main\\eca_soleil_zmi4104_lib\\sis1100_zmilib -I C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\VC\\Tools\\MSVC\\14.28.29910\\include -I C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\VC\\Tools\\MSVC\\14.28.29910\\atlmfc\\include -I C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\VC\\Auxiliary\\VS\\include -I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.19041.0\\ucrt -I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.19041.0\\um -I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.19041.0\\shared -I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.19041.0\\winrt -I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.19041.0\\cppwinrt -I C:\\Users\\guekam\\source\\repos\\ECA_ZMI4104_Project\\ECA_ZMI4104C_main\\eca_soleil_zmi4104_lib\\Include\\um",
+          "commandLine": "\"C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\VC\\Tools\\MSVC\\14.28.29910\\bin\\HostX86\\x86\\c1xx.dll\" -ACf{1F7B090C-16DB-4822-966A-A93D26ED4681} -ACpmspft140.dll -Alint -D_PREFAST_ -D_AST_FE_ -Analyze -zm0x009AB1C0 -allChunksReserved -il C:\\Users\\guekam\\AppData\\Local\\Temp\\_CL_3e4c2c0dast -typedil -f sis1100_zmilib\\sis3100_vme_calls.cpp -Ze -D_MSC_EXTENSIONS -Zp8 -Gs -pc \\:/ -D_MSC_VER=1928 -D_MSC_FULL_VER=192829914 -D_MSC_BUILD=0 -D_WIN32 -D_M_IX86=600 -D_M_IX86_FP=2 -GR -D_CPPRTTI -I C:\\Users\\guekam\\source\\repos\\ECA_ZMI4104_Project\\ECA_ZMI4104C_main\\eca_soleil_zmi4104_lib\\sis1100_zmilib -nologo -W 1 -diagnostics:column -D_GUARDOVERFLOW_CRT_ALLOCATORS=1 -GF -Og -Ot -Oi -ltcg -DCODE_ANALYSIS -DWIN32 -DNDEBUG -DECASOLEILZMI4104LIB_EXPORTS -D_WINDOWS -D_USRDLL -D_WINDLL -D_UNICODE -DUNICODE -EHs -D_CPPUNWIND -EHc -MD -D_MT -D_DLL -GS -D_M_FP_PRECISE -permissive- -Zc:wchar_t -Zc:forScope -Yupch.h -FpRelease\\eca_soleil_zmi4104_lib.pch -FoRelease\\sis3100_vme_calls.obj -FdRelease\\vc142.pdb -Gd -analyze:projectdirectory C:\\Users\\guekam\\source\\repos\\ECA_ZMI4104_Project\\ECA_ZMI4104C_main\\eca_soleil_zmi4104_lib -analyze:rulesetdirectory ;C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\Team Tools\\Static Analysis Tools\\\\Rule Sets; -analyze:ruleset C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\Team Tools\\Static Analysis Tools\\Rule Sets\\NativeRecommendedRules.ruleset -analyze:quiet -analyze:plugin C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\VC\\Tools\\MSVC\\14.28.29910\\bin\\HostX86\\x86\\EspXEngine.dll -FC -errorreport:prompt -I C:\\Users\\guekam\\source\\repos\\ECA_ZMI4104_Project\\ECA_ZMI4104C_main\\ECA_ZMI4104C_main -I C:\\Users\\guekam\\source\\repos\\ECA_ZMI4104_Project\\ECA_ZMI4104C_main\\eca_soleil_zmi4104_lib\\sis1100_zmilib -I C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\VC\\Tools\\MSVC\\14.28.29910\\include -I C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\VC\\Tools\\MSVC\\14.28.29910\\atlmfc\\include -I C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\VC\\Auxiliary\\VS\\include -I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.19041.0\\ucrt -I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.19041.0\\um -I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.19041.0\\shared -I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.19041.0\\winrt -I C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.19041.0\\cppwinrt -I C:\\Users\\guekam\\source\\repos\\ECA_ZMI4104_Project\\ECA_ZMI4104C_main\\eca_soleil_zmi4104_lib\\Include\\um",
           "executionSuccessful": true
         }
       ],
@@ -2309,7 +2041,7 @@
             "resultFile"
           ],
           "hashes": {
-            "md5": "fad955f9104a4940cd3a33bfc5c44217"
+            "md5": "8815a5efe3fcc820e8afedd3477e0978"
           }
         },
         {
@@ -2349,7 +2081,7 @@
             "uri": "file:///c:/users/guekam/source/repos/eca_zmi4104_project/eca_zmi4104c_main/eca_soleil_zmi4104_lib/sis1100_zmilib/sis1100wstat.h"
           },
           "hashes": {
-            "md5": "d2b9e7242f0822099f3f0ed65fb4c7f7"
+            "md5": "3b00e42112bdce625699611c689c461c"
           }
         },
         {

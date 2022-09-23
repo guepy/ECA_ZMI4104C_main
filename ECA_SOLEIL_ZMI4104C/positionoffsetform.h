@@ -13,6 +13,7 @@ class positionOffsetForm : public QWidget
     Q_OBJECT
 
 public:
+    int currentUnits;
     explicit positionOffsetForm(QWidget *parent = nullptr);
     ~positionOffsetForm();
     void closeForm();
@@ -31,7 +32,6 @@ private slots:
 
 private:
     Ui::positionOffsetForm *ui;
-    int currentUnits;
     double* posOffsetValue;
     bool alreadyApplied;
 };

@@ -364,8 +364,6 @@
 			//printf("Writing %x to memory case 0x%p\n", vme_data[i], vme_data + i);
 			vme_data[i] = buf[i];
 		}
-		printf("End Address 0x%p\n", vme_data + i - 1);
-		printf("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*******-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*\n");
 		free(buf);
 		return return_code;
 	}

@@ -13,6 +13,7 @@
 #include <QtGui/QIcon>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QComboBox>
+#include <QtWidgets/QDoubleSpinBox>
 #include <QtWidgets/QFrame>
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QLabel>
@@ -131,49 +132,6 @@ public:
     QWidget *vWidget;
     QVBoxLayout *verticalLayout;
     QWidget *widget;
-    QHBoxLayout *horizontalLayout;
-    QLabel *label_3;
-    QSpacerItem *horizontalSpacer;
-    QSpinBox *apdGainL2SetVal;
-    QSpinBox *apdGainL2SetVal_2;
-    QSpinBox *apdGainL2SetVal_3;
-    QSpinBox *apdGainL2SetVal_4;
-    QLabel *label_5;
-    QSpacerItem *verticalSpacer;
-    QWidget *widget1;
-    QHBoxLayout *horizontalLayout_2;
-    QLabel *label_2;
-    QSpacerItem *horizontalSpacer_2;
-    QSpinBox *apdBiasDac;
-    QSpinBox *apdBiasDac_2;
-    QSpinBox *apdBiasDac_3;
-    QSpinBox *apdBiasDac_4;
-    QLabel *label_34;
-    QSpacerItem *verticalSpacer_2;
-    QWidget *widget2;
-    QHBoxLayout *horizontalLayout_3;
-    QLabel *label_4;
-    QSpacerItem *horizontalSpacer_3;
-    QSpinBox *apdSigRmsL2Set;
-    QSpinBox *apdSigRmsL2Set_2;
-    QSpinBox *apdSigRmsL2Set_3;
-    QSpinBox *apdSigRmsL2Set_4;
-    QLabel *label_35;
-    QSpacerItem *verticalSpacer_3;
-    QWidget *widget3;
-    QHBoxLayout *horizontalLayout_4;
-    QLabel *label_37;
-    QSpacerItem *horizontalSpacer_4;
-    QSpinBox *apdOptPwrL2Set;
-    QSpinBox *apdOptPwrL2Set_2;
-    QSpinBox *apdOptPwrL2Set_3;
-    QSpinBox *apdOptPwrL2Set_4;
-    QLabel *label_36;
-    QSpacerItem *verticalSpacer_4;
-    QHBoxLayout *horizontalLayout_32;
-    QSpacerItem *horizontalSpacer_33;
-    QPushButton *pushButton_6;
-    QWidget *layoutWidget;
     QHBoxLayout *horizontalLayout_36;
     QSpacerItem *horizontalSpacer_51;
     QLabel *label_52;
@@ -184,6 +142,63 @@ public:
     QSpacerItem *horizontalSpacer_54;
     QLabel *label_55;
     QSpacerItem *horizontalSpacer_55;
+    QLabel *label_5;
+    QWidget *widget1;
+    QHBoxLayout *horizontalLayout;
+    QLabel *label_3;
+    QSpacerItem *horizontalSpacer;
+    QDoubleSpinBox *apdGainL2SetVal_1;
+    QDoubleSpinBox *apdGainL2SetVal_2;
+    QDoubleSpinBox *apdGainL2SetVal_3;
+    QDoubleSpinBox *apdGainL2SetVal_4;
+    QLabel *label_36;
+    QWidget *widget2;
+    QHBoxLayout *horizontalLayout_2;
+    QLabel *label_2;
+    QSpacerItem *horizontalSpacer_2;
+    QDoubleSpinBox *apdBiasDac_1;
+    QDoubleSpinBox *apdBiasDac_2;
+    QDoubleSpinBox *apdBiasDac_3;
+    QDoubleSpinBox *apdBiasDac_4;
+    QLabel *label_34;
+    QWidget *widget3;
+    QHBoxLayout *horizontalLayout_4;
+    QLabel *label_37;
+    QSpacerItem *horizontalSpacer_4;
+    QDoubleSpinBox *apdOptPwrL2Set_1;
+    QDoubleSpinBox *apdOptPwrL2Set_2;
+    QDoubleSpinBox *apdOptPwrL2Set_3;
+    QDoubleSpinBox *apdOptPwrL2Set_4;
+    QLabel *label_35;
+    QWidget *widget4;
+    QHBoxLayout *horizontalLayout_3;
+    QLabel *label_4;
+    QSpacerItem *horizontalSpacer_3;
+    QDoubleSpinBox *apdSigRmsL2Set_1;
+    QDoubleSpinBox *apdSigRmsL2Set_2;
+    QDoubleSpinBox *apdSigRmsL2Set_3;
+    QDoubleSpinBox *apdSigRmsL2Set_4;
+    QLabel *label_66;
+    QWidget *widget_2;
+    QHBoxLayout *horizontalLayout_9;
+    QLabel *label_39;
+    QSpacerItem *horizontalSpacer_78;
+    QDoubleSpinBox *sigRmsL2MaxLim_1;
+    QDoubleSpinBox *sigRmsL2MaxLim_2;
+    QDoubleSpinBox *sigRmsL2MaxLim_3;
+    QDoubleSpinBox *sigRmsL2MaxLim_4;
+    QLabel *label_68;
+    QWidget *widget_3;
+    QHBoxLayout *horizontalLayout_45;
+    QLabel *label_67;
+    QSpacerItem *horizontalSpacer_79;
+    QDoubleSpinBox *sigRmsL2MinLim_1;
+    QDoubleSpinBox *sigRmsL2MinLim_2;
+    QDoubleSpinBox *sigRmsL2MinLim_3;
+    QDoubleSpinBox *sigRmsL2MinLim_4;
+    QHBoxLayout *horizontalLayout_32;
+    QSpacerItem *horizontalSpacer_33;
+    QPushButton *pushButton_6;
     QWidget *tab_4;
     QWidget *verticalWidget_5;
     QVBoxLayout *verticalLayout_8;
@@ -208,13 +223,6 @@ public:
     QSpinBox *ssiSquelch_3;
     QSpacerItem *horizontalSpacer_7;
     QSpinBox *ssiSquelch_4;
-    QHBoxLayout *horizontalLayout_26;
-    QLabel *label_28;
-    QSpacerItem *horizontalSpacer_26;
-    QLineEdit *ssiNomVal_1;
-    QLineEdit *ssiNomVal_2;
-    QLineEdit *ssiNomVal_3;
-    QLineEdit *ssiNomVal_4;
     QHBoxLayout *horizontalLayout_27;
     QLabel *label_29;
     QSpacerItem *horizontalSpacer_27;
@@ -222,6 +230,13 @@ public:
     QLineEdit *ssiMinVal_2;
     QLineEdit *ssiMinVal_3;
     QLineEdit *ssiMinVal_4;
+    QHBoxLayout *horizontalLayout_26;
+    QLabel *label_28;
+    QSpacerItem *horizontalSpacer_26;
+    QLineEdit *ssiNomVal_1;
+    QLineEdit *ssiNomVal_2;
+    QLineEdit *ssiNomVal_3;
+    QLineEdit *ssiNomVal_4;
     QHBoxLayout *horizontalLayout_28;
     QLabel *label_30;
     QSpacerItem *horizontalSpacer_28;
@@ -375,7 +390,7 @@ public:
         SettingsForm->setStyleSheet(QString::fromUtf8("QLabel{\n"
 "font: 75 12pt \"MS Shell Dlg 2\";\n"
 "}\n"
-"QComboBox, QLineEdit{\n"
+"QComboBox, QLineEdit ,QDoubleSpinBox{\n"
 "font: 75 12pt \"MS Shell Dlg 2\";\n"
 "border-radius:1px;\n"
 "border: 2px solid;\n"
@@ -406,7 +421,7 @@ public:
 "}"));
         settingsTab = new QTabWidget(SettingsForm);
         settingsTab->setObjectName(QString::fromUtf8("settingsTab"));
-        settingsTab->setGeometry(QRect(10, 10, 721, 661));
+        settingsTab->setGeometry(QRect(10, 10, 721, 741));
         QSizePolicy sizePolicy1(QSizePolicy::Maximum, QSizePolicy::Maximum);
         sizePolicy1.setHorizontalStretch(0);
         sizePolicy1.setVerticalStretch(0);
@@ -506,6 +521,7 @@ public:
         horizontalLayout_21->addItem(horizontalSpacer_50);
 
         interType = new QComboBox(verticalWidget);
+        interType->addItem(QString());
         interType->addItem(QString());
         interType->addItem(QString());
         interType->setObjectName(QString::fromUtf8("interType"));
@@ -1017,7 +1033,7 @@ public:
         tab_2->setObjectName(QString::fromUtf8("tab_2"));
         vWidget = new QWidget(tab_2);
         vWidget->setObjectName(QString::fromUtf8("vWidget"));
-        vWidget->setGeometry(QRect(20, 70, 691, 441));
+        vWidget->setGeometry(QRect(20, 20, 691, 631));
         vWidget->setStyleSheet(QString::fromUtf8("#vWidget{border: 1px solid;\n"
 "    border: 2px solid gray;\n"
 "    border-radius: 10px;\n"
@@ -1027,195 +1043,185 @@ public:
         verticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
         widget = new QWidget(vWidget);
         widget->setObjectName(QString::fromUtf8("widget"));
-        QSizePolicy sizePolicy4(QSizePolicy::Expanding, QSizePolicy::Fixed);
-        sizePolicy4.setHorizontalStretch(0);
-        sizePolicy4.setVerticalStretch(0);
-        sizePolicy4.setHeightForWidth(widget->sizePolicy().hasHeightForWidth());
-        widget->setSizePolicy(sizePolicy4);
-        horizontalLayout = new QHBoxLayout(widget);
-        horizontalLayout->setObjectName(QString::fromUtf8("horizontalLayout"));
-        label_3 = new QLabel(widget);
-        label_3->setObjectName(QString::fromUtf8("label_3"));
+        horizontalLayout_36 = new QHBoxLayout(widget);
+        horizontalLayout_36->setObjectName(QString::fromUtf8("horizontalLayout_36"));
+        horizontalSpacer_51 = new QSpacerItem(250, 20, QSizePolicy::Preferred, QSizePolicy::Minimum);
 
-        horizontalLayout->addWidget(label_3);
+        horizontalLayout_36->addItem(horizontalSpacer_51);
 
-        horizontalSpacer = new QSpacerItem(20, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
+        label_52 = new QLabel(widget);
+        label_52->setObjectName(QString::fromUtf8("label_52"));
+        sizePolicy3.setHeightForWidth(label_52->sizePolicy().hasHeightForWidth());
+        label_52->setSizePolicy(sizePolicy3);
 
-        horizontalLayout->addItem(horizontalSpacer);
+        horizontalLayout_36->addWidget(label_52);
 
-        apdGainL2SetVal = new QSpinBox(widget);
-        apdGainL2SetVal->setObjectName(QString::fromUtf8("apdGainL2SetVal"));
-        sizePolicy2.setHeightForWidth(apdGainL2SetVal->sizePolicy().hasHeightForWidth());
-        apdGainL2SetVal->setSizePolicy(sizePolicy2);
-        apdGainL2SetVal->setMinimumSize(QSize(120, 35));
+        horizontalSpacer_52 = new QSpacerItem(50, 20, QSizePolicy::Preferred, QSizePolicy::Minimum);
 
-        horizontalLayout->addWidget(apdGainL2SetVal);
+        horizontalLayout_36->addItem(horizontalSpacer_52);
 
-        apdGainL2SetVal_2 = new QSpinBox(widget);
-        apdGainL2SetVal_2->setObjectName(QString::fromUtf8("apdGainL2SetVal_2"));
-        sizePolicy2.setHeightForWidth(apdGainL2SetVal_2->sizePolicy().hasHeightForWidth());
-        apdGainL2SetVal_2->setSizePolicy(sizePolicy2);
-        apdGainL2SetVal_2->setMinimumSize(QSize(120, 35));
+        label_53 = new QLabel(widget);
+        label_53->setObjectName(QString::fromUtf8("label_53"));
+        sizePolicy3.setHeightForWidth(label_53->sizePolicy().hasHeightForWidth());
+        label_53->setSizePolicy(sizePolicy3);
 
-        horizontalLayout->addWidget(apdGainL2SetVal_2);
+        horizontalLayout_36->addWidget(label_53);
 
-        apdGainL2SetVal_3 = new QSpinBox(widget);
-        apdGainL2SetVal_3->setObjectName(QString::fromUtf8("apdGainL2SetVal_3"));
-        sizePolicy2.setHeightForWidth(apdGainL2SetVal_3->sizePolicy().hasHeightForWidth());
-        apdGainL2SetVal_3->setSizePolicy(sizePolicy2);
-        apdGainL2SetVal_3->setMinimumSize(QSize(120, 35));
+        horizontalSpacer_53 = new QSpacerItem(50, 20, QSizePolicy::Preferred, QSizePolicy::Minimum);
 
-        horizontalLayout->addWidget(apdGainL2SetVal_3);
+        horizontalLayout_36->addItem(horizontalSpacer_53);
 
-        apdGainL2SetVal_4 = new QSpinBox(widget);
-        apdGainL2SetVal_4->setObjectName(QString::fromUtf8("apdGainL2SetVal_4"));
-        sizePolicy2.setHeightForWidth(apdGainL2SetVal_4->sizePolicy().hasHeightForWidth());
-        apdGainL2SetVal_4->setSizePolicy(sizePolicy2);
-        apdGainL2SetVal_4->setMinimumSize(QSize(120, 35));
+        label_54 = new QLabel(widget);
+        label_54->setObjectName(QString::fromUtf8("label_54"));
+        sizePolicy3.setHeightForWidth(label_54->sizePolicy().hasHeightForWidth());
+        label_54->setSizePolicy(sizePolicy3);
 
-        horizontalLayout->addWidget(apdGainL2SetVal_4);
+        horizontalLayout_36->addWidget(label_54);
+
+        horizontalSpacer_54 = new QSpacerItem(40, 20, QSizePolicy::Preferred, QSizePolicy::Minimum);
+
+        horizontalLayout_36->addItem(horizontalSpacer_54);
+
+        label_55 = new QLabel(widget);
+        label_55->setObjectName(QString::fromUtf8("label_55"));
+        sizePolicy3.setHeightForWidth(label_55->sizePolicy().hasHeightForWidth());
+        label_55->setSizePolicy(sizePolicy3);
+
+        horizontalLayout_36->addWidget(label_55);
+
+        horizontalSpacer_55 = new QSpacerItem(25, 20, QSizePolicy::Preferred, QSizePolicy::Minimum);
+
+        horizontalLayout_36->addItem(horizontalSpacer_55);
 
 
         verticalLayout->addWidget(widget);
 
         label_5 = new QLabel(vWidget);
         label_5->setObjectName(QString::fromUtf8("label_5"));
-        QSizePolicy sizePolicy5(QSizePolicy::Preferred, QSizePolicy::Fixed);
-        sizePolicy5.setHorizontalStretch(0);
-        sizePolicy5.setVerticalStretch(0);
-        sizePolicy5.setHeightForWidth(label_5->sizePolicy().hasHeightForWidth());
-        label_5->setSizePolicy(sizePolicy5);
+        QSizePolicy sizePolicy4(QSizePolicy::Preferred, QSizePolicy::Fixed);
+        sizePolicy4.setHorizontalStretch(0);
+        sizePolicy4.setVerticalStretch(0);
+        sizePolicy4.setHeightForWidth(label_5->sizePolicy().hasHeightForWidth());
+        label_5->setSizePolicy(sizePolicy4);
         label_5->setStyleSheet(QString::fromUtf8("font: 10pt \"MS Shell Dlg 2\";\n"
 "color:rgb(0, 0, 255);"));
 
         verticalLayout->addWidget(label_5);
 
-        verticalSpacer = new QSpacerItem(20, 20, QSizePolicy::Minimum, QSizePolicy::Fixed);
-
-        verticalLayout->addItem(verticalSpacer);
-
         widget1 = new QWidget(vWidget);
         widget1->setObjectName(QString::fromUtf8("widget1"));
-        horizontalLayout_2 = new QHBoxLayout(widget1);
-        horizontalLayout_2->setObjectName(QString::fromUtf8("horizontalLayout_2"));
-        label_2 = new QLabel(widget1);
-        label_2->setObjectName(QString::fromUtf8("label_2"));
+        QSizePolicy sizePolicy5(QSizePolicy::Preferred, QSizePolicy::Preferred);
+        sizePolicy5.setHorizontalStretch(0);
+        sizePolicy5.setVerticalStretch(0);
+        sizePolicy5.setHeightForWidth(widget1->sizePolicy().hasHeightForWidth());
+        widget1->setSizePolicy(sizePolicy5);
+        widget1->setMinimumSize(QSize(0, 50));
+        horizontalLayout = new QHBoxLayout(widget1);
+        horizontalLayout->setObjectName(QString::fromUtf8("horizontalLayout"));
+        label_3 = new QLabel(widget1);
+        label_3->setObjectName(QString::fromUtf8("label_3"));
 
-        horizontalLayout_2->addWidget(label_2);
+        horizontalLayout->addWidget(label_3);
 
-        horizontalSpacer_2 = new QSpacerItem(70, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+        horizontalSpacer = new QSpacerItem(100, 20, QSizePolicy::Preferred, QSizePolicy::Minimum);
 
-        horizontalLayout_2->addItem(horizontalSpacer_2);
+        horizontalLayout->addItem(horizontalSpacer);
 
-        apdBiasDac = new QSpinBox(widget1);
-        apdBiasDac->setObjectName(QString::fromUtf8("apdBiasDac"));
-        sizePolicy2.setHeightForWidth(apdBiasDac->sizePolicy().hasHeightForWidth());
-        apdBiasDac->setSizePolicy(sizePolicy2);
-        apdBiasDac->setMinimumSize(QSize(120, 35));
+        apdGainL2SetVal_1 = new QDoubleSpinBox(widget1);
+        apdGainL2SetVal_1->setObjectName(QString::fromUtf8("apdGainL2SetVal_1"));
+        sizePolicy5.setHeightForWidth(apdGainL2SetVal_1->sizePolicy().hasHeightForWidth());
+        apdGainL2SetVal_1->setSizePolicy(sizePolicy5);
 
-        horizontalLayout_2->addWidget(apdBiasDac);
+        horizontalLayout->addWidget(apdGainL2SetVal_1);
 
-        apdBiasDac_2 = new QSpinBox(widget1);
-        apdBiasDac_2->setObjectName(QString::fromUtf8("apdBiasDac_2"));
-        sizePolicy2.setHeightForWidth(apdBiasDac_2->sizePolicy().hasHeightForWidth());
-        apdBiasDac_2->setSizePolicy(sizePolicy2);
-        apdBiasDac_2->setMinimumSize(QSize(120, 35));
+        apdGainL2SetVal_2 = new QDoubleSpinBox(widget1);
+        apdGainL2SetVal_2->setObjectName(QString::fromUtf8("apdGainL2SetVal_2"));
+        sizePolicy5.setHeightForWidth(apdGainL2SetVal_2->sizePolicy().hasHeightForWidth());
+        apdGainL2SetVal_2->setSizePolicy(sizePolicy5);
 
-        horizontalLayout_2->addWidget(apdBiasDac_2);
+        horizontalLayout->addWidget(apdGainL2SetVal_2);
 
-        apdBiasDac_3 = new QSpinBox(widget1);
-        apdBiasDac_3->setObjectName(QString::fromUtf8("apdBiasDac_3"));
-        sizePolicy2.setHeightForWidth(apdBiasDac_3->sizePolicy().hasHeightForWidth());
-        apdBiasDac_3->setSizePolicy(sizePolicy2);
-        apdBiasDac_3->setMinimumSize(QSize(120, 35));
+        apdGainL2SetVal_3 = new QDoubleSpinBox(widget1);
+        apdGainL2SetVal_3->setObjectName(QString::fromUtf8("apdGainL2SetVal_3"));
+        sizePolicy5.setHeightForWidth(apdGainL2SetVal_3->sizePolicy().hasHeightForWidth());
+        apdGainL2SetVal_3->setSizePolicy(sizePolicy5);
 
-        horizontalLayout_2->addWidget(apdBiasDac_3);
+        horizontalLayout->addWidget(apdGainL2SetVal_3);
 
-        apdBiasDac_4 = new QSpinBox(widget1);
-        apdBiasDac_4->setObjectName(QString::fromUtf8("apdBiasDac_4"));
-        sizePolicy2.setHeightForWidth(apdBiasDac_4->sizePolicy().hasHeightForWidth());
-        apdBiasDac_4->setSizePolicy(sizePolicy2);
-        apdBiasDac_4->setMinimumSize(QSize(120, 35));
+        apdGainL2SetVal_4 = new QDoubleSpinBox(widget1);
+        apdGainL2SetVal_4->setObjectName(QString::fromUtf8("apdGainL2SetVal_4"));
+        sizePolicy5.setHeightForWidth(apdGainL2SetVal_4->sizePolicy().hasHeightForWidth());
+        apdGainL2SetVal_4->setSizePolicy(sizePolicy5);
 
-        horizontalLayout_2->addWidget(apdBiasDac_4);
+        horizontalLayout->addWidget(apdGainL2SetVal_4);
 
 
         verticalLayout->addWidget(widget1);
 
+        label_36 = new QLabel(vWidget);
+        label_36->setObjectName(QString::fromUtf8("label_36"));
+        label_36->setStyleSheet(QString::fromUtf8("font: 10pt \"MS Shell Dlg 2\";\n"
+"color:rgb(0, 0, 255);"));
+
+        verticalLayout->addWidget(label_36);
+
+        widget2 = new QWidget(vWidget);
+        widget2->setObjectName(QString::fromUtf8("widget2"));
+        widget2->setMinimumSize(QSize(0, 50));
+        horizontalLayout_2 = new QHBoxLayout(widget2);
+        horizontalLayout_2->setObjectName(QString::fromUtf8("horizontalLayout_2"));
+        label_2 = new QLabel(widget2);
+        label_2->setObjectName(QString::fromUtf8("label_2"));
+
+        horizontalLayout_2->addWidget(label_2);
+
+        horizontalSpacer_2 = new QSpacerItem(110, 20, QSizePolicy::Preferred, QSizePolicy::Minimum);
+
+        horizontalLayout_2->addItem(horizontalSpacer_2);
+
+        apdBiasDac_1 = new QDoubleSpinBox(widget2);
+        apdBiasDac_1->setObjectName(QString::fromUtf8("apdBiasDac_1"));
+        sizePolicy5.setHeightForWidth(apdBiasDac_1->sizePolicy().hasHeightForWidth());
+        apdBiasDac_1->setSizePolicy(sizePolicy5);
+
+        horizontalLayout_2->addWidget(apdBiasDac_1);
+
+        apdBiasDac_2 = new QDoubleSpinBox(widget2);
+        apdBiasDac_2->setObjectName(QString::fromUtf8("apdBiasDac_2"));
+        sizePolicy5.setHeightForWidth(apdBiasDac_2->sizePolicy().hasHeightForWidth());
+        apdBiasDac_2->setSizePolicy(sizePolicy5);
+
+        horizontalLayout_2->addWidget(apdBiasDac_2);
+
+        apdBiasDac_3 = new QDoubleSpinBox(widget2);
+        apdBiasDac_3->setObjectName(QString::fromUtf8("apdBiasDac_3"));
+        sizePolicy5.setHeightForWidth(apdBiasDac_3->sizePolicy().hasHeightForWidth());
+        apdBiasDac_3->setSizePolicy(sizePolicy5);
+
+        horizontalLayout_2->addWidget(apdBiasDac_3);
+
+        apdBiasDac_4 = new QDoubleSpinBox(widget2);
+        apdBiasDac_4->setObjectName(QString::fromUtf8("apdBiasDac_4"));
+        sizePolicy5.setHeightForWidth(apdBiasDac_4->sizePolicy().hasHeightForWidth());
+        apdBiasDac_4->setSizePolicy(sizePolicy5);
+
+        horizontalLayout_2->addWidget(apdBiasDac_4);
+
+
+        verticalLayout->addWidget(widget2);
+
         label_34 = new QLabel(vWidget);
         label_34->setObjectName(QString::fromUtf8("label_34"));
-        sizePolicy5.setHeightForWidth(label_34->sizePolicy().hasHeightForWidth());
-        label_34->setSizePolicy(sizePolicy5);
+        sizePolicy4.setHeightForWidth(label_34->sizePolicy().hasHeightForWidth());
+        label_34->setSizePolicy(sizePolicy4);
         label_34->setStyleSheet(QString::fromUtf8("font: 10pt \"MS Shell Dlg 2\";\n"
 "color:rgb(0, 0, 255);"));
 
         verticalLayout->addWidget(label_34);
 
-        verticalSpacer_2 = new QSpacerItem(20, 20, QSizePolicy::Minimum, QSizePolicy::Fixed);
-
-        verticalLayout->addItem(verticalSpacer_2);
-
-        widget2 = new QWidget(vWidget);
-        widget2->setObjectName(QString::fromUtf8("widget2"));
-        horizontalLayout_3 = new QHBoxLayout(widget2);
-        horizontalLayout_3->setObjectName(QString::fromUtf8("horizontalLayout_3"));
-        label_4 = new QLabel(widget2);
-        label_4->setObjectName(QString::fromUtf8("label_4"));
-
-        horizontalLayout_3->addWidget(label_4);
-
-        horizontalSpacer_3 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
-
-        horizontalLayout_3->addItem(horizontalSpacer_3);
-
-        apdSigRmsL2Set = new QSpinBox(widget2);
-        apdSigRmsL2Set->setObjectName(QString::fromUtf8("apdSigRmsL2Set"));
-        sizePolicy2.setHeightForWidth(apdSigRmsL2Set->sizePolicy().hasHeightForWidth());
-        apdSigRmsL2Set->setSizePolicy(sizePolicy2);
-        apdSigRmsL2Set->setMinimumSize(QSize(120, 35));
-
-        horizontalLayout_3->addWidget(apdSigRmsL2Set);
-
-        apdSigRmsL2Set_2 = new QSpinBox(widget2);
-        apdSigRmsL2Set_2->setObjectName(QString::fromUtf8("apdSigRmsL2Set_2"));
-        sizePolicy2.setHeightForWidth(apdSigRmsL2Set_2->sizePolicy().hasHeightForWidth());
-        apdSigRmsL2Set_2->setSizePolicy(sizePolicy2);
-        apdSigRmsL2Set_2->setMinimumSize(QSize(120, 35));
-
-        horizontalLayout_3->addWidget(apdSigRmsL2Set_2);
-
-        apdSigRmsL2Set_3 = new QSpinBox(widget2);
-        apdSigRmsL2Set_3->setObjectName(QString::fromUtf8("apdSigRmsL2Set_3"));
-        sizePolicy2.setHeightForWidth(apdSigRmsL2Set_3->sizePolicy().hasHeightForWidth());
-        apdSigRmsL2Set_3->setSizePolicy(sizePolicy2);
-        apdSigRmsL2Set_3->setMinimumSize(QSize(120, 35));
-
-        horizontalLayout_3->addWidget(apdSigRmsL2Set_3);
-
-        apdSigRmsL2Set_4 = new QSpinBox(widget2);
-        apdSigRmsL2Set_4->setObjectName(QString::fromUtf8("apdSigRmsL2Set_4"));
-        sizePolicy2.setHeightForWidth(apdSigRmsL2Set_4->sizePolicy().hasHeightForWidth());
-        apdSigRmsL2Set_4->setSizePolicy(sizePolicy2);
-        apdSigRmsL2Set_4->setMinimumSize(QSize(120, 35));
-
-        horizontalLayout_3->addWidget(apdSigRmsL2Set_4);
-
-
-        verticalLayout->addWidget(widget2);
-
-        label_35 = new QLabel(vWidget);
-        label_35->setObjectName(QString::fromUtf8("label_35"));
-        label_35->setStyleSheet(QString::fromUtf8("font: 10pt \"MS Shell Dlg 2\";\n"
-"color:rgb(0, 0, 255);"));
-
-        verticalLayout->addWidget(label_35);
-
-        verticalSpacer_3 = new QSpacerItem(20, 20, QSizePolicy::Minimum, QSizePolicy::Fixed);
-
-        verticalLayout->addItem(verticalSpacer_3);
-
         widget3 = new QWidget(vWidget);
         widget3->setObjectName(QString::fromUtf8("widget3"));
+        widget3->setMinimumSize(QSize(0, 50));
         horizontalLayout_4 = new QHBoxLayout(widget3);
         horizontalLayout_4->setObjectName(QString::fromUtf8("horizontalLayout_4"));
         label_37 = new QLabel(widget3);
@@ -1230,55 +1236,198 @@ public:
 
         horizontalLayout_4->addWidget(label_37);
 
-        horizontalSpacer_4 = new QSpacerItem(20, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+        horizontalSpacer_4 = new QSpacerItem(100, 20, QSizePolicy::Preferred, QSizePolicy::Minimum);
 
         horizontalLayout_4->addItem(horizontalSpacer_4);
 
-        apdOptPwrL2Set = new QSpinBox(widget3);
-        apdOptPwrL2Set->setObjectName(QString::fromUtf8("apdOptPwrL2Set"));
-        sizePolicy2.setHeightForWidth(apdOptPwrL2Set->sizePolicy().hasHeightForWidth());
-        apdOptPwrL2Set->setSizePolicy(sizePolicy2);
-        apdOptPwrL2Set->setMinimumSize(QSize(120, 35));
+        apdOptPwrL2Set_1 = new QDoubleSpinBox(widget3);
+        apdOptPwrL2Set_1->setObjectName(QString::fromUtf8("apdOptPwrL2Set_1"));
+        sizePolicy5.setHeightForWidth(apdOptPwrL2Set_1->sizePolicy().hasHeightForWidth());
+        apdOptPwrL2Set_1->setSizePolicy(sizePolicy5);
 
-        horizontalLayout_4->addWidget(apdOptPwrL2Set);
+        horizontalLayout_4->addWidget(apdOptPwrL2Set_1);
 
-        apdOptPwrL2Set_2 = new QSpinBox(widget3);
+        apdOptPwrL2Set_2 = new QDoubleSpinBox(widget3);
         apdOptPwrL2Set_2->setObjectName(QString::fromUtf8("apdOptPwrL2Set_2"));
-        sizePolicy2.setHeightForWidth(apdOptPwrL2Set_2->sizePolicy().hasHeightForWidth());
-        apdOptPwrL2Set_2->setSizePolicy(sizePolicy2);
-        apdOptPwrL2Set_2->setMinimumSize(QSize(120, 35));
+        sizePolicy5.setHeightForWidth(apdOptPwrL2Set_2->sizePolicy().hasHeightForWidth());
+        apdOptPwrL2Set_2->setSizePolicy(sizePolicy5);
 
         horizontalLayout_4->addWidget(apdOptPwrL2Set_2);
 
-        apdOptPwrL2Set_3 = new QSpinBox(widget3);
+        apdOptPwrL2Set_3 = new QDoubleSpinBox(widget3);
         apdOptPwrL2Set_3->setObjectName(QString::fromUtf8("apdOptPwrL2Set_3"));
-        sizePolicy2.setHeightForWidth(apdOptPwrL2Set_3->sizePolicy().hasHeightForWidth());
-        apdOptPwrL2Set_3->setSizePolicy(sizePolicy2);
-        apdOptPwrL2Set_3->setMinimumSize(QSize(120, 35));
+        sizePolicy5.setHeightForWidth(apdOptPwrL2Set_3->sizePolicy().hasHeightForWidth());
+        apdOptPwrL2Set_3->setSizePolicy(sizePolicy5);
 
         horizontalLayout_4->addWidget(apdOptPwrL2Set_3);
 
-        apdOptPwrL2Set_4 = new QSpinBox(widget3);
+        apdOptPwrL2Set_4 = new QDoubleSpinBox(widget3);
         apdOptPwrL2Set_4->setObjectName(QString::fromUtf8("apdOptPwrL2Set_4"));
-        sizePolicy2.setHeightForWidth(apdOptPwrL2Set_4->sizePolicy().hasHeightForWidth());
-        apdOptPwrL2Set_4->setSizePolicy(sizePolicy2);
-        apdOptPwrL2Set_4->setMinimumSize(QSize(120, 35));
+        sizePolicy5.setHeightForWidth(apdOptPwrL2Set_4->sizePolicy().hasHeightForWidth());
+        apdOptPwrL2Set_4->setSizePolicy(sizePolicy5);
 
         horizontalLayout_4->addWidget(apdOptPwrL2Set_4);
 
 
         verticalLayout->addWidget(widget3);
 
-        label_36 = new QLabel(vWidget);
-        label_36->setObjectName(QString::fromUtf8("label_36"));
-        label_36->setStyleSheet(QString::fromUtf8("font: 10pt \"MS Shell Dlg 2\";\n"
+        label_35 = new QLabel(vWidget);
+        label_35->setObjectName(QString::fromUtf8("label_35"));
+        label_35->setStyleSheet(QString::fromUtf8("font: 10pt \"MS Shell Dlg 2\";\n"
 "color:rgb(0, 0, 255);"));
 
-        verticalLayout->addWidget(label_36);
+        verticalLayout->addWidget(label_35);
 
-        verticalSpacer_4 = new QSpacerItem(20, 20, QSizePolicy::Minimum, QSizePolicy::Fixed);
+        widget4 = new QWidget(vWidget);
+        widget4->setObjectName(QString::fromUtf8("widget4"));
+        widget4->setMinimumSize(QSize(0, 50));
+        horizontalLayout_3 = new QHBoxLayout(widget4);
+        horizontalLayout_3->setObjectName(QString::fromUtf8("horizontalLayout_3"));
+        label_4 = new QLabel(widget4);
+        label_4->setObjectName(QString::fromUtf8("label_4"));
 
-        verticalLayout->addItem(verticalSpacer_4);
+        horizontalLayout_3->addWidget(label_4);
+
+        horizontalSpacer_3 = new QSpacerItem(100, 20, QSizePolicy::Preferred, QSizePolicy::Minimum);
+
+        horizontalLayout_3->addItem(horizontalSpacer_3);
+
+        apdSigRmsL2Set_1 = new QDoubleSpinBox(widget4);
+        apdSigRmsL2Set_1->setObjectName(QString::fromUtf8("apdSigRmsL2Set_1"));
+        sizePolicy5.setHeightForWidth(apdSigRmsL2Set_1->sizePolicy().hasHeightForWidth());
+        apdSigRmsL2Set_1->setSizePolicy(sizePolicy5);
+
+        horizontalLayout_3->addWidget(apdSigRmsL2Set_1);
+
+        apdSigRmsL2Set_2 = new QDoubleSpinBox(widget4);
+        apdSigRmsL2Set_2->setObjectName(QString::fromUtf8("apdSigRmsL2Set_2"));
+        sizePolicy5.setHeightForWidth(apdSigRmsL2Set_2->sizePolicy().hasHeightForWidth());
+        apdSigRmsL2Set_2->setSizePolicy(sizePolicy5);
+
+        horizontalLayout_3->addWidget(apdSigRmsL2Set_2);
+
+        apdSigRmsL2Set_3 = new QDoubleSpinBox(widget4);
+        apdSigRmsL2Set_3->setObjectName(QString::fromUtf8("apdSigRmsL2Set_3"));
+        sizePolicy5.setHeightForWidth(apdSigRmsL2Set_3->sizePolicy().hasHeightForWidth());
+        apdSigRmsL2Set_3->setSizePolicy(sizePolicy5);
+
+        horizontalLayout_3->addWidget(apdSigRmsL2Set_3);
+
+        apdSigRmsL2Set_4 = new QDoubleSpinBox(widget4);
+        apdSigRmsL2Set_4->setObjectName(QString::fromUtf8("apdSigRmsL2Set_4"));
+        sizePolicy5.setHeightForWidth(apdSigRmsL2Set_4->sizePolicy().hasHeightForWidth());
+        apdSigRmsL2Set_4->setSizePolicy(sizePolicy5);
+
+        horizontalLayout_3->addWidget(apdSigRmsL2Set_4);
+
+
+        verticalLayout->addWidget(widget4);
+
+        label_66 = new QLabel(vWidget);
+        label_66->setObjectName(QString::fromUtf8("label_66"));
+        label_66->setStyleSheet(QString::fromUtf8("font: 10pt \"MS Shell Dlg 2\";\n"
+"color:rgb(0, 0, 255);"));
+
+        verticalLayout->addWidget(label_66);
+
+        widget_2 = new QWidget(vWidget);
+        widget_2->setObjectName(QString::fromUtf8("widget_2"));
+        widget_2->setMinimumSize(QSize(0, 50));
+        horizontalLayout_9 = new QHBoxLayout(widget_2);
+        horizontalLayout_9->setObjectName(QString::fromUtf8("horizontalLayout_9"));
+        label_39 = new QLabel(widget_2);
+        label_39->setObjectName(QString::fromUtf8("label_39"));
+        label_39->setFont(font1);
+
+        horizontalLayout_9->addWidget(label_39);
+
+        horizontalSpacer_78 = new QSpacerItem(100, 20, QSizePolicy::Preferred, QSizePolicy::Minimum);
+
+        horizontalLayout_9->addItem(horizontalSpacer_78);
+
+        sigRmsL2MaxLim_1 = new QDoubleSpinBox(widget_2);
+        sigRmsL2MaxLim_1->setObjectName(QString::fromUtf8("sigRmsL2MaxLim_1"));
+        sizePolicy5.setHeightForWidth(sigRmsL2MaxLim_1->sizePolicy().hasHeightForWidth());
+        sigRmsL2MaxLim_1->setSizePolicy(sizePolicy5);
+
+        horizontalLayout_9->addWidget(sigRmsL2MaxLim_1);
+
+        sigRmsL2MaxLim_2 = new QDoubleSpinBox(widget_2);
+        sigRmsL2MaxLim_2->setObjectName(QString::fromUtf8("sigRmsL2MaxLim_2"));
+        sizePolicy5.setHeightForWidth(sigRmsL2MaxLim_2->sizePolicy().hasHeightForWidth());
+        sigRmsL2MaxLim_2->setSizePolicy(sizePolicy5);
+
+        horizontalLayout_9->addWidget(sigRmsL2MaxLim_2);
+
+        sigRmsL2MaxLim_3 = new QDoubleSpinBox(widget_2);
+        sigRmsL2MaxLim_3->setObjectName(QString::fromUtf8("sigRmsL2MaxLim_3"));
+        sizePolicy5.setHeightForWidth(sigRmsL2MaxLim_3->sizePolicy().hasHeightForWidth());
+        sigRmsL2MaxLim_3->setSizePolicy(sizePolicy5);
+
+        horizontalLayout_9->addWidget(sigRmsL2MaxLim_3);
+
+        sigRmsL2MaxLim_4 = new QDoubleSpinBox(widget_2);
+        sigRmsL2MaxLim_4->setObjectName(QString::fromUtf8("sigRmsL2MaxLim_4"));
+        sizePolicy5.setHeightForWidth(sigRmsL2MaxLim_4->sizePolicy().hasHeightForWidth());
+        sigRmsL2MaxLim_4->setSizePolicy(sizePolicy5);
+
+        horizontalLayout_9->addWidget(sigRmsL2MaxLim_4);
+
+
+        verticalLayout->addWidget(widget_2);
+
+        label_68 = new QLabel(vWidget);
+        label_68->setObjectName(QString::fromUtf8("label_68"));
+        label_68->setStyleSheet(QString::fromUtf8("font: 10pt \"MS Shell Dlg 2\";\n"
+"color:rgb(0, 0, 255);"));
+
+        verticalLayout->addWidget(label_68);
+
+        widget_3 = new QWidget(vWidget);
+        widget_3->setObjectName(QString::fromUtf8("widget_3"));
+        widget_3->setMinimumSize(QSize(0, 50));
+        horizontalLayout_45 = new QHBoxLayout(widget_3);
+        horizontalLayout_45->setObjectName(QString::fromUtf8("horizontalLayout_45"));
+        label_67 = new QLabel(widget_3);
+        label_67->setObjectName(QString::fromUtf8("label_67"));
+        label_67->setFont(font1);
+
+        horizontalLayout_45->addWidget(label_67);
+
+        horizontalSpacer_79 = new QSpacerItem(100, 20, QSizePolicy::Preferred, QSizePolicy::Minimum);
+
+        horizontalLayout_45->addItem(horizontalSpacer_79);
+
+        sigRmsL2MinLim_1 = new QDoubleSpinBox(widget_3);
+        sigRmsL2MinLim_1->setObjectName(QString::fromUtf8("sigRmsL2MinLim_1"));
+        sizePolicy5.setHeightForWidth(sigRmsL2MinLim_1->sizePolicy().hasHeightForWidth());
+        sigRmsL2MinLim_1->setSizePolicy(sizePolicy5);
+
+        horizontalLayout_45->addWidget(sigRmsL2MinLim_1);
+
+        sigRmsL2MinLim_2 = new QDoubleSpinBox(widget_3);
+        sigRmsL2MinLim_2->setObjectName(QString::fromUtf8("sigRmsL2MinLim_2"));
+        sizePolicy5.setHeightForWidth(sigRmsL2MinLim_2->sizePolicy().hasHeightForWidth());
+        sigRmsL2MinLim_2->setSizePolicy(sizePolicy5);
+
+        horizontalLayout_45->addWidget(sigRmsL2MinLim_2);
+
+        sigRmsL2MinLim_3 = new QDoubleSpinBox(widget_3);
+        sigRmsL2MinLim_3->setObjectName(QString::fromUtf8("sigRmsL2MinLim_3"));
+        sizePolicy5.setHeightForWidth(sigRmsL2MinLim_3->sizePolicy().hasHeightForWidth());
+        sigRmsL2MinLim_3->setSizePolicy(sizePolicy5);
+
+        horizontalLayout_45->addWidget(sigRmsL2MinLim_3);
+
+        sigRmsL2MinLim_4 = new QDoubleSpinBox(widget_3);
+        sigRmsL2MinLim_4->setObjectName(QString::fromUtf8("sigRmsL2MinLim_4"));
+        sizePolicy5.setHeightForWidth(sigRmsL2MinLim_4->sizePolicy().hasHeightForWidth());
+        sigRmsL2MinLim_4->setSizePolicy(sizePolicy5);
+
+        horizontalLayout_45->addWidget(sigRmsL2MinLim_4);
+
+
+        verticalLayout->addWidget(widget_3);
 
         horizontalLayout_32 = new QHBoxLayout();
         horizontalLayout_32->setObjectName(QString::fromUtf8("horizontalLayout_32"));
@@ -1299,60 +1448,6 @@ public:
 
 
         verticalLayout->addLayout(horizontalLayout_32);
-
-        layoutWidget = new QWidget(tab_2);
-        layoutWidget->setObjectName(QString::fromUtf8("layoutWidget"));
-        layoutWidget->setGeometry(QRect(-10, 40, 716, 22));
-        horizontalLayout_36 = new QHBoxLayout(layoutWidget);
-        horizontalLayout_36->setObjectName(QString::fromUtf8("horizontalLayout_36"));
-        horizontalLayout_36->setContentsMargins(0, 0, 0, 0);
-        horizontalSpacer_51 = new QSpacerItem(250, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
-
-        horizontalLayout_36->addItem(horizontalSpacer_51);
-
-        label_52 = new QLabel(layoutWidget);
-        label_52->setObjectName(QString::fromUtf8("label_52"));
-        sizePolicy3.setHeightForWidth(label_52->sizePolicy().hasHeightForWidth());
-        label_52->setSizePolicy(sizePolicy3);
-
-        horizontalLayout_36->addWidget(label_52);
-
-        horizontalSpacer_52 = new QSpacerItem(60, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
-
-        horizontalLayout_36->addItem(horizontalSpacer_52);
-
-        label_53 = new QLabel(layoutWidget);
-        label_53->setObjectName(QString::fromUtf8("label_53"));
-        sizePolicy3.setHeightForWidth(label_53->sizePolicy().hasHeightForWidth());
-        label_53->setSizePolicy(sizePolicy3);
-
-        horizontalLayout_36->addWidget(label_53);
-
-        horizontalSpacer_53 = new QSpacerItem(70, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
-
-        horizontalLayout_36->addItem(horizontalSpacer_53);
-
-        label_54 = new QLabel(layoutWidget);
-        label_54->setObjectName(QString::fromUtf8("label_54"));
-        sizePolicy3.setHeightForWidth(label_54->sizePolicy().hasHeightForWidth());
-        label_54->setSizePolicy(sizePolicy3);
-
-        horizontalLayout_36->addWidget(label_54);
-
-        horizontalSpacer_54 = new QSpacerItem(60, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
-
-        horizontalLayout_36->addItem(horizontalSpacer_54);
-
-        label_55 = new QLabel(layoutWidget);
-        label_55->setObjectName(QString::fromUtf8("label_55"));
-        sizePolicy3.setHeightForWidth(label_55->sizePolicy().hasHeightForWidth());
-        label_55->setSizePolicy(sizePolicy3);
-
-        horizontalLayout_36->addWidget(label_55);
-
-        horizontalSpacer_55 = new QSpacerItem(50, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
-
-        horizontalLayout_36->addItem(horizontalSpacer_55);
 
         settingsTab->addTab(tab_2, QString());
         tab_4 = new QWidget();
@@ -1437,8 +1532,8 @@ public:
 
         ssiSquelch_1 = new QSpinBox(ssisq);
         ssiSquelch_1->setObjectName(QString::fromUtf8("ssiSquelch_1"));
-        sizePolicy5.setHeightForWidth(ssiSquelch_1->sizePolicy().hasHeightForWidth());
-        ssiSquelch_1->setSizePolicy(sizePolicy5);
+        sizePolicy4.setHeightForWidth(ssiSquelch_1->sizePolicy().hasHeightForWidth());
+        ssiSquelch_1->setSizePolicy(sizePolicy4);
         ssiSquelch_1->setMinimumSize(QSize(110, 35));
 
         horizontalLayout_7->addWidget(ssiSquelch_1);
@@ -1461,8 +1556,8 @@ public:
 
         ssiSquelch_3 = new QSpinBox(ssisq);
         ssiSquelch_3->setObjectName(QString::fromUtf8("ssiSquelch_3"));
-        sizePolicy5.setHeightForWidth(ssiSquelch_3->sizePolicy().hasHeightForWidth());
-        ssiSquelch_3->setSizePolicy(sizePolicy5);
+        sizePolicy4.setHeightForWidth(ssiSquelch_3->sizePolicy().hasHeightForWidth());
+        ssiSquelch_3->setSizePolicy(sizePolicy4);
         ssiSquelch_3->setMinimumSize(QSize(110, 35));
 
         horizontalLayout_7->addWidget(ssiSquelch_3);
@@ -1481,52 +1576,6 @@ public:
 
 
         verticalLayout_8->addWidget(ssisq);
-
-        horizontalLayout_26 = new QHBoxLayout();
-        horizontalLayout_26->setObjectName(QString::fromUtf8("horizontalLayout_26"));
-        label_28 = new QLabel(verticalWidget_5);
-        label_28->setObjectName(QString::fromUtf8("label_28"));
-
-        horizontalLayout_26->addWidget(label_28);
-
-        horizontalSpacer_26 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
-
-        horizontalLayout_26->addItem(horizontalSpacer_26);
-
-        ssiNomVal_1 = new QLineEdit(verticalWidget_5);
-        ssiNomVal_1->setObjectName(QString::fromUtf8("ssiNomVal_1"));
-        sizePolicy2.setHeightForWidth(ssiNomVal_1->sizePolicy().hasHeightForWidth());
-        ssiNomVal_1->setSizePolicy(sizePolicy2);
-        ssiNomVal_1->setMinimumSize(QSize(130, 35));
-
-        horizontalLayout_26->addWidget(ssiNomVal_1);
-
-        ssiNomVal_2 = new QLineEdit(verticalWidget_5);
-        ssiNomVal_2->setObjectName(QString::fromUtf8("ssiNomVal_2"));
-        sizePolicy2.setHeightForWidth(ssiNomVal_2->sizePolicy().hasHeightForWidth());
-        ssiNomVal_2->setSizePolicy(sizePolicy2);
-        ssiNomVal_2->setMinimumSize(QSize(130, 35));
-
-        horizontalLayout_26->addWidget(ssiNomVal_2);
-
-        ssiNomVal_3 = new QLineEdit(verticalWidget_5);
-        ssiNomVal_3->setObjectName(QString::fromUtf8("ssiNomVal_3"));
-        sizePolicy2.setHeightForWidth(ssiNomVal_3->sizePolicy().hasHeightForWidth());
-        ssiNomVal_3->setSizePolicy(sizePolicy2);
-        ssiNomVal_3->setMinimumSize(QSize(130, 35));
-
-        horizontalLayout_26->addWidget(ssiNomVal_3);
-
-        ssiNomVal_4 = new QLineEdit(verticalWidget_5);
-        ssiNomVal_4->setObjectName(QString::fromUtf8("ssiNomVal_4"));
-        sizePolicy2.setHeightForWidth(ssiNomVal_4->sizePolicy().hasHeightForWidth());
-        ssiNomVal_4->setSizePolicy(sizePolicy2);
-        ssiNomVal_4->setMinimumSize(QSize(130, 35));
-
-        horizontalLayout_26->addWidget(ssiNomVal_4);
-
-
-        verticalLayout_8->addLayout(horizontalLayout_26);
 
         horizontalLayout_27 = new QHBoxLayout();
         horizontalLayout_27->setObjectName(QString::fromUtf8("horizontalLayout_27"));
@@ -1573,6 +1622,52 @@ public:
 
 
         verticalLayout_8->addLayout(horizontalLayout_27);
+
+        horizontalLayout_26 = new QHBoxLayout();
+        horizontalLayout_26->setObjectName(QString::fromUtf8("horizontalLayout_26"));
+        label_28 = new QLabel(verticalWidget_5);
+        label_28->setObjectName(QString::fromUtf8("label_28"));
+
+        horizontalLayout_26->addWidget(label_28);
+
+        horizontalSpacer_26 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+
+        horizontalLayout_26->addItem(horizontalSpacer_26);
+
+        ssiNomVal_1 = new QLineEdit(verticalWidget_5);
+        ssiNomVal_1->setObjectName(QString::fromUtf8("ssiNomVal_1"));
+        sizePolicy2.setHeightForWidth(ssiNomVal_1->sizePolicy().hasHeightForWidth());
+        ssiNomVal_1->setSizePolicy(sizePolicy2);
+        ssiNomVal_1->setMinimumSize(QSize(130, 35));
+
+        horizontalLayout_26->addWidget(ssiNomVal_1);
+
+        ssiNomVal_2 = new QLineEdit(verticalWidget_5);
+        ssiNomVal_2->setObjectName(QString::fromUtf8("ssiNomVal_2"));
+        sizePolicy2.setHeightForWidth(ssiNomVal_2->sizePolicy().hasHeightForWidth());
+        ssiNomVal_2->setSizePolicy(sizePolicy2);
+        ssiNomVal_2->setMinimumSize(QSize(130, 35));
+
+        horizontalLayout_26->addWidget(ssiNomVal_2);
+
+        ssiNomVal_3 = new QLineEdit(verticalWidget_5);
+        ssiNomVal_3->setObjectName(QString::fromUtf8("ssiNomVal_3"));
+        sizePolicy2.setHeightForWidth(ssiNomVal_3->sizePolicy().hasHeightForWidth());
+        ssiNomVal_3->setSizePolicy(sizePolicy2);
+        ssiNomVal_3->setMinimumSize(QSize(130, 35));
+
+        horizontalLayout_26->addWidget(ssiNomVal_3);
+
+        ssiNomVal_4 = new QLineEdit(verticalWidget_5);
+        ssiNomVal_4->setObjectName(QString::fromUtf8("ssiNomVal_4"));
+        sizePolicy2.setHeightForWidth(ssiNomVal_4->sizePolicy().hasHeightForWidth());
+        ssiNomVal_4->setSizePolicy(sizePolicy2);
+        ssiNomVal_4->setMinimumSize(QSize(130, 35));
+
+        horizontalLayout_26->addWidget(ssiNomVal_4);
+
+
+        verticalLayout_8->addLayout(horizontalLayout_26);
 
         horizontalLayout_28 = new QHBoxLayout();
         horizontalLayout_28->setObjectName(QString::fromUtf8("horizontalLayout_28"));
@@ -1973,7 +2068,7 @@ public:
 "text-decoration: underline;"));
         horizontalLayoutWidget_2 = new QWidget(tab_4);
         horizontalLayoutWidget_2->setObjectName(QString::fromUtf8("horizontalLayoutWidget_2"));
-        horizontalLayoutWidget_2->setGeometry(QRect(40, 180, 661, 25));
+        horizontalLayoutWidget_2->setGeometry(QRect(40, 180, 661, 26));
         horizontalLayout_8 = new QHBoxLayout(horizontalLayoutWidget_2);
         horizontalLayout_8->setObjectName(QString::fromUtf8("horizontalLayout_8"));
         horizontalLayout_8->setContentsMargins(0, 0, 0, 0);
@@ -2277,7 +2372,7 @@ public:
         settingsTab->addTab(tab_7, QString());
         ButtonForm = new QWidget(SettingsForm);
         ButtonForm->setObjectName(QString::fromUtf8("ButtonForm"));
-        ButtonForm->setGeometry(QRect(40, 680, 681, 51));
+        ButtonForm->setGeometry(QRect(50, 700, 681, 51));
         ButtonForm->setStyleSheet(QString::fromUtf8("font: 75 12pt \"MS Shell Dlg 2\";"));
         horizontalLayout_11 = new QHBoxLayout(ButtonForm);
         horizontalLayout_11->setObjectName(QString::fromUtf8("horizontalLayout_11"));
@@ -2325,7 +2420,7 @@ public:
 
         retranslateUi(SettingsForm);
 
-        settingsTab->setCurrentIndex(1);
+        settingsTab->setCurrentIndex(2);
 
 
         QMetaObject::connectSlotsByName(SettingsForm);
@@ -2339,6 +2434,7 @@ public:
         label_15->setText(QCoreApplication::translate("SettingsForm", "Interfero type", nullptr));
         interType->setItemText(0, QCoreApplication::translate("SettingsForm", "Single Pass ", nullptr));
         interType->setItemText(1, QCoreApplication::translate("SettingsForm", "Double Pass", nullptr));
+        interType->setItemText(2, QCoreApplication::translate("SettingsForm", "Quad Pass", nullptr));
 
         label_16->setText(QCoreApplication::translate("SettingsForm", "Precision", nullptr));
         precisionVal->setItemText(0, QCoreApplication::translate("SettingsForm", "32 bits", nullptr));
@@ -2407,34 +2503,47 @@ public:
 
         label_61->setText(QCoreApplication::translate("SettingsForm", "Gain control settings", nullptr));
         settingsTab->setTabText(settingsTab->indexOf(tab), QCoreApplication::translate("SettingsForm", "General ", nullptr));
-        label_3->setText(QCoreApplication::translate("SettingsForm", "APD Gain L2 Set ", nullptr));
-        label_5->setText(QCoreApplication::translate("SettingsForm", " (*specifies the APD Gain in constant gain mode)", nullptr));
-        label_2->setText(QCoreApplication::translate("SettingsForm", "APD BIAS DAC ", nullptr));
-        label_34->setText(QCoreApplication::translate("SettingsForm", "(*specifies the max opt pwr expected in Constant Opt Pwr mode)", nullptr));
-        label_4->setText(QCoreApplication::translate("SettingsForm", "APD Sig RMS L2 Set", nullptr));
-        label_35->setText(QCoreApplication::translate("SettingsForm", " (*specifies the desired Sig RMS L2 value used in Sig RMS Adjust mode in Constant Opt Pwr mode)", nullptr));
-        label_37->setText(QCoreApplication::translate("SettingsForm", "APD OptPwr  L2 Set", nullptr));
-        label_36->setText(QCoreApplication::translate("SettingsForm", " (*sets the APD bias voltage directly in constant voltage mode)", nullptr));
-        pushButton_6->setText(QCoreApplication::translate("SettingsForm", "Default", nullptr));
         label_52->setText(QCoreApplication::translate("SettingsForm", "Axis 1", nullptr));
         label_53->setText(QCoreApplication::translate("SettingsForm", "Axis 2", nullptr));
         label_54->setText(QCoreApplication::translate("SettingsForm", "Axis 3", nullptr));
         label_55->setText(QCoreApplication::translate("SettingsForm", "Axis 4", nullptr));
+        label_5->setText(QCoreApplication::translate("SettingsForm", " (This value specifies the APD Gain in constant gain mode)", nullptr));
+        label_3->setText(QCoreApplication::translate("SettingsForm", "APD Gain L2 Set \n"
+"", nullptr));
+        label_36->setText(QCoreApplication::translate("SettingsForm", "(This value specifies the APD bias voltage directly in constant voltage mode)", nullptr));
+        label_2->setText(QCoreApplication::translate("SettingsForm", "APD BIAS \n"
+"Voltage(V)", nullptr));
+        label_34->setText(QCoreApplication::translate("SettingsForm", "(This value specifies the max opt pwr expected in Constant Opt Pwr mode)", nullptr));
+        label_37->setText(QCoreApplication::translate("SettingsForm", "APD OptPwr  L2\n"
+"Set (\302\265W)", nullptr));
+        label_35->setText(QCoreApplication::translate("SettingsForm", " (This value specifies the desired Sig RMS L2 value used in Sig RMS Adjust mode in Constant Opt Pwr mode)", nullptr));
+        label_4->setText(QCoreApplication::translate("SettingsForm", "APD Sig RMS L2 \n"
+"Set (RMS)", nullptr));
+        label_66->setText(QCoreApplication::translate("SettingsForm", "(This value specifies the APD bias voltage directly in constant voltage mode)", nullptr));
+        label_39->setText(QCoreApplication::translate("SettingsForm", "Sig RMS L2 Max\n"
+"Lim (RMS)", nullptr));
+        label_68->setText(QCoreApplication::translate("SettingsForm", "(This value specifies the APD bias voltage directly in constant voltage mode)", nullptr));
+        label_67->setText(QCoreApplication::translate("SettingsForm", "Sig RMS L2 Min \n"
+"Lim (RMS)", nullptr));
+        pushButton_6->setText(QCoreApplication::translate("SettingsForm", "Default", nullptr));
         settingsTab->setTabText(settingsTab->indexOf(tab_2), QCoreApplication::translate("SettingsForm", "Signal", nullptr));
         label_40->setText(QCoreApplication::translate("SettingsForm", "Axis 1", nullptr));
         label_41->setText(QCoreApplication::translate("SettingsForm", "Axis 2", nullptr));
         label_42->setText(QCoreApplication::translate("SettingsForm", "Axis 3", nullptr));
         label_43->setText(QCoreApplication::translate("SettingsForm", "Axis 4", nullptr));
         label_9->setText(QCoreApplication::translate("SettingsForm", "SSI Squelch", nullptr));
-        label_28->setText(QCoreApplication::translate("SettingsForm", "SSI nom", nullptr));
-        label_29->setText(QCoreApplication::translate("SettingsForm", "SSI  min", nullptr));
-        label_30->setText(QCoreApplication::translate("SettingsForm", "SSI max", nullptr));
+        label_29->setText(QCoreApplication::translate("SettingsForm", "SSI  min\n"
+"(V)", nullptr));
+        label_28->setText(QCoreApplication::translate("SettingsForm", "SSI nom\n"
+"(V)", nullptr));
+        label_30->setText(QCoreApplication::translate("SettingsForm", "SSI max\n"
+"(V)", nullptr));
         label_32->setText(QCoreApplication::translate("SettingsForm", "OptPwr\n"
-"  min", nullptr));
+"min(\302\265W)", nullptr));
         label_31->setText(QCoreApplication::translate("SettingsForm", "OptPwr\n"
-" nom", nullptr));
+"nom(\302\265W)", nullptr));
         label_33->setText(QCoreApplication::translate("SettingsForm", "OptPwr\n"
-" max", nullptr));
+"max(\302\265W)", nullptr));
         pushButton_15->setText(QCoreApplication::translate("SettingsForm", "Reset", nullptr));
         label_62->setText(QCoreApplication::translate("SettingsForm", "Axis 1", nullptr));
         label_63->setText(QCoreApplication::translate("SettingsForm", "Axis 2", nullptr));

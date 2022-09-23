@@ -665,7 +665,7 @@ public:
         FlyscanForm->setWindowTitle(QCoreApplication::translate("FlyscanForm", "Flyscan", nullptr));
         freqCheckBox->setText(QCoreApplication::translate("FlyscanForm", "Freq", nullptr));
         label_6->setText(QCoreApplication::translate("FlyscanForm", "Hz", nullptr));
-        itCheckBox->setText(QCoreApplication::translate("FlyscanForm", "Int time", nullptr));
+        itCheckBox->setText(QCoreApplication::translate("FlyscanForm", "Duration", nullptr));
         label_7->setText(QCoreApplication::translate("FlyscanForm", "\302\265s", nullptr));
         npCheckBox->setText(QCoreApplication::translate("FlyscanForm", "Nbr_Pts", nullptr));
         label_9->setText(QCoreApplication::translate("FlyscanForm", "Method", nullptr));

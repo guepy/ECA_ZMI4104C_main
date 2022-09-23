@@ -18,10 +18,12 @@ SOURCES += \
     positionoffsetform.cpp \
     presetpositionform.cpp \
     qcustomplot/qcustomplot.cpp \
+    serialoutput.cpp \
     settingsform.cpp
 
 HEADERS += \
     ../eca_soleil_zmi4104_lib/eca_soleil_zmi4104c.h \
+    ../eca_soleil_zmi4104_lib/zVME_const.h \
     cesettingsform.h \
     dataprocessing.h \
     flyscanform.h \
@@ -30,14 +32,14 @@ HEADERS += \
     positionoffsetform.h \
     presetpositionform.h \
     qcustomplot/qcustomplot.h \
+    serialoutput.h \
     settingsform.h \
     sis1100w.h \
     sis1100wStat.h \
     sis1100wType.h \
     sis3100.h \
     sis3100_vme_calls.h \
-    wingetopt.h \
-    zVME_const.h
+    wingetopt.h
 
 FORMS += \
     cesettingsform.ui \
@@ -46,6 +48,7 @@ FORMS += \
     mainwindow.ui \
     positionoffsetform.ui \
     presetpositionform.ui \
+    serialoutput.ui \
     settingsform.ui
 
 TRANSLATIONS += \

@@ -274,11 +274,11 @@ public:
 
     void retranslateUi(QWidget *presetPositionForm)
     {
-        presetPositionForm->setWindowTitle(QCoreApplication::translate("presetPositionForm", "Form", nullptr));
+        presetPositionForm->setWindowTitle(QCoreApplication::translate("presetPositionForm", "Set Preset Position", nullptr));
         applyButton->setText(QCoreApplication::translate("presetPositionForm", "Apply", nullptr));
         okButton->setText(QCoreApplication::translate("presetPositionForm", "OK", nullptr));
         pushButton_5->setText(QCoreApplication::translate("presetPositionForm", "Cancel", nullptr));
-        radioButton_2->setText(QCoreApplication::translate("presetPositionForm", "Enable position offsets", nullptr));
+        radioButton_2->setText(QCoreApplication::translate("presetPositionForm", "Enable preset position ", nullptr));
         label_2->setText(QCoreApplication::translate("presetPositionForm", "units", nullptr));
         leftBlockUnits->setItemText(0, QCoreApplication::translate("presetPositionForm", "mm", nullptr));
         leftBlockUnits->setItemText(1, QCoreApplication::translate("presetPositionForm", "\302\265m", nullptr));

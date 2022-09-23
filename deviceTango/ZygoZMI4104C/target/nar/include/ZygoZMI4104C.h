@@ -39,8 +39,8 @@
 #include <stdexcept>
 #include <string>
 #include <thread>
+#include <mutex>
 
-#define NBR_RAM_PAGES	64
 /*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C.h
 
 /**
@@ -87,18 +87,18 @@ class ZygoZMI4104C : public TANGO_BASE_CLASS
 	Tango::DevDouble 	*optPwr;
 	Tango::DevString 	*biasModeString;
 	Tango::DevString 	*interferometerConfigurationString;	
-	static bool 		*ledsErrorStatus,*ledsStatus;
-	unsigned int 		flyscanAxesCtr, cecAxesCtr;
-	Tango::DevUShort	*flyscanAxesTab, *cecAxesTab;
-	unsigned int		*base_A24D32_ptr,*base_A24D32_FR_ptr;
-	char				*flyscanPath;
-	double 				*meanVal, *stdDevVal;
-	int 				ceVelMin, ceVelMax;
+	static bool 		*ledsErrorStatus,*ledsStatus, *init_done;
+	uint32_t	 		flyscanAxesCtr, cecAxesCtr;
+	uint8_t				*flyscanAxesTab, *cecAxesTab;
+	char				flyscanPath[2];
+	static double 		*meanVal, *stdDevVal;
+	static int			ceVelMin, ceVelMax;
 	std::ostringstream  status_msg_stream;
 	Tango::DevState		dev_state_val;
 	Tango::DevBoolean	status_msg_ok;
 	std::stringstream	dev_status_msg;
-	yat::Mutex			dev_status_msg_key, flyscan_param_key;
+	yat::Mutex			dev_status_msg_key;
+	std::mutex			flyscan_param_key;
 	Tango::DevBoolean 	m_status_retrieved;
 	std::string			attr_continuousSamplingAxes,attr_cecAxes;
 /*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::Data Members
@@ -684,14 +684,17 @@ public:
 
 //	Additional Method prototypes
 
-	void vme_system_reset();
+	void vme_system_reset(bool argin);
 	int getLEDsColor(unsigned char* ledsColor);
 	void localSetBiasMode(Tango::DevUChar axis, Tango::DevString w_val);
-	int getAxesfromInputString(Tango::DevString	val, unsigned int axisCtr, Tango::DevUShort	*axisTab, std::string& attr_read);
+	int getAxesfromInputString(Tango::DevString	val, uint32_t* axisCtr, uint8_t *axisTab, std::string& attr_read);
 	std::string ZygoZMI4104C::get_status_msg();
-	void ZygoZMI4104C::append_status_msg(const std::string& message);
-	int ZygoZMI4104C::sca_thread_function(Tango::DevBoolean argin);
+	void append_status_msg(const std::string& message);
+	int sca_thread_function(Tango::DevBoolean argin);
 	std::string get_ZYGO_error_string(int err_code);
+	int enable_cec_hardware(Tango::DevShort argin);
+	void write_init_done(bool argin);
+	bool read_init_done(void);
 /*----- PROTECTED REGION END -----*/	//	ZygoZMI4104C::Additional Method prototypes
 };
 
