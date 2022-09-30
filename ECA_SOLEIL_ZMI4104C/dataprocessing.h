@@ -52,6 +52,7 @@ private:
     static SIS1100_Device_Struct* dev;
     //static bool accessToken;
 signals:
+    void ceParams(std::array<std::complex<double>, 14> params);
     void initBoardsDone();
     void initAxisComplete();
     void cecConfigComplete();
@@ -72,6 +73,10 @@ signals:
     void errorSerialOutputRequest();
     void sampFreq(uint32_t freq);
 public slots:
+    void on_enableUsc_received(uint8_t a,bool b);
+    void on_enableUscStartup_received(uint8_t a,bool b);
+    void on_initCeParams_received(uint8_t axis);
+    void on_updateCeParams_received(uint8_t axis, int i,std::vector<std::complex<double>> params);
     void on_sampFreqRequest_received();
     void on_fifoModeSignal_recieved(bool index);
     void on_stopContinuousScanSignal_received();

@@ -1,0 +1,2 @@
+2022/9/30|15:17:19:806 [zygoLogWarn] Register  160A0 access Faillure !  
+2022/9/30|15:17:19:807 [zygoLogWarn] Faillure when running eepromRead

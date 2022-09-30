@@ -7,9 +7,8 @@ serialOutput::serialOutput(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    ui->serialBusSamplingFreq->setMaximum(20000001);
-    ui->serialBusSamplingFreq->setMinimum(300);
-    emit sampFreqRequest();
+    ui->serialBusSamplingFreq->setMaximum(7e5);
+    ui->serialBusSamplingFreq->setMinimum(152);
 
 }
 

@@ -792,6 +792,11 @@ text-align: cente</string>
      <height>161</height>
     </rect>
    </property>
+   <property name="font">
+    <font>
+     <pointsize>12</pointsize>
+    </font>
+   </property>
   </widget>
   <widget class="QWidget" name="horizontalWidget" native="true">
    <property name="geometry">

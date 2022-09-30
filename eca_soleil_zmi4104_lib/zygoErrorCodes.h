@@ -30,6 +30,7 @@
 #define	RET_FAILED								-1
 #define FIFO_OVERLAP_ERR_CODE					-100
 #define VME_PCI_GATEWAY_NOT_FOUND				-101
+
 #define VME_PROT_ERROR							0x211
 
 #define	BAD_AXIS_VALUE							-2

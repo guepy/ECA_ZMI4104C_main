@@ -95,8 +95,8 @@ SettingsForm::SettingsForm(QWidget *parent) :
     ui->ssiSquelch_4->setMinimum(0);
 
 
-    ui->sampFreq->setMaximum(2e7);
-    ui->sampFreq->setMinimum(0);
+    ui->sampFreq->setMaximum(1e7);
+    ui->sampFreq->setMinimum(152);
 
     //*
     //ui->apdBiasDac->setEnabled(false);

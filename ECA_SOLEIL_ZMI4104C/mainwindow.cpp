@@ -850,10 +850,11 @@ void MainWindow::on_radioButton_clicked()
         ui->textBrowser_3->setTextColor(QColor("green"));
         ui->textBrowser_3->append("Cyclic errors compensation activated");
         ui->textBrowser_3->setTextColor(QColor("dark"));
-        ui->textBrowser_3->append("1-Start the motor for a displacement of at least 5s then press Enter. CEC hardware need to observe the motion at startup "
+        ui->textBrowser_3->append("1-Start the motor for a displacement of at least 5s, with a minimum velocity of 1.2mm/s  then press Enter. CEC hardware need to observe the motion at startup "
     "in order to determine correct CE coefficients \n");
         ui->textBrowser_3->append("2- Next, check the axis to configure ce compensation on");
         ui->textBrowser_3->append("3-Then select in the list, the axis to display cec ratios on");
+        ui->textBrowser_3->append("Notes: If the velocity is lesser than 1.2 mm/s the compensation will probably never startup or if started, won't work correctly");
         ui->radioButton->setStyleSheet("background-color: green;"
                                         "border: 2px solid gray;"
                                         "border-radius: 10px;"
@@ -1185,9 +1186,10 @@ void MainWindow::openSdoForm(){
     connect(sdo, &serialOutput::stopSerialOutput, dataProc, &::dataProcessing::on_stopSerialOutput_received);
     connect(sdo, &serialOutput::closeThis, this, &MainWindow::closeSdoForm);
     connect(this, &MainWindow::closeSdoRequest, sdo, &serialOutput::closeForm);
-    connect(sdo, &serialOutput::sampFreqRequest, dataProc, &::dataProcessing::on_sampFreqRequest_received);
+    connect(this, &MainWindow::sampFreqRequest, dataProc, &::dataProcessing::on_sampFreqRequest_received);
     connect(dataProc, &dataProcessing::sampFreq, sdo, &serialOutput::on_sampleFreq_received);
 
+    emit sampFreqRequest();
     sdo->show();
     sdoForm_int=1;
 }
@@ -1238,4 +1240,41 @@ void MainWindow::setDisplayOutputString(std::string text, std::string col){
             "border-radius: 5px";
     ui->digitalOutput->setStyleSheet(QString::fromStdString(ds));
     ui->digitalOutput->setText(QString::fromStdString(text));
+}
+
+void MainWindow::on_cecSettings_clicked()
+{
+    if(!cesForm_int) openCesForm();
+    else reopenCesForm();
+
+}
+
+void MainWindow::openCesForm(){
+    //--------------flyscanForm signals-slots --------------------------------------
+
+    ces = new CEsettingsForm;
+    connect(this, &MainWindow::initCeParams, dataProc, &::dataProcessing::on_initCeParams_received);
+    connect(dataProc, &dataProcessing::ceParams, ces, &CEsettingsForm::on_CeParams_received);
+    connect(ces, &CEsettingsForm::updateCeParams, dataProc, &::dataProcessing::on_updateCeParams_received);
+    connect(ces, &CEsettingsForm::enableUsc, dataProc, &::dataProcessing::on_enableUsc_received);
+    connect(ces, &CEsettingsForm::enableUscStartup, dataProc, &::dataProcessing::on_enableUscStartup_received);
+    emit initCeParams(ces->curCecAxis);
+    /*
+    connect(ces, &CEsettingsForm::closeThis, this, &MainWindow::closeCesForm);
+    connect(this, &MainWindow::closeSdoRequest, ces, &CEsettingsForm::closeForm);
+    connect(ces, &CEsettingsForm::sampFreqRequest, dataProc, &::dataProcessing::on_sampFreqRequest_received);
+    connect(dataProc, &dataProcessing::CeParams, ces, &CEsettingsForm::on_CeParams_received);
+*/
+    ces->show();
+    cesForm_int=1;
+}
+void MainWindow::reopenCesForm(){
+    closeCesForm();
+    //emit closeCesRequest();
+    openCesForm();
+
+}
+
+void MainWindow::closeCesForm(){
+    cesForm_int=0;
 }

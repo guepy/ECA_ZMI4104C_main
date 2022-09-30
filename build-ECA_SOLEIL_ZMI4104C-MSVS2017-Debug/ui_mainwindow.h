@@ -296,14 +296,15 @@ public:
 "color: white;\n"
 "}\n"
 "\n"
-"QPushButton:hover{\n"
+"QPushButton:hover, QToolButton:hover{\n"
 "border:  2px solid white;\n"
 "border-radius: 5px;\n"
 "}\n"
 "\n"
-"QPushButton:pressed{\n"
+"QPushButton:pressed, QToolButton:pressed{\n"
 "border:  2px solid white;\n"
-"border-radius: 10px;\n"
+"border-r"
+                        "adius: 10px;\n"
 "}"));
         actionAbout = new QAction(MainWindow);
         actionAbout->setObjectName(QString::fromUtf8("actionAbout"));
@@ -692,7 +693,7 @@ public:
         verticalWidget->setSizePolicy(sizePolicy4);
         verticalWidget->setMinimumSize(QSize(300, 200));
         verticalWidget->setStyleSheet(QString::fromUtf8("QTextBrowser{\n"
-"font: 75 12pt \"MS Shell Dlg 2\";\n"
+"font: 75 14pt \"MS Shell Dlg 2\";\n"
 "border: 2px solid white;\n"
 "padding: 0 8px;\n"
 "border-radius:8px;\n"
@@ -724,6 +725,14 @@ public:
         displayPositionAxis1 = new QTextBrowser(verticalWidget);
         displayPositionAxis1->setObjectName(QString::fromUtf8("displayPositionAxis1"));
         displayPositionAxis1->setMinimumSize(QSize(160, 0));
+        QFont font5;
+        font5.setFamily(QString::fromUtf8("MS Shell Dlg 2"));
+        font5.setPointSize(14);
+        font5.setBold(false);
+        font5.setItalic(false);
+        font5.setWeight(9);
+        font5.setKerning(false);
+        displayPositionAxis1->setFont(font5);
         displayPositionAxis1->setStyleSheet(QString::fromUtf8(""));
 
         horizontalLayout_7->addWidget(displayPositionAxis1);
@@ -839,11 +848,11 @@ public:
         sizePolicy5.setVerticalStretch(0);
         sizePolicy5.setHeightForWidth(mixingFreqAxis1->sizePolicy().hasHeightForWidth());
         mixingFreqAxis1->setSizePolicy(sizePolicy5);
-        QFont font5;
-        font5.setPointSize(12);
-        font5.setBold(true);
-        font5.setWeight(75);
-        mixingFreqAxis1->setFont(font5);
+        QFont font6;
+        font6.setPointSize(12);
+        font6.setBold(true);
+        font6.setWeight(75);
+        mixingFreqAxis1->setFont(font6);
         mixingFreqAxis1->setValue(24);
 
         horizontalLayout_102->addWidget(mixingFreqAxis1);
@@ -867,7 +876,7 @@ public:
         mixingFreqAxis2->setObjectName(QString::fromUtf8("mixingFreqAxis2"));
         sizePolicy5.setHeightForWidth(mixingFreqAxis2->sizePolicy().hasHeightForWidth());
         mixingFreqAxis2->setSizePolicy(sizePolicy5);
-        mixingFreqAxis2->setFont(font5);
+        mixingFreqAxis2->setFont(font6);
         mixingFreqAxis2->setValue(24);
 
         horizontalLayout_104->addWidget(mixingFreqAxis2);
@@ -893,7 +902,7 @@ public:
         mixingFreqAxis3->setObjectName(QString::fromUtf8("mixingFreqAxis3"));
         sizePolicy5.setHeightForWidth(mixingFreqAxis3->sizePolicy().hasHeightForWidth());
         mixingFreqAxis3->setSizePolicy(sizePolicy5);
-        mixingFreqAxis3->setFont(font5);
+        mixingFreqAxis3->setFont(font6);
         mixingFreqAxis3->setValue(24);
 
         horizontalLayout_105->addWidget(mixingFreqAxis3);
@@ -915,7 +924,7 @@ public:
         mixingFreqAxis4->setObjectName(QString::fromUtf8("mixingFreqAxis4"));
         sizePolicy5.setHeightForWidth(mixingFreqAxis4->sizePolicy().hasHeightForWidth());
         mixingFreqAxis4->setSizePolicy(sizePolicy5);
-        mixingFreqAxis4->setFont(font5);
+        mixingFreqAxis4->setFont(font6);
         mixingFreqAxis4->setValue(24);
 
         horizontalLayout_106->addWidget(mixingFreqAxis4);
@@ -1643,6 +1652,9 @@ public:
         sizePolicy9.setHeightForWidth(textBrowser_3->sizePolicy().hasHeightForWidth());
         textBrowser_3->setSizePolicy(sizePolicy9);
         textBrowser_3->setMinimumSize(QSize(0, 120));
+        QFont font7;
+        font7.setPointSize(10);
+        textBrowser_3->setFont(font7);
 
         verticalLayout_6->addWidget(textBrowser_3);
 

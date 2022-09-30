@@ -43,6 +43,8 @@ public:
     positionOffsetForm *posOffsetForm;
     // --------Bouton configure serial output --------------------------
     serialOutput *sdo;
+    // --------Bouton configure serial output --------------------------
+    CEsettingsForm *ces;
     //-------------plot graphs button --------------------------
     //graphsForm* customplotForm;
     // --------Bouton preset position --------------------------
@@ -87,6 +89,8 @@ private:
     double* mxFreq{};
     double* Temp;
 signals:
+    void initCeParams(uint8_t axis);
+    void sampFreqRequest();
     void fifoModeSignal(bool index);
     void stopContinuousScanSignal();
     void startGraph();
@@ -141,6 +145,10 @@ public slots:
     void openSdoForm();
     void closeSdoForm();
     void reopenSdoForm();
+    // --------------ce settings menu button---------------------------
+    void openCesForm();
+    void closeCesForm();
+    void reopenCesForm();
     //--------------Pot graphs button---------------------------------
     void openCustomplotForm();
     void closeCustomplotForm();
@@ -222,6 +230,8 @@ private slots:
 
     void on_buttonSerialOutput_clicked();
 
+    void on_cecSettings_clicked();
+
 private:
     Ui::MainWindow *ui;
 };
@@ -237,6 +247,8 @@ static bool posOffForm_int=0;
 static bool customplotForm_int=0;
 // --------------serial output button---------------------------
 static bool sdoForm_int=0;
+// --------------ce seting menu button---------------------------
+static bool cesForm_int=0;
 //---------------LEDs-----------------
 //static QPainter* circlePainter;
 static const char* ledsColorString[3] = {

@@ -22,8 +22,8 @@ QT_BEGIN_MOC_NAMESPACE
 QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 struct qt_meta_stringdata_serialOutput_t {
-    QByteArrayData data[27];
-    char stringdata0[472];
+    QByteArrayData data[30];
+    char stringdata0[499];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -33,35 +33,39 @@ struct qt_meta_stringdata_serialOutput_t {
 static const qt_meta_stringdata_serialOutput_t qt_meta_stringdata_serialOutput = {
     {
 QT_MOC_LITERAL(0, 0, 12), // "serialOutput"
-QT_MOC_LITERAL(1, 13, 15), // "sampFreqRequest"
-QT_MOC_LITERAL(2, 29, 0), // ""
-QT_MOC_LITERAL(3, 30, 21), // "configureSerialOutput"
-QT_MOC_LITERAL(4, 52, 4), // "SCLK"
-QT_MOC_LITERAL(5, 57, 3), // "clk"
-QT_MOC_LITERAL(6, 61, 18), // "SerialOutputDriver"
-QT_MOC_LITERAL(7, 80, 3), // "sdo"
-QT_MOC_LITERAL(8, 84, 22), // "SerialDataPositionSize"
-QT_MOC_LITERAL(9, 107, 4), // "sdps"
-QT_MOC_LITERAL(10, 112, 9), // "BitWindow"
-QT_MOC_LITERAL(11, 122, 2), // "bw"
-QT_MOC_LITERAL(12, 125, 8), // "uint32_t"
-QT_MOC_LITERAL(13, 134, 8), // "sampFreq"
-QT_MOC_LITERAL(14, 143, 17), // "startSerialOutput"
-QT_MOC_LITERAL(15, 161, 16), // "stopSerialOutput"
-QT_MOC_LITERAL(16, 178, 9), // "closeThis"
-QT_MOC_LITERAL(17, 188, 36), // "on_serialClockIn_currentIndex..."
-QT_MOC_LITERAL(18, 225, 5), // "index"
-QT_MOC_LITERAL(19, 231, 41), // "on_serialDriverOutput_current..."
-QT_MOC_LITERAL(20, 273, 32), // "on_bitWindow_currentIndexChanged"
-QT_MOC_LITERAL(21, 306, 32), // "on_precision_currentIndexChanged"
-QT_MOC_LITERAL(22, 339, 32), // "on_configureSerialOutput_clicked"
-QT_MOC_LITERAL(23, 372, 27), // "on_stopSerialOutput_clicked"
-QT_MOC_LITERAL(24, 400, 28), // "on_startSerialOutput_clicked"
-QT_MOC_LITERAL(25, 429, 37), // "on_serialBusSamplingFreq_valu..."
-QT_MOC_LITERAL(26, 467, 4) // "arg1"
+QT_MOC_LITERAL(1, 13, 12), // "updateParams"
+QT_MOC_LITERAL(2, 26, 0), // ""
+QT_MOC_LITERAL(3, 27, 1), // "i"
+QT_MOC_LITERAL(4, 29, 20), // "std::complex<double>"
+QT_MOC_LITERAL(5, 50, 6), // "params"
+QT_MOC_LITERAL(6, 57, 21), // "configureSerialOutput"
+QT_MOC_LITERAL(7, 79, 4), // "SCLK"
+QT_MOC_LITERAL(8, 84, 3), // "clk"
+QT_MOC_LITERAL(9, 88, 18), // "SerialOutputDriver"
+QT_MOC_LITERAL(10, 107, 3), // "sdo"
+QT_MOC_LITERAL(11, 111, 22), // "SerialDataPositionSize"
+QT_MOC_LITERAL(12, 134, 4), // "sdps"
+QT_MOC_LITERAL(13, 139, 9), // "BitWindow"
+QT_MOC_LITERAL(14, 149, 2), // "bw"
+QT_MOC_LITERAL(15, 152, 8), // "uint32_t"
+QT_MOC_LITERAL(16, 161, 8), // "sampFreq"
+QT_MOC_LITERAL(17, 170, 17), // "startSerialOutput"
+QT_MOC_LITERAL(18, 188, 16), // "stopSerialOutput"
+QT_MOC_LITERAL(19, 205, 9), // "closeThis"
+QT_MOC_LITERAL(20, 215, 36), // "on_serialClockIn_currentIndex..."
+QT_MOC_LITERAL(21, 252, 5), // "index"
+QT_MOC_LITERAL(22, 258, 41), // "on_serialDriverOutput_current..."
+QT_MOC_LITERAL(23, 300, 32), // "on_bitWindow_currentIndexChanged"
+QT_MOC_LITERAL(24, 333, 32), // "on_precision_currentIndexChanged"
+QT_MOC_LITERAL(25, 366, 32), // "on_configureSerialOutput_clicked"
+QT_MOC_LITERAL(26, 399, 27), // "on_stopSerialOutput_clicked"
+QT_MOC_LITERAL(27, 427, 28), // "on_startSerialOutput_clicked"
+QT_MOC_LITERAL(28, 456, 37), // "on_serialBusSamplingFreq_valu..."
+QT_MOC_LITERAL(29, 494, 4) // "arg1"
 
     },
-    "serialOutput\0sampFreqRequest\0\0"
+    "serialOutput\0updateParams\0\0i\0"
+    "std::complex<double>\0params\0"
     "configureSerialOutput\0SCLK\0clk\0"
     "SerialOutputDriver\0sdo\0SerialDataPositionSize\0"
     "sdps\0BitWindow\0bw\0uint32_t\0sampFreq\0"
@@ -92,38 +96,38 @@ static const uint qt_meta_data_serialOutput[] = {
        5,       // signalCount
 
  // signals: name, argc, parameters, tag, flags
-       1,    0,   79,    2, 0x06 /* Public */,
-       3,    5,   80,    2, 0x06 /* Public */,
-      14,    0,   91,    2, 0x06 /* Public */,
-      15,    0,   92,    2, 0x06 /* Public */,
-      16,    0,   93,    2, 0x06 /* Public */,
+       1,    2,   79,    2, 0x06 /* Public */,
+       6,    5,   84,    2, 0x06 /* Public */,
+      17,    0,   95,    2, 0x06 /* Public */,
+      18,    0,   96,    2, 0x06 /* Public */,
+      19,    0,   97,    2, 0x06 /* Public */,
 
  // slots: name, argc, parameters, tag, flags
-      17,    1,   94,    2, 0x08 /* Private */,
-      19,    1,   97,    2, 0x08 /* Private */,
-      20,    1,  100,    2, 0x08 /* Private */,
-      21,    1,  103,    2, 0x08 /* Private */,
-      22,    0,  106,    2, 0x08 /* Private */,
-      23,    0,  107,    2, 0x08 /* Private */,
-      24,    0,  108,    2, 0x08 /* Private */,
-      25,    1,  109,    2, 0x08 /* Private */,
+      20,    1,   98,    2, 0x08 /* Private */,
+      22,    1,  101,    2, 0x08 /* Private */,
+      23,    1,  104,    2, 0x08 /* Private */,
+      24,    1,  107,    2, 0x08 /* Private */,
+      25,    0,  110,    2, 0x08 /* Private */,
+      26,    0,  111,    2, 0x08 /* Private */,
+      27,    0,  112,    2, 0x08 /* Private */,
+      28,    1,  113,    2, 0x08 /* Private */,
 
  // signals: parameters
-    QMetaType::Void,
-    QMetaType::Void, 0x80000000 | 4, 0x80000000 | 6, 0x80000000 | 8, 0x80000000 | 10, 0x80000000 | 12,    5,    7,    9,   11,   13,
+    QMetaType::Void, QMetaType::Int, 0x80000000 | 4,    3,    5,
+    QMetaType::Void, 0x80000000 | 7, 0x80000000 | 9, 0x80000000 | 11, 0x80000000 | 13, 0x80000000 | 15,    8,   10,   12,   14,   16,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
 
  // slots: parameters
-    QMetaType::Void, QMetaType::Int,   18,
-    QMetaType::Void, QMetaType::Int,   18,
-    QMetaType::Void, QMetaType::Int,   18,
-    QMetaType::Void, QMetaType::Int,   18,
+    QMetaType::Void, QMetaType::Int,   21,
+    QMetaType::Void, QMetaType::Int,   21,
+    QMetaType::Void, QMetaType::Int,   21,
+    QMetaType::Void, QMetaType::Int,   21,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
-    QMetaType::Void, QMetaType::Int,   26,
+    QMetaType::Void, QMetaType::Int,   29,
 
        0        // eod
 };
@@ -134,7 +138,7 @@ void serialOutput::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id
         auto *_t = static_cast<serialOutput *>(_o);
         Q_UNUSED(_t)
         switch (_id) {
-        case 0: _t->sampFreqRequest(); break;
+        case 0: _t->updateParams((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< std::complex<double>(*)>(_a[2]))); break;
         case 1: _t->configureSerialOutput((*reinterpret_cast< SCLK(*)>(_a[1])),(*reinterpret_cast< SerialOutputDriver(*)>(_a[2])),(*reinterpret_cast< SerialDataPositionSize(*)>(_a[3])),(*reinterpret_cast< BitWindow(*)>(_a[4])),(*reinterpret_cast< uint32_t(*)>(_a[5]))); break;
         case 2: _t->startSerialOutput(); break;
         case 3: _t->stopSerialOutput(); break;
@@ -152,8 +156,8 @@ void serialOutput::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id
     } else if (_c == QMetaObject::IndexOfMethod) {
         int *result = reinterpret_cast<int *>(_a[0]);
         {
-            using _t = void (serialOutput::*)();
-            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&serialOutput::sampFreqRequest)) {
+            using _t = void (serialOutput::*)(int , std::complex<double> );
+            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&serialOutput::updateParams)) {
                 *result = 0;
                 return;
             }
@@ -230,9 +234,10 @@ int serialOutput::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 }
 
 // SIGNAL 0
-void serialOutput::sampFreqRequest()
+void serialOutput::updateParams(int _t1, std::complex<double> _t2)
 {
-    QMetaObject::activate(this, &staticMetaObject, 0, nullptr);
+    void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t1))), const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t2))) };
+    QMetaObject::activate(this, &staticMetaObject, 0, _a);
 }
 
 // SIGNAL 1

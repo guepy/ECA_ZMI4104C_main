@@ -509,6 +509,9 @@ public:
         display = new QTextBrowser(FlyscanForm);
         display->setObjectName(QString::fromUtf8("display"));
         display->setGeometry(QRect(20, 90, 791, 161));
+        QFont font1;
+        font1.setPointSize(12);
+        display->setFont(font1);
         horizontalWidget = new QWidget(FlyscanForm);
         horizontalWidget->setObjectName(QString::fromUtf8("horizontalWidget"));
         horizontalWidget->setGeometry(QRect(20, 580, 791, 181));
@@ -532,13 +535,13 @@ public:
         sizePolicy2.setHeightForWidth(label->sizePolicy().hasHeightForWidth());
         label->setSizePolicy(sizePolicy2);
         label->setMinimumSize(QSize(80, 0));
-        QFont font1;
-        font1.setFamily(QString::fromUtf8("MS Shell Dlg 2"));
-        font1.setPointSize(14);
-        font1.setBold(false);
-        font1.setItalic(false);
-        font1.setWeight(9);
-        label->setFont(font1);
+        QFont font2;
+        font2.setFamily(QString::fromUtf8("MS Shell Dlg 2"));
+        font2.setPointSize(14);
+        font2.setBold(false);
+        font2.setItalic(false);
+        font2.setWeight(9);
+        label->setFont(font2);
         label->setStyleSheet(QString::fromUtf8("QLabel{\n"
 "font: 75 14pt \"MS Shell Dlg 2\";\n"
 "}"));
@@ -550,7 +553,7 @@ public:
         sizePolicy2.setHeightForWidth(label_4->sizePolicy().hasHeightForWidth());
         label_4->setSizePolicy(sizePolicy2);
         label_4->setMinimumSize(QSize(80, 0));
-        label_4->setFont(font1);
+        label_4->setFont(font2);
         label_4->setStyleSheet(QString::fromUtf8("QLabel{\n"
 "font: 75 14pt \"MS Shell Dlg 2\";\n"
 "}"));
@@ -562,7 +565,7 @@ public:
         sizePolicy2.setHeightForWidth(label_14->sizePolicy().hasHeightForWidth());
         label_14->setSizePolicy(sizePolicy2);
         label_14->setMinimumSize(QSize(80, 0));
-        label_14->setFont(font1);
+        label_14->setFont(font2);
         label_14->setStyleSheet(QString::fromUtf8("QLabel{\n"
 "font: 75 14pt \"MS Shell Dlg 2\";\n"
 "}"));
@@ -574,7 +577,7 @@ public:
         sizePolicy2.setHeightForWidth(label_13->sizePolicy().hasHeightForWidth());
         label_13->setSizePolicy(sizePolicy2);
         label_13->setMinimumSize(QSize(80, 0));
-        label_13->setFont(font1);
+        label_13->setFont(font2);
         label_13->setStyleSheet(QString::fromUtf8("QLabel{\n"
 "font: 75 14pt \"MS Shell Dlg 2\";\n"
 "}"));

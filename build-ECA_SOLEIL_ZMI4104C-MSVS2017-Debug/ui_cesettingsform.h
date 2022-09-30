@@ -11,6 +11,7 @@
 
 #include <QtCore/QVariant>
 #include <QtWidgets/QApplication>
+#include <QtWidgets/QComboBox>
 #include <QtWidgets/QDoubleSpinBox>
 #include <QtWidgets/QFrame>
 #include <QtWidgets/QHBoxLayout>
@@ -27,17 +28,20 @@ QT_BEGIN_NAMESPACE
 class Ui_CEsettingsForm
 {
 public:
-    QLabel *label_3;
-    QWidget *verticalLayoutWidget_3;
     QVBoxLayout *verticalLayout;
     QLabel *label_5;
     QWidget *widget;
     QHBoxLayout *horizontalLayout_4;
+    QSpacerItem *horizontalSpacer_10;
     QRadioButton *radioButton_2;
     QSpacerItem *horizontalSpacer;
+    QComboBox *cecAxis;
+    QSpacerItem *horizontalSpacer_6;
     QRadioButton *radioButton;
+    QSpacerItem *horizontalSpacer_26;
     QWidget *horizontalWidget_2;
     QHBoxLayout *horizontalLayout_6;
+    QWidget *usCoeffs;
     QVBoxLayout *verticalLayout_2;
     QHBoxLayout *horizontalLayout_7;
     QLabel *label_4;
@@ -45,33 +49,41 @@ public:
     QLabel *label_8;
     QSpacerItem *horizontalSpacer_12;
     QDoubleSpinBox *uscCE0;
-    QPushButton *pushButton;
+    QSpacerItem *horizontalSpacer_3;
+    QLabel *label_7;
+    QDoubleSpinBox *uscCE0_img;
     QHBoxLayout *horizontalLayout_14;
     QLabel *label_12;
     QSpacerItem *horizontalSpacer_13;
-    QDoubleSpinBox *uscCEN;
-    QPushButton *pushButton_3;
+    QDoubleSpinBox *uscCEC1;
+    QSpacerItem *horizontalSpacer_4;
     QHBoxLayout *horizontalLayout_15;
     QLabel *label_13;
     QSpacerItem *horizontalSpacer_14;
-    QDoubleSpinBox *uscCEMeas;
-    QPushButton *pushButton_4;
-    QWidget *vWidget_3;
+    QDoubleSpinBox *uscCEN;
+    QSpacerItem *horizontalSpacer_5;
+    QLabel *label_22;
+    QDoubleSpinBox *uscCEN_img;
+    QWidget *calcCoeffs;
     QVBoxLayout *verticalLayout_5;
     QHBoxLayout *horizontalLayout_2;
     QLabel *label_2;
     QHBoxLayout *horizontalLayout_16;
     QLabel *label_9;
     QSpacerItem *horizontalSpacer_15;
-    QLineEdit *calcuCE0;
-    QHBoxLayout *horizontalLayout_17;
-    QLabel *label_14;
-    QSpacerItem *horizontalSpacer_16;
-    QLineEdit *calcuCEN;
+    QLineEdit *calCE0;
+    QLabel *label_23;
+    QLineEdit *calCE0_img;
     QHBoxLayout *horizontalLayout_18;
     QLabel *label_15;
     QSpacerItem *horizontalSpacer_17;
-    QLineEdit *calcuCEMeas;
+    QLineEdit *calCEN;
+    QLabel *label_24;
+    QLineEdit *calCEN_img;
+    QHBoxLayout *horizontalLayout_17;
+    QLabel *label_14;
+    QSpacerItem *horizontalSpacer_16;
+    QLineEdit *calCEMeas;
     QHBoxLayout *horizontalLayout;
     QSpacerItem *horizontalSpacer_7;
     QPushButton *pushButton_12;
@@ -85,22 +97,22 @@ public:
     QLabel *label_10;
     QSpacerItem *horizontalSpacer_18;
     QDoubleSpinBox *ceMinVel;
-    QPushButton *pushButton_6;
+    QPushButton *defCEMinVel;
     QHBoxLayout *horizontalLayout_20;
     QLabel *label_16;
     QSpacerItem *horizontalSpacer_19;
     QDoubleSpinBox *ceMaxVel;
-    QPushButton *pushButton_7;
+    QPushButton *defCEMaxVel;
     QHBoxLayout *horizontalLayout_21;
     QLabel *label_17;
     QSpacerItem *horizontalSpacer_20;
     QDoubleSpinBox *ce0Lim;
-    QPushButton *pushButton_8;
+    QPushButton *defCE0Lim;
     QHBoxLayout *horizontalLayout_22;
     QLabel *label_18;
     QSpacerItem *horizontalSpacer_21;
     QDoubleSpinBox *ceNLim;
-    QPushButton *pushButton_9;
+    QPushButton *defCENLim;
     QFrame *line;
     QWidget *widget1;
     QVBoxLayout *verticalLayout_3;
@@ -108,17 +120,14 @@ public:
     QLabel *label_11;
     QSpacerItem *horizontalSpacer_22;
     QLineEdit *ce0Min;
-    QPushButton *pushButton_10;
     QHBoxLayout *horizontalLayout_24;
     QLabel *label_19;
     QSpacerItem *horizontalSpacer_23;
     QLineEdit *ce0Max;
-    QPushButton *pushButton_11;
     QHBoxLayout *horizontalLayout_25;
     QLabel *label_20;
     QSpacerItem *horizontalSpacer_24;
     QLineEdit *ceNMin;
-    QPushButton *pushButton_13;
     QHBoxLayout *horizontalLayout_26;
     QLabel *label_21;
     QSpacerItem *horizontalSpacer_25;
@@ -153,7 +162,7 @@ public:
 "border: 2px solid;\n"
 "border-color: white;\n"
 "}\n"
-"QPushButton, QDoubleSpinBox, #ceBoundaries,QToolButton{\n"
+"QPushButton, QSpinBox, QDoubleSpinBox, #ceBoundaries,QToolButton,#usCoeffs,#calcCoeffs{\n"
 "font: 75 12pt \"MS Shell Dlg 2\";\n"
 "border: 2px solid gray;\n"
 "padding: 0 8px;\n"
@@ -165,17 +174,23 @@ public:
 "}\n"
 "QTabWidget{\n"
 "color: red;\n"
+"}\n"
+"\n"
+"QPushButton:hover, QToolButton:hover{\n"
+"border:  2px solid white;\n"
+"border-radius: 5px;\n"
+"}\n"
+"\n"
+"QPushButton:pressed, QToolButton:pressed{\n"
+"border:  2px solid white;\n"
+"border-radius: 10px;\n"
+"}\n"
+"#CEsettingsForm{\n"
+"background-color: rgb(195, 218, 150)\n"
 "}"));
-        label_3 = new QLabel(CEsettingsForm);
-        label_3->setObjectName(QString::fromUtf8("label_3"));
-        label_3->setGeometry(QRect(-290, 240, 729, 23));
-        verticalLayoutWidget_3 = new QWidget(CEsettingsForm);
-        verticalLayoutWidget_3->setObjectName(QString::fromUtf8("verticalLayoutWidget_3"));
-        verticalLayoutWidget_3->setGeometry(QRect(10, 30, 771, 661));
-        verticalLayout = new QVBoxLayout(verticalLayoutWidget_3);
+        verticalLayout = new QVBoxLayout(CEsettingsForm);
         verticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
-        verticalLayout->setContentsMargins(0, 0, 0, 0);
-        label_5 = new QLabel(verticalLayoutWidget_3);
+        label_5 = new QLabel(CEsettingsForm);
         label_5->setObjectName(QString::fromUtf8("label_5"));
         QSizePolicy sizePolicy1(QSizePolicy::Preferred, QSizePolicy::Fixed);
         sizePolicy1.setHorizontalStretch(0);
@@ -195,12 +210,16 @@ public:
 
         verticalLayout->addWidget(label_5);
 
-        widget = new QWidget(verticalLayoutWidget_3);
+        widget = new QWidget(CEsettingsForm);
         widget->setObjectName(QString::fromUtf8("widget"));
         sizePolicy1.setHeightForWidth(widget->sizePolicy().hasHeightForWidth());
         widget->setSizePolicy(sizePolicy1);
         horizontalLayout_4 = new QHBoxLayout(widget);
         horizontalLayout_4->setObjectName(QString::fromUtf8("horizontalLayout_4"));
+        horizontalSpacer_10 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+
+        horizontalLayout_4->addItem(horizontalSpacer_10);
+
         radioButton_2 = new QRadioButton(widget);
         radioButton_2->setObjectName(QString::fromUtf8("radioButton_2"));
         radioButton_2->setStyleSheet(QString::fromUtf8("\n"
@@ -208,9 +227,35 @@ public:
 
         horizontalLayout_4->addWidget(radioButton_2);
 
-        horizontalSpacer = new QSpacerItem(40, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
+        horizontalSpacer = new QSpacerItem(40, 20, QSizePolicy::Preferred, QSizePolicy::Minimum);
 
         horizontalLayout_4->addItem(horizontalSpacer);
+
+        cecAxis = new QComboBox(widget);
+        cecAxis->addItem(QString());
+        cecAxis->addItem(QString());
+        cecAxis->addItem(QString());
+        cecAxis->addItem(QString());
+        cecAxis->addItem(QString());
+        cecAxis->setObjectName(QString::fromUtf8("cecAxis"));
+        QSizePolicy sizePolicy2(QSizePolicy::Preferred, QSizePolicy::Preferred);
+        sizePolicy2.setHorizontalStretch(0);
+        sizePolicy2.setVerticalStretch(0);
+        sizePolicy2.setHeightForWidth(cecAxis->sizePolicy().hasHeightForWidth());
+        cecAxis->setSizePolicy(sizePolicy2);
+        cecAxis->setMinimumSize(QSize(150, 40));
+        cecAxis->setStyleSheet(QString::fromUtf8("background:rgb(59, 118, 177);\n"
+"border: 2px solid gray;\n"
+"padding: 0 8px;\n"
+"border-radius:10px;\n"
+"color: white;\n"
+"text-align: center;"));
+
+        horizontalLayout_4->addWidget(cecAxis);
+
+        horizontalSpacer_6 = new QSpacerItem(40, 20, QSizePolicy::Preferred, QSizePolicy::Minimum);
+
+        horizontalLayout_4->addItem(horizontalSpacer_6);
 
         radioButton = new QRadioButton(widget);
         radioButton->setObjectName(QString::fromUtf8("radioButton"));
@@ -219,21 +264,27 @@ public:
 
         horizontalLayout_4->addWidget(radioButton);
 
+        horizontalSpacer_26 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+
+        horizontalLayout_4->addItem(horizontalSpacer_26);
+
 
         verticalLayout->addWidget(widget);
 
-        horizontalWidget_2 = new QWidget(verticalLayoutWidget_3);
+        horizontalWidget_2 = new QWidget(CEsettingsForm);
         horizontalWidget_2->setObjectName(QString::fromUtf8("horizontalWidget_2"));
         sizePolicy1.setHeightForWidth(horizontalWidget_2->sizePolicy().hasHeightForWidth());
         horizontalWidget_2->setSizePolicy(sizePolicy1);
         horizontalWidget_2->setMinimumSize(QSize(8, 200));
         horizontalLayout_6 = new QHBoxLayout(horizontalWidget_2);
         horizontalLayout_6->setObjectName(QString::fromUtf8("horizontalLayout_6"));
-        verticalLayout_2 = new QVBoxLayout();
+        usCoeffs = new QWidget(horizontalWidget_2);
+        usCoeffs->setObjectName(QString::fromUtf8("usCoeffs"));
+        verticalLayout_2 = new QVBoxLayout(usCoeffs);
         verticalLayout_2->setObjectName(QString::fromUtf8("verticalLayout_2"));
         horizontalLayout_7 = new QHBoxLayout();
         horizontalLayout_7->setObjectName(QString::fromUtf8("horizontalLayout_7"));
-        label_4 = new QLabel(horizontalWidget_2);
+        label_4 = new QLabel(usCoeffs);
         label_4->setObjectName(QString::fromUtf8("label_4"));
         label_4->setAlignment(Qt::AlignCenter);
 
@@ -244,7 +295,7 @@ public:
 
         horizontalLayout_13 = new QHBoxLayout();
         horizontalLayout_13->setObjectName(QString::fromUtf8("horizontalLayout_13"));
-        label_8 = new QLabel(horizontalWidget_2);
+        label_8 = new QLabel(usCoeffs);
         label_8->setObjectName(QString::fromUtf8("label_8"));
 
         horizontalLayout_13->addWidget(label_8);
@@ -253,29 +304,34 @@ public:
 
         horizontalLayout_13->addItem(horizontalSpacer_12);
 
-        uscCE0 = new QDoubleSpinBox(horizontalWidget_2);
+        uscCE0 = new QDoubleSpinBox(usCoeffs);
         uscCE0->setObjectName(QString::fromUtf8("uscCE0"));
-        uscCE0->setMinimumSize(QSize(150, 40));
+        uscCE0->setMinimumSize(QSize(100, 40));
 
         horizontalLayout_13->addWidget(uscCE0);
 
-        pushButton = new QPushButton(horizontalWidget_2);
-        pushButton->setObjectName(QString::fromUtf8("pushButton"));
-        QSizePolicy sizePolicy2(QSizePolicy::Preferred, QSizePolicy::Preferred);
-        sizePolicy2.setHorizontalStretch(0);
-        sizePolicy2.setVerticalStretch(0);
-        sizePolicy2.setHeightForWidth(pushButton->sizePolicy().hasHeightForWidth());
-        pushButton->setSizePolicy(sizePolicy2);
-        pushButton->setMinimumSize(QSize(75, 40));
+        horizontalSpacer_3 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
 
-        horizontalLayout_13->addWidget(pushButton);
+        horizontalLayout_13->addItem(horizontalSpacer_3);
+
+        label_7 = new QLabel(usCoeffs);
+        label_7->setObjectName(QString::fromUtf8("label_7"));
+        label_7->setAlignment(Qt::AlignCenter);
+
+        horizontalLayout_13->addWidget(label_7);
+
+        uscCE0_img = new QDoubleSpinBox(usCoeffs);
+        uscCE0_img->setObjectName(QString::fromUtf8("uscCE0_img"));
+        uscCE0_img->setMinimumSize(QSize(100, 40));
+
+        horizontalLayout_13->addWidget(uscCE0_img);
 
 
         verticalLayout_2->addLayout(horizontalLayout_13);
 
         horizontalLayout_14 = new QHBoxLayout();
         horizontalLayout_14->setObjectName(QString::fromUtf8("horizontalLayout_14"));
-        label_12 = new QLabel(horizontalWidget_2);
+        label_12 = new QLabel(usCoeffs);
         label_12->setObjectName(QString::fromUtf8("label_12"));
 
         horizontalLayout_14->addWidget(label_12);
@@ -284,26 +340,22 @@ public:
 
         horizontalLayout_14->addItem(horizontalSpacer_13);
 
-        uscCEN = new QDoubleSpinBox(horizontalWidget_2);
-        uscCEN->setObjectName(QString::fromUtf8("uscCEN"));
-        uscCEN->setMinimumSize(QSize(150, 40));
+        uscCEC1 = new QDoubleSpinBox(usCoeffs);
+        uscCEC1->setObjectName(QString::fromUtf8("uscCEC1"));
+        uscCEC1->setMinimumSize(QSize(150, 40));
 
-        horizontalLayout_14->addWidget(uscCEN);
+        horizontalLayout_14->addWidget(uscCEC1);
 
-        pushButton_3 = new QPushButton(horizontalWidget_2);
-        pushButton_3->setObjectName(QString::fromUtf8("pushButton_3"));
-        sizePolicy2.setHeightForWidth(pushButton_3->sizePolicy().hasHeightForWidth());
-        pushButton_3->setSizePolicy(sizePolicy2);
-        pushButton_3->setMinimumSize(QSize(75, 40));
+        horizontalSpacer_4 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
 
-        horizontalLayout_14->addWidget(pushButton_3);
+        horizontalLayout_14->addItem(horizontalSpacer_4);
 
 
         verticalLayout_2->addLayout(horizontalLayout_14);
 
         horizontalLayout_15 = new QHBoxLayout();
         horizontalLayout_15->setObjectName(QString::fromUtf8("horizontalLayout_15"));
-        label_13 = new QLabel(horizontalWidget_2);
+        label_13 = new QLabel(usCoeffs);
         label_13->setObjectName(QString::fromUtf8("label_13"));
 
         horizontalLayout_15->addWidget(label_13);
@@ -312,36 +364,44 @@ public:
 
         horizontalLayout_15->addItem(horizontalSpacer_14);
 
-        uscCEMeas = new QDoubleSpinBox(horizontalWidget_2);
-        uscCEMeas->setObjectName(QString::fromUtf8("uscCEMeas"));
-        uscCEMeas->setMinimumSize(QSize(150, 40));
+        uscCEN = new QDoubleSpinBox(usCoeffs);
+        uscCEN->setObjectName(QString::fromUtf8("uscCEN"));
+        uscCEN->setMinimumSize(QSize(100, 40));
 
-        horizontalLayout_15->addWidget(uscCEMeas);
+        horizontalLayout_15->addWidget(uscCEN);
 
-        pushButton_4 = new QPushButton(horizontalWidget_2);
-        pushButton_4->setObjectName(QString::fromUtf8("pushButton_4"));
-        sizePolicy2.setHeightForWidth(pushButton_4->sizePolicy().hasHeightForWidth());
-        pushButton_4->setSizePolicy(sizePolicy2);
-        pushButton_4->setMinimumSize(QSize(75, 40));
+        horizontalSpacer_5 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
 
-        horizontalLayout_15->addWidget(pushButton_4);
+        horizontalLayout_15->addItem(horizontalSpacer_5);
+
+        label_22 = new QLabel(usCoeffs);
+        label_22->setObjectName(QString::fromUtf8("label_22"));
+        label_22->setAlignment(Qt::AlignCenter);
+
+        horizontalLayout_15->addWidget(label_22);
+
+        uscCEN_img = new QDoubleSpinBox(usCoeffs);
+        uscCEN_img->setObjectName(QString::fromUtf8("uscCEN_img"));
+        uscCEN_img->setMinimumSize(QSize(100, 40));
+
+        horizontalLayout_15->addWidget(uscCEN_img);
 
 
         verticalLayout_2->addLayout(horizontalLayout_15);
 
 
-        horizontalLayout_6->addLayout(verticalLayout_2);
+        horizontalLayout_6->addWidget(usCoeffs);
 
-        vWidget_3 = new QWidget(horizontalWidget_2);
-        vWidget_3->setObjectName(QString::fromUtf8("vWidget_3"));
-        vWidget_3->setStyleSheet(QString::fromUtf8("#vWidget_3{\n"
+        calcCoeffs = new QWidget(horizontalWidget_2);
+        calcCoeffs->setObjectName(QString::fromUtf8("calcCoeffs"));
+        calcCoeffs->setStyleSheet(QString::fromUtf8("#vWidget_3{\n"
 "border: 1px solid;\n"
 "}"));
-        verticalLayout_5 = new QVBoxLayout(vWidget_3);
+        verticalLayout_5 = new QVBoxLayout(calcCoeffs);
         verticalLayout_5->setObjectName(QString::fromUtf8("verticalLayout_5"));
         horizontalLayout_2 = new QHBoxLayout();
         horizontalLayout_2->setObjectName(QString::fromUtf8("horizontalLayout_2"));
-        label_2 = new QLabel(vWidget_3);
+        label_2 = new QLabel(calcCoeffs);
         label_2->setObjectName(QString::fromUtf8("label_2"));
         label_2->setAlignment(Qt::AlignCenter);
 
@@ -352,7 +412,7 @@ public:
 
         horizontalLayout_16 = new QHBoxLayout();
         horizontalLayout_16->setObjectName(QString::fromUtf8("horizontalLayout_16"));
-        label_9 = new QLabel(vWidget_3);
+        label_9 = new QLabel(calcCoeffs);
         label_9->setObjectName(QString::fromUtf8("label_9"));
 
         horizontalLayout_16->addWidget(label_9);
@@ -361,45 +421,37 @@ public:
 
         horizontalLayout_16->addItem(horizontalSpacer_15);
 
-        calcuCE0 = new QLineEdit(vWidget_3);
-        calcuCE0->setObjectName(QString::fromUtf8("calcuCE0"));
+        calCE0 = new QLineEdit(calcCoeffs);
+        calCE0->setObjectName(QString::fromUtf8("calCE0"));
         QSizePolicy sizePolicy3(QSizePolicy::Expanding, QSizePolicy::Fixed);
         sizePolicy3.setHorizontalStretch(0);
         sizePolicy3.setVerticalStretch(0);
-        sizePolicy3.setHeightForWidth(calcuCE0->sizePolicy().hasHeightForWidth());
-        calcuCE0->setSizePolicy(sizePolicy3);
-        calcuCE0->setMinimumSize(QSize(130, 35));
+        sizePolicy3.setHeightForWidth(calCE0->sizePolicy().hasHeightForWidth());
+        calCE0->setSizePolicy(sizePolicy3);
+        calCE0->setMinimumSize(QSize(130, 35));
 
-        horizontalLayout_16->addWidget(calcuCE0);
+        horizontalLayout_16->addWidget(calCE0);
+
+        label_23 = new QLabel(calcCoeffs);
+        label_23->setObjectName(QString::fromUtf8("label_23"));
+        label_23->setAlignment(Qt::AlignCenter);
+
+        horizontalLayout_16->addWidget(label_23);
+
+        calCE0_img = new QLineEdit(calcCoeffs);
+        calCE0_img->setObjectName(QString::fromUtf8("calCE0_img"));
+        sizePolicy3.setHeightForWidth(calCE0_img->sizePolicy().hasHeightForWidth());
+        calCE0_img->setSizePolicy(sizePolicy3);
+        calCE0_img->setMinimumSize(QSize(130, 35));
+
+        horizontalLayout_16->addWidget(calCE0_img);
 
 
         verticalLayout_5->addLayout(horizontalLayout_16);
 
-        horizontalLayout_17 = new QHBoxLayout();
-        horizontalLayout_17->setObjectName(QString::fromUtf8("horizontalLayout_17"));
-        label_14 = new QLabel(vWidget_3);
-        label_14->setObjectName(QString::fromUtf8("label_14"));
-
-        horizontalLayout_17->addWidget(label_14);
-
-        horizontalSpacer_16 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
-
-        horizontalLayout_17->addItem(horizontalSpacer_16);
-
-        calcuCEN = new QLineEdit(vWidget_3);
-        calcuCEN->setObjectName(QString::fromUtf8("calcuCEN"));
-        sizePolicy3.setHeightForWidth(calcuCEN->sizePolicy().hasHeightForWidth());
-        calcuCEN->setSizePolicy(sizePolicy3);
-        calcuCEN->setMinimumSize(QSize(130, 35));
-
-        horizontalLayout_17->addWidget(calcuCEN);
-
-
-        verticalLayout_5->addLayout(horizontalLayout_17);
-
         horizontalLayout_18 = new QHBoxLayout();
         horizontalLayout_18->setObjectName(QString::fromUtf8("horizontalLayout_18"));
-        label_15 = new QLabel(vWidget_3);
+        label_15 = new QLabel(calcCoeffs);
         label_15->setObjectName(QString::fromUtf8("label_15"));
 
         horizontalLayout_18->addWidget(label_15);
@@ -408,16 +460,52 @@ public:
 
         horizontalLayout_18->addItem(horizontalSpacer_17);
 
-        calcuCEMeas = new QLineEdit(vWidget_3);
-        calcuCEMeas->setObjectName(QString::fromUtf8("calcuCEMeas"));
-        sizePolicy3.setHeightForWidth(calcuCEMeas->sizePolicy().hasHeightForWidth());
-        calcuCEMeas->setSizePolicy(sizePolicy3);
-        calcuCEMeas->setMinimumSize(QSize(130, 35));
+        calCEN = new QLineEdit(calcCoeffs);
+        calCEN->setObjectName(QString::fromUtf8("calCEN"));
+        sizePolicy3.setHeightForWidth(calCEN->sizePolicy().hasHeightForWidth());
+        calCEN->setSizePolicy(sizePolicy3);
+        calCEN->setMinimumSize(QSize(130, 35));
 
-        horizontalLayout_18->addWidget(calcuCEMeas);
+        horizontalLayout_18->addWidget(calCEN);
+
+        label_24 = new QLabel(calcCoeffs);
+        label_24->setObjectName(QString::fromUtf8("label_24"));
+        label_24->setAlignment(Qt::AlignCenter);
+
+        horizontalLayout_18->addWidget(label_24);
+
+        calCEN_img = new QLineEdit(calcCoeffs);
+        calCEN_img->setObjectName(QString::fromUtf8("calCEN_img"));
+        sizePolicy3.setHeightForWidth(calCEN_img->sizePolicy().hasHeightForWidth());
+        calCEN_img->setSizePolicy(sizePolicy3);
+        calCEN_img->setMinimumSize(QSize(130, 35));
+
+        horizontalLayout_18->addWidget(calCEN_img);
 
 
         verticalLayout_5->addLayout(horizontalLayout_18);
+
+        horizontalLayout_17 = new QHBoxLayout();
+        horizontalLayout_17->setObjectName(QString::fromUtf8("horizontalLayout_17"));
+        label_14 = new QLabel(calcCoeffs);
+        label_14->setObjectName(QString::fromUtf8("label_14"));
+
+        horizontalLayout_17->addWidget(label_14);
+
+        horizontalSpacer_16 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+
+        horizontalLayout_17->addItem(horizontalSpacer_16);
+
+        calCEMeas = new QLineEdit(calcCoeffs);
+        calCEMeas->setObjectName(QString::fromUtf8("calCEMeas"));
+        sizePolicy3.setHeightForWidth(calCEMeas->sizePolicy().hasHeightForWidth());
+        calCEMeas->setSizePolicy(sizePolicy3);
+        calCEMeas->setMinimumSize(QSize(130, 35));
+
+        horizontalLayout_17->addWidget(calCEMeas);
+
+
+        verticalLayout_5->addLayout(horizontalLayout_17);
 
         horizontalLayout = new QHBoxLayout();
         horizontalLayout->setObjectName(QString::fromUtf8("horizontalLayout"));
@@ -425,7 +513,7 @@ public:
 
         horizontalLayout->addItem(horizontalSpacer_7);
 
-        pushButton_12 = new QPushButton(vWidget_3);
+        pushButton_12 = new QPushButton(calcCoeffs);
         pushButton_12->setObjectName(QString::fromUtf8("pushButton_12"));
         sizePolicy.setHeightForWidth(pushButton_12->sizePolicy().hasHeightForWidth());
         pushButton_12->setSizePolicy(sizePolicy);
@@ -441,18 +529,18 @@ public:
         verticalLayout_5->addLayout(horizontalLayout);
 
 
-        horizontalLayout_6->addWidget(vWidget_3);
+        horizontalLayout_6->addWidget(calcCoeffs);
 
 
         verticalLayout->addWidget(horizontalWidget_2);
 
-        label_6 = new QLabel(verticalLayoutWidget_3);
+        label_6 = new QLabel(CEsettingsForm);
         label_6->setObjectName(QString::fromUtf8("label_6"));
         label_6->setAlignment(Qt::AlignCenter);
 
         verticalLayout->addWidget(label_6);
 
-        ceBoundaries = new QWidget(verticalLayoutWidget_3);
+        ceBoundaries = new QWidget(CEsettingsForm);
         ceBoundaries->setObjectName(QString::fromUtf8("ceBoundaries"));
         sizePolicy1.setHeightForWidth(ceBoundaries->sizePolicy().hasHeightForWidth());
         ceBoundaries->setSizePolicy(sizePolicy1);
@@ -482,13 +570,13 @@ public:
 
         horizontalLayout_19->addWidget(ceMinVel);
 
-        pushButton_6 = new QPushButton(vWidget_4);
-        pushButton_6->setObjectName(QString::fromUtf8("pushButton_6"));
-        sizePolicy2.setHeightForWidth(pushButton_6->sizePolicy().hasHeightForWidth());
-        pushButton_6->setSizePolicy(sizePolicy2);
-        pushButton_6->setMinimumSize(QSize(0, 30));
+        defCEMinVel = new QPushButton(vWidget_4);
+        defCEMinVel->setObjectName(QString::fromUtf8("defCEMinVel"));
+        sizePolicy2.setHeightForWidth(defCEMinVel->sizePolicy().hasHeightForWidth());
+        defCEMinVel->setSizePolicy(sizePolicy2);
+        defCEMinVel->setMinimumSize(QSize(0, 30));
 
-        horizontalLayout_19->addWidget(pushButton_6);
+        horizontalLayout_19->addWidget(defCEMinVel);
 
 
         verticalLayout_6->addLayout(horizontalLayout_19);
@@ -510,13 +598,13 @@ public:
 
         horizontalLayout_20->addWidget(ceMaxVel);
 
-        pushButton_7 = new QPushButton(vWidget_4);
-        pushButton_7->setObjectName(QString::fromUtf8("pushButton_7"));
-        sizePolicy2.setHeightForWidth(pushButton_7->sizePolicy().hasHeightForWidth());
-        pushButton_7->setSizePolicy(sizePolicy2);
-        pushButton_7->setMinimumSize(QSize(0, 30));
+        defCEMaxVel = new QPushButton(vWidget_4);
+        defCEMaxVel->setObjectName(QString::fromUtf8("defCEMaxVel"));
+        sizePolicy2.setHeightForWidth(defCEMaxVel->sizePolicy().hasHeightForWidth());
+        defCEMaxVel->setSizePolicy(sizePolicy2);
+        defCEMaxVel->setMinimumSize(QSize(0, 30));
 
-        horizontalLayout_20->addWidget(pushButton_7);
+        horizontalLayout_20->addWidget(defCEMaxVel);
 
 
         verticalLayout_6->addLayout(horizontalLayout_20);
@@ -538,13 +626,13 @@ public:
 
         horizontalLayout_21->addWidget(ce0Lim);
 
-        pushButton_8 = new QPushButton(vWidget_4);
-        pushButton_8->setObjectName(QString::fromUtf8("pushButton_8"));
-        sizePolicy2.setHeightForWidth(pushButton_8->sizePolicy().hasHeightForWidth());
-        pushButton_8->setSizePolicy(sizePolicy2);
-        pushButton_8->setMinimumSize(QSize(0, 30));
+        defCE0Lim = new QPushButton(vWidget_4);
+        defCE0Lim->setObjectName(QString::fromUtf8("defCE0Lim"));
+        sizePolicy2.setHeightForWidth(defCE0Lim->sizePolicy().hasHeightForWidth());
+        defCE0Lim->setSizePolicy(sizePolicy2);
+        defCE0Lim->setMinimumSize(QSize(0, 30));
 
-        horizontalLayout_21->addWidget(pushButton_8);
+        horizontalLayout_21->addWidget(defCE0Lim);
 
 
         verticalLayout_6->addLayout(horizontalLayout_21);
@@ -566,13 +654,13 @@ public:
 
         horizontalLayout_22->addWidget(ceNLim);
 
-        pushButton_9 = new QPushButton(vWidget_4);
-        pushButton_9->setObjectName(QString::fromUtf8("pushButton_9"));
-        sizePolicy2.setHeightForWidth(pushButton_9->sizePolicy().hasHeightForWidth());
-        pushButton_9->setSizePolicy(sizePolicy2);
-        pushButton_9->setMinimumSize(QSize(0, 30));
+        defCENLim = new QPushButton(vWidget_4);
+        defCENLim->setObjectName(QString::fromUtf8("defCENLim"));
+        sizePolicy2.setHeightForWidth(defCENLim->sizePolicy().hasHeightForWidth());
+        defCENLim->setSizePolicy(sizePolicy2);
+        defCENLim->setMinimumSize(QSize(0, 30));
 
-        horizontalLayout_22->addWidget(pushButton_9);
+        horizontalLayout_22->addWidget(defCENLim);
 
 
         verticalLayout_6->addLayout(horizontalLayout_22);
@@ -617,14 +705,6 @@ public:
 
         horizontalLayout_23->addWidget(ce0Min);
 
-        pushButton_10 = new QPushButton(widget1);
-        pushButton_10->setObjectName(QString::fromUtf8("pushButton_10"));
-        sizePolicy2.setHeightForWidth(pushButton_10->sizePolicy().hasHeightForWidth());
-        pushButton_10->setSizePolicy(sizePolicy2);
-        pushButton_10->setMinimumSize(QSize(75, 40));
-
-        horizontalLayout_23->addWidget(pushButton_10);
-
 
         verticalLayout_3->addLayout(horizontalLayout_23);
 
@@ -646,14 +726,6 @@ public:
         ce0Max->setMinimumSize(QSize(130, 35));
 
         horizontalLayout_24->addWidget(ce0Max);
-
-        pushButton_11 = new QPushButton(widget1);
-        pushButton_11->setObjectName(QString::fromUtf8("pushButton_11"));
-        sizePolicy2.setHeightForWidth(pushButton_11->sizePolicy().hasHeightForWidth());
-        pushButton_11->setSizePolicy(sizePolicy2);
-        pushButton_11->setMinimumSize(QSize(75, 40));
-
-        horizontalLayout_24->addWidget(pushButton_11);
 
 
         verticalLayout_3->addLayout(horizontalLayout_24);
@@ -677,14 +749,6 @@ public:
 
         horizontalLayout_25->addWidget(ceNMin);
 
-        pushButton_13 = new QPushButton(widget1);
-        pushButton_13->setObjectName(QString::fromUtf8("pushButton_13"));
-        sizePolicy2.setHeightForWidth(pushButton_13->sizePolicy().hasHeightForWidth());
-        pushButton_13->setSizePolicy(sizePolicy2);
-        pushButton_13->setMinimumSize(QSize(75, 40));
-
-        horizontalLayout_25->addWidget(pushButton_13);
-
 
         verticalLayout_3->addLayout(horizontalLayout_25);
 
@@ -707,16 +771,16 @@ public:
 
         horizontalLayout_26->addWidget(ceNMax);
 
+
+        verticalLayout_3->addLayout(horizontalLayout_26);
+
         pushButton_14 = new QPushButton(widget1);
         pushButton_14->setObjectName(QString::fromUtf8("pushButton_14"));
         sizePolicy2.setHeightForWidth(pushButton_14->sizePolicy().hasHeightForWidth());
         pushButton_14->setSizePolicy(sizePolicy2);
         pushButton_14->setMinimumSize(QSize(75, 40));
 
-        horizontalLayout_26->addWidget(pushButton_14);
-
-
-        verticalLayout_3->addLayout(horizontalLayout_26);
+        verticalLayout_3->addWidget(pushButton_14);
 
 
         horizontalLayout_5->addWidget(widget1);
@@ -724,7 +788,7 @@ public:
 
         verticalLayout->addWidget(ceBoundaries);
 
-        ButtonForm = new QWidget(verticalLayoutWidget_3);
+        ButtonForm = new QWidget(CEsettingsForm);
         ButtonForm->setObjectName(QString::fromUtf8("ButtonForm"));
         sizePolicy1.setHeightForWidth(ButtonForm->sizePolicy().hasHeightForWidth());
         ButtonForm->setSizePolicy(sizePolicy1);
@@ -797,38 +861,45 @@ public:
 
     void retranslateUi(QWidget *CEsettingsForm)
     {
-        CEsettingsForm->setWindowTitle(QCoreApplication::translate("CEsettingsForm", "Form", nullptr));
-        label_3->setText(QCoreApplication::translate("CEsettingsForm", "CE Boundaries", nullptr));
+        CEsettingsForm->setWindowTitle(QCoreApplication::translate("CEsettingsForm", "Cyclic Error Compensation Settings", nullptr));
         label_5->setText(QCoreApplication::translate("CEsettingsForm", "Cyclic Errors Compensation Parameters", nullptr));
         radioButton_2->setText(QCoreApplication::translate("CEsettingsForm", "Use USC for next corrections", nullptr));
+        cecAxis->setItemText(0, QCoreApplication::translate("CEsettingsForm", "Select axis", nullptr));
+        cecAxis->setItemText(1, QCoreApplication::translate("CEsettingsForm", "Axis 1", nullptr));
+        cecAxis->setItemText(2, QCoreApplication::translate("CEsettingsForm", "Axis 2", nullptr));
+        cecAxis->setItemText(3, QCoreApplication::translate("CEsettingsForm", "Axis 3", nullptr));
+        cecAxis->setItemText(4, QCoreApplication::translate("CEsettingsForm", "Axis 4", nullptr));
+
         radioButton->setText(QCoreApplication::translate("CEsettingsForm", "Use USC at startup", nullptr));
         label_4->setText(QCoreApplication::translate("CEsettingsForm", "user supply coefficients(USC)", nullptr));
         label_8->setText(QCoreApplication::translate("CEsettingsForm", "CE C0", nullptr));
-        pushButton->setText(QCoreApplication::translate("CEsettingsForm", "Reset", nullptr));
-        label_12->setText(QCoreApplication::translate("CEsettingsForm", "CE CN", nullptr));
-        pushButton_3->setText(QCoreApplication::translate("CEsettingsForm", "Reset", nullptr));
-        label_13->setText(QCoreApplication::translate("CEsettingsForm", "CE C1", nullptr));
-        pushButton_4->setText(QCoreApplication::translate("CEsettingsForm", "Reset", nullptr));
+        label_7->setText(QCoreApplication::translate("CEsettingsForm", "+i", nullptr));
+        label_12->setText(QCoreApplication::translate("CEsettingsForm", "CE C1", nullptr));
+        label_13->setText(QCoreApplication::translate("CEsettingsForm", "CE CN", nullptr));
+        label_22->setText(QCoreApplication::translate("CEsettingsForm", "+i", nullptr));
         label_2->setText(QCoreApplication::translate("CEsettingsForm", "Calculated coefficients", nullptr));
         label_9->setText(QCoreApplication::translate("CEsettingsForm", "CE0", nullptr));
-        label_14->setText(QCoreApplication::translate("CEsettingsForm", "CE N", nullptr));
-        label_15->setText(QCoreApplication::translate("CEsettingsForm", "Meas", nullptr));
+        label_23->setText(QCoreApplication::translate("CEsettingsForm", "+i", nullptr));
+        label_15->setText(QCoreApplication::translate("CEsettingsForm", "CE N", nullptr));
+        label_24->setText(QCoreApplication::translate("CEsettingsForm", "+i", nullptr));
+        label_14->setText(QCoreApplication::translate("CEsettingsForm", "CE 1", nullptr));
         pushButton_12->setText(QCoreApplication::translate("CEsettingsForm", "Update", nullptr));
         label_6->setText(QCoreApplication::translate("CEsettingsForm", "CE Boundaries", nullptr));
-        label_10->setText(QCoreApplication::translate("CEsettingsForm", "CE Min Vel", nullptr));
-        pushButton_6->setText(QCoreApplication::translate("CEsettingsForm", "Default", nullptr));
-        label_16->setText(QCoreApplication::translate("CEsettingsForm", "CE Max Vel", nullptr));
-        pushButton_7->setText(QCoreApplication::translate("CEsettingsForm", "Default", nullptr));
-        label_17->setText(QCoreApplication::translate("CEsettingsForm", "CE 0 Limit", nullptr));
-        pushButton_8->setText(QCoreApplication::translate("CEsettingsForm", "Default", nullptr));
-        label_18->setText(QCoreApplication::translate("CEsettingsForm", "CE N Limit", nullptr));
-        pushButton_9->setText(QCoreApplication::translate("CEsettingsForm", "Default", nullptr));
+        label_10->setText(QCoreApplication::translate("CEsettingsForm", "CE Min Vel\n"
+"(mm/s)", nullptr));
+        defCEMinVel->setText(QCoreApplication::translate("CEsettingsForm", "Default", nullptr));
+        label_16->setText(QCoreApplication::translate("CEsettingsForm", "CE Max Vel\n"
+"(mm/s)", nullptr));
+        defCEMaxVel->setText(QCoreApplication::translate("CEsettingsForm", "Default", nullptr));
+        label_17->setText(QCoreApplication::translate("CEsettingsForm", "CE 0 Limit\n"
+"mm/s)", nullptr));
+        defCE0Lim->setText(QCoreApplication::translate("CEsettingsForm", "Default", nullptr));
+        label_18->setText(QCoreApplication::translate("CEsettingsForm", "CE N Limit\n"
+"(mm/s)", nullptr));
+        defCENLim->setText(QCoreApplication::translate("CEsettingsForm", "Default", nullptr));
         label_11->setText(QCoreApplication::translate("CEsettingsForm", "CE0 Min", nullptr));
-        pushButton_10->setText(QCoreApplication::translate("CEsettingsForm", "Reset", nullptr));
         label_19->setText(QCoreApplication::translate("CEsettingsForm", "CE 0 Max", nullptr));
-        pushButton_11->setText(QCoreApplication::translate("CEsettingsForm", "Reset", nullptr));
         label_20->setText(QCoreApplication::translate("CEsettingsForm", "CE N Min", nullptr));
-        pushButton_13->setText(QCoreApplication::translate("CEsettingsForm", "Reset", nullptr));
         label_21->setText(QCoreApplication::translate("CEsettingsForm", "CE N Max", nullptr));
         pushButton_14->setText(QCoreApplication::translate("CEsettingsForm", "Reset", nullptr));
         pushButton_2->setText(QCoreApplication::translate("CEsettingsForm", "Apply", nullptr));

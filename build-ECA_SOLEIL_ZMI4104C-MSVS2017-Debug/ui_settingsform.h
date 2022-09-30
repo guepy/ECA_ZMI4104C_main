@@ -714,7 +714,7 @@ public:
         line_9->setFrameShadow(QFrame::Sunken);
         verticalWidget1 = new QWidget(tab);
         verticalWidget1->setObjectName(QString::fromUtf8("verticalWidget1"));
-        verticalWidget1->setGeometry(QRect(30, 380, 683, 191));
+        verticalWidget1->setGeometry(QRect(22, 370, 691, 211));
         verticalWidget1->setStyleSheet(QString::fromUtf8("#verticalWidget{\n"
 "border: 1px solid;\n"
 "    border: 2px solid gray;\n"
@@ -2420,7 +2420,7 @@ public:
 
         retranslateUi(SettingsForm);
 
-        settingsTab->setCurrentIndex(2);
+        settingsTab->setCurrentIndex(0);
 
 
         QMetaObject::connectSlotsByName(SettingsForm);
@@ -2519,10 +2519,10 @@ public:
         label_35->setText(QCoreApplication::translate("SettingsForm", " (This value specifies the desired Sig RMS L2 value used in Sig RMS Adjust mode in Constant Opt Pwr mode)", nullptr));
         label_4->setText(QCoreApplication::translate("SettingsForm", "APD Sig RMS L2 \n"
 "Set (RMS)", nullptr));
-        label_66->setText(QCoreApplication::translate("SettingsForm", "(This value specifies the APD bias voltage directly in constant voltage mode)", nullptr));
+        label_66->setText(QCoreApplication::translate("SettingsForm", "(Specifies the max Sig RMS L2 value reached since the reset of the board)", nullptr));
         label_39->setText(QCoreApplication::translate("SettingsForm", "Sig RMS L2 Max\n"
 "Lim (RMS)", nullptr));
-        label_68->setText(QCoreApplication::translate("SettingsForm", "(This value specifies the APD bias voltage directly in constant voltage mode)", nullptr));
+        label_68->setText(QCoreApplication::translate("SettingsForm", "((Specifies the min Sig RMS L2 value reached since the reset of the board)", nullptr));
         label_67->setText(QCoreApplication::translate("SettingsForm", "Sig RMS L2 Min \n"
 "Lim (RMS)", nullptr));
         pushButton_6->setText(QCoreApplication::translate("SettingsForm", "Default", nullptr));

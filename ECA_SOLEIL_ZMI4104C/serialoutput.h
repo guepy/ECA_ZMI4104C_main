@@ -19,7 +19,7 @@ public:
     void on_sampleFreq_received(uint32_t freq);
 
 signals:
-    void sampFreqRequest();
+    void updateParams(int i, std::complex<double> params);
     void configureSerialOutput(SCLK clk, SerialOutputDriver sdo, SerialDataPositionSize sdps, BitWindow bw , uint32_t sampFreq);
     void startSerialOutput();
     void stopSerialOutput();

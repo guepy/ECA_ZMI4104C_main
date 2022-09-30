@@ -74,12 +74,12 @@ background:rgb(198, 114, 92);
 color: white;
 }
 
-QPushButton:hover{
+QPushButton:hover, QToolButton:hover{
 border:  2px solid white;
 border-radius: 5px;
 }
 
-QPushButton:pressed{
+QPushButton:pressed, QToolButton:pressed{
 border:  2px solid white;
 border-radius: 10px;
 }</string>
@@ -939,7 +939,7 @@ border: 1px solid;
              </property>
              <property name="styleSheet">
               <string notr="true">QTextBrowser{
-font: 75 12pt &quot;MS Shell Dlg 2&quot;;
+font: 75 14pt &quot;MS Shell Dlg 2&quot;;
 border: 2px solid white;
 padding: 0 8px;
 border-radius:8px;
@@ -990,6 +990,16 @@ font: 75 14pt &quot;MS Shell Dlg 2&quot;;
                     <width>160</width>
                     <height>0</height>
                    </size>
+                  </property>
+                  <property name="font">
+                   <font>
+                    <family>MS Shell Dlg 2</family>
+                    <pointsize>14</pointsize>
+                    <weight>9</weight>
+                    <italic>false</italic>
+                    <bold>false</bold>
+                    <kerning>false</kerning>
+                   </font>
                   </property>
                   <property name="styleSheet">
                    <string notr="true"/>
@@ -2879,6 +2889,11 @@ background-color: white;
                    <width>0</width>
                    <height>120</height>
                   </size>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <pointsize>10</pointsize>
+                  </font>
                  </property>
                 </widget>
                </item>

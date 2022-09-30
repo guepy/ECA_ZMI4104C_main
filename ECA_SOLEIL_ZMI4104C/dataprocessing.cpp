@@ -25,7 +25,7 @@ void dataProcessing::on_initBoardsRequest_recieved(){
 */
 void dataProcessing::on_initBoardsRequest_recieved(){
 
-    if(initSisBoards(1)!= RET_SUCCESS) {
+    if(initSisBoards(0)!= RET_SUCCESS) {
         fprintf(stderr,"Failed to initialize SIS boards\n");
     }
 
@@ -36,7 +36,7 @@ void dataProcessing::on_initBoardsRequest_recieved(){
 
 void dataProcessing::vmeSystemReset(){
     fprintf(stdout, "VME SYSTEM RESET!!!\n");
-    if(initSisBoards(1)!= RET_SUCCESS) fprintf(stderr,"Failed to initialize SIS boards\n");
+    if(initSisBoards(0)!= RET_SUCCESS) fprintf(stderr,"Failed to initialize SIS boards\n");
     //Sleep(10);
     if(initZmiBoards() != RET_SUCCESS) fprintf(stderr,"Failed to initialize ZMI board\n");
     //ui->pushButton_11->setEnabled(false);
@@ -449,12 +449,13 @@ int dataProcessing::on_configureFifoFlyscanRequest_recieved(){
 
             return RET_FAILED;
         }
+        /*
         if(ovf){
             ovf=0;
             memset(base_A24D32_ptr, 0, mysize);
             goto ovf_flag;
         }
-
+*/
         dataProcessing::dev_mutex.unlock();
     }
     emit flyscanStatValues((unsigned char*)fifoFlyscanAxisTab,(double*)meanVal,(double*)stdDevVal);
@@ -679,3 +680,77 @@ void dataProcessing::on_stopSerialOutput_received(){
         emit stopSerialOutputRequest();
 }
 
+void dataProcessing::on_initCeParams_received(uint8_t a){
+    CECoeffs coeffs;
+    CECoeffBoundaries ce0b{}, cenb{};
+    CECLimits lim;
+    double tmp;
+    Axes axis = static_cast<Axes>(a);
+    std::array<std::complex<double>,14> arr{0.0};
+    getUserSuppliedCoeffs(axis, coeffs);
+    arr.at(0) = coeffs.CEC0coeff;
+    arr.at(1).real(coeffs.CEC1coeff);
+    arr.at(2) = coeffs.CECNcoeff;
+    getCEMinVel(axis, tmp);
+    arr.at(3).real(tmp);
+    getCEMaxVel(axis, tmp);
+    arr.at(4).real(tmp);
+    getCELimts(axis, lim);
+    arr.at(5).real(lim.CEC0Limit);
+    arr.at(6).real(lim.CECNLimit);
+    readCalcCecoeffs(axis, coeffs);
+    arr.at(7) = coeffs.CEC0coeff;
+    arr.at(8).real(coeffs.CEC1coeff);
+    arr.at(9) = coeffs.CECNcoeff;
+    readCecoefBoundaries(axis, ce0b, cenb);
+    arr.at(10) = ce0b.CEMincoeff;
+    arr.at(11) = ce0b.CEMaxcoeff;
+    arr.at(12) = cenb.CEMincoeff;
+    arr.at(13) = cenb.CEMaxcoeff;
+    emit ceParams(arr);
+}
+
+void dataProcessing::on_updateCeParams_received(uint8_t axis, int i,std::vector<std::complex<double>> params){
+    CECoeffs coeffs;
+    switch(i){
+    case 0:
+        coeffs.CEC0coeff = params.at(0);
+        coeffs.CEC1coeff = params.at(1).real();
+        coeffs.CECNcoeff = params.at(2);
+        setUserSuppliedCoeffs(static_cast<Axes>(axis), coeffs);
+        break;
+    case 3:
+        setCEMinVel(static_cast<Axes>(axis),params.at(0).real());
+        break;
+    case 4:
+        setCEMaxVel(static_cast<Axes>(axis),params.at(0).real());
+        break;
+    case 5:
+        setCE0Limit(static_cast<Axes>(axis),params.at(0).real());
+        break;
+    case 6:
+        setCENLimit(static_cast<Axes>(axis),params.at(0).real());
+        break;
+    default:
+        break;
+    }
+}
+
+void dataProcessing::on_enableUsc_received(uint8_t a,bool b){
+    Axes axis = static_cast<Axes>(a);
+    if(b){
+        enableCeuserSuppliedCoef(axis);
+    }
+    else{
+        disableCeuserSuppliedCoef(axis);
+    }
+}
+void dataProcessing::on_enableUscStartup_received(uint8_t a,bool b){
+    Axes axis = static_cast<Axes>(a);
+    if(b){
+        enableCeuserSuppliedCoefAtStartup(axis);
+    }
+    else{
+        disableCeuserSuppliedCoefAtStartup(axis);
+    }
+}

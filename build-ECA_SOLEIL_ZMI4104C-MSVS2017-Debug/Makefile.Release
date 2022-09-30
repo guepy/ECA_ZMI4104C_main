@@ -317,6 +317,7 @@ release\moc_cesettingsform.cpp: ..\ECA_SOLEIL_ZMI4104C\cesettingsform.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtCore\qfiledevice.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtGui\qvector2d.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtGui\qtouchdevice.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\QDebug \
 		release\moc_predefs.h \
 		C:\Qt2\5.13.2\msvc2017\bin\moc.exe
 	C:\Qt2\5.13.2\msvc2017\bin\moc.exe $(DEFINES) --compiler-flavor=msvc --include C:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/build-ECA_SOLEIL_ZMI4104C-MSVS2017-Debug/release/moc_predefs.h -IC:/Qt2/5.13.2/msvc2017/mkspecs/win32-msvc -IC:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/ECA_SOLEIL_ZMI4104C -IC:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/Release -IC:/Users/guekam/source/repos/ECA_ZMI4104_Project/ECA_ZMI4104C_main/eca_soleil_zmi4104_lib/sis1100_zmilib -IC:/Qt2/5.13.2/msvc2017/include -IC:/Qt2/5.13.2/msvc2017/include/QtPrintSupport -IC:/Qt2/5.13.2/msvc2017/include/QtWidgets -IC:/Qt2/5.13.2/msvc2017/include/QtGui -IC:/Qt2/5.13.2/msvc2017/include/QtANGLE -IC:/Qt2/5.13.2/msvc2017/include/QtCore -I. -I"C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\VC\Tools\MSVC\14.28.29910\ATLMFC\include" -I"C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\VC\Tools\MSVC\14.28.29910\include" -I"C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt" -I"C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\shared" -I"C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um" -I"C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\winrt" -I"C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\cppwinrt" ..\ECA_SOLEIL_ZMI4104C\cesettingsform.h -o release\moc_cesettingsform.cpp
@@ -3219,6 +3220,7 @@ release\cesettingsform.obj: ..\ECA_SOLEIL_ZMI4104C\cesettingsform.cpp ..\ECA_SOL
 		C:\Qt2\5.13.2\msvc2017\include\QtCore\qfiledevice.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtGui\qvector2d.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtGui\qtouchdevice.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\QDebug \
 		ui_cesettingsform.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtCore\QVariant \
 		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\QApplication \
@@ -3228,13 +3230,25 @@ release\cesettingsform.obj: ..\ECA_SOLEIL_ZMI4104C\cesettingsform.cpp ..\ECA_SOL
 		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qdesktopwidget.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtGui\qguiapplication.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtGui\qinputmethod.h \
-		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\QDoubleSpinBox \
-		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qspinbox.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\QComboBox \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qcombobox.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qabstractitemdelegate.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qstyleoption.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qabstractspinbox.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtGui\qvalidator.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtCore\qregularexpression.h \
-		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\QFrame \
+		C:\Qt2\5.13.2\msvc2017\include\QtGui\qicon.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qslider.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qabstractslider.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qstyle.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qtabbar.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qtabwidget.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qrubberband.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qframe.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtCore\qabstractitemmodel.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\QDoubleSpinBox \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qspinbox.h \
+		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\QFrame \
 		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\QHBoxLayout \
 		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qboxlayout.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qlayout.h \
@@ -3251,7 +3265,6 @@ release\cesettingsform.obj: ..\ECA_SOLEIL_ZMI4104C\cesettingsform.cpp ..\ECA_SOL
 		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\QPushButton \
 		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qpushbutton.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qabstractbutton.h \
-		C:\Qt2\5.13.2\msvc2017\include\QtGui\qicon.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\QRadioButton \
 		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\qradiobutton.h \
 		C:\Qt2\5.13.2\msvc2017\include\QtWidgets\QSpacerItem \

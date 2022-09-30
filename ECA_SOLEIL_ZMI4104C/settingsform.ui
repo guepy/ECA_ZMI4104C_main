@@ -119,7 +119,7 @@ border:  2px solid white;
 </string>
    </property>
    <property name="currentIndex">
-    <number>2</number>
+    <number>0</number>
    </property>
    <property name="iconSize">
     <size>
@@ -642,10 +642,10 @@ text-decoration: underline;</string>
     <widget class="QWidget" name="verticalWidget" native="true">
      <property name="geometry">
       <rect>
-       <x>30</x>
-       <y>380</y>
-       <width>683</width>
-       <height>191</height>
+       <x>22</x>
+       <y>370</y>
+       <width>691</width>
+       <height>211</height>
       </rect>
      </property>
      <property name="styleSheet">
@@ -1960,7 +1960,7 @@ Set (RMS)</string>
 color:rgb(0, 0, 255);</string>
         </property>
         <property name="text">
-         <string>(This value specifies the APD bias voltage directly in constant voltage mode)</string>
+         <string>(Specifies the max Sig RMS L2 value reached since the reset of the board)</string>
         </property>
        </widget>
       </item>
@@ -2056,7 +2056,7 @@ Lim (RMS)</string>
 color:rgb(0, 0, 255);</string>
         </property>
         <property name="text">
-         <string>(This value specifies the APD bias voltage directly in constant voltage mode)</string>
+         <string>((Specifies the min Sig RMS L2 value reached since the reset of the board)</string>
         </property>
        </widget>
       </item>

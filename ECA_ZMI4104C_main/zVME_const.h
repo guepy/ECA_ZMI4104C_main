@@ -31,7 +31,7 @@
 #define zAPDOptPwrL2Set 0x18E
 #define zAPDGainL2Set 0x18C 
 #define zAPDBiasDAC 0xDE 
-#define zP2ErrStat0 0xDE				// read only 
+#define zP2ErrStat0 0x24				// read only 
 #define zP2ErrClr0 0x24					// write only 
 #define zP2ErrStat1 0x26				// read only 
 #define zP2ErrClr1 0x26					// write only 

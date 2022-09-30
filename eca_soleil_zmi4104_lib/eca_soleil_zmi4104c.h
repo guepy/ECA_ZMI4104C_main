@@ -64,10 +64,9 @@ extern "C" {
 #define NON_FATAL							0
 #define EXIT_FAILLURE						-1
 #define INFO_PURPOSE						2
-#define SAMP_FREQ_MIN						305	// 1/(65536*005) in Hz
-#define SAMP_FREQ_MIN_DIV_2					305/2	//in Mhz. min freq with divide by 2 enable in control register 16
-#define SAMP_FREQ_MAX						1e7			
-#define SAMP_FREQ_MAX_X_2					2*(1e7)			
+#define SAMP_FREQ_MIN						305	// 1/(0xFFFF*0.05*2) in Hz
+#define SAMP_FREQ_MIN_DIV_2					SAMP_FREQ_MIN/2	//in Mhz. min freq with divide by 2 enable in control register 16
+#define SAMP_FREQ_MAX						1e7				
 #define defaultAPDGAinL2Set					7
 #define defaultAPDOptPwrL2Set				0
 #define defaultAPDSigRMSL2Set				13200
@@ -82,11 +81,16 @@ extern "C" {
 #define CE_MAX_VEL							31457 // max vel is 0.38 m/s
 #define ACTIVATE_CEC						0
 #define FIFO_FLYSCAN_MODE					1
+#define CE_VEL_COEFF						12e-3 // mm/s
+#define A24D16_VME_ADDR_MODE				"A24D16"
+#define A24D32_VME_ADDR_MODE				"A24D32"
+#define A24D8_VME_ADDR_MODE					"A24D8"
 
 typedef INT64 my_int64_t;
 constexpr static const uint64_t TMP32 = static_cast<uint64_t>(1) << 32;
 constexpr static const int defKp = -3;
 constexpr static const int defKv = -9;
+constexpr static const unsigned int defMinVel = 96;
 constexpr static const double minOptPwrDC = 0.01; // µW
 constexpr static const int minOptPwrDC_hex = 0xE56C;
 constexpr static const double maxOptPwrDC = 100; // µW
@@ -99,11 +103,19 @@ constexpr static const int EEPROM_MAX_SSI_OFFSET = 23;
 constexpr static const int EEPROM_OPT_PWR_L2_MIN_OFFSET = 5;
 constexpr static const int EEPROM_OPT_PWR_L2_NOM_OFFSET = 12;
 constexpr static const int EEPROM_OPT_PWR_L2_MAX_OFFSET = 19;
+static char logfileName[100];
+static char fifoFile[100];
+static char ramdataFile[100];
 	struct CECoeffs 
 	{
 		std::complex<double> CEC0coeff;	// 20MHz(Leakage) cyclic error
 		double CEC1coeff;	//Doppler signal magnitude 
 		std::complex<double> CECNcoeff;	//Negative doppler cyclic error
+	};
+	struct CECLimits
+	{
+		double CEC0Limit;
+		double CECNLimit;
 	};
 	
 	struct CECoeffBoundaries 
@@ -296,6 +308,11 @@ constexpr static const int EEPROM_OPT_PWR_L2_MAX_OFFSET = 19;
 	ECASOLEILZMI4104CLIB_API const char* getZygoSerialNumber();
 	ECASOLEILZMI4104CLIB_API const char* getZygoBoardVersion();
 
+	ECASOLEILZMI4104CLIB_API int setResetSourceClock(Axes axis, SCLK sclk);
+	ECASOLEILZMI4104CLIB_API int getVMEBusSampleClk(Axes axis, SCLK& clk);
+	ECASOLEILZMI4104CLIB_API int setVMEBusSampleClk(Axes axis, SCLK clk);
+	ECASOLEILZMI4104CLIB_API int getResetSourceClock(Axes axis, SCLK& sclk);
+
 	ECASOLEILZMI4104CLIB_API uint8_t getInterferometerConfiguration();
 	ECASOLEILZMI4104CLIB_API int setInterferometerConfiguration(uint32_t config);
 
@@ -305,16 +322,23 @@ constexpr static const int EEPROM_OPT_PWR_L2_MAX_OFFSET = 19;
 	ECASOLEILZMI4104CLIB_API int readCecoefBoundaries(Axes axis, CECoeffBoundaries& CE0CoeffBound, CECoeffBoundaries& CENCoeffBound);
 	ECASOLEILZMI4104CLIB_API int readCalcCecoeffs(Axes axis, CECoeffs& CECalcCoeffs);
 	ECASOLEILZMI4104CLIB_API int enableCecCompensation(Axes axis);
-	ECASOLEILZMI4104CLIB_API int setResetSourceClock(Axes axis, SCLK sclk);
-	ECASOLEILZMI4104CLIB_API int getVMEBusSampleClk(Axes axis, SCLK& clk);
-	ECASOLEILZMI4104CLIB_API int setVMEBusSampleClk(Axes axis, SCLK clk);
-	ECASOLEILZMI4104CLIB_API int getResetSourceClock(Axes axis, SCLK& sclk);
 	ECASOLEILZMI4104CLIB_API int calculateCeratio(Axes axis, CEratios& ceRatios, CEratioUnits units);
 	ECASOLEILZMI4104CLIB_API int readCecErrorStatReg( Axes axis, uint32_t& CEstatReg);
 	ECASOLEILZMI4104CLIB_API int getAproximateCeratio(Axes axis, CEratios& ceRatios, CEratioUnits units);
 	ECASOLEILZMI4104CLIB_API int waitCeinit2Complete(Axes axis);
-	ECASOLEILZMI4104CLIB_API int setCemaxVel(Axes axis, uint32_t CEMaxVelValue);
-	ECASOLEILZMI4104CLIB_API int setCeminVel(Axes axis, uint32_t CEMinVelValue);
+	ECASOLEILZMI4104CLIB_API int setCEMinVel(Axes axis, double CEMaxVelValue);
+	ECASOLEILZMI4104CLIB_API int setCEMaxVel(Axes axis, double CEMinVelValue);
+	ECASOLEILZMI4104CLIB_API int getCEMinVel(Axes axis, double& CEMaxVelValue);
+	ECASOLEILZMI4104CLIB_API int getCEMaxVel(Axes axis, double& CEMinVelValue);
+	ECASOLEILZMI4104CLIB_API int enableCeuserSuppliedCoefAtStartup(Axes axis);
+	ECASOLEILZMI4104CLIB_API int disableCeuserSuppliedCoefAtStartup(Axes axis);
+	ECASOLEILZMI4104CLIB_API int enableCeuserSuppliedCoef(Axes axis);
+	ECASOLEILZMI4104CLIB_API int disableCeuserSuppliedCoef(Axes axis);
+	ECASOLEILZMI4104CLIB_API int setUserSuppliedCoeffs(Axes axis, CECoeffs& coeffs);
+	ECASOLEILZMI4104CLIB_API int getUserSuppliedCoeffs(Axes axis, CECoeffs& coeffs);
+	ECASOLEILZMI4104CLIB_API int getCELimts(Axes axis, CECLimits& val);
+	ECASOLEILZMI4104CLIB_API int setCE0Limit(Axes axis, double CEC0Limit);
+	ECASOLEILZMI4104CLIB_API int setCENLimit(Axes axis, double CECNLimit);
 
 	ECASOLEILZMI4104CLIB_API int getLedsStatus( bool* ledsStatus);
 	ECASOLEILZMI4104CLIB_API int getLedsErrorStatus( bool* ledsErrorStatus);
@@ -452,8 +476,6 @@ constexpr static const int EEPROM_OPT_PWR_L2_MAX_OFFSET = 19;
 	ECASOLEILZMI4104CLIB_API int processFifoData(uint32_t nbrAxis, uint8_t* axisTab, uint32_t* memPtr, uint32_t nbrOfPts, const char* folderName, double* meanVal, double* stdDevVal);
 	ECASOLEILZMI4104CLIB_API bool isFifoDavBitSet(Axes axis);
 	ECASOLEILZMI4104CLIB_API bool isFifoOvfBitSet(Axes axis);
-	ECASOLEILZMI4104CLIB_API int convertCint162Complex(uint32_t, std::complex<double>&);
-	ECASOLEILZMI4104CLIB_API int convertCfloat2Complex(uint32_t, std::complex<double>&);
 	ECASOLEILZMI4104CLIB_API bool isRamBusy();
 
 	ECASOLEILZMI4104CLIB_API int setGainControlAgc(Axes axis);
@@ -499,3 +521,10 @@ constexpr static const int EEPROM_OPT_PWR_L2_MAX_OFFSET = 19;
 	ECASOLEILZMI4104CLIB_API int disableSCLKDivider(Axes axis);
 	ECASOLEILZMI4104CLIB_API int getSCLKDivideBy2(Axes axis, State& s);
 	ECASOLEILZMI4104CLIB_API int getSCLKDividerState(Axes axis, State& s);
+
+
+	ECASOLEILZMI4104CLIB_API int convertComplex2Uint(std::complex<double> nbr, uint32_t& val);
+	ECASOLEILZMI4104CLIB_API int convertDouble2Float(double doubleNbr, uint32_t* floatVal);
+	ECASOLEILZMI4104CLIB_API int convertCint16ToComplex(uint32_t, std::complex<double>&);
+	ECASOLEILZMI4104CLIB_API int convertCfloat2Complex(uint32_t, std::complex<double>&);
+

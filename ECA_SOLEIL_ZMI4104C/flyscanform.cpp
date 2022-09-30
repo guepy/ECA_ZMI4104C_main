@@ -6,6 +6,12 @@
 #include <QIODevice>
 #include <string.h>
 #include <QMessageBox>
+
+#define scanMinFreq 152
+#define scanMaxFreq 1e7
+#define scanMaxPointsRamData 16384
+#define scanMaxPointsFifo 1e8
+
 FlyscanForm::FlyscanForm(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::FlyscanForm)
@@ -13,16 +19,16 @@ FlyscanForm::FlyscanForm(QWidget *parent) :
     ui->setupUi(this);
     ui->selectAxisWidget->setEnabled(false);
     char txt[1024]="";
-    ui->spinBox->setMaximum(30000);//16384 points max
+    ui->spinBox->setMaximum(scanMaxPointsRamData);//16384 points max
     ui->spinBox->setMinimum(1);//1 point min
-    ui->spinBox_3->setMinimum(3e2);//min freq
-    ui->spinBox_3->setMaximum(1e6);//max freq
+    ui->spinBox_3->setMinimum(scanMinFreq);//min freq
+    ui->spinBox_3->setMaximum(scanMaxFreq);//max freq
     ui->spinBox_3->setEnabled(false);
     ui->spinBox_2->setEnabled(false);
     ui->spinBox->setEnabled(false);
 
     ui->spinBox_2->setMaximum(1.44e6);//1.44 sec max
-    ui->spinBox_2->setMinimum(3.334e3);//3.33 ms sec min
+    ui->spinBox_2->setMinimum(1);//3.33 ms sec min
     strcpy_s(extFolderName,(QDir::currentPath()).toStdString().c_str());
     ui->saveFile->setStyleSheet("font: 75 12pt \"MS Shell Dlg 2\";");
     ui->saveFile->setText(extFolderName);
@@ -63,22 +69,30 @@ void FlyscanForm::on_comboBox_currentIndexChanged(int index)
         ui->display->append("RAM DATA FLYSCAN MODE activated ");
         ui->selectAxisWidget->setEnabled(false);
         ui->NbrOfAxisWidget->setEnabled(true);
-        ui->spinBox->setMaximum(16384);//16384 points max
-        ui->spinBox_3->setMinimum(300);//min freq
-        ui->spinBox_3->setMaximum(10e6);//max freq
+        ui->spinBox->setMaximum(scanMaxPointsRamData);//16384 points max
+        ui->spinBox_3->setMinimum(scanMinFreq);//min freq
+        ui->spinBox_3->setMaximum(scanMaxFreq);//max
         ui->spinBox_2->setMaximum(1.44e6);//1.44 sec max
         ui->comboBox_2->setDisabled(true);
         flyscanModeIndex=0;
+        ui->fifoAxis1->setCheckState(Qt::Unchecked);
+        ui->fifoAxis2->setCheckState(Qt::Unchecked);
+        ui->fifoAxis3->setCheckState(Qt::Unchecked);
+        ui->fifoAxis4->setCheckState(Qt::Unchecked);
         break;
     case 1: // FIFO FLYSCAN MODE
         ui->display->append("FIFO FLYSCAN MODE activated ");
         ui->NbrOfAxisWidget->setEnabled(false);
         ui->selectAxisWidget->setEnabled(true);
         ui->comboBox_2->setDisabled(false);
-        ui->spinBox_3->setMinimum(0);//min freq
-        ui->spinBox_3->setMaximum(10e6);//max freq
-        ui->spinBox->setMaximum(10e6);//1e6 points max
+        ui->spinBox_3->setMinimum(scanMinFreq);//min freq
+        ui->spinBox_3->setMaximum(scanMaxFreq);//max freq
+        ui->spinBox->setMaximum(scanMaxPointsFifo);
         flyscanModeIndex=1;
+        ui->fifoAxis1->setCheckState(Qt::Unchecked);
+        ui->fifoAxis2->setCheckState(Qt::Unchecked);
+        ui->fifoAxis3->setCheckState(Qt::Unchecked);
+        ui->fifoAxis4->setCheckState(Qt::Unchecked);
 
         break;
     default:
@@ -239,6 +253,27 @@ void FlyscanForm::on_StartButton_clicked()
             nbrAxis=ui->NbrOfAxisWidget->currentIndex()+1;
             ui->display->append("Setting up RAMDATA FLYSCAN...");
             emit ramDataFlyscanRequest(freqValue, timeValue, sizeValue, nbrAxis);
+            switch(nbrAxis){
+            case 1:
+                ui->fifoAxis3->setCheckState(Qt::Checked);
+                ui->fifoAxis1->setCheckState(Qt::Unchecked);
+                ui->fifoAxis2->setCheckState(Qt::Unchecked);
+                ui->fifoAxis4->setCheckState(Qt::Unchecked);
+                break;
+            case 2:
+                ui->fifoAxis3->setCheckState(Qt::Checked);
+                ui->fifoAxis1->setCheckState(Qt::Checked);
+                ui->fifoAxis2->setCheckState(Qt::Unchecked);
+                ui->fifoAxis4->setCheckState(Qt::Unchecked);
+                break;
+            default :
+                ui->fifoAxis1->setCheckState(Qt::Checked);
+                ui->fifoAxis2->setCheckState(Qt::Checked);
+                ui->fifoAxis3->setCheckState(Qt::Checked);
+                ui->fifoAxis4->setCheckState(Qt::Checked);
+                break;
+
+            }
         }
         else{
             if(!nbrAxis){
@@ -338,8 +373,10 @@ void FlyscanForm::on_flyscanErrorCode_recieved(int err_code){
         ui->display->setTextColor(QColor("red"));
         ui->display->append("Flyscan configuration failed ");
         ui->display->append("1- Make sure the destination file is not currently open. If so, close the file and try again");
-        ui->display->append("2- If it still doesn't work, Try to reset the vme system ");
-        ui->display->append("3- If the issue remain, Try to reset the host system ");
+        ui->display->append("2- Make sure axes are properly selected ");
+        ui->display->append("3- Make sure frequency is over the minimum ");
+        ui->display->append("4- If it still doesn't work, Try to reset the vme system ");
+        ui->display->append("5- If the issue remain, Try to reset the host system ");
         ui->display->setTextColor(QColor("dark"));
         break;
     case -100:
@@ -389,8 +426,10 @@ void FlyscanForm::on_flyscanErrorCode_recieved(int err_code){
         ui->display->setTextColor(QColor("red"));
         ui->display->append("Faillure while processing flyscan data");
         ui->display->append("1- Make sure the destination file is not currently open. If so, close the file and try again");
-        ui->display->append("2- If it still doesn't work, Try to reset the vme system ");
-        ui->display->append("3- If the issue remain, Try to reset the host system ");
+        ui->display->append("2- Make sure axes are properly selected ");
+        ui->display->append("3- Make sure frequency is over the minimum ");
+        ui->display->append("4- If it still doesn't work, Try to reset the vme system ");
+        ui->display->append("5- If the issue remain, Try to reset the host system ");
         ui->display->setTextColor(QColor("dark"));
         break;
     default:
